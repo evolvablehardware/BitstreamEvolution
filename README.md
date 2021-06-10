@@ -86,7 +86,7 @@ distribution as follows:
 python3 -m pip install pyserial numpy matplotlib
 ```
 ### Configuring the BitstreamEvolution core
-Although BitstreamEvolution doesn't require anything building or
+Although BitstreamEvolution doesn't require any building or
 compilation (other than the Project Icestorm tools), it utilizes make
 targets to simplify configuration. The simplest and recommended way to
 configure the BitstreamEvolution core is to run `make` in the root
@@ -136,7 +136,7 @@ been for testing and maintainence of the project.
 
 |Target|Actions|
 |------|-------|
-|`clean`|Removes the default permananent data logging directories and their contents as well as all the build directories for the Project Icestorm tools (*but it does not uninstall them*)|
+|`clean`|Removes the default permanent data logging directories and their contents as well as all the build directories for the Project Icestorm tools (*but it does not uninstall them*)|
 |`clean-workspace`|Removes the default permananent data logging directories and their contents|
 |`clean-tools`|Removes all the build directories for the Project Icestorm tools (*but it does not uninstall them*)|
 
@@ -179,7 +179,7 @@ If you are using an Arduino microcontroller other than a nano, replace
 "nano" in the last command with the name of the Arduino microcontroller
 type you are using (e.g. "mega", "uno", "duo", et cetera). Note that
 while the program is likely to work for any Arduino microcontroller, it
-has only been thoroughly tested with a nano.
+has only been thoroughly tested with a 5V nano.
 
 After arduino-cli has been configured, you will need to upload the
 sketch to the microcontroller with the arduino-cli tool. This requires
@@ -191,7 +191,7 @@ how to enure you have proper access see the
 
 Once you have found the correct file and ensured you can access it, run
 the following command to upload the sketch, making sure to replace the
-`#` with the appropritae number (or the entire filename if your system
+`#` with the appropriate number (or the entire filename if your system
 uses a different type of device file):
 
 ```bash
@@ -340,7 +340,7 @@ is restricted to members of the groups `dialout` for `ttyUSB0` and
 `plugdev` for `ttyUSB1` and `ttyUSB2`.
 
 BitstreamEvolution requires read/write permission for the device files
-for the Lattice ICE40 FPAG and the Arduino microcontroller. To add
+for the Lattice ICE40 FPGA and the Arduino microcontroller. To add
 yourself as a member to appropriate group, you use the command:
 
 ```bash
@@ -361,20 +361,20 @@ sudo usermod -Ga plugdev USERNAME
 This section describes some issues that can be encountered during
 installation and how to address them. If the following steps do not
 address your issue or you encounter other problems, please file an issue
-[here](https://github.com/derekwhitley/EvolvableHardware/issues) so that
+[here](https://github.com/evolvablehardware/BitstreamEvolution/issues) so that
 we can look into it.
 
 #### USB Permission denied
 If you get permission denied related to a USB and you have updated
 the rules, try:
-  * rebooting as the added rules may not have taken effect
+  * log out of your current session or reboot as the added rules may not have taken effect
   * run `ls -l /dev` and look at `ttyUSB0` and `ttyUSB1`. Ensure that
     the user you are running the program with is a member of the group
     that can access these devices (do not run the program as root!)
 
 ## Usage
 This section describes how to run the configure and run
-BitstreamEvolution. For the most part, BitstreamEVolution can be run
+BitstreamEvolution. For the most part, BitstreamEvolution can be run
 as-is without configuration; the only part of the configuration file
 that needs to be modified is the
 [Arduino device file path](#system-parameters).
@@ -431,7 +431,7 @@ From the root directory of BitstreamEvolution run:
 python3 src/evolve.py
 ```
 
-BitstreamEvolution will begin to run and display information in windows
+BitstreamEvolution will begin to run and display information in separate windows
 that will appear (unless these have been disabled in the configuration).
 
 BitstreamEvolution will continue to run until:
@@ -442,10 +442,10 @@ BitstreamEvolution will continue to run until:
 ### Troubleshooting
 #### Program hangs during FPGA programming
 BitstreamEvolution may hang indefinitely while attempting to program the
-FPGA with `iceprog`. This often happens if an instance of the program
-was quit earlier during programming.
+FPGA with `iceprog`. This often happens if the circuit upload process was
+quit or interrupted for any reason.
 
-A simple fix for this is to disconnect and reconnect the FPAG.
+A simple fix for this is to disconnect and reconnect the FPGA.
 
 ## Contributing
 *Don't know what Derek wants to do regarding contributing*.
