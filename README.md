@@ -108,14 +108,14 @@ tools.
 |Target|Actions|
 |------|-------|
 |`all`|Creates the directories for logging data, initializes the default configuration settings installs all the Project Icestorm tools, and creates and writes the udev rules for the Lattice ICE40 USB serial programmer|
-|`init`|Creates the directories for logging and initialzies the default configuration settings|
+|`init`|Creates the directories for logging and initializes the default configuration settings|
 |`udev-rules`|Creates and writes the udev rules for the Lattice ICE40 USB serial programmer|
 
 #### Targets for building Project Icestorm tools
 These targets are used to individually build the tools
 BitstreamEvolution depends on. In general, they are only useful if some
 of the Project Icestorm tools have already been installed and the user
-does not want to overwrite the previous installs and wants to save on
+does not want to overwrite the previous installs or wants to save on
 disk space.
 
 |Target|Actions|
@@ -143,10 +143,10 @@ been for testing and maintainence of the project.
 <!-- Arduino-CLI Instructions -->
 ### Configuring the Arduino components
 The Arduino components are used by BitstreamEvolution to control and
-communicate with the micrcontroller which is reponsible for measuring
+communicate with the microcontroller which is responsible for measuring
 the signals from the FPGA. The Arduino component can be configured two
 different ways. The first way is to utilize the Arduino GUI to compile
-and upload the microncontroller code. The second and recommmended way is
+and upload the microncontroller code. The second and recommended way is
 to use the official Arduino-cli tools. This section describes the latter
 method.
 
@@ -172,7 +172,7 @@ run the following commands to configure it:
 ./arduino-cli upgrade
 ./arduino-cli core download arduino:avr
 ./arduino-cli core install arduino:avr
-./arduino-cli compile -b arduino:avr:nano EvolvableHardware/ReadSignal/ReadSignal.ino
+./arduino-cli compile -b arduino:avr:nano BitstreamEvolution/data/ReadSignal/ReadSignal.ino
 ```
 
 If you are using an Arduino microcontroller other than a nano, replace
@@ -195,7 +195,7 @@ the following command to upload the sketch, making sure to replace the
 uses a different type of device file):
 
 ```bash
-./arduino-cli upload -b arduino:avr:nano -p /dev/ttyUSB1 EvolvableHardware/ReadSignal
+./arduino-cli upload -b arduino:avr:nano -p /dev/ttyUSB1 BitstreamEvolution/data/ReadSignal/ReadSignal.ino [Verify - this  should be entire file not folder]
 ```
 
 ### Determining the correct device files
@@ -204,7 +204,7 @@ files for the Arduino microcontroller and the Lattice ICE40 FPGA. The
 device file for each will likely have the form `\dev\ttyUSB#` where `#`
 is a number There are two ways to do determine the device file
 associated with a particular device: one uses:
-[`udevamd`](#finding-device-files-with-udevadm) and the other uses
+[`udevadm`](#finding-device-files-with-udevadm) and the other uses
 [`dmesg`](#finding-device-files-with-dmesg).
 
 #### Finding device files with udevadm
@@ -387,7 +387,7 @@ that needs to be modified is the
 -->
 ### Configuring
 The project has various configuration options that can be specified in
-`data/config.ini`. The file`data/defualt_config.ini` contains the
+`data/config.ini`. The file`data/default_config.ini` contains the
 default options for the configuration and should not be modified. Below
 is a list of the options, their description, and their possible values:
 
@@ -400,7 +400,7 @@ is a list of the options, their description, and their possible values:
 | Population size | The number of circuits to evolve | No theoretical limit, at least ??? recommended|
 | Generations | The maximum number of generations to iterate through | Limitless but recommended at least 500 |
 | Mutation probability | The probability to flip a bit of the bitstream during mutation | 0.0 - 1.0 |
-| Crossover probability | The probability of replacing a bit in one bistream from a bit from another during crossover | 0.0 - 1.0 |
+| Crossover probability | The probability of replacing a bit in one bitstream from a bit from another during crossover | 0.0 - 1.0 |
 | Elitism fraction | The percentage of most fit circuits to protect from modification in a given generation | 0.0 - 1.0 |
 | Desired frequency | The target frequency of the evolved oscillator | At least 1 Hz |
 | Selection | The type of selection to perform | *TODO List the types* |
@@ -434,7 +434,7 @@ python3 src/evolve.py
 BitstreamEvolution will begin to run and display information in separate windows
 that will appear (unless these have been disabled in the configuration).
 
-BitstreamEvolution will continue to run until:
+BitstreamEvolution will continue to run until one of the following happens:
   * It has run through the specified number of generations
   * It has met the specified conditions
   * It is terminated in some other form (e.g. ctrl-c, shutdown, etc.)
