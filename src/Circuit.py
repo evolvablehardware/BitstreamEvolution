@@ -12,7 +12,7 @@ class Circuit:
     """
     Represents a manifestation of a particular configuration
     on an FPGA and all its associated information. It tracks the
-    location of the various files assocatiated with the FPGA
+    location of the various files associated with the FPGA
     configurations as well as GA information associated with the
     configuration. This class also defines methods to run, modify,
     and analyze FPGA configurations.
@@ -20,7 +20,7 @@ class Circuit:
 
     def __repr__(self):
         """
-        Returns the string represenation of this Circuit, used in
+        Returns the string representation of this Circuit, used in
         functions such as 'print'.
         """
         return self.__filename
