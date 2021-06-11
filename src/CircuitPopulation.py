@@ -16,16 +16,16 @@ RANDOMIZE_UNTIL not set in config.ini, continuing without randomization'''
 INVALID_VARIANCE_ERR_MSG = '''\
 VARIANCE_THRESHOLD <= 0 as set in config.ini, continuing without randomization'''
 
-# FIXME This should be included as a paramter in the config.
+# FIXME This should be included as a parameter in the config.
 # The hardware file used as an initial template for the Circuits
 SEED_HARDWARE_FILEPATH = Path("data/seed-hardware.asc")
 
-# FIXME This should be inlcuded as a parameter in the config.
+# FIXME This should be included as a parameter in the config.
 # The basename (filename without path or extensions) of the Circuit
 # hardware, bitstream, and data files.
 CIRCUIT_FILE_BASENAME="hardware"
 
-# Create a named tuple for easy and clear store of information about
+# Create a named tuple for easy and clear storage of information about
 # a Circuit (currently its name and fitness)
 CircuitInfo = namedtuple("CircuitInfo", ["name", "fitness"])
 
@@ -59,7 +59,7 @@ class CircuitPopulation:
         elif config.get_selection_type() == "FIT_PROP_SEL":
             self.__run_selection = self.__run_fitness_proportional_selection
         else:
-            # TODO Shcurrent_genould probably throw error here.
+            # TODO Should probably throw error here.
             pass
 
         elitism_fraction = config.get_elitism_fraction()
@@ -129,7 +129,7 @@ class CircuitPopulation:
     def evolve(self):
         if len(self.__circuits) == 0:
             self.__log_error("Attempting to evolve with empty population")
-            # FIXME Should probably through an exception here instead.
+            # FIXME Should probably throw an exception here instead.
             return
 
         # Set initial values for 'best' data
@@ -340,7 +340,7 @@ class CircuitPopulation:
     def get_best_epoch(self):
         return self.__best_epoch
 
-    # SECTION Miscellanious helper functions.
+    # SECTION Miscellaneous helper functions.
     def __single_point_crossover(self, source, dest):
         """
         Copy some series of chiasmas from fitter circuit into children

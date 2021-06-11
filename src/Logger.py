@@ -85,7 +85,7 @@ class Logger:
         except OSError as e:
             self.log_error("An error occured while launching the process")
         except CalledProcessError as e:
-            self.log_error("An error occured in the launcded process")
+            self.log_error("An error occured in the launched process")
 
         self.log_event("Launching the Live Plot window...")
         args = TERM_CMD + ["python3", "src/PlotEvolutionLive.py"]
@@ -94,7 +94,7 @@ class Logger:
         except OSError as e:
             self.log_error("An error occured while launching the process")
         except CalledProcessError as e:
-            self.log_error("An error occured in the launcded process")
+            self.log_error("An error occured in the launched process")
 
     def __init__(self, config, explanation):
         self.__config = config
