@@ -75,9 +75,7 @@ the packages can all be installed at once with the following commands:
 
 ```bash
 sudo apt update && sudo apt upgrade  # Optional, but recommended
-sudo apt install build-essential clang bison flex libreadline-dev
-gawk tcl-dev libffi-dev mercurial grpahviz xdot pkg-config python3
-python3-pip libboost-all-dev cmake make
+sudo apt install build-essential clang bison flex libreadline-dev gawk tcl-dev libffi-dev mercurial graphviz xdot pkg-config python3 python3-pip libboost-all-dev cmake make
 ```
 The Python libraries can be installed in one command in any Linux
 distribution as follows:
@@ -172,7 +170,7 @@ run the following commands to configure it:
 ./arduino-cli upgrade
 ./arduino-cli core download arduino:avr
 ./arduino-cli core install arduino:avr
-./arduino-cli compile -b arduino:avr:nano BitstreamEvolution/data/ReadSignal/ReadSignal.ino
+./arduino-cli compile -b arduino:avr:nano [PATH TO PROJECT i.e. ~/BitstreamEvolution/data/ReadSignal/ReadSignal.ino]
 ```
 
 If you are using an Arduino microcontroller other than a nano, replace
@@ -195,7 +193,7 @@ the following command to upload the sketch, making sure to replace the
 uses a different type of device file):
 
 ```bash
-./arduino-cli upload -b arduino:avr:nano -p /dev/ttyUSB1 BitstreamEvolution/data/ReadSignal/ReadSignal.ino [Verify - this  should be entire file not folder]
+./arduino-cli upload -b arduino:avr:nano -p /dev/ttyUSB# [PATH TO PROJECT i.e. ~/BitstreamEvolution/data/ReadSignal/ReadSignal.ino]
 ```
 
 ### Determining the correct device files
@@ -344,7 +342,7 @@ for the Lattice ICE40 FPGA and the Arduino microcontroller. To add
 yourself as a member to appropriate group, you use the command:
 
 ```bash
-sudo usermod -Ga GROUPNAME USERNAME
+sudo usermod -a -G GROUPNAME USERNAME
 ```
 
 Where `GROUPNAME` is the name of the group that has permissions for the
@@ -353,8 +351,8 @@ in the example listed above we would run the following the add the user
 `USERNAME` to the appropriate groups:
 
 ```bash
-sudo usermod -Ga dialout USERNAME
-sudo usermod -Ga plugdev USERNAME
+sudo usermod -a -G dialout USERNAME
+sudo usermod -a -G plugdev USERNAME
 ```
 
 ### Issues with setup:
