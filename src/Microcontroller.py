@@ -93,7 +93,7 @@ class Microcontroller:
 
         start = time()
 
-        # REVIEW This whole section can probably be optimized
+        # TODO REVIEW This whole section can probably be optimized
         while b"START\n" not in line:
             self.__serial.write(b'2')
             line = self.__serial.read_until()
@@ -103,7 +103,7 @@ class Microcontroller:
                 self.__log_warning("Time Exceeded. Halting MCU Reading.")
                 break
 
-        # REVIEW This whole section can probably be optimized
+        # TODO REVIEW This whole section can probably be optimized
         while (b"FINISHED\n" not in line):
             line = self.__serial.read_until()
             if line != b"\n" and line != b"START\n" and line != b"FINISHED\n" and line != b"FINISHED\n":

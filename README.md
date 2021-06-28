@@ -393,7 +393,7 @@ is a list of the options, their description, and their possible values:
 
 <!-- NOTE Right now this only lists the most important options-->
 
-<!-- REVIEW Ask Derek about good defaults -->
+<!-- TODO REVIEW Ask Derek about good defaults -->
 #### GA parameters
 | Parameter | Description | Possible Values |
 |-----------|-------------|-----------------|
@@ -408,12 +408,15 @@ is a list of the options, their description, and their possible values:
 | Init Mode | The method to generate the initial circuits | *TODO list these* |
 
 ##### Selection methods
+<!--TODO Describe the various selection methods-->
 *TODO Describe the various selection methods*
 
 ##### Initialization modes
+<!--TODO Describe the various initialization modes-->
 *TODO Describe the various initialization modes*
 
 #### Logging parameters
+<!--TODO Describe these -->
 *TODO Describe these*
 
 #### System parameters
@@ -422,6 +425,7 @@ is a list of the options, their description, and their possible values:
 | USB Path | The path to the USB device file | Any device file path (e.g. `/dev/ttyUSB0`) |
 
 #### Hardware parameters
+<!--TODO Describe these -->
 *TODO Describe these*
 
 ### Running
@@ -448,6 +452,7 @@ quit or interrupted for any reason.
 A simple fix for this is to disconnect and reconnect the FPGA.
 
 ## Contributing
+<!--TODO define the desired approach -->
 *Don't know what Derek wants to do regarding contributing*.
 
 ## License

@@ -41,7 +41,7 @@ class Circuit:
         self.__hardware_filepath = asc_dir.joinpath(filename + ".asc")
         self.__bitstream_filepath = bin_dir.joinpath(filename + ".bin")
 
-        # REVIEW Consider using data buffer instead of file.
+        # TODO REVIEW Consider using data buffer instead of file.
         self.__data_filepath = data_dir.joinpath(filename + ".log")
 
         # SECTION Intialize the hardware file
@@ -126,7 +126,7 @@ class Circuit:
         run(cmd_str)
         sleep(1)
 
-    # REVIEW We could probably improve this by using a buffer instead of a file.
+    # TODO REVIEW We could probably improve this by using a buffer instead of a file.
     def __measure_variance_fitness(self):
         """
         Measure the fitness of this circuit using the ??? fitness
@@ -138,7 +138,7 @@ class Circuit:
         wave = 0
         waveform = []
         for i in range(499):
-            # REVIEW Really need to review what this section does.
+            # TODO REVIEW Really need to review what this section does.
             try:
                 initial1 = int(data[i].strip().split(b": ", 1)[1])
                 initial2 = int(data[i + 1].strip().split(b": ", 1)[1])
@@ -187,7 +187,7 @@ class Circuit:
             allLive.flush()
         return self.__fitness
 
-    # REVIEW We could probably improve this by using a buffer instead of a file.
+    # TODO REVIEW We could probably improve this by using a buffer instead of a file.
     def __measure_pulse_fitness(self):
         """
         Measures the fitness of this circuit using the pulse-count
@@ -196,7 +196,7 @@ class Circuit:
         data_file = open(self.__data_filepath, "r")
         data = data_file.readlines()
 
-        # REVIEW Look more into what exactly this code is doing.
+        # TODO REVIEW Look more into what exactly this code is doing.
         pulse_count = 0
         for i in range(len(data)):
             pulse_count += int(data[i])
@@ -339,7 +339,7 @@ class Circuit:
         VALID_TILE_X = range(4, 10)
         VALID_TILE_Y = range(1, 17)
 
-        # REVIEW Should we store the x and y as strings?
+        # TODO REVIEW Should we store the x and y as strings?
         is_x_valid = int(self.__hardware_file[pos + 1]) in VALID_TILE_X
         is_y_valid = int(self.__hardware_file[pos + 3]) in VALID_TILE_Y
 

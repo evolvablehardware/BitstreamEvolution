@@ -31,7 +31,7 @@ CircuitInfo = namedtuple("CircuitInfo", ["name", "fitness"])
 
 class CircuitPopulation:
     # SECTION Initialization functions
-    # REVIEW Add docstring to init?
+    # TODO REVIEW Add docstring to init?
     def __init__(self, mcu, config, logger):
         self.__config = config
         self.__microcontroller = mcu
@@ -105,7 +105,7 @@ class CircuitPopulation:
         """
         no_pulses_generated = True
         while no_pulses_generated:
-            # REVIEW Should we revert to the original hardware seed each
+            # TODO REVIEW Should we revert to the original hardware seed each
             # time we try to generate a pulse, or can we just keep
             # mutating?
             for circuit in self.__circuits:
@@ -114,7 +114,7 @@ class CircuitPopulation:
                 if (pulses > 0):
                     no_pulses_generated = False
 
-    # REVIEW Figure out how best to implement this given the changes.
+    # TODO REVIEW Figure out how best to implement this given the changes.
     def __randomize_until_variance(self):
         """
         Randomizes population until minimum variance is found
@@ -291,10 +291,10 @@ class CircuitPopulation:
                 elites[elite] = 1 / self.__n_elites
         else:
             # elite_sum is negative. This should not be possible.
-            # REVIEW Should we throw an exception here?
+            # TODO REVIEW Should we throw an exception here?
             pass
 
-        # REVIEW should we just print the dictionary instead?
+        # TODO REVIEW should we just print the dictionary instead?
         self.__log_event("Elite Group:", elites.keys())
         self.__log_event("Elite Probabilites:", elites.values())
 
@@ -353,7 +353,7 @@ class CircuitPopulation:
         elif self.__config.get_routing_type() == "NWSE":
             crossover_point = self.__rand.integers(13,15)
         else:
-            # REVIEW Throw an exception here?
+            # TODO REVIEW Throw an exception here?
             pass
         dest.copy_genes_from(source, crossover_point)
 
