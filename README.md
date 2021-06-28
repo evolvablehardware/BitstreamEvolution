@@ -378,7 +378,7 @@ that needs to be modified is the
 [Arduino device file path](#system-parameters).
 
 <!--
-  FIXME Configuration options that need to be changed should be
+  TODO Configuration options that need to be changed should be
   better highlighted and emphasized. Ideally, the program would ensure
   that the user has set these before running (and they would be unset by
   default
@@ -391,19 +391,18 @@ is a list of the options, their description, and their possible values:
 
 <!-- NOTE Right now this only lists the most important options-->
 
-<!-- TODO REVIEW Ask Derek about good defaults -->
 #### GA parameters
-| Parameter | Description | Possible Values |
-|-----------|-------------|-----------------|
-| Population size | The number of circuits to evolve | No theoretical limit, at least ??? recommended|
-| Generations | The maximum number of generations to iterate through | Limitless but recommended at least 500 |
-| Mutation probability | The probability to flip a bit of the bitstream during mutation | 0.0 - 1.0 |
-| Crossover probability | The probability of replacing a bit in one bitstream from a bit from another during crossover | 0.0 - 1.0 |
-| Elitism fraction | The percentage of most fit circuits to protect from modification in a given generation | 0.0 - 1.0 |
-| Desired frequency | The target frequency of the evolved oscillator | At least 1 Hz |
-| Selection | The type of selection to perform | *TODO List the types* |
-| Variance threshold | The target variance | ??? |
-| Init Mode | The method to generate the initial circuits | *TODO list these* |
+| Parameter | Description | Possible Values | Recommended Values |
+|-----------|-------------|-----------------|--------------------|
+| Population size | The number of circuits to evolve | 2 - 1000+ | 10 - 50 |
+| Generations | The maximum number of generations to iterate through | 2 - 1000+ | 50 - 500 |
+| Mutation probability | The probability to flip a bit of the bitstream during mutation | 0.0 - 1.0 | (1 / genotypic length) = 0.0021 |
+| Crossover probability | The probability of replacing a bit in one bitstream from a bit from another during crossover | 0.0 - 1.0 | 0.1 - 0.5 |
+| Elitism fraction | The percentage of most fit circuits to protect from modification in a given generation | 0.0 - 1.0 | 0.1 |
+| Desired frequency | The target frequency of the evolved oscillator | (In Hertz) 1 - 1000000 | 1000 |
+| Selection | The type of selection to perform | SINGLE_ELITE, FRAC_ELITE, CLASSIC_TOURN, FIT_PROP_SEL| CLASSIC_TOURN |
+| Variance threshold | The target signal variance from initial random search | 3-8 | 4 |
+| Seed Mode | The method to generate the initial random circuits | *TODO Add Seed Modes to CircuitPopulation.Py and List them here* | RAND_FROM_SEED |
 
 ##### Selection methods
 <!--TODO Describe the various selection methods-->

@@ -16,11 +16,12 @@ RANDOMIZE_UNTIL not set in config.ini, continuing without randomization'''
 INVALID_VARIANCE_ERR_MSG = '''\
 VARIANCE_THRESHOLD <= 0 as set in config.ini, continuing without randomization'''
 
-# FIXME This should be included as a parameter in the config.
-# The hardware file used as an initial template for the Circuits
+# SEED_HARDWARE is the hardware file used as an initial template for the Circuits
+# NOTE The Seed file is provided as a way to kickstart the evolutionary process
+# without having to perform a time-consuming random search for a seedable circuit.
+# Contact repository authors if you're interested in a new seed file.
 SEED_HARDWARE_FILEPATH = Path("data/seed-hardware.asc")
 
-# FIXME This should be included as a parameter in the config.
 # The basename (filename without path or extensions) of the Circuit
 # hardware, bitstream, and data files.
 CIRCUIT_FILE_BASENAME="hardware"
@@ -31,8 +32,17 @@ CircuitInfo = namedtuple("CircuitInfo", ["name", "fitness"])
 
 class CircuitPopulation:
     # SECTION Initialization functions
-    # TODO REVIEW Add docstring to init?
     def __init__(self, mcu, config, logger):
+        """ Generates the initial population of circuits with the following arguments
+
+                Args:
+                    mcu::[Class Object] containing an instance of Microcontroller class
+
+                    config::[Class Object] containing an instance of Config class
+
+                    logger::[Class Object] containing an instance of Logger class
+
+        """
         self.__config = config
         self.__microcontroller = mcu
 
@@ -105,16 +115,16 @@ class CircuitPopulation:
         """
         no_pulses_generated = True
         while no_pulses_generated:
-            # TODO REVIEW Should we revert to the original hardware seed each
-            # time we try to generate a pulse, or can we just keep
-            # mutating?
+            # NOTE Randomize until pulses will continue mutating and
+            # not revert to the original seed-hardware until restarting 
             for circuit in self.__circuits:
                 circuit.mutate()
-                pulses = circuit.get_pulse_count()
+                pulses = circuit.evaluate_pulse_count()
                 if (pulses > 0):
                     no_pulses_generated = False
 
     # TODO REVIEW Figure out how best to implement this given the changes.
+    # NOTE 
     def __randomize_until_variance(self):
         """
         Randomizes population until minimum variance is found
@@ -128,9 +138,8 @@ class CircuitPopulation:
     # TODO Add docstring.
     def evolve(self):
         if len(self.__circuits) == 0:
-            self.__log_error("Attempting to evolve with empty population")
-            # FIXME Should probably throw an exception here instead.
-            return
+            self.__log_error("Attempting to evolve with empty population. Exiting...")
+            exit()
 
         # Set initial values for 'best' data
         self.__overall_best_circuit_info = CircuitInfo(
@@ -155,7 +164,7 @@ class CircuitPopulation:
             for circuit in self.__circuits:
                 # If evaluate returns true, then a circuit has surpassed
                 # the threshold and we are done.
-                fitness = circuit.evaluate()
+                fitness = circuit.evaluate_variance()
                 if fitness > self.__config.get_variance_threshold():
                     self.__log_event("{} fitness: {}".format(circuit, fitness))
                     return
@@ -291,10 +300,9 @@ class CircuitPopulation:
                 elites[elite] = 1 / self.__n_elites
         else:
             # elite_sum is negative. This should not be possible.
-            # TODO REVIEW Should we throw an exception here?
-            pass
+            self.__log_error("Elite_sum is negative. Exiting...")
+            exit()
 
-        # TODO REVIEW should we just print the dictionary instead?
         self.__log_event("Elite Group:", elites.keys())
         self.__log_event("Elite Probabilites:", elites.values())
 
@@ -343,7 +351,7 @@ class CircuitPopulation:
     # SECTION Miscellaneous helper functions.
     def __single_point_crossover(self, source, dest):
         """
-        Copy some series of chiasmas from fitter circuit into children
+        Copy some series of chiasmas (points of genetic exchange) from fitter circuit into children
         """
         crossover_point = 0
 
@@ -353,8 +361,8 @@ class CircuitPopulation:
         elif self.__config.get_routing_type() == "NWSE":
             crossover_point = self.__rand.integers(13,15)
         else:
-            # TODO REVIEW Throw an exception here?
-            pass
+            self.__log_error("Invalid routing type specified in config.ini. Exiting...")
+            exit()
         dest.copy_genes_from(source, crossover_point)
 
     # TODO Take a closer look at this function

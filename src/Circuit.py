@@ -41,7 +41,7 @@ class Circuit:
         self.__hardware_filepath = asc_dir.joinpath(filename + ".asc")
         self.__bitstream_filepath = bin_dir.joinpath(filename + ".bin")
 
-        # TODO REVIEW Consider using data buffer instead of file.
+        # NOTE Using log files instead of a data buffer in the event of premature termination
         self.__data_filepath = data_dir.joinpath(filename + ".log")
 
         # SECTION Intialize the hardware file
@@ -72,9 +72,12 @@ class Circuit:
 
         self.__log_event("Finished compiling", self)
 
-    # FIXME Rename this to account for multiple fitness functions.
-    # TODO Rename to some like evaluate_variance
-    def evaluate(self):
+    # TODO Evaluate based on a fitness function defined in the config file
+    # while still utilizing the existing or newly added evaluate functions in this class
+    # def evaluate(self):
+    #     return 
+
+    def evaluate_variance(self):
         """
         Upload and run this Circuit on the FPGA and analyze its
         performance.
@@ -92,8 +95,7 @@ class Circuit:
 
         return self.__measure_variance_fitness()
 
-    # FIXME This should also be "evaluating"
-    def get_pulse_count(self):
+    def evaluate_pulse_count(self):
         """
         Upload and run this circuit and count the number of pulses it
         generates.
@@ -126,7 +128,7 @@ class Circuit:
         run(cmd_str)
         sleep(1)
 
-    # TODO REVIEW We could probably improve this by using a buffer instead of a file.
+    # NOTE Using log files instead of a data buffer in the event of premature termination
     def __measure_variance_fitness(self):
         """
         Measure the fitness of this circuit using the ??? fitness
@@ -135,18 +137,25 @@ class Circuit:
         data_file = open(self.__data_filepath, "rb")
         data = data_file.readlines()
 
-        wave = 0
+        variance_sum = 0
+        total_samples = 500
         waveform = []
-        for i in range(499):
-            # TODO REVIEW Really need to review what this section does.
+        for i in range(total_samples-1):
+            # NOTE Signal Variance is calculated by summing the absolute difference of
+            # sequential voltage samples from the microcontroller.
             try:
+                # Capture the next point in the data file to a variable
                 initial1 = int(data[i].strip().split(b": ", 1)[1])
+                # Capture the next point + 1 in the data file to a variable
                 initial2 = int(data[i + 1].strip().split(b": ", 1)[1])
+                # Take the absolute difference of the two points and store to a variable
                 variance = abs(initial2 - initial1)
+                # Append the variance to the waveform list
                 waveform.append(initial1)
 
+
                 if initial1 != None and initial1 < 1000:
-                    wave += variance
+                    variance_sum += variance
             except:
                 self.__log_error("FAILED TO READ {} AT LINE {} -> ZEROIZING LINE".format(
                     self,
@@ -159,7 +168,7 @@ class Circuit:
                 waveLive.write(str(i) + ", " + str(points) + "\n")
                 i += 1
 
-        self.__fitness = wave / 500
+        self.__fitness = variance_sum / total_samples
         # return self.__fitness
 
         # TODO Make sure alllivedata.log is cleared before run
@@ -187,7 +196,7 @@ class Circuit:
             allLive.flush()
         return self.__fitness
 
-    # TODO REVIEW We could probably improve this by using a buffer instead of a file.
+    # NOTE Using log files instead of a data buffer in the event of premature termination
     def __measure_pulse_fitness(self):
         """
         Measures the fitness of this circuit using the pulse-count
@@ -196,7 +205,9 @@ class Circuit:
         data_file = open(self.__data_filepath, "r")
         data = data_file.readlines()
 
-        # TODO REVIEW Look more into what exactly this code is doing.
+        # Extract the integer value from the log file indicating the pulses counted from
+        # the microcontroller. Pulses are currently measured by Rising or Falling edges
+        # that cross the microcontrollers reference voltage (currently ~2.25 Volts)
         pulse_count = 0
         for i in range(len(data)):
             pulse_count += int(data[i])
@@ -336,10 +347,13 @@ class Circuit:
         Determines whether a given tile is available for modificiation.
         """
         # Replace these magic values with a more generalized solution
+        # Magic values are indicative of the underlying hardware (ice40hx1k)
+        # A different model will require different magic values (i.e. ice40hx8k)
         VALID_TILE_X = range(4, 10)
         VALID_TILE_Y = range(1, 17)
 
-        # TODO REVIEW Should we store the x and y as strings?
+        # NOTE x and y are stored as ints to aid the loops that search and identify
+        # tiles while scraping the asc files
         is_x_valid = int(self.__hardware_file[pos + 1]) in VALID_TILE_X
         is_y_valid = int(self.__hardware_file[pos + 3]) in VALID_TILE_Y
 

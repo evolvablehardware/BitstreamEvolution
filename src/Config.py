@@ -1,7 +1,7 @@
 from pathlib import Path
 
 # TODO Add handling for missing values
-# TODO REVIEW Should we fail at missing values or provide defaults?
+# NOTE Fails ungracefully at missing values currently
 class Config:
 	def __init__(self, config_parser):
 		self.__config_parser = config_parser
@@ -48,7 +48,6 @@ class Config:
 		return self.get_ga_parameters("RANDOMIZE_UNTIL")
 
 	def get_variance_threshold(self):
-		# TODO REVIEW Can this be a float?
 		return int(self.get_ga_parameters("VARIANCE_THRESHOLD"))
 
 	def get_init_mode(self):

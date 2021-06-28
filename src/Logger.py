@@ -5,7 +5,6 @@ from os.path import exists
 from os import mkdir
 from pathlib import Path
 
-# FIXME These logging-related constants should be in the config.
 # The window dimensions
 LINE_WIDTH = 112
 WIN_DIM="105x29"
