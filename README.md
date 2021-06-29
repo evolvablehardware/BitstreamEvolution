@@ -4,7 +4,7 @@ Code for the BitstreamEvolution Open Source Toolkit
 ## Table of Contents
 - [BitstreamEvolution](#bitstreamevolution)
   - [Table of Contents](#table-of-contents)
-  - [Setup](#Setup)
+  - [Setup](#setup)
     - [Requirements](#requirements)
     - [Installing the dependencies](#installing-the-dependencies)
     - [Configuring the BistreamEvolution core](#configuring-the-bitstreamevolution-core)
@@ -14,7 +14,7 @@ Code for the BitstreamEvolution Open Source Toolkit
     - [Configuring the Arduino components](#configuring-the-arduino-components)
       - [Obtaining the arduino-cli tool](#obtaining-the-arduino-cli-tool)
     - [Determining the correct device files](#determining-the-correct-device-files)
-      - [Finding device files with udevadm](#finding-device-file-with-udevadm)
+      - [Finding device files with udevadm](#finding-device-files-with-udevadm)
       - [Finding device files with dmesg](#finding-device-files-with-dmesg)
     - [Setting up permissions](#setting-up-permissions)
     - [Issues with setup](#issues-with-setup)
@@ -74,8 +74,9 @@ For Debian-based distributions and other distributions that use `apt`,
 the packages can all be installed at once with the following commands:
 
 ```bash
-sudo apt update && sudo apt upgrade  # Optional, but recommended
-sudo apt install build-essential clang bison flex libreadline-dev gawk tcl-dev libffi-dev mercurial graphviz xdot pkg-config python3 python3-pip libboost-all-dev cmake make
+sudo apt update && sudo apt upgrade  # Optional, but recommended 
+sudo apt install build-essential clang bison flex libreadline-dev gawk tcl-dev libffi-dev mercurial graphviz xdot \ 
+pkg-config python3 python3-pip libboost-all-dev cmake make
 ```
 The Python libraries can be installed in one command in any Linux
 distribution as follows:
@@ -193,8 +194,10 @@ the following command to upload the sketch, making sure to replace the
 uses a different type of device file):
 
 ```bash
-./arduino-cli upload -b arduino:avr:nano -p /dev/ttyUSB# [PATH TO PROJECT i.e. ~/BitstreamEvolution/data/ReadSignal/ReadSignal.ino]
+./arduino-cli upload -b arduino:avr:nano -p /dev/ttyUSB# PATH/TO/SKETCH
 ```
+Where `PATH/TO/SKETCH/` may look something like: 
+`~/BitstreamEvolution/data/ReadSignal/ReadSignal.ino`
 
 ### Determining the correct device files
 Correctly configuring BitstreamEvolution requires determining the device
@@ -383,7 +386,7 @@ that needs to be modified is the
   that the user has set these before running (and they would be unset by
   default
 -->
-### Configuring
+### Configuration
 The project has various configuration options that can be specified in
 `data/config.ini`. The file`data/default_config.ini` contains the
 default options for the configuration and should not be modified. Below
