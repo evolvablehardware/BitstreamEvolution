@@ -171,7 +171,7 @@ class Circuit:
         self.__fitness = variance_sum / total_samples
         # return self.__fitness
 
-        # TODO Make sure alllivedata.log is cleared before run
+        # TODO ALIFE2021 Make sure alllivedata.log is cleared before run
         with open("workspace/alllivedata.log", "br+") as allLive:
             line = allLive.readline()
             while line != b'':
@@ -240,7 +240,7 @@ class Circuit:
                 line_end = self.__hardware_file.find(b"\n", line_start + 1)
                 line_size = line_end - line_start + 1
 
-                # TODO Should line 14 be included in MOORE routing?
+                # TODO ALIFE2021 The routing protocol here is dated and needs to mimic that of the Tone Discriminator
                 if self.__config.get_routing == "MOORE":
                     rows = [1, 2, 13]
                 elif self.__config.get_routing == "NEWSE":
@@ -314,7 +314,7 @@ class Circuit:
     def get_hardware_file(self):
         return self.__hardware_file
 
-    # TODO Do we need to add the extension here?
+    # NOTE may need to add the file extension here (.asc)
     def get_hardware_filepath(self):
         """
         Returns the path to the hardware file associated with this
@@ -322,7 +322,7 @@ class Circuit:
         """
         return self.__hardware_filepath
 
-    # TODO Do we need to add the extension here?
+    # NOTE may need to add the file extension here (.bin)
     def get_bitstream_filepath(self):
         """
         Returns the path to the bitstream file associated with this

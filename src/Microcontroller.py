@@ -34,7 +34,8 @@ class Microcontroller:
         for i in range(0,samples):
             # Poll serial line until START signal
             self.__serial.reset_input_buffer()
-            self.__serial.write(bytes(1))
+            # NOTE The MCU is expecting a string '1' if fitness isn't measured this may be why
+            self.__serial.write(bytes(1)) 
             start = time()
 
             while True:
@@ -43,6 +44,8 @@ class Microcontroller:
                     self.__log_warning("Time Exceeded. Halting MCU Reading")
                     break
                 # TODO We should be able to do whatever this line does better
+                # This is currently doing a poor job at REGEXing the MCU serial return - can be done better
+                # It's supposed to handle exceptions from transmission loss (i.e. dropped or additional spaces, shifted colons, etc)
                 if (p != b"" and b":" not in p and b"START" not in p and b"FINISH" not in p and b" " not in p):
                     p = p.translate(None, b"\r\n")
                     buf.append(p)
@@ -80,6 +83,9 @@ class Microcontroller:
         data_file.close()
 
     def measure_signal(self, circuit):
+
+        # TODO This whole section can probably be optimized
+        
         buf = []
 
         # Begin monitoring on load
@@ -88,12 +94,13 @@ class Microcontroller:
         self.__serial.reset_input_buffer()
         self.__serial.reset_output_buffer();
         self.__log_event("Reading microcontroller.")
+        # The MCU is expecting a string '2' to initiate the ADC capture from the FPGA (waveform as opposed to pulses)
         self.__serial.write(b'2')
         line = self.__serial.read()
 
         start = time()
 
-        # TODO REVIEW This whole section can probably be optimized
+        # The MCU returns a START line followed by many lines of data (500 currently) followed by a FINISHED line
         while b"START\n" not in line:
             self.__serial.write(b'2')
             line = self.__serial.read_until()
@@ -103,7 +110,7 @@ class Microcontroller:
                 self.__log_warning("Time Exceeded. Halting MCU Reading.")
                 break
 
-        # TODO REVIEW This whole section can probably be optimized
+        # TODO  This whole section can probably be optimized
         while (b"FINISHED\n" not in line):
             line = self.__serial.read_until()
             if line != b"\n" and line != b"START\n" and line != b"FINISHED\n" and line != b"FINISHED\n":

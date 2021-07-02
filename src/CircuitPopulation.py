@@ -69,8 +69,8 @@ class CircuitPopulation:
         elif config.get_selection_type() == "FIT_PROP_SEL":
             self.__run_selection = self.__run_fitness_proportional_selection
         else:
-            # TODO Should probably throw error here.
-            pass
+            self.__log_error("Invalid Selection method in config.ini. Exiting...")
+            exit()
 
         elitism_fraction = config.get_elitism_fraction()
         population_size = config.get_population_size()
@@ -123,8 +123,8 @@ class CircuitPopulation:
                 if (pulses > 0):
                     no_pulses_generated = False
 
-    # TODO REVIEW Figure out how best to implement this given the changes.
-    # NOTE 
+    # NOTE This is whole function going to be upgraded to handle a from-scratch circuit seeding process.
+    # https://github.com/evolvablehardware/BitstreamEvolution/issues/3 
     def __randomize_until_variance(self):
         """
         Randomizes population until minimum variance is found

@@ -27,7 +27,7 @@ void setup(){
     while (!Serial);
     digitalWrite(LED_BUILTIN, HIGH);
     digitalWrite(2, HIGH); // noise suppression on interrupt pin
-    attachInterrupt(digitalPinToInterrupt(interrupt),pulseCounter, RISING);
+    attachInterrupt(digitalPinToInterrupt(interrupt),pulseCounter, RISING); // can be changed from RISING to FALLING or CHANGE
 }
 
 void pulseCounter(){
@@ -51,7 +51,9 @@ void loop(){
             Serial.print(": ");
             Serial.print(analogRead(analogPin)); //buf[i]); //Write the buffer to Serial
             Serial.print("\n");
-            delayMicroseconds(10);
+            // This determines the sampling frequency 
+            //(500 samples delayed by 10us each results in a sampled time interval of 5ms)
+            delayMicroseconds(10); 
         }
     
         Serial.print("FINISHED\nFINISHED\nFINISHED\n");

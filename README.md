@@ -408,15 +408,15 @@ is a list of the options, their description, and their possible values:
 | Seed Mode | The method to generate the initial random circuits | *TODO Add Seed Modes to CircuitPopulation.Py and List them here* | RAND_FROM_SEED |
 
 ##### Selection methods
-<!--TODO Describe the various selection methods-->
+<!--TODO ALIFE2021 Describe the various selection methods-->
 *TODO Describe the various selection methods*
 
 ##### Initialization modes
-<!--TODO Describe the various initialization modes-->
+<!--TODO ALIFE2021 Describe the various initialization modes-->
 *TODO Describe the various initialization modes*
 
 #### Logging parameters
-<!--TODO Describe these -->
+<!--TODO ALIFE2021 Describe these -->
 *TODO Describe these*
 
 #### System parameters
@@ -452,7 +452,7 @@ quit or interrupted for any reason.
 A simple fix for this is to disconnect and reconnect the FPGA.
 
 ## Contributing
-<!--TODO define the desired approach -->
+<!--TODO ALIFE2021 define the desired approach -->
 *Don't know what Derek wants to do regarding contributing*.
 
 ## License
