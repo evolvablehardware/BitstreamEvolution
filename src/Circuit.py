@@ -38,10 +38,10 @@ class Circuit:
         bin_dir = config.get_bin_directory()
         data_dir = config.get_data_directory()
         self.__hardware_filepath = hardware_filepath
-        self.__bitstream_filepath = bin_dir.joinpath(self.filename + ".bin")
+        self.__bitstream_filepath = bin_dir.joinpath(self.__filename + ".bin")
 
         # NOTE Using log files instead of a data buffer in the event of premature termination
-        self.__data_filepath = data_dir.joinpath(filename + ".log")
+        self.__data_filepath = data_dir.joinpath(self.__filename + ".log")
 
         # SECTION Intialize the hardware file
         # Since the hardware file is written to and read from a lot, we
@@ -229,31 +229,30 @@ class Circuit:
         """
         Mutate the configuration of this circuit.
         """
-
-	mutation_probability = self.__config.mutation_probability()
-	if force_mutation:
-		mutation_probability = 1.0
+        mutation_probability = self.__config.get_mutation_probability()
+        if force_mutation:
+            mutation_probability = 1.0
 
         tile = self.__hardware_file.find(b".logic_tile")
         while tile > 0:
-            pos = tile + len(".logic_tile")
+            pos = tile + len(b".logic_tile")
             if self.__tile_is_included(pos):
                 line_start = self.__hardware_file.find(b"\n", tile) + 1
                 line_end = self.__hardware_file.find(b"\n", line_start + 1)
                 line_size = line_end - line_start + 1
 
                 # TODO Should line 14 be included in MOORE routing?
-                if self.__config.get_routing == "MOORE":
+                if self.__config.get_routing_type() == "MOORE":
                     rows = [1, 2, 13]
-                elif self.__config.get_routing == "NEWSE":
+                elif self.__config.get_routing_type() == "NEWSE":
                     rows = [1, 2]
                 for row in rows:
-                    for col in self.__config.get_acccessed_columns():
+                    for col in self.__config.get_accessed_columns():
                         if mutation_probability >= self.__rand.uniform(0,1):
-                            pos = tile + line_size * (row - 1) + col
-                            self.__hardware_filefile[pos] = str(self.__rand.integers(0,2))
-
+                            pos = tile + line_size * (row - 1) + int(col)
+                            self.__hardware_file[pos] = ord(str(self.__rand.integers(0,2)))
             tile = self.__hardware_file.find(b".logic_tile", tile + 1)
+        self.__hardware_file.flush()
 
     def copy_genes_from(self, parent, crossover_point):
         """
@@ -351,13 +350,21 @@ class Circuit:
         # Replace these magic values with a more generalized solution
         # Magic values are indicative of the underlying hardware (ice40hx1k)
         # A different model will require different magic values (i.e. ice40hx8k)
-        VALID_TILE_X = range(4, 10)
-        VALID_TILE_Y = range(1, 17)
+        VALID_X_TILES = range(4, 10)
+        VALID_Y_TILES = range(1, 17)
 
-        # NOTE x and y are stored as ints to aid the loops that search and identify
-        # tiles while scraping the asc files
-        is_x_valid = int(self.__hardware_file[pos + 1]) in VALID_TILE_X
-        is_y_valid = int(self.__hardware_file[pos + 3]) in VALID_TILE_Y
+        i = 0
+        # Search for the next instance of a newline (ASCII 10). We have
+        # to search for 10, because Python can't make up it's mind on
+        # how it wants to represent bytes in memory.
+        while self.__hardware_file[pos + i] != 10:
+            i = i + 1
+        
+        coordinates = self.__hardware_file[pos:pos+i].strip().split(b" ")  
+        x = int(coordinates[0])
+        y = int(coordinates[1])
+        is_x_valid = x in VALID_X_TILES
+        is_y_valid = y in VALID_Y_TILES
 
         return is_x_valid and is_y_valid
 

@@ -27,9 +27,6 @@ population = CircuitPopulation(mcu, config, logger)
 population.populate()
 population.evolve()
 
-# SECTION Clean up resources
-
-
 # Upload a sample bitstream to the FPGA.
 run([
     "iceprog",

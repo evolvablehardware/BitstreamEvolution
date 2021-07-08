@@ -51,7 +51,7 @@ class Config:
 		return int(self.get_ga_parameters("VARIANCE_THRESHOLD"))
 
 	def get_seed_mode(self):
-		return self.get_ga_parameters("INIT_MODE")
+		return self.get_ga_parameters("SEED_MODE")
 
 	def get_using_pulse_function(self):
 		return bool(self.get_ga_parameters("PULSE_FUNC"))

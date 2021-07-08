@@ -1,5 +1,6 @@
-from os import exit
-from typing import NamedTuple from Circuit import Circuit
+from sys import exit
+from typing import NamedTuple 
+from Circuit import Circuit
 from shutil import copyfile
 from sortedcontainers import SortedKeyList
 from math import ceil
@@ -41,55 +42,48 @@ CircuitInfo = namedtuple("CircuitInfo", ["name", "fitness"])
 class CircuitPopulation:
     # SECTION Initialization functions
     def __rand_from_seed(self):
-		asc_dir = config.get_asc_directory()
-		for index in range(1, self.__config.get_population_size() + 1)	
-			hardware_filename = Path("hardware" + str(index) + ".asc")
-			hardware_filepath = asc_dir.joinpath(hardware_filename)
-	    	copyfile(SEED_HARDWARE_FILEPATH, hardware_filepath) 
+        asc_dir = self.__config.get_asc_directory()
+        for index in range(1, self.__config.get_population_size() + 1):  
+            hardware_filename = Path("hardware" + str(index) + ".asc")
+            hardware_filepath = asc_dir.joinpath(hardware_filename)
+            copyfile(SEED_HARDWARE_FILEPATH, hardware_filepath) 
             ckt = Circuit(
                 index,
-				hardware_filepath,
+                hardware_filepath,
                 self.__microcontroller,
                 self.__logger,
                 self.__config,
                 self.__rand
             )
-			ckt.mutate(true)
+            ckt.mutate()
             self.__circuits.add(ckt)
-		
-	tmp = TemporaryFile("w+")
-	seed_hardware_file = open(SEED_HARDWARE_FILEPATH, "r")
-	copyfileobj(seed_hardware_file, tmp);
-	seed_hardware_file.close()
-	
-	tmp_map = mmap(tmp.fileno(), 0)
-
+        
     def __complete_rand(self):
-		asc_dir = config.get_asc_directory()
-		for index in range(1, self.__config.get_population_size() + 1)	
-			hardware_filename = Path("hardware" + str(index) + ".asc")
-			hardware_filepath = asc_dir.joinpath(hardware_filename)
-	    	copyfile(SEED_HARDWARE_FILEPATH, hardware_filepath) 
+        asc_dir = self.__config.get_asc_directory()
+        for index in range(1, self.__config.get_population_size() + 1):  
+            hardware_filename = Path("hardware" + str(index) + ".asc")
+            hardware_filepath = asc_dir.joinpath(hardware_filename)
+            copyfile(SEED_HARDWARE_FILEPATH, hardware_filepath) 
             ckt = Circuit(
                 index,
-				hardware_filepath,
+                hardware_filepath,
                 self.__microcontroller,
                 self.__logger,
                 self.__config,
                 self.__rand
             )
-			ckt.mutate(force_mutation=true)
+            ckt.mutate(force_mutation=True)
             self.__circuits.add(ckt)
     
     def __clone_from_seed(self):
-		asc_dir = config.get_asc_directory()
-		for index in range(1, self.__config.get_population_size() + 1)	
-			hardware_filename = Path("hardware" + str(index) + ".asc")
-			hardware_filepath = asc_dir.joinpath(hardware_filename)
-	   		copyfile(SEED_HARDWARE_FILEPATH, hardware_filepath) 
+        asc_dir = self.__config.get_asc_directory()
+        for index in range(1, self.__config.get_population_size() + 1):  
+            hardware_filename = Path("hardware" + str(index) + ".asc")
+            hardware_filepath = asc_dir.joinpath(hardware_filename)
+            copyfile(SEED_HARDWARE_FILEPATH, hardware_filepath) 
             ckt = Circuit(
                 index,
-				hardware_filepath,
+                hardware_filepath,
                 self.__microcontroller,
                 self.__logger,
                 self.__config,
@@ -98,13 +92,13 @@ class CircuitPopulation:
             self.__circuits.add(ckt)
 
     def __continue(self):
-		asc_dir = config.get_asc_directory()
-		for index in range(1, self.__config.get_population_size() + 1)	
-			hardware_filename = Path("hardware" + str(index) + ".asc")
-			hardware_filepath = asc_dir.joinpath(hardware_filename)
+        asc_dir = self.__config.get_asc_directory()
+        for index in range(1, self.__config.get_population_size() + 1):  
+            hardware_filename = Path("hardware" + str(index) + ".asc")
+            hardware_filepath = asc_dir.joinpath(hardware_filename)
             ckt = Circuit(
                 index,
-				hardware_filepath,
+                hardware_filepath,
                 self.__microcontroller,
                 self.__logger,
                 self.__config,
@@ -147,13 +141,13 @@ class CircuitPopulation:
             exit(-1)
         
         if config.get_seed_mode() == "RAND_FROM_SEED":
-            self.populate = __rand_from_seed
+            self.populate = self.__rand_from_seed
         elif config.get_seed_mode() == "COMPLETE_RAND":
-            self.populate = __complete_rand
+            self.populate = self.__complete_rand
         elif config.get_seed_mode() == "CLONE_FROM_SEED":
-            self.populate = __clone_from_seed
-        elif config.get_seed_mode() == "CONTINUE"
-            self.populate = __continue
+            self.populate = self.__clone_from_seed
+        elif config.get_seed_mode() == "CONTINUE":
+            self.populate = self.__continue
         else:
             self.__log_error(INVALID_SEED_MODE_ERR_MSG)
             exit(-1)
@@ -177,12 +171,7 @@ class CircuitPopulation:
             self.__circuits.add(ckt)
             self.__log_event("Created circuit: {0}".format(ckt))
 
-        # Randomize initial circuits until waveform variance or
-        # pulses are found
-        f self.__config.get_randomization_type() == "PULSE":
-            self.__log_info("PULSE randomization mode selected.")
-            self.__randomize_until_pulses()
-        elif self.__config.get_randomization_type() == "VARIANCE":
+        if self.__config.get_randomization_type() == "VARIANCE":
             self.__log_info("VARIANCE randomization mode selected.")
             if self.config.variance_threshold() <= 0:
                 self.log_error(INVALID_VARIANCE_ERR_MSG)
