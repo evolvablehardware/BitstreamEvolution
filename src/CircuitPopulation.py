@@ -1,6 +1,5 @@
-from os import name
-from typing import NamedTuple
-from Circuit import Circuit
+from os import exit
+from typing import NamedTuple from Circuit import Circuit
 from shutil import copyfile
 from sortedcontainers import SortedKeyList
 from math import ceil
@@ -9,12 +8,21 @@ from pathlib import Path
 from itertools import zip_longest
 from collections import namedtuple
 from time import time
+from shutil import copyfileobj
+from mmap import mmap
 
-RANDOMIZE_UNTIL_NOT_SET_ERR_MSG = '''\
-RANDOMIZE_UNTIL not set in config.ini, continuing without randomization'''
+RANDOMIZE_UNTIL_INVALID_ERR_MSG = '''\
+RANDOMIZE_UNTIL not set or invalid in config.ini, continuing without\
+randomization'''
 
 INVALID_VARIANCE_ERR_MSG = '''\
-VARIANCE_THRESHOLD <= 0 as set in config.ini, continuing without randomization'''
+VARIANCE_THRESHOLD <= 0 as set in config.ini, continuing without\
+randomization'''
+
+INVALID_SELECTION_TYPE_ERR_MSG='''\
+SELECTION_TYPE not set or invalid in config.ini'''
+
+INVALID_SEED_MODE_ERR_MSG = "SEED_MODE is not set or invalid in config.ini"
 
 # SEED_HARDWARE is the hardware file used as an initial template for the Circuits
 # NOTE The Seed file is provided as a way to kickstart the evolutionary process
@@ -32,6 +40,78 @@ CircuitInfo = namedtuple("CircuitInfo", ["name", "fitness"])
 
 class CircuitPopulation:
     # SECTION Initialization functions
+    def __rand_from_seed(self):
+		asc_dir = config.get_asc_directory()
+		for index in range(1, self.__config.get_population_size() + 1)	
+			hardware_filename = Path("hardware" + str(index) + ".asc")
+			hardware_filepath = asc_dir.joinpath(hardware_filename)
+	    	copyfile(SEED_HARDWARE_FILEPATH, hardware_filepath) 
+            ckt = Circuit(
+                index,
+				hardware_filepath,
+                self.__microcontroller,
+                self.__logger,
+                self.__config,
+                self.__rand
+            )
+			ckt.mutate(true)
+            self.__circuits.add(ckt)
+		
+	tmp = TemporaryFile("w+")
+	seed_hardware_file = open(SEED_HARDWARE_FILEPATH, "r")
+	copyfileobj(seed_hardware_file, tmp);
+	seed_hardware_file.close()
+	
+	tmp_map = mmap(tmp.fileno(), 0)
+
+    def __complete_rand(self):
+		asc_dir = config.get_asc_directory()
+		for index in range(1, self.__config.get_population_size() + 1)	
+			hardware_filename = Path("hardware" + str(index) + ".asc")
+			hardware_filepath = asc_dir.joinpath(hardware_filename)
+	    	copyfile(SEED_HARDWARE_FILEPATH, hardware_filepath) 
+            ckt = Circuit(
+                index,
+				hardware_filepath,
+                self.__microcontroller,
+                self.__logger,
+                self.__config,
+                self.__rand
+            )
+			ckt.mutate(force_mutation=true)
+            self.__circuits.add(ckt)
+    
+    def __clone_from_seed(self):
+		asc_dir = config.get_asc_directory()
+		for index in range(1, self.__config.get_population_size() + 1)	
+			hardware_filename = Path("hardware" + str(index) + ".asc")
+			hardware_filepath = asc_dir.joinpath(hardware_filename)
+	   		copyfile(SEED_HARDWARE_FILEPATH, hardware_filepath) 
+            ckt = Circuit(
+                index,
+				hardware_filepath,
+                self.__microcontroller,
+                self.__logger,
+                self.__config,
+                self.__rand
+            )
+            self.__circuits.add(ckt)
+
+    def __continue(self):
+		asc_dir = config.get_asc_directory()
+		for index in range(1, self.__config.get_population_size() + 1)	
+			hardware_filename = Path("hardware" + str(index) + ".asc")
+			hardware_filepath = asc_dir.joinpath(hardware_filename)
+            ckt = Circuit(
+                index,
+				hardware_filepath,
+                self.__microcontroller,
+                self.__logger,
+                self.__config,
+                self.__rand
+            )
+            self.__circuits.add(ckt)
+
     def __init__(self, mcu, config, logger):
         """ Generates the initial population of circuits with the following arguments
 
@@ -46,10 +126,7 @@ class CircuitPopulation:
         self.__config = config
         self.__microcontroller = mcu
 
-        # A list of Circuits that's sorted by fitness decreasing order
-        # (to get it to sort in decreasing order I had to multiply the
-        # sort key by negative one to reverse the natural sorting order
-        # since sortedcontainers don't have a way to be in reverse order).
+        # A list of Circuits that's sorted by fitness decreasing order.
         self.__circuits = SortedKeyList(key=lambda ckt: -1 * ckt.get_fitness())
         self.__logger = logger
         self.__overall_best_circuit_info = CircuitInfo("", 0)
@@ -57,9 +134,6 @@ class CircuitPopulation:
         self.__current_epoch = 0
         self.__best_epoch = 0
 
-        # Set the selection type here since the selection type should
-        # not change during a run. This way we don't have to branch each
-        # time we run selection.
         if config.get_selection_type() == "SINGLE_ELITE":
             self.__run_selection = self.__run_single_elite_tournament
         elif config.get_selection_type() == "FRAC_ELITE":
@@ -69,8 +143,20 @@ class CircuitPopulation:
         elif config.get_selection_type() == "FIT_PROP_SEL":
             self.__run_selection = self.__run_fitness_proportional_selection
         else:
-            # TODO Should probably throw error here.
-            pass
+            self.__log_error(INVALID_SELECTION_TYPE_ERR_MSG)
+            exit(-1)
+        
+        if config.get_seed_mode() == "RAND_FROM_SEED":
+            self.populate = __rand_from_seed
+        elif config.get_seed_mode() == "COMPLETE_RAND":
+            self.populate = __complete_rand
+        elif config.get_seed_mode() == "CLONE_FROM_SEED":
+            self.populate = __clone_from_seed
+        elif config.get_seed_mode() == "CONTINUE"
+            self.populate = __continue
+        else:
+            self.__log_error(INVALID_SEED_MODE_ERR_MSG)
+            exit(-1)
 
         elitism_fraction = config.get_elitism_fraction()
         population_size = config.get_population_size()
@@ -93,9 +179,7 @@ class CircuitPopulation:
 
         # Randomize initial circuits until waveform variance or
         # pulses are found
-        if self.__config.using_simulation_mode():
-            pass # No randomization implemented for simulation mode
-        elif self.__config.get_randomization_type() == "PULSE":
+        f self.__config.get_randomization_type() == "PULSE":
             self.__log_info("PULSE randomization mode selected.")
             self.__randomize_until_pulses()
         elif self.__config.get_randomization_type() == "VARIANCE":
@@ -107,7 +191,7 @@ class CircuitPopulation:
         elif self.__config.get_randomization_type() == "NO":
             self.__log_info("NO randomization mode selected.")
         else:
-            self.__log_error(RANDOMIZE_UNTIL_NOT_SET_ERR_MSG)
+            self.__log_error(RANDOMIZE_UNTIL_INVALID_ERR_MSG)
 
     def __randomize_until_pulses(self):
         """

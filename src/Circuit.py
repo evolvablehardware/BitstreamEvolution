@@ -25,9 +25,9 @@ class Circuit:
         """
         return self.__filename
 
-    def __init__(self, index, filename, template, mcu, logger, config, rand):
+    def __init__(self, index, hardware_filepath, mcu, logger, config, rand):
         self.__index = index
-        self.__filename = filename
+        self.__filename = hardware_filepath.name
         self.__microcontroller = mcu
         self.__config = config
         self.__logger = logger
@@ -35,21 +35,18 @@ class Circuit:
         self.__fitness = 0
 
         # SECTION Build the relevant paths
-        asc_dir = config.get_asc_directory()
         bin_dir = config.get_bin_directory()
         data_dir = config.get_data_directory()
-        self.__hardware_filepath = asc_dir.joinpath(filename + ".asc")
-        self.__bitstream_filepath = bin_dir.joinpath(filename + ".bin")
+        self.__hardware_filepath = hardware_filepath
+        self.__bitstream_filepath = bin_dir.joinpath(self.filename + ".bin")
 
         # NOTE Using log files instead of a data buffer in the event of premature termination
         self.__data_filepath = data_dir.joinpath(filename + ".log")
 
         # SECTION Intialize the hardware file
-        copyfile(template, self.__hardware_filepath)
-
         # Since the hardware file is written to and read from a lot, we
         # mmap it to improve preformance.
-        hardware_file = open(self.__hardware_filepath, "r+")
+        hardware_file = open(hardware_filepath, "r+")
         self.__hardware_file = mmap(hardware_file.fileno(), 0)
         hardware_file.close()
 
@@ -228,10 +225,15 @@ class Circuit:
 
     # SECTION Genetic Algorithm related functions
     # TODO Initialize function to avoid conditional checks?
-    def mutate(self):
+    def mutate(self, force_mutation=False):
         """
         Mutate the configuration of this circuit.
         """
+
+	mutation_probability = self.__config.mutation_probability()
+	if force_mutation:
+		mutation_probability = 1.0
+
         tile = self.__hardware_file.find(b".logic_tile")
         while tile > 0:
             pos = tile + len(".logic_tile")
@@ -246,8 +248,8 @@ class Circuit:
                 elif self.__config.get_routing == "NEWSE":
                     rows = [1, 2]
                 for row in rows:
-                    for col in self.__config.get_acccessed_columns:
-                        if self.__config.mutation_probability >= self.__rand.uniform(0,1):
+                    for col in self.__config.get_acccessed_columns():
+                        if mutation_probability >= self.__rand.uniform(0,1):
                             pos = tile + line_size * (row - 1) + col
                             self.__hardware_filefile[pos] = str(self.__rand.integers(0,2))
 

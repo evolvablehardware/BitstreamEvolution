@@ -5,10 +5,6 @@ import configparser
 import re
 from Config import Config
 
-"""
-Static parameters can be found and changed in the config.ini file in the root project folder
-DO NOT CHANGE THEM HERE
-"""
 config_parser = configparser.ConfigParser()
 config_parser.read("data/config.ini")
 config = Config(config_parser)
@@ -24,12 +20,7 @@ def animate_generation(i):
     lines = graph_data.split('\n')
     xs = []
     ys = []
-    if config.using_simulation_mode():
-        target_freq = 1728
-        # Based on my calculations for the maximum number of bits we can 
-        # modify with our given search space constraints
-    else:
-        target_freq = [config.get_desired_frequency()]*(config.get_population_size+2)
+    target_freq = [config.get_desired_frequency()]*(config.get_population_size+2)
     base = [config.get_desired_frequency()]*0
     for line in lines:
         if len(line) > 1:
@@ -51,9 +42,6 @@ def animate_generation(i):
     ax1.plot(target_freq, "r--")
     ax1.plot(base, "w-")
     ax1.plot(avg_fitness, color="violet")
-    if config.get_using_pulse_function() and not config.using_simulation_mode():
-        ax1.set_yscale('symlog')
-        ax1.set_ylim([0, 1000000])
     # ax1.plot.stem(xs,ys,  color="green", use_line_collection=True)
     ax1.scatter(xs, ys)
     # plt.stem(xs, ys, markerfmt="bo", linefmt="b-", use_line_collection=True)

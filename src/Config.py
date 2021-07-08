@@ -50,14 +50,11 @@ class Config:
 	def get_variance_threshold(self):
 		return int(self.get_ga_parameters("VARIANCE_THRESHOLD"))
 
-	def get_init_mode(self):
+	def get_seed_mode(self):
 		return self.get_ga_parameters("INIT_MODE")
 
 	def get_using_pulse_function(self):
 		return bool(self.get_ga_parameters("PULSE_FUNC"))
-
-	def using_simulation_mode(self):
-		return bool(self.get_ga_parameters("SIMULATION_MODE"))
 
 	# SECTION Getters for logging parameters.
 	def get_asc_directory(self):
