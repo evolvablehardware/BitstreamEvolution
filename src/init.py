@@ -3,6 +3,7 @@
 from configparser import ConfigParser
 from pathlib import Path
 from shutil import copyfile
+import os
 
 config = ConfigParser()
 config.read("data/default_config.ini")
@@ -42,3 +43,7 @@ with open(data.joinpath("default_config.ini"), "w+") as default_config_file:
 		data.joinpath("config.ini")
 	)
 
+# Make sure that user has permissions for workspace and data folder if running via sudo
+USERNAME=os.getlogin()
+os.system(f"chown -R {USERNAME} data")
+os.system(f"chown -R {USERNAME} workspace")

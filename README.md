@@ -123,7 +123,7 @@ disk space.
 |------|-------|
 |`icestorm-tools`|Builds and installs all the Project Icestorm tools|
 |`icestorm`|Builds and install just the icestorm tools (e.g. icepack, iceprog)|
-|`archne-pnr`|Builds and installs just the archne-pnr tool|
+|`arachne-pnr`|Builds and installs just the arachne-pnr tool|
 |`yosys`|Builds and installs just the yosys tools|
 
 #### Clean targets
