@@ -1,3 +1,7 @@
+# no need to include temp files
+workspace/
+tools/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
