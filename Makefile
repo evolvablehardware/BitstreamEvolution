@@ -37,8 +37,8 @@ tools:
 .PHONY: icestorm
 icestorm: tools tools/icestorm
 
-.PHONY: archne-pnr
-archne-pnr: tools tools/archne-pnr
+.PHONY: arachne-pnr
+archne-pnr: tools tools/arachne-pnr
 
 .PHONY: yosys
 yosys: tools tools/yosys
@@ -52,7 +52,7 @@ tools/icestorm: tools
 	make install
 
 .ONESHELL:
-tools/archne-pnr: tools
+tools/arachne-pnr: tools
 	cd tools
 	git clone https://github.com/cseed/arachne-pnr.git arachne-pnr
 	cd arachne-pnr
