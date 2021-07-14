@@ -51,6 +51,7 @@ BistreamEvolution requires the following libraries and packages:
   * gawk
   * tcl-dev
   * libffi-dev
+  * libftdi-dev
   * git
   * mercurial
   * graphviz
@@ -75,7 +76,7 @@ the packages can all be installed at once with the following commands:
 
 ```bash
 sudo apt update && sudo apt upgrade  # Optional, but recommended 
-sudo apt install build-essential clang bison flex libreadline-dev gawk tcl-dev libffi-dev mercurial graphviz xdot \ 
+sudo apt install build-essential clang bison flex libreadline-dev gawk tcl-dev libffi-dev libftdi-dev mercurial graphviz xdot \ 
 pkg-config python3 python3-pip libboost-all-dev cmake make
 ```
 The Python libraries can be installed in one command in any Linux
@@ -88,7 +89,7 @@ python3 -m pip install pyserial numpy matplotlib
 Although BitstreamEvolution doesn't require any building or
 compilation (other than the Project Icestorm tools), it utilizes make
 targets to simplify configuration. The simplest and recommended way to
-configure the BitstreamEvolution core is to run `make` in the root
+configure the BitstreamEvolution core is to run `sudo make` in the root
 directory of BitstreamEvolution, which will default to running the
 target `all`. To allow users to optimize their configuration and save
 space (BitstreamEvolution with all its tools is around 2.2 GB), other
