@@ -67,6 +67,7 @@ BitstreamEvolution alse requires the following Python libraries:
   * pyserial
   * matplotlib
   * numpy
+  * sortedcontainers
 
 ### Installing the dependencies
 Each of the dependencies above has a corresponding `apt` package of the
@@ -83,7 +84,7 @@ The Python libraries can be installed in one command in any Linux
 distribution as follows:
 
 ```bash
-python3 -m pip install pyserial numpy matplotlib
+python3 -m pip install pyserial numpy matplotlib sortedcontainers
 ```
 ### Configuring the BitstreamEvolution core
 Although BitstreamEvolution doesn't require any building or
@@ -210,7 +211,7 @@ associated with a particular device: one uses:
 
 #### Finding device files with udevadm
 Information about a particular device file can be found with the
-command `udevamd info <filename>`, where `<filename>` is the name of the
+command `udevadm info <filename>`, where `<filename>` is the name of the
 file you want to examine. From the output of this command, you can
 discern whether a particular device file corresponds to the device you
 are looking for.
