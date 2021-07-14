@@ -129,14 +129,14 @@ disk space.
 BitstreamEvolution does not build any intermediate targets, clean
 targets are used to get rid of other automatically generated files such
 as the workspace defaults and the tools. In particular, cleaning the
-latter is not recommended as this make it more difficult to uninstall
+latter is not recommended as this makes it more difficult to uninstall
 the project Icestorm tools. So far, the primary use of these targets has
 been for testing and maintainence of the project.
 
 |Target|Actions|
 |------|-------|
 |`clean`|Removes the default permanent data logging directories and their contents as well as all the build directories for the Project Icestorm tools (*but it does not uninstall them*)|
-|`clean-workspace`|Removes the default permananent data logging directories and their contents|
+|`clean-workspace`|Removes the default permanent data logging directories and their contents|
 |`clean-tools`|Removes all the build directories for the Project Icestorm tools (*but it does not uninstall them*)|
 
 <!-- Arduino-CLI Instructions -->
@@ -154,7 +154,6 @@ arduino-cli tool could be done automatically with a make target.
 
 #### Obtaining the arduino-cli tool
 Download and extract the pre-built binary from the [Arduino webpage](https://arduino.github.io/arduino-cli/latest/installation/#latest-packages)
-and extract it.
 
 For an x86_64 machine running Linux, this can be done with the following
 commands:
