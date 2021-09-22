@@ -49,3 +49,26 @@ RUN cd /tools/icestorm && make -j $(nproc) && make install
 RUN cd /tools/arachne-pnr && make -j $(nproc)
 RUN cd /tools/yosys && make -j $(nproc)
 # # }}}
+
+# # Final container {{{
+FROM base
+WORKDIR project
+COPY --from=dependencies /tools /tools
+COPY --from=arduino /arduino-cli /usr/local/bin/arduino-cli
+
+RUN cd /tools/icestorm && make install && rm -rf /tools/icestorm
+RUN cd /tools/arachne-pnr && make install && rm -rf /tools/arachne-pnr
+RUN cd /tools/yosys && make install && rm -rf /tools/yosys
+RUN rm -rf /tools
+
+RUN arduino-cli update \
+  && arduino-cli upgrade \
+  && arduino-cli core download arduino:avr \
+  && arduino-cli core install arduino:avr
+
+RUN apt-get install -y python3-pip sudo udev
+RUN python3 -m pip install pyserial numpy matplotlib sortedcontainers tailer
+
+COPY . temp
+RUN cd temp && make udev-rules && cd .. && rm -rf temp
+# }}}

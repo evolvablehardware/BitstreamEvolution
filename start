@@ -1,0 +1,6 @@
+#!/bin/bash
+
+python3 src/init.py
+arduino-cli compile -b arduino:avr:nano ./data/ReadSignal/ReadSignal.ino
+arduino-cli upload -b arduino:avr:nano -p /dev/ttyUSB0 ./data/ReadSignal/ReadSignal.ino
+python3 src/evolve.py
