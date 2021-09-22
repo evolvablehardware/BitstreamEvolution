@@ -70,5 +70,5 @@ RUN apt-get install -y python3-pip sudo udev
 RUN python3 -m pip install pyserial numpy matplotlib sortedcontainers tailer
 
 COPY . temp
-RUN cd temp && make udev-rules && cd .. && rm -rf temp
+RUN cd temp && make init && make udev-rules && cd .. && rm -rf temp
 # }}}
