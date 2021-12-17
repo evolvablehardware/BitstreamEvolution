@@ -454,7 +454,7 @@ A simple fix for this is to disconnect and reconnect the FPGA.
 
 ## Contributing
 <!--TODO ALIFE2021 define the desired approach -->
-*Don't know what Derek wants to do regarding contributing*.
+Join the movement! Email derek.whitley1@gmail.com to get added to the Slack group.
 
 ## License
 This project is licensed under the GNU GPL v3 or later. For more
