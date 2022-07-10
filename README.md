@@ -1,5 +1,5 @@
 # BitstreamEvolution
-Code for the BitstreamEvolution Open Source Toolkit
+An Open Source Toolchain for the artificial evolution of FPGA bitstreams using genetic algorithms.
 
 ## Table of Contents
 - [BitstreamEvolution](#bitstreamevolution)
