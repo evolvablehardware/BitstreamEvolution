@@ -183,7 +183,7 @@ has only been thoroughly tested with a 5V nano.
 
 After arduino-cli has been configured, you will need to upload the
 sketch to the microcontroller with the arduino-cli tool. This requires
-accessing the correct device file and having the proper priviledges for
+accessing the correct device file and having the proper privileges for
 it. The device file should look something like `/dev/ttyUSB#` where
 `#` is a number. To determine which device file is the correct one and
 how to enure you have proper access see the
@@ -341,7 +341,7 @@ Long listing the specified device files shows that read/write permission
 is restricted to members of the groups `dialout` for `ttyUSB0` and
 `plugdev` for `ttyUSB1` and `ttyUSB2`.
 
-BitstreamEvolution requires read/write permission for the device files
+BitstreamEvolution requires read/write permission to the device files
 for the Lattice ICE40 FPGA and the Arduino microcontroller. To add
 yourself as a member to appropriate group, you use the command:
 
