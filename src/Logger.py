@@ -1,6 +1,6 @@
 from sys import stdout
 from datetime import datetime
-from subprocess import CalledProcessError, run
+from subprocess import CalledProcessError, Popen
 from os.path import exists
 from os import mkdir
 from pathlib import Path
@@ -11,8 +11,6 @@ WIN_DIM="105x29"
 DOUBLE_HLINE = "=" * LINE_WIDTH
 
 MONITOR_FILE = None
-
-TERM_CMD=["gnome-terminal", "--geometry={}".format(WIN_DIM), "--"]
 
 # The time between animation frames in milliseconds
 FRAME_DELAY = 200
@@ -78,18 +76,18 @@ class Logger:
         self.log_monitor(".\n" * 23)
         self.__monitor_file.flush()
 
-        args = TERM_CMD + ["python3", "src/Monitor.py"]
+        args = ["python3", "src/Monitor.py"]
         try:
-            run(args, check=True, capture_output=True)
+            Popen(args)
         except OSError as e:
             self.log_error("An error occured while launching the process")
         except CalledProcessError as e:
             self.log_error("An error occured in the launched process")
 
         self.log_event("Launching the Live Plot window...")
-        args = TERM_CMD + ["python3", "src/PlotEvolutionLive.py"]
+        args = ["python3", "src/PlotEvolutionLive.py"]
         try:
-            run(args, check=True, capture_output=True)
+            Popen(args)
         except OSError as e:
             self.log_error("An error occured while launching the process")
         except CalledProcessError as e:

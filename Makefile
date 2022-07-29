@@ -3,6 +3,19 @@ SHELL:=/bin/bash
 
 LATTICE_FTDI_RULES='ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6010", MODE="0660", GROUP="plugdev", TAG+="uaccess"'
 
+build:
+	docker build -t bitstreamevolution .
+
+run:
+	docker run --rm -it --network=host --env DISPLAY=$(DISPLAY) \
+		--volume $(XAUTHORITY):/root/.Xauthority --volume $(shell pwd):/project \
+		--privileged -v /dev/bus/usb:/dev/bus/usb bitstreamevolution ./start
+
+debug:
+	docker run --rm -it --network=host --env DISPLAY=$(DISPLAY) \
+		--volume $(XAUTHORITY):/root/.Xauthority --volume $(shell pwd):/project \
+		--privileged -v /dev/bus/usb:/dev/bus/usb bitstreamevolution /bin/bash
+
 .PHONY: all
 all: init icestorm-tools udev-rules
 
