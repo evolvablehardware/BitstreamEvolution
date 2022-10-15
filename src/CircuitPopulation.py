@@ -76,8 +76,10 @@ class CircuitPopulation:
         population_size = config.get_population_size()
         self.__n_elites = int(ceil(elitism_fraction * population_size))
 
-    # TODO Add docstring.
     def populate(self):
+        """ 
+        Generates the initial population of circuits randomly or until pulses are detected
+        """
         for index in range(1, self.__config.get_population_size() + 1):
             ckt = Circuit(
                 index,
@@ -131,8 +133,10 @@ class CircuitPopulation:
         """
         pass
 
-    # TODO Add docstring.
     def __next_epoch(self):
+        """
+        Increases the generation count by 1
+        """
         self.__current_epoch += 1
 
     # TODO Add docstring.
@@ -197,8 +201,10 @@ class CircuitPopulation:
                 ))
 
     # SECTION Selection algorithms.
-    # TODO Add docstring.
     def __run_classic_tournament(self):
+        """
+        Randomly pairs together circuits, compares their fitness, and preforms crossover on and mutates the "loser"
+        """
         population = self.__rand.permuation(
             self.__circuits,
             k=len(self.__circuits)
@@ -236,8 +242,10 @@ class CircuitPopulation:
                 self.__single_point_crossover(ckt2, ckt1)
                 ckt1.mutate()
 
-    # TODO Add docstring.
     def __run_single_elite_tournament(self):
+        """
+        Set the hardware of every circuit that is not the best to a mutated version of the best circuit's hardware
+        """
         self.__log_event("Tournament Number: {}".format(str(self.get_current_epoch())))
 
         best = self.get_best_circuit()
@@ -332,20 +340,28 @@ class CircuitPopulation:
                 ckt.mutate()
 
     # SECTION Getters.
-    # TODO Add docstring.
     def get_current_best_circuit(self):
+        """
+        Returns the circuit in the current generation with the highest fitness
+        """
         return self.__circuits[0]
 
-    # TODO Add docstring.
     def get_overall_best_circuit_info(self):
+        """
+        Returns the information of the circuit with the highest fitness throughout the run 
+        """
         return self.__overall_best_circuit_info
 
-    # TODO Add docstring.
     def get_current_epoch(self):
+        """
+        Returns the generation number
+        """
         return self.__current_epoch
 
-    # TODO Add docstring.
     def get_best_epoch(self):
+        """
+        Returns the generation number that contained the circuit with the highest fitness
+        """
         return self.__best_epoch
 
     # SECTION Miscellaneous helper functions.
