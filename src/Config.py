@@ -54,10 +54,14 @@ class Config:
 		return self.get_ga_parameters("INIT_MODE")
 
 	def get_using_pulse_function(self):
-		return bool(self.get_ga_parameters("PULSE_FUNC"))
+		return self.get_ga_parameters("PULSE_FUNC") == "True"
 
-	def using_simulation_mode(self):
-		return bool(self.get_ga_parameters("SIMULATION_MODE"))
+	# We have 3 types of mode. There's FULLY_INTRINSIC, SIM_HARDWARE, and FULLY_SIM
+	# FULLY_INTRINSIC: Runs the experiments on the actual hardware. Full normal experiment setup
+	# SIM_HARDWARE: Simulation mode, but using an arbitrary function operating on compiled binary files
+	# FULLY_SIM: Simulation mode, but operating on a small array of arbitrary bit values
+	def get_simulation_mode(self):
+		return self.get_ga_parameters("SIMULATION_MODE")
 
 	# SECTION Getters for logging parameters.
 	def get_asc_directory(self):

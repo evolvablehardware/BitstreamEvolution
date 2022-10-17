@@ -76,10 +76,8 @@ class CircuitPopulation:
         population_size = config.get_population_size()
         self.__n_elites = int(ceil(elitism_fraction * population_size))
 
+    # TODO Add docstring.
     def populate(self):
-        """ 
-        Generates the initial population of circuits randomly or until pulses are detected
-        """
         for index in range(1, self.__config.get_population_size() + 1):
             ckt = Circuit(
                 index,
@@ -95,7 +93,7 @@ class CircuitPopulation:
 
         # Randomize initial circuits until waveform variance or
         # pulses are found
-        if self.__config.using_simulation_mode():
+        if not self.__config.get_simulation_mode() == "FULLY_INTRINSIC":
             pass # No randomization implemented for simulation mode
         elif self.__config.get_randomization_type() == "PULSE":
             self.__log_info("PULSE randomization mode selected.")
@@ -133,10 +131,8 @@ class CircuitPopulation:
         """
         pass
 
+    # TODO Add docstring.
     def __next_epoch(self):
-        """
-        Increases the generation count by 1
-        """
         self.__current_epoch += 1
 
     # TODO Add docstring.
@@ -152,14 +148,14 @@ class CircuitPopulation:
         )
         self.__best_epoch = 0
         self.__next_epoch()
-
+        
         while(self.get_current_epoch() < self.__config.get_n_generations()):
             # Since sortedcontainers don't update when the value by
             # which an item is sorted gets updated, we have to add the
             # Circuits to a new list after we evaluate them and then
             # make the new list the working Circuit list.
             reevaulated_circuits = SortedKeyList(
-                key=lambda ckt: ckt.get_fitness()
+                key=lambda ckt: -ckt.get_fitness()
             )
 
             # Evaluate all the Circuits in this CircuitPopulation.
@@ -168,7 +164,14 @@ class CircuitPopulation:
             for circuit in self.__circuits:
                 # If evaluate returns true, then a circuit has surpassed
                 # the threshold and we are done.
-                fitness = circuit.evaluate_variance()
+                
+                # Biggest difference between Fully Instrinsic and Hardware Sim: The fitness evaluation
+                if self.__config.get_simulation_mode() == "FULLY_SIM":
+                    fitness = circuit.evaluate_sim()
+                elif self.__config.get_simulation_mode() == "SIM_HARDWARE":
+                    fitness = circuit.evaluate_sim_hardware()
+                else:
+                    fitness = circuit.evaluate_variance()
                 if fitness > self.__config.get_variance_threshold():
                     self.__log_event("{} fitness: {}".format(circuit, fitness))
                     return
@@ -180,6 +183,8 @@ class CircuitPopulation:
             # If one of the new Circuits has a higher fitness than our
             # recorded best, make it the recorded best.
             best_circuit_info = self.get_overall_best_circuit_info()
+            self.__log_event("Best circuit info", best_circuit_info.fitness)
+            self.__log_event("Circuit 0 info", self.__circuits[0].get_fitness())
             if self.__circuits[0].get_fitness() > best_circuit_info.fitness:
                 self.__overall_best_circuit_info = CircuitInfo(
                     str(self.__circuits[0]),
@@ -194,17 +199,17 @@ class CircuitPopulation:
 
             with open("workspace/bestlivedata.log", "a") as liveFile:
                 avg = fitness_sum / self.__config.get_population_size()
-                liveFile.write("{}, {}, {}\n".format(
+                # Format: Epoch, Best Fitness, Worst Fitness, Average Fitness
+                liveFile.write("{}, {}, {}, {}\n".format(
                     str(self.get_current_epoch()),
                     str(self.__circuits[0].get_fitness()),
+                    str(self.__circuits[-1].get_fitness()),
                     str(avg)
                 ))
 
     # SECTION Selection algorithms.
+    # TODO Add docstring.
     def __run_classic_tournament(self):
-        """
-        Randomly pairs together circuits, compares their fitness, and preforms crossover on and mutates the "loser"
-        """
         population = self.__rand.permuation(
             self.__circuits,
             k=len(self.__circuits)
@@ -242,10 +247,8 @@ class CircuitPopulation:
                 self.__single_point_crossover(ckt2, ckt1)
                 ckt1.mutate()
 
+    # TODO Add docstring.
     def __run_single_elite_tournament(self):
-        """
-        Set the hardware of every circuit that is not the best to a mutated version of the best circuit's hardware
-        """
         self.__log_event("Tournament Number: {}".format(str(self.get_current_epoch())))
 
         best = self.get_best_circuit()
@@ -297,6 +300,7 @@ class CircuitPopulation:
         # a probabilty value (used later for crossover/copying/mutation).
         elites = {}
         elite_sum = 0
+        
         for i in range(self.__n_elites):
             elites[self.__circuits[i]] = 0
             elite_sum += self.__circuits[i].get_fitness()
@@ -331,37 +335,32 @@ class CircuitPopulation:
             else:
                 rand_elite = self.__rand.choice(list(elite.keys()))[0]
 
+            #self.__log_event("Elite", rand_elite)
+
             if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite:
                 if self.__config.get_crossover_probability() == 0:
                     self.__log_event("Cloning:", rand_elite, " ---> ", ckt)
                     ckt.copy_hardware_from(rand_elite)
                 else:
                     self.__single_point_crossover(rand_elite, ckt)
+                    
                 ckt.mutate()
 
     # SECTION Getters.
+    # TODO Add docstring.
     def get_current_best_circuit(self):
-        """
-        Returns the circuit in the current generation with the highest fitness
-        """
         return self.__circuits[0]
 
+    # TODO Add docstring.
     def get_overall_best_circuit_info(self):
-        """
-        Returns the information of the circuit with the highest fitness throughout the run 
-        """
         return self.__overall_best_circuit_info
 
+    # TODO Add docstring.
     def get_current_epoch(self):
-        """
-        Returns the generation number
-        """
         return self.__current_epoch
 
+    # TODO Add docstring.
     def get_best_epoch(self):
-        """
-        Returns the generation number that contained the circuit with the highest fitness
-        """
         return self.__best_epoch
 
     # SECTION Miscellaneous helper functions.
@@ -372,7 +371,9 @@ class CircuitPopulation:
         crossover_point = 0
 
         # Replace magic values with more generalized solutions
-        if self.__config.get_routing_type() == "MOORE":
+        if self.__config.get_simulation_mode() == "FULLY_SIM":
+            crossover_point = self.__rand.integers(1, 99)
+        elif self.__config.get_routing_type() == "MOORE":
             crossover_point = self.__rand.integers(1,3)
         elif self.__config.get_routing_type() == "NWSE":
             crossover_point = self.__rand.integers(13,15)

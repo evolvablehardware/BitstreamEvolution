@@ -94,6 +94,7 @@ class Logger:
             self.log_error("An error occured while launching the process")
         except CalledProcessError as e:
             self.log_error("An error occured in the launched process")
+            self.log_error(e)
 
     def __init__(self, config, explanation):
         self.__config = config

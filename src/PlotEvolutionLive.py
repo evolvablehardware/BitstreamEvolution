@@ -24,12 +24,17 @@ def animate_generation(i):
     lines = graph_data.split('\n')
     xs = []
     ys = []
-    if config.using_simulation_mode():
-        target_freq = 1728
+    
+    # There used to be a bug where the program always believed it was in sim mode, but once that was fixed, the code below
+    # broke the chart on non-simulation mode. As such, the target frequency is just always set to 1728, which worked fine before
+    #if not config.get_simulation_mode() == "FULLY_INTRINSIC":
+        #target_freq = 1728
         # Based on my calculations for the maximum number of bits we can 
         # modify with our given search space constraints
-    else:
-        target_freq = [config.get_desired_frequency()]*(config.get_population_size+2)
+    #else:
+        #target_freq = [config.get_desired_frequency()]*(config.get_population_size+2)
+    target_freq = 1728
+    
     base = [config.get_desired_frequency()]*0
     for line in lines:
         if len(line) > 1:
@@ -51,7 +56,7 @@ def animate_generation(i):
     ax1.plot(target_freq, "r--")
     ax1.plot(base, "w-")
     ax1.plot(avg_fitness, color="violet")
-    if config.get_using_pulse_function() and not config.using_simulation_mode():
+    if config.get_using_pulse_function() and not config.get_simulation_mode() == "FULLY_INTRINSIC":
         ax1.set_yscale('symlog')
         ax1.set_ylim([0, 1000000])
     # ax1.plot.stem(xs,ys,  color="green", use_line_collection=True)
@@ -68,16 +73,19 @@ def animate_epoch(i):
     xs = []
     ys = []
     zs = []
+    ws = []
     for line in lines:
         if len(line) > 1:
-            x, y, z = line.split(',')
+            x, y, z, w = line.split(',')
             xs.append(int(x))
             ys.append(float(y))
             zs.append(float(z))
+            ws.append(float(w))
     ax2.clear()
     # ax2.set_yscale('symlog')
-    ax2.plot(xs, ys, color="red")
-    ax2.plot(xs, zs, color="green")
+    ax2.plot(xs, ys, color="green")
+    ax2.plot(xs, zs, color="red")
+    ax2.plot(xs, ws, color="yellow")
     ax2.set(xlabel='Generation', ylabel='Fitness', title='Best Circuit Fitness per Generation')
 
 #ax3 = fig.add_subplot(2,1,2)
