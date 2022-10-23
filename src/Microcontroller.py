@@ -2,17 +2,17 @@ from serial import Serial
 from time import time
 
 class Microcontroller:
-    def __log_event(self, *event):
-        self.__logger.log_event(*event)
+    def __log_event(self, level, *event):
+        self.__logger.log_event(level, *event)
 
-    def __log_info(self, *info):
-        self.__logger.log_info(*info)
+    def __log_info(self, level, *info):
+        self.__logger.log_info(level, *info)
 
-    def __log_error(self, *error):
-        self.__logger.log_error(*error)
+    def __log_error(self, level, *error):
+        self.__logger.log_error(level, *error)
 
-    def __log_warning(self, *warning):
-        self.__logger.log_warning(*warning)
+    def __log_warning(self, level, *warning):
+        self.__logger.log_warning(level, *warning)
 
     def __init__(self, config, logger):
         self.__logger = logger
@@ -41,7 +41,7 @@ class Microcontroller:
             while True:
                 p = self.__serial.read()
                 if (time() - start) >= self.__config.get_mcu_read_timeout():
-                    self.__log_warning("Time Exceeded. Halting MCU Reading")
+                    self.__log_warning(1, "Time Exceeded. Halting MCU Reading")
                     break
                 # TODO We should be able to do whatever this line does better
                 # This is currently doing a poor job at REGEXing the MCU serial return - can be done better
@@ -74,11 +74,11 @@ class Microcontroller:
         else:
             freq = 0.0
 
-        self.__log_event("Length of Buffer:", len(buf))
-        self.__log_event("Number Pulses:", sum(buf))
-        self.__log_event("Average Frequency: ~", freq, "Hz")
-        self.__log_event("Sampling Duration:", end)
-        self.__log_event("Completed writing to data file")
+        self.__log_event(2, "Length of Buffer:", len(buf))
+        self.__log_event(2, "Number Pulses:", sum(buf))
+        self.__log_event(2, "Average Frequency: ~", freq, "Hz")
+        self.__log_event(2, "Sampling Duration:", end)
+        self.__log_event(2, "Completed writing to data file")
 
         data_file.close()
 
@@ -93,7 +93,7 @@ class Microcontroller:
 
         self.__serial.reset_input_buffer()
         self.__serial.reset_output_buffer();
-        self.__log_event("Reading microcontroller.")
+        self.__log_event(1, "Reading microcontroller.")
         # The MCU is expecting a string '2' to initiate the ADC capture from the FPGA (waveform as opposed to pulses)
         self.__serial.write(b'2')
         line = self.__serial.read()
@@ -106,8 +106,8 @@ class Microcontroller:
             line = self.__serial.read_until()
 
             if (time() - start) >= self.__config.get_mcu_read_timeout():
-                self.__log_warning("Did not read START from MCU")
-                self.__log_warning("Time Exceeded. Halting MCU Reading.")
+                self.__log_warning(1, "Did not read START from MCU")
+                self.__log_warning(1, "Time Exceeded. Halting MCU Reading.")
                 break
 
         # TODO  This whole section can probably be optimized
@@ -116,14 +116,14 @@ class Microcontroller:
             if line != b"\n" and line != b"START\n" and line != b"FINISHED\n" and line != b"FINISHED\n":
                 buf.append(line)
             if (time() - start) >= self.__config.get_mcu_read_timeout():
-                self.__log_warning("Time Exceeded. Halting MCU Reading.")
+                self.__log_warning(1, "Time Exceeded. Halting MCU Reading.")
                 break
 
-        self.__log_event("Finished reading microcontroller. Logging data to file.")
+        self.__log_event(2, "Finished reading microcontroller. Logging data to file.")
 
         for i in buf:
             if b"FINISHED" not in i:
                 data_file.write(bytes(i))
 
         data_file.close()
-        self.__log_event("Completed writing to data file")
+        self.__log_event(2, "Completed writing to data file")

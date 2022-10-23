@@ -84,6 +84,12 @@ class Config:
 
 	def get_datetime_format(self):
 		return self.get_logging_parameters("DATETIME_FORMAT")
+		
+	# There are 3 log levels (1, 2, 3)
+	# 3 will log the most information, 1 will log the least
+	# So when putting a log level as an arg to a log event, higher numbers = seen less often
+	def get_log_level(self):
+		return int(self.get_logging_parameters("LOG_LEVEL"))
 
 	# SECTION Getters for system parameters.
 	def get_fpga(self):

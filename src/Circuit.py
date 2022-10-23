@@ -60,7 +60,7 @@ class Circuit:
         """
         Compile circuit ASC file to a BIN file for hardware upload.
         """
-        self.__log_event("Compiling", self, "with icepack...")
+        self.__log_event(2, "Compiling", self, "with icepack...")
 
         # Ensure the file backing the mmap is up to date with the latest
         # changes to the mmap.
@@ -73,7 +73,7 @@ class Circuit:
         ]
         run(compile_command);
 
-        self.__log_event("Finished compiling", self)
+        self.__log_event(2, "Finished compiling", self)
 
     # TODO Evaluate based on a fitness function defined in the config file
     # while still utilizing the existing or newly added evaluate functions in this class
@@ -103,6 +103,7 @@ class Circuit:
                 self.__fitness = self.__fitness + int.from_bytes(byte, "big")
                 byte = f.read(1)
         
+        self.__log_event(3, "Fitness: ", self.__fitness)
         return self.__fitness
 
     def evaluate_variance(self):
@@ -116,7 +117,7 @@ class Circuit:
         self.__microcontroller.measure_signal(self)
 
         elapsed = time() - start
-        self.__log_event(
+        self.__log_event(1,
             "TIME TAKEN RUNNING AND LOGGING ---------------------- ",
             elapsed
         )
@@ -133,7 +134,7 @@ class Circuit:
         self.__microcontroller.measure_pulses(self)
 
         elapsed = time() - start
-        self.__log_event(
+        self.__log_event(1,
             "TIME TAKEN RUNNING AND LOGGING ---------------------- ",
             elapsed
         )
@@ -185,7 +186,7 @@ class Circuit:
                 if initial1 != None and initial1 < 1000:
                     variance_sum += variance
             except:
-                self.__log_error("FAILED TO READ {} AT LINE {} -> ZEROIZING LINE".format(
+                self.__log_error(1, "FAILED TO READ {} AT LINE {} -> ZEROIZING LINE".format(
                     self,
                     i
                 ))
@@ -239,15 +240,15 @@ class Circuit:
         pulse_count = 0
         for i in range(len(data)):
             pulse_count += int(data[i])
-        self.__log_event("Pulses counted: {}".format(pulse_count))
+        self.__log_event(3, "Pulses counted: {}".format(pulse_count))
 
         if pulse_count == 0:
-            self.__log_event("NULL DATA FILE. ZEROIZING")
+            self.__log_event(2, "NULL DATA FILE. ZEROIZING")
 
         desired_freq = self.__config.get_desired_frequency()
         var = self.__config.get_variance_threshold()
         if pulse_count == desired_freq:
-            self.__log_event("Unity achieved: {}".format(self))
+            self.__log_event(1, "Unity achieved: {}".format(self))
             self.__fitness = 1
         elif pulse_count == 0:
             self.__fitness = var
@@ -291,18 +292,16 @@ class Circuit:
         
         
         while tile > 0:
-            # Set pos to the position of this tile, but with the length of ".logic_tile" added so it is the position of the first 0 or 1
+            # Set pos to the position of this tile, but with the length of ".logic_tile" added so it is in front of where we have the x/y coords
             pos = tile + len(".logic_tile")
             
-            self.__log_event("=============++++++++++++++++++++++++++++++++++++++++++++++++++++ INSIDE MUTATE!!", pos)
             
             # Check if the position is legal to modify
             if self.__tile_is_included(pos):
                 # Find the start and end of the line; the positions of the \n newline just before and at the end of this line
                 # The start is the newline position + 1, so the first valid bit character
                 # line_size is self-explanatory
-                # The line in question seems to be the .logic_tile line, so this should theoretically find where that line starts and ends, and find the size of the line
-                # that we should ignore (the header of the tile)
+                # This finds the length of a standard line of bits (so the width of each data-containing line in this tile)
                 line_start = self.__hardware_file.find(b"\n", tile) + 1
                 line_end = self.__hardware_file.find(b"\n", line_start + 1)
                 line_size = line_end - line_start + 1
@@ -318,11 +317,17 @@ class Circuit:
                     for col in self.__config.get_accessed_columns():
                         # This will get us to individual bits. If the mutation probability passes, then...
                         if self.__config.get_mutation_probability() >= self.__rand.uniform(0,1):
-                            # ... our position is now going to be the tile location, plus the line size multiplied to get to our desired row,
+                            # ... our position is now going to be the start of the first line, plus the line size multiplied to get to our desired row,
                             # and finally added to the column (with the int cast to sanitize user input)
-                            pos = tile + line_size * (row - 1) + int(col)
+                            pos = line_start + line_size * (row - 1) + int(col)
                             # Set this bit to either a 0 or 1 randomly
-                            self.__hardware_file[pos] = self.__rand.integers(0,2)
+                            # Keep in mind that these are BYTES that we are modifying, not characters
+                            # Therefore, we have to set it to either ASCII 0 (48) or ASCII 1 (49), not actual 0 or 1, which represent different characters
+                            # and will corrupt the file if we mutate in this way
+                            prev = self.__hardware_file[pos]
+                            self.__hardware_file[pos] = self.__rand.integers(48, 50)
+                            # Note: If prev != 48 or 49, then we changed the wrong value because it was not a 0 or 1 previously
+                            self.__log_event(3, "Mutating:", self, "@", row, ",", col, "previous was", prev)
 
             # Find the next logic tile, and start again
             # Will return -1 if .logic_tile isn't found, and the while loop will exit
@@ -396,8 +401,8 @@ class Circuit:
 
     def copy_hardware_from(self, source):
         """Copy the hardware from a source circuit to this circuit."""
-        source.write_hardware_change()
-        self.replace_hardware_file(source.get_hardware_file)
+        source.write_hardware_changes()
+        self.replace_hardware_file(source.get_hardware_filepath())
 
     # SECTION Getters.
     def get_fitness(self):
@@ -464,7 +469,7 @@ class Circuit:
         y_bytes = self.__hardware_file[space_pos:eol_pos]
         x_str = x_bytes.decode("utf-8").strip()
         y_str = y_bytes.decode("utf-8").strip()
-        self.__log_event("Attempting", x_str, ",", y_str, pos, self.__hardware_file[pos:pos + 100].decode("utf-8"), self)
+        #self.__log_event(3, "Attempting", x_str, ",", y_str, pos, self.__hardware_file[pos:pos + 100].decode("utf-8"), self)
         x = int(x_str)
         y = int(y_str)
         is_x_valid = x in VALID_TILE_X
@@ -472,30 +477,30 @@ class Circuit:
 
         return is_x_valid and is_y_valid
 
-    def __log_event(self, *event):
+    def __log_event(self, level, *event):
         """
         Emit an event-level log. This function is fulfilled through
         the logger.
         """
-        self.__logger.log_event(*event)
+        self.__logger.log_event(level, *event)
 
-    def __log_info(self, *info):
+    def __log_info(self, level, *info):
         """
         Emit an info-level log. This function is fulfilled through
         the logger.
         """
-        self.__logger.log_info(*info)
+        self.__logger.log_info(level, *info)
 
-    def __log_error(self, *error):
+    def __log_error(self, level, *error):
         """
         Emit an error-level log. This function is fulfilled through
         the logger.
         """
-        self.__logger.log_error(*error)
+        self.__logger.log_error(level, *error)
 
-    def __log_warning(self, *warning):
+    def __log_warning(self, level, *warning):
         """
         Emit a warning-level log. This function is fulfilled through
         the logger.
         """
-        self.__logger.log_warning(*warning)
+        self.__logger.log_warning(level, *warning)

@@ -67,34 +67,34 @@ class Logger:
 
     def __init_monitor(self):
         # Start the monitor
-        self.log_event("Creating the monitor file...")
+        self.log_event(1, "Creating the monitor file...")
 
-        self.log_monitor("{}{}".format(
+        self.log_monitor(1, "{}{}".format(
             "Evolutionary Experiment Monitor".center(LINE_WIDTH),
             "\n"
         ))
-        self.log_monitor("{}\n".format(DOUBLE_HLINE))
-        self.log_monitor("Parameters and updates load during circuit evaluation")
-        self.log_monitor(".\n" * 23)
+        self.log_monitor(1, "{}\n".format(DOUBLE_HLINE))
+        self.log_monitor(1, "Parameters and updates load during circuit evaluation")
+        self.log_monitor(1, ".\n" * 23)
         self.__monitor_file.flush()
 
         args = TERM_CMD + ["python3", "src/Monitor.py"]
         try:
             run(args, check=True, capture_output=True)
         except OSError as e:
-            self.log_error("An error occured while launching the process")
+            self.log_error(1, "An error occured while launching the process")
         except CalledProcessError as e:
-            self.log_error("An error occured in the launched process")
+            self.log_error(1, "An error occured in the launched process")
 
-        self.log_event("Launching the Live Plot window...")
+        self.log_event(1, "Launching the Live Plot window...")
         args = TERM_CMD + ["python3", "src/PlotEvolutionLive.py"]
         try:
             run(args, check=True, capture_output=True)
         except OSError as e:
-            self.log_error("An error occured while launching the process")
+            self.log_error(1, "An error occured while launching the process")
         except CalledProcessError as e:
-            self.log_error("An error occured in the launched process")
-            self.log_error(e)
+            self.log_error(1, "An error occured in the launched process")
+            self.log_error(1, e)
 
     def __init__(self, config, explanation):
         self.__config = config
@@ -119,44 +119,50 @@ class Logger:
             self.__init_monitor()
 
     def log_generation(self, population, epoch_time):
-        self.log_event(DOUBLE_HLINE)
-        self.log_event(DOUBLE_HLINE)
-        self.log_event(DOUBLE_HLINE)
+        self.log_event(2, DOUBLE_HLINE)
+        self.log_event(2, DOUBLE_HLINE)
+        self.log_event(2, DOUBLE_HLINE)
 
         current_best_circuit = population.get_current_best_circuit()
         overall_best_circuit = population.get_overall_best_circuit_info()
 
-        self.log_event("CURRENT BEST: {} : EPOCH {} : FITNESS {}".format(
+        self.log_event(2, "CURRENT BEST: {} : EPOCH {} : FITNESS {}".format(
             str(overall_best_circuit.name),
             str(population.get_best_epoch()),
             str(overall_best_circuit.fitness)
         ))
 
-        print("HIGHEST FITNESS OF EPOCH {} IS: {} = {} over {} seconds".format(
+        self.log_event(2, "HIGHEST FITNESS OF EPOCH {} IS: {} = {} over {} seconds".format(
             str(population.get_current_epoch()),
             str(current_best_circuit),
             str(current_best_circuit.get_fitness()),
             str(epoch_time)
         ))
 
-        self.log_event(DOUBLE_HLINE)
-        self.log_event(DOUBLE_HLINE)
-        self.log_event(DOUBLE_HLINE)
+        self.log_event(2, DOUBLE_HLINE)
+        self.log_event(2, DOUBLE_HLINE)
+        self.log_event(2, DOUBLE_HLINE)
 
-    def log_monitor(self, *msg):
-        print(*msg, file=self.__monitor_file)
+    def log_monitor(self, level, *msg):
+        if self.__config.get_log_level() >= level:
+            print(*msg, file=self.__monitor_file)
 
-    def log_event(self, *msg):
-        print(*msg, file=self.__log_file)
+    def log_event(self, level, *msg):
+        if self.__config.get_log_level() >= level:
+            print(*msg, file=self.__log_file)
 
-    def log_info(self, *msg):
-        print("INFO: ", OKBLUE, *msg, ENDC, file=self.__log_file)
+    def log_info(self, level, *msg):
+        if self.__config.get_log_level() >= level:
+            print("INFO: ", OKBLUE, *msg, ENDC, file=self.__log_file)
 
-    def log_warning(self, *msg):
-        print("WARNING: ", WARNING, *msg, ENDC, file=self.__log_file)
+    def log_warning(self, level, *msg):
+        if self.__config.get_log_level() >= level:
+            print("WARNING: ", WARNING, *msg, ENDC, file=self.__log_file)
 
-    def log_error(self, *msg):
-        print("ERROR: ", FAIL, *msg, ENDC, file=self.__log_file)
+    def log_error(self, level, *msg):
+        if self.__config.get_log_level() >= level:
+            print("ERROR: ", FAIL, *msg, ENDC, file=self.__log_file)
 
-    def log_critical(self, *msg):
-        print("CRITICAL: ", FAIL, *msg, ENDC, file=self.__log_file)
+    def log_critical(self, level, *msg):
+        if self.__config.get_log_level() >= level:
+            print("CRITICAL: ", FAIL, *msg, ENDC, file=self.__log_file)

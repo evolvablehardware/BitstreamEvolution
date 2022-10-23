@@ -69,7 +69,7 @@ class CircuitPopulation:
         elif config.get_selection_type() == "FIT_PROP_SEL":
             self.__run_selection = self.__run_fitness_proportional_selection
         else:
-            self.__log_error("Invalid Selection method in config.ini. Exiting...")
+            self.__log_error(1, "Invalid Selection method in config.ini. Exiting...")
             exit()
 
         elitism_fraction = config.get_elitism_fraction()
@@ -89,25 +89,25 @@ class CircuitPopulation:
                 self.__rand
             )
             self.__circuits.add(ckt)
-            self.__log_event("Created circuit: {0}".format(ckt))
+            self.__log_event(3, "Created circuit: {0}".format(ckt))
 
         # Randomize initial circuits until waveform variance or
         # pulses are found
         if not self.__config.get_simulation_mode() == "FULLY_INTRINSIC":
             pass # No randomization implemented for simulation mode
         elif self.__config.get_randomization_type() == "PULSE":
-            self.__log_info("PULSE randomization mode selected.")
+            self.__log_info(2, "PULSE randomization mode selected.")
             self.__randomize_until_pulses()
         elif self.__config.get_randomization_type() == "VARIANCE":
-            self.__log_info("VARIANCE randomization mode selected.")
+            self.__log_info(2, "VARIANCE randomization mode selected.")
             if self.config.variance_threshold() <= 0:
                 self.log_error(INVALID_VARIANCE_ERR_MSG)
             else:
                 self.__randomize_until_variance()
         elif self.__config.get_randomization_type() == "NO":
-            self.__log_info("NO randomization mode selected.")
+            self.__log_info(2, "NO randomization mode selected.")
         else:
-            self.__log_error(RANDOMIZE_UNTIL_NOT_SET_ERR_MSG)
+            self.__log_error(1, RANDOMIZE_UNTIL_NOT_SET_ERR_MSG)
 
     def __randomize_until_pulses(self):
         """
@@ -138,7 +138,7 @@ class CircuitPopulation:
     # TODO Add docstring.
     def evolve(self):
         if len(self.__circuits) == 0:
-            self.__log_error("Attempting to evolve with empty population. Exiting...")
+            self.__log_error(1, "Attempting to evolve with empty population. Exiting...")
             exit()
 
         # Set initial values for 'best' data
@@ -173,7 +173,7 @@ class CircuitPopulation:
                 else:
                     fitness = circuit.evaluate_variance()
                 if fitness > self.__config.get_variance_threshold():
-                    self.__log_event("{} fitness: {}".format(circuit, fitness))
+                    self.__log_event(1, "{} fitness: {}".format(circuit, fitness))
                     return
                 fitness_sum += fitness
                 reevaulated_circuits.add(circuit)
@@ -183,15 +183,15 @@ class CircuitPopulation:
             # If one of the new Circuits has a higher fitness than our
             # recorded best, make it the recorded best.
             best_circuit_info = self.get_overall_best_circuit_info()
-            self.__log_event("Best circuit info", best_circuit_info.fitness)
-            self.__log_event("Circuit 0 info", self.__circuits[0].get_fitness())
+            self.__log_event(2, "Best circuit info", best_circuit_info.fitness)
+            self.__log_event(2, "Circuit 0 info", self.__circuits[0].get_fitness())
             if self.__circuits[0].get_fitness() > best_circuit_info.fitness:
                 self.__overall_best_circuit_info = CircuitInfo(
                     str(self.__circuits[0]),
                     self.__circuits[0].get_fitness()
                 )
                 self.__best_epoch = self.get_current_epoch()
-                self.__log_event("New best found")
+                self.__log_event(2, "New best found")
 
             self.__logger.log_generation(self, epoch_time)
             self.__run_selection()
@@ -215,7 +215,7 @@ class CircuitPopulation:
             k=len(self.__circuits)
         )[0]
 
-        self.__log_event("Tournament Number:", self.get_current_epoch())
+        self.__log_event(3, "Tournament Number:", self.get_current_epoch())
 
         # For all Circuits in the CircuitPopulation, take two random
         # circuits at a time from the population and compare them. Copy
@@ -225,7 +225,7 @@ class CircuitPopulation:
             ckt1_fitness = ckt1.get_fitness()
             ckt2_fitness = ckt2.get_fitness()
             if ckt1_fitness > ckt2_fitness:
-                self.__log_event(
+                self.__log_event(3,
                     "Fitness {}: {} > Fitness {}: {}".format(
                         ckt1,
                         ckt1.get_fitness(),
@@ -236,7 +236,7 @@ class CircuitPopulation:
                 self.__single_point_crossover(ckt1, ckt2)
                 ckt2.mutate()
             else:
-                self.__log_event(
+                self.__log_event(3,
                     "Fitness {}: {} < Fitness {}: {}".format(
                         ckt1,
                         ckt1.get_fitness(),
@@ -249,7 +249,7 @@ class CircuitPopulation:
 
     # TODO Add docstring.
     def __run_single_elite_tournament(self):
-        self.__log_event("Tournament Number: {}".format(str(self.get_current_epoch())))
+        self.__log_event(3, "Tournament Number: {}".format(str(self.get_current_epoch())))
 
         best = self.get_best_circuit()
         for ckt in self.__circuits:
@@ -261,19 +261,19 @@ class CircuitPopulation:
                     ckt.copy_hardware_from()
                     ckt.mutate()
             else:
-                self.__log_info(ckt, "is current BEST")
+                self.__log_info(2, ckt, "is current BEST")
 
     # TODO Add docstring.
     def __run_fractional_elite_tournament(self):
-        self.__log_info("Number of Elites: ", str(self.__n_elites))
-        self.__log_info("Ranked Fitness: ", self.__circuits)
+        self.__log_info(2, "Number of Elites: ", str(self.__n_elites))
+        self.__log_info(2, "Ranked Fitness: ", self.__circuits)
 
         # Generate a group of elite Circuits from the
         # n = <self.__n_elites> best performing Circuits.
         elite_group = []
         for i in range(0, self.__n_elites):
             elite_group.append(self.__circuits[i])
-        self.__log_info("Elite Group:", elite_group)
+        self.__log_info(3, "Elite Group:", elite_group)
 
         # For all the Circuits in the CircuitPopulation compare the
         # Circuit against a random elite Circuit from the group
@@ -284,7 +284,7 @@ class CircuitPopulation:
             rand_elite = self.__rand.choice(elite_group)[0]
             if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite:
                 if self.__config.crossover_probability  == 0:
-                    self.__log_event("Cloning:", rand_elite, " ---> ", ckt)
+                    self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
                     ckt.replace_hardware_file(rand_elite.get_hardware_filepath)
                 else:
                     self.__single_point_crossover(rand_elite, ckt)
@@ -292,8 +292,8 @@ class CircuitPopulation:
 
     # TODO Add docstring.
     def __run_fitness_proportional_selection(self):
-        self.__log_event("Number of Elites:", self.__n_elites)
-        self.__log_event("Ranked Fitness:", self.__circuits)
+        self.__log_event(2, "Number of Elites:", self.__n_elites)
+        self.__log_event(2, "Ranked Fitness:", self.__circuits)
 
         # Generate a group of elites from the best n = <self.__n_elites>
         # Circuits. Based on their fitness values, map each Circuit with
@@ -312,11 +312,11 @@ class CircuitPopulation:
                 elites[elite] = 1 / self.__n_elites
         else:
             # elite_sum is negative. This should not be possible.
-            self.__log_error("Elite_sum is negative. Exiting...")
+            self.__log_error(1, "Elite_sum is negative. Exiting...")
             exit()
 
-        self.__log_event("Elite Group:", elites.keys())
-        self.__log_event("Elite Probabilites:", elites.values())
+        self.__log_event(3, "Elite Group:", elites.keys())
+        self.__log_event(3, "Elite Probabilites:", elites.values())
 
         # For all Circuits in this CircuitPopulation, choose a random
         # elite (based on the associated probabilities calculated above)
@@ -335,11 +335,11 @@ class CircuitPopulation:
             else:
                 rand_elite = self.__rand.choice(list(elite.keys()))[0]
 
-            #self.__log_event("Elite", rand_elite)
+            #self.__log_event(3, "Elite", rand_elite)
 
             if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite:
                 if self.__config.get_crossover_probability() == 0:
-                    self.__log_event("Cloning:", rand_elite, " ---> ", ckt)
+                    self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
                     ckt.copy_hardware_from(rand_elite)
                 else:
                     self.__single_point_crossover(rand_elite, ckt)
@@ -378,7 +378,7 @@ class CircuitPopulation:
         elif self.__config.get_routing_type() == "NWSE":
             crossover_point = self.__rand.integers(13,15)
         else:
-            self.__log_error("Invalid routing type specified in config.ini. Exiting...")
+            self.__log_error(1, "Invalid routing type specified in config.ini. Exiting...")
             exit()
         dest.copy_genes_from(source, crossover_point)
 
@@ -394,30 +394,30 @@ class CircuitPopulation:
         args = [iter(iterable)] * n
         return zip_longest(fillvalue=fillvalue, *args)
 
-    def __log_event(self, *event):
+    def __log_event(self, level, *event):
         """
         Emit an event-level log. This function is fulfilled through
         the logger.
         """
-        self.__logger.log_event(*event)
+        self.__logger.log_event(level, *event)
 
-    def __log_info(self, *info):
+    def __log_info(self, level, *info):
         """
         Emit an info-level log. This function is fulfilled through
         the logger.
         """
-        self.__logger.log_info(*info)
+        self.__logger.log_info(level, *info)
 
-    def __log_error(self, *error):
+    def __log_error(self, level, *error):
         """
         Emit an error-level log. This function is fulfilled through
         the logger.
         """
-        self.__logger.log_error(*error)
+        self.__logger.log_error(level, *error)
 
-    def __log_warning(self, *warning):
+    def __log_warning(self, level, *warning):
         """
         Emit a warning-level log. This function is fulfilled through
         the logger.
         """
-        self.__logger.log_warning(*warning)
+        self.__logger.log_warning(level, *warning)
