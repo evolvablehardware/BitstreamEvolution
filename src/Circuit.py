@@ -259,7 +259,6 @@ class Circuit:
         """
         tile = self.__hardware_file.find(b".logic_tile")
         while tile > 0:
-<<<<<<< HEAD
             # Set pos to the position of this tile, but with the length of ".logic_tile" added so it is in front of where we have the x/y coords
             pos = tile + len(".logic_tile")
             
@@ -270,10 +269,6 @@ class Circuit:
                 # The start is the newline position + 1, so the first valid bit character
                 # line_size is self-explanatory
                 # This finds the length of a standard line of bits (so the width of each data-containing line in this tile)
-=======
-            pos = tile + len(".logic_tile")
-            if self.__tile_is_included(pos):
->>>>>>> c62972065462a2c81373fd6712ecfecbec57b360
                 line_start = self.__hardware_file.find(b"\n", tile) + 1
                 line_end = self.__hardware_file.find(b"\n", line_start + 1)
                 line_size = line_end - line_start + 1
@@ -284,7 +279,6 @@ class Circuit:
                 elif self.__config.get_routing == "NEWSE":
                     rows = [1, 2]
                 for row in rows:
-<<<<<<< HEAD
                     for col in self.__config.get_accessed_columns():
                         # This will get us to individual bits. If the mutation probability passes, then...
                         if self.__config.get_mutation_probability() >= self.__rand.uniform(0,1):
@@ -302,13 +296,6 @@ class Circuit:
 
             # Find the next logic tile, and start again
             # Will return -1 if .logic_tile isn't found, and the while loop will exit
-=======
-                    for col in self.__config.get_acccessed_columns:
-                        if self.__config.mutation_probability >= self.__rand.uniform(0,1):
-                            pos = tile + line_size * (row - 1) + col
-                            self.__hardware_filefile[pos] = str(self.__rand.integers(0,2))
-
->>>>>>> c62972065462a2c81373fd6712ecfecbec57b360
             tile = self.__hardware_file.find(b".logic_tile", tile + 1)
 
     def copy_genes_from(self, parent, crossover_point):
@@ -412,7 +399,6 @@ class Circuit:
 
         # NOTE x and y are stored as ints to aid the loops that search and identify
         # tiles while scraping the asc files
-<<<<<<< HEAD
         # This is in the actual asc file; this is why we can simply pull from "pos"
         # i.e. you'll see the header ".logic_file 1 1" - x=1, y=1
         
@@ -433,10 +419,6 @@ class Circuit:
         y = int(y_str)
         is_x_valid = x in VALID_TILE_X
         is_y_valid = y in VALID_TILE_Y
-=======
-        is_x_valid = int(self.__hardware_file[pos + 1]) in VALID_TILE_X
-        is_y_valid = int(self.__hardware_file[pos + 3]) in VALID_TILE_Y
->>>>>>> c62972065462a2c81373fd6712ecfecbec57b360
 
         return is_x_valid and is_y_valid
 
@@ -466,8 +448,4 @@ class Circuit:
         Emit a warning-level log. This function is fulfilled through
         the logger.
         """
-<<<<<<< HEAD
         self.__logger.log_warning(level, *warning)
-=======
-        self.__logger.log_warning(*warning)
->>>>>>> c62972065462a2c81373fd6712ecfecbec57b360
