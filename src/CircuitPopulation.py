@@ -139,8 +139,10 @@ class CircuitPopulation:
         """
         self.__current_epoch += 1
 
-    # TODO Add docstring.
     def evolve(self):
+        '''
+        Runs an evolutionary loop and records the circuit with the highest fitness throughout the loop
+        '''
         if len(self.__circuits) == 0:
             self.__log_error(1, "Attempting to evolve with empty population. Exiting...")
             exit()
@@ -262,8 +264,10 @@ class CircuitPopulation:
             else:
                 self.__log_info(2, ckt, "is current BEST")
 
-    # TODO Add docstring.
     def __run_fractional_elite_tournament(self):
+        '''
+        Compares every circuit in the population to a random elite. If circuit has a lower fitness, crossover or mutate the circuit
+        '''
         self.__log_info(2, "Number of Elites: ", str(self.__n_elites))
         self.__log_info(2, "Ranked Fitness: ", self.__circuits)
 
@@ -289,8 +293,11 @@ class CircuitPopulation:
                     self.__single_point_crossover(rand_elite, ckt)
                 ckt.mutate()
 
-    # TODO Add docstring.
     def __run_fitness_proportional_selection(self):
+        '''
+        Compares every circuit in the population to a random elite (chosen proportionally based on each elite's fitness).
+        If circuit has a lower fitness, crossover or mutate the circuit
+        '''
         self.__log_event(2, "Number of Elites:", self.__n_elites)
         self.__log_event(2, "Ranked Fitness:", self.__circuits)
 
