@@ -16,7 +16,7 @@
             "intelliSenseMode": "gcc-x64",
             "includePath": [
                 "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino",
-                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\variants\\eightanaloginputs",
+                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\variants\\standard",
                 "c:\\program files (x86)\\arduino\\hardware\\tools\\avr\\lib\\gcc\\avr\\7.3.0\\include",
                 "c:\\program files (x86)\\arduino\\hardware\\tools\\avr\\lib\\gcc\\avr\\7.3.0\\include-fixed",
                 "c:\\program files (x86)\\arduino\\hardware\\tools\\avr\\avr\\include"
@@ -29,7 +29,7 @@
             "defines": [
                 "F_CPU=16000000L",
                 "ARDUINO=10813",
-                "ARDUINO_AVR_NANO",
+                "ARDUINO_AVR_UNO",
                 "ARDUINO_ARCH_AVR",
                 "__DBL_MIN_EXP__=(-125)",
                 "__HQ_FBIT__=15",
