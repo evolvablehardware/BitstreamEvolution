@@ -274,9 +274,9 @@ class Circuit:
                 line_size = line_end - line_start + 1
 
                 # TODO ALIFE2021 The routing protocol here is dated and needs to mimic that of the Tone Discriminator
-                if self.__config.get_routing == "MOORE":
+                if self.__config.get_routing_type() == "MOORE":
                     rows = [1, 2, 13]
-                elif self.__config.get_routing == "NEWSE":
+                elif self.__config.get_routing_type() == "NEWSE":
                     rows = [1, 2]
                 for row in rows:
                     for col in self.__config.get_accessed_columns():
