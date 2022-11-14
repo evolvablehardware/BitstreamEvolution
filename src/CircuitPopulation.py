@@ -181,6 +181,7 @@ class CircuitPopulation:
                     fitness = circuit.evaluate_sim_hardware()
                 else:
                     fitness = circuit.evaluate_pulse_count()
+                    
                 if fitness > self.__config.get_variance_threshold():
                     self.__log_event(1, "{} fitness: {}".format(circuit, fitness))
                     return

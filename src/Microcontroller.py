@@ -17,10 +17,12 @@ class Microcontroller:
     def __init__(self, config, logger):
         self.__logger = logger
         self.__config = config
+        self.__log_event(1, "MCU SETTINGS ================================", config.get_usb_path(), config.get_serial_baud())
         self.__serial =  Serial(
             config.get_usb_path(),
             config.get_serial_baud(),
         )
+        self.__serial.dtr = False
 
     def measure_pulses(self, circuit):
         samples = 2
@@ -30,14 +32,14 @@ class Microcontroller:
         data_file = open(circuit.get_data_filepath(), "wb")
 
         buf = []
-
         for i in range(0,samples):
             # Poll serial line until START signal
             self.__log_event(3, "Starting loop for reading")
             
             self.__serial.reset_input_buffer()
+            self.__serial.reset_output_buffer()
             # NOTE The MCU is expecting a string '1' if fitness isn't measured this may be why
-            self.__serial.write(bytes(1)) 
+            self.__serial.write(b'1') 
             start = time()
             self.__log_event(3, "Starting MCU loop...")
 
@@ -62,6 +64,7 @@ class Microcontroller:
         buf_dif = 0
         weighted_count = 0
 
+        print(len(buf))
         for i in range(0, len(buf)):
             if buf[i] == b'':
                 buf[i] = 0
@@ -73,7 +76,7 @@ class Microcontroller:
         if len(buf) > 0:
             if samples > 1:
                 weighted_count = abs(buf[0] - buf_dif)
-            data_file.write(bytes(weighted_count) + "\n")
+            data_file.write(bytes(str(weighted_count) + "\n", "utf-8"))
 
         if len(buf) > 0:
             freq = sum(buf)/len(buf)
@@ -98,7 +101,7 @@ class Microcontroller:
         data_file = open(circuit.get_data_filepath(), "wb")
 
         self.__serial.reset_input_buffer()
-        self.__serial.reset_output_buffer();
+        self.__serial.reset_output_buffer()
         self.__log_event(1, "Reading microcontroller.")
         # The MCU is expecting a string '2' to initiate the ADC capture from the FPGA (waveform as opposed to pulses)
         self.__serial.write(b'2')

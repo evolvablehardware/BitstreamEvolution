@@ -151,7 +151,7 @@ class Circuit:
             elapsed
         )
 
-        self.__measure_pulse_fitness()
+        return self.__measure_pulse_fitness()
 
     def __run(self):
         """
@@ -266,6 +266,9 @@ class Circuit:
             self.__fitness = var
         else:
             self.__fitness = var + (1.0 / desired_freq - pulse_count)
+        
+        return self.__fitness
+ 
 
     # SECTION Genetic Algorithm related functions
     
