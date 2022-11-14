@@ -71,6 +71,8 @@ class CircuitPopulation:
             self.__run_selection = self.__run_classic_tournament
         elif config.get_selection_type() == "FIT_PROP_SEL":
             self.__run_selection = self.__run_fitness_proportional_selection
+        elif config.get_selection_type() == "RANK_PROP_SEL":
+            self.__run_selection = self.__run_rank_proportional_selection
         else:
             self.__log_error(1, "Invalid Selection method in config.ini. Exiting...")
             exit()
@@ -134,12 +136,16 @@ class CircuitPopulation:
         """
         pass
 
-    # TODO Add docstring.
     def __next_epoch(self):
+        """
+        Increases the generation count by 1
+        """
         self.__current_epoch += 1
 
-    # TODO Add docstring.
     def evolve(self):
+        """
+        Runs an evolutionary loop and records the circuit with the highest fitness throughout the loop
+        """
         if len(self.__circuits) == 0:
             self.__log_error(1, "Attempting to evolve with empty population. Exiting...")
             exit()
@@ -221,8 +227,10 @@ class CircuitPopulation:
                 ))
 
     # SECTION Selection algorithms.
-    # TODO Add docstring.
     def __run_classic_tournament(self):
+        """
+        Randomly pairs together circuits, compares their fitness, and preforms crossover on and mutates the "loser"
+        """
         population = self.__rand.permutation(self.__circuits)
 
         self.__log_event(3, "Tournament Number:", self.get_current_epoch())
@@ -257,8 +265,10 @@ class CircuitPopulation:
                 self.__single_point_crossover(ckt2, ckt1)
                 ckt1.mutate()
 
-    # TODO Add docstring.
     def __run_single_elite_tournament(self):
+        """
+        Set the hardware of every circuit that is not the best to a mutated version of the best circuit's hardware
+        """
         self.__log_event(3, "Tournament Number: {}".format(str(self.get_current_epoch())))
 
         best = self.get_best_circuit()
@@ -273,35 +283,11 @@ class CircuitPopulation:
             else:
                 self.__log_info(2, ckt, "is current BEST")
 
-    # TODO Add docstring.
-    def __run_fractional_elite_tournament(self):
-        self.__log_info(2, "Number of Elites: ", str(self.__n_elites))
-        self.__log_info(2, "Ranked Fitness: ", self.__circuits)
-
-        # Generate a group of elite Circuits from the
-        # n = <self.__n_elites> best performing Circuits.
-        elite_group = []
-        for i in range(0, self.__n_elites):
-            elite_group.append(self.__circuits[i])
-        self.__log_info(3, "Elite Group:", elite_group)
-
-        # For all the Circuits in the CircuitPopulation compare the
-        # Circuit against a random elite Circuit from the group
-        # generated above. If the Circuit's fitness is less than than
-        # the elite's perform crossover (or clone if crossover is
-        # disabled) and then mutate the Circuit.
-        for ckt in self.__circuits:
-            rand_elite = self.__rand.choice(elite_group)[0]
-            if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite:
-                if self.__config.crossover_probability  == 0:
-                    self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
-                    ckt.replace_hardware_file(rand_elite.get_hardware_filepath)
-                else:
-                    self.__single_point_crossover(rand_elite, ckt)
-                ckt.mutate()
-
-    # TODO Add docstring.
     def __run_fitness_proportional_selection(self):
+        """
+        Compares every circuit in the population to a random elite (chosen proportionally based on each elite's fitness).
+        If circuit has a lower fitness, crossover or mutate the circuit
+        """
         self.__log_event(2, "Number of Elites:", self.__n_elites)
         self.__log_event(2, "Ranked Fitness:", self.__circuits)
 
@@ -355,22 +341,112 @@ class CircuitPopulation:
                     self.__single_point_crossover(rand_elite, ckt)
                     
                 ckt.mutate()
+                
+    def __run_rank_proportional_selection(self):
+        '''
+        Compares every circuit in the population to a random elite (chosen proportionally based on each elite's rank).
+        If circuit has a lower fitness, crossover or mutate the circuit
+        '''
+        self.__log_event(2, "Number of Elites:", self.__n_elites)
+        self.__log_event(2, "Ranked Fitness:", self.__circuits)
+
+        # Generate a group of elites from the best n = <self.__n_elites>
+        # Circuits. Based on their fitness values, map each Circuit with
+        # a probabilty value (used later for crossover/copying/mutation).
+        elites = {}
+        #can use summation formula since sum of ranks is the sum of natural numbers
+        elite_sum = (self.__n_elites - 1) * (self.__n_elites) / 2
+        if (elite_sum > 0):
+            for i in range(self.__n_elites):
+                # Using (self.__n_elites - i) since highest ranked indiviual is at self.__circuits[0]
+                elites[self.__circuits[i]] = (self.__n_elites - i) / elite_sum
+        else:
+            # elite_sum is negative. This should not be possible.
+            self.__log_error(1, "Elite_sum is zero or negative. Exiting...")
+            exit()
+
+        self.__log_event(3, "Elite Group:", elites.keys())
+        self.__log_event(3, "Elite Probabilites:", elites.values())
+            #self.__log_event(3, "Elite", rand_elite)
+
+        # For all Circuits in this CircuitPopulation, choose a random
+        # elite (based on the associated probabilities calculated above)
+        # and compare it to the Circuit. If the Circuit has lower
+        # fitness than the elite, perform crossover (with the elite) and
+        # mutation on it (or copy the elite's hardware if crossover is
+        # disabled).
+        elite_prob_sum = sum(elites.values())
+        for ckt in self.__circuits:
+            if elite_prob_sum > 0:
+                rand_elite = self.__rand.choice(
+                    list(elites.keys()),
+                    self.__n_elites,
+                    p=list(elites.values())
+                )[0]
+            else:
+                rand_elite = self.__rand.choice(list(elite.keys()))[0]
+
+            if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite:
+                if self.__config.get_crossover_probability() == 0:
+                    self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
+                    ckt.copy_hardware_from(rand_elite)
+                else:
+                    self.__single_point_crossover(rand_elite, ckt)
+                ckt.mutate()
+
+    def __run_fractional_elite_tournament(self):
+        '''
+        Compares every circuit in the population to a random elite. If circuit has a lower fitness, crossover or mutate the circuit
+        '''
+        self.__log_info(2, "Number of Elites: ", str(self.__n_elites))
+        self.__log_info(2, "Ranked Fitness: ", self.__circuits)
+
+        # Generate a group of elite Circuits from the
+        # n = <self.__n_elites> best performing Circuits.
+        elite_group = []
+        for i in range(0, self.__n_elites):
+            elite_group.append(self.__circuits[i])
+        self.__log_info(3, "Elite Group:", elite_group)
+
+        # For all the Circuits in the CircuitPopulation compare the
+        # Circuit against a random elite Circuit from the group
+        # generated above. If the Circuit's fitness is less than than
+        # the elite's perform crossover (or clone if crossover is
+        # disabled) and then mutate the Circuit.
+        for ckt in self.__circuits:
+            rand_elite = self.__rand.choice(elite_group)[0]
+            if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite:
+                if self.__config.crossover_probability  == 0:
+                    self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
+                    ckt.replace_hardware_file(rand_elite.get_hardware_filepath)
+                else:
+                    self.__single_point_crossover(rand_elite, ckt)
+
+                ckt.mutate()
 
     # SECTION Getters.
-    # TODO Add docstring.
     def get_current_best_circuit(self):
+        """
+        Returns the circuit in the current generation with the highest fitness
+        """
         return self.__circuits[0]
 
-    # TODO Add docstring.
     def get_overall_best_circuit_info(self):
+        """
+        Returns the information of the circuit with the highest fitness throughout the run 
+        """
         return self.__overall_best_circuit_info
 
-    # TODO Add docstring.
     def get_current_epoch(self):
+        """
+        Returns the generation number
+        """
         return self.__current_epoch
 
-    # TODO Add docstring.
     def get_best_epoch(self):
+        """
+        Returns the generation number that contained the circuit with the highest fitness
+        """
         return self.__best_epoch
 
     # SECTION Miscellaneous helper functions.
