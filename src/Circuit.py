@@ -52,6 +52,9 @@ class Circuit:
         hardware_file = open(self.__hardware_filepath, "r+")
         self.__hardware_file = mmap(hardware_file.fileno(), 0)
         hardware_file.close()
+        
+        # If simulation mode, then we don't compile or read the binary or anything, just simply keep a bitstream of 100 bits we modify in here
+        self.__simulation_bitstream = [0] * 20;
 
     def __compile(self):
         """
@@ -72,10 +75,23 @@ class Circuit:
 
         self.__log_event(2, "Finished compiling", self)
 
+    def get_sim_bitstream(self):
+        """
+        Returns the simulation bitstream array
+        """
+        return self.__simulation_bitstream
+
+    def get_hardware_file_path(self):
+        """
+        Returns the hardware file path
+        """
+        return self.__hardware_filepath
+
     # TODO Evaluate based on a fitness function defined in the config file
     # while still utilizing the existing or newly added evaluate functions in this class
     # def evaluate(self):
     #     return 
+    
     def evaluate_sim(self):
         """
         Just evaluate the simulation bitstream (count # of 1s)
@@ -142,7 +158,7 @@ class Circuit:
         Compiles this Circuit, uploads it, and runs it on the FPGA
         """
         self.__compile()
-
+        
         cmd_str = [
             RUN_CMD,
             self.__bitstream_filepath,
@@ -252,12 +268,41 @@ class Circuit:
             self.__fitness = var + (1.0 / desired_freq - pulse_count)
 
     # SECTION Genetic Algorithm related functions
-    # TODO Initialize function to avoid conditional checks?
+    
     def mutate(self):
+        """
+        Decide which mutation function to used based on configuration
+        Only the full simulation mode uses a special function, otherwise we use the default to operate on the hardware files
+        """
+        if self.__config.get_simulation_mode() == "FULLY_SIM":
+            self.__mutate_simulation()
+        else:
+            self.__mutate_actual()
+    
+    def __mutate_simulation(self):
+        """
+        Mutate the simulation mode circuit
+        """
+        # Pick a random position and flip it
+        pos = self.__rand.integers(0, len(self.__simulation_bitstream))
+        value = self.__simulation_bitstream[pos]
+        if value == 0:
+            self.__simulation_bitstream[pos] = 1
+        else:
+            self.__simulation_bitstream[pos] = 0
+    
+    # TODO Initialize function to avoid conditional checks?
+    def __mutate_actual(self):
         """
         Mutate the configuration of this circuit.
         """
+        
+        # Set tile to the first location of the substring ".logic_tile"
+        # The b prefix makes the string an instance of the "bytes" type
+        # The .logic_tile header indicates that there is a tile, so the "tile" variable stores the starting point of the current tile
         tile = self.__hardware_file.find(b".logic_tile")
+        
+        
         while tile > 0:
             # Set pos to the position of this tile, but with the length of ".logic_tile" added so it is in front of where we have the x/y coords
             pos = tile + len(".logic_tile")
@@ -273,11 +318,13 @@ class Circuit:
                 line_end = self.__hardware_file.find(b"\n", line_start + 1)
                 line_size = line_end - line_start + 1
 
+                # Determine which rows we can modify
                 # TODO ALIFE2021 The routing protocol here is dated and needs to mimic that of the Tone Discriminator
                 if self.__config.get_routing_type() == "MOORE":
                     rows = [1, 2, 13]
                 elif self.__config.get_routing_type() == "NEWSE":
                     rows = [1, 2]
+                # Iterate over each row and the columns that we can access within each row
                 for row in rows:
                     for col in self.__config.get_accessed_columns():
                         # This will get us to individual bits. If the mutation probability passes, then...
@@ -298,7 +345,74 @@ class Circuit:
             # Will return -1 if .logic_tile isn't found, and the while loop will exit
             tile = self.__hardware_file.find(b".logic_tile", tile + 1)
 
+    def get_intrinsic_modifiable_bitstream(self):
+        """
+        Returns an array of bytes (that correspond to characters, so they will either be 48 or 49)
+        These bytes represent the bits of the circuit's bitstream that can be modified. All other bits are left out
+        """
+        # TODO: Convert this to be a single function that takes this functionality and the mutate_actual one. Function takes in a callback to call on each modifiable position
+        # Set tile to the first location of the substring ".logic_tile"
+        # The b prefix makes the string an instance of the "bytes" type
+        # The .logic_tile header indicates that there is a tile, so the "tile" variable stores the starting point of the current tile
+        tile = self.__hardware_file.find(b".logic_tile")
+        
+        bitstream = []
+        
+        while tile > 0:
+            # Set pos to the position of this tile, but with the length of ".logic_tile" added so it is in front of where we have the x/y coords
+            pos = tile + len(".logic_tile")
+            
+            
+            # Check if the position is legal to modify
+            if self.__tile_is_included(pos):
+                # Find the start and end of the line; the positions of the \n newline just before and at the end of this line
+                # The start is the newline position + 1, so the first valid bit character
+                # line_size is self-explanatory
+                # This finds the length of a standard line of bits (so the width of each data-containing line in this tile)
+                line_start = self.__hardware_file.find(b"\n", tile) + 1
+                line_end = self.__hardware_file.find(b"\n", line_start + 1)
+                line_size = line_end - line_start + 1
+
+                # Determine which rows we can modify
+                # TODO ALIFE2021 The routing protocol here is dated and needs to mimic that of the Tone Discriminator
+                if self.__config.get_routing_type() == "MOORE":
+                    rows = [1, 2, 13]
+                elif self.__config.get_routing_type() == "NEWSE":
+                    rows = [1, 2]
+                # Iterate over each row and the columns that we can access within each row
+                for row in rows:
+                    for col in self.__config.get_accessed_columns():
+                        # This will get us to individual bits. Our position is now going to be the start of the first line, plus the line size multiplied to get to our desired row,
+                        # and finally added to the column (with the int cast to sanitize user input)
+                        pos = line_start + line_size * (row - 1) + int(col)
+                        byte = self.__hardware_file[pos]
+                        bitstream.append(byte)
+
+            # Find the next logic tile, and start again
+            # Will return -1 if .logic_tile isn't found, and the while loop will exit
+            tile = self.__hardware_file.find(b".logic_tile", tile + 1)
+            
+        return bitstream
+    
     def copy_genes_from(self, parent, crossover_point):
+        """
+        Decide which crossover function to used based on configuration
+        Only the full simulation mode uses a special crossover function, otherwise we use the default to operate on the hardware files
+        """
+        if self.__config.get_simulation_mode() == "FULLY_SIM":
+            self.__crossover_sim(parent, crossover_point)
+        else:
+            self.__crossover_actual(parent, crossover_point)
+        
+    def __crossover_sim(self, parent, crossover_point):
+        """
+        Simulated crossover, pulls first n bits from parent and remaining from self
+        """
+        for i in range(0, crossover_point):
+            self.__simulation_bitstream[i] = parent.__simulation_bitstream[i]
+        # Remaining bits left unchanged
+        
+    def __crossover_actual(self, parent, crossover_point):
         """
         Copy part of the configuration from parent into this circuit.
         """
@@ -388,6 +502,7 @@ class Circuit:
 
     # SECTION Miscellanious helper functions.
     def __tile_is_included(self, pos):
+    
         """
         Determines whether a given tile is available for modificiation.
         """

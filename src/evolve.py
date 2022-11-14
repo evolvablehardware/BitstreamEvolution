@@ -24,17 +24,19 @@ logger = Logger(config, explanation)
 mcu = Microcontroller(config, logger)
 population = CircuitPopulation(mcu, config, logger)
 
+
 population.populate()
 population.evolve()
 
 # SECTION Clean up resources
 
 
-# Upload a sample bitstream to the FPGA.
-run([
-    "iceprog",
-    "-d",
-    "i:0x0403:0x6010:0",
-    "data/hardware_blink.bin"
-])
+if config.get_simulation_mode() == "FULLY_INTRINSIC":
+    # Upload a sample bitstream to the FPGA.
+    run([
+        "iceprog",
+        "-d",
+        "i:0x0403:0x6010:0",
+        "data/hardware_blink.bin"
+    ])
 

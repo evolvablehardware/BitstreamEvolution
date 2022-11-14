@@ -33,19 +33,25 @@ class Microcontroller:
 
         for i in range(0,samples):
             # Poll serial line until START signal
+            self.__log_event(3, "Starting loop for reading")
+            
             self.__serial.reset_input_buffer()
             # NOTE The MCU is expecting a string '1' if fitness isn't measured this may be why
             self.__serial.write(bytes(1)) 
             start = time()
+            self.__log_event(3, "Starting MCU loop...")
 
             while True:
+                self.__log_event(3, "Serial reading...")
                 p = self.__serial.read()
+                self.__log_event(3, "Serial read done")
                 if (time() - start) >= self.__config.get_mcu_read_timeout():
                     self.__log_warning(1, "Time Exceeded. Halting MCU Reading")
                     break
                 # TODO We should be able to do whatever this line does better
                 # This is currently doing a poor job at REGEXing the MCU serial return - can be done better
                 # It's supposed to handle exceptions from transmission loss (i.e. dropped or additional spaces, shifted colons, etc)
+                self.__log_event(3, "Pulled", p, "from MCU")
                 if (p != b"" and b":" not in p and b"START" not in p and b"FINISH" not in p and b" " not in p):
                     p = p.translate(None, b"\r\n")
                     buf.append(p)
