@@ -334,19 +334,24 @@ class CircuitPopulation:
                     p=list(elites.values())
                 )[0]
             else:
-                rand_elite = self.__rand.choice(list(elite.keys()))[0]
+                rand_elite = self.__rand.choice(list(elites.keys()))[0]
 
             self.__log_event(2, "Elite", rand_elite)
             
             # NOTE: This makes it possible for the top circuit to be mutated... if multiple circuits have the same top fitness, then they can
             # both meet up here and end up mutating one or both of the circuits, which can bring down the best fitness line temporarily
             if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite:
-                if self.__config.get_crossover_probability() == 0:
-                    self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
-                    ckt.copy_hardware_from(rand_elite)
-                else:
+                # if self.__config.get_crossover_probability() == 0:
+                #     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
+                #     ckt.copy_hardware_from(rand_elite)
+                # else:
+                #     self.__single_point_crossover(rand_elite, ckt)
+
+                if self.__rand.uniform(0,1) <= self.__config.get_crossover_probability():
                     self.__single_point_crossover(rand_elite, ckt)
-                    
+                else:
+                    self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
+                    ckt.copy_hardware_from(rand_elite)      
                 ckt.mutate()
                 
     def __run_rank_proportional_selection(self):
@@ -362,7 +367,7 @@ class CircuitPopulation:
         # a probabilty value (used later for crossover/copying/mutation).
         elites = {}
         #can use summation formula since sum of ranks is the sum of natural numbers
-        elite_sum = (self.__n_elites - 1) * (self.__n_elites) / 2
+        elite_sum = (self.__n_elites) * (self.__n_elites + 1) / 2
         if (elite_sum > 0):
             for i in range(self.__n_elites):
                 # Using (self.__n_elites - i) since highest ranked indiviual is at self.__circuits[0]
@@ -391,14 +396,20 @@ class CircuitPopulation:
                     p=list(elites.values())
                 )[0]
             else:
-                rand_elite = self.__rand.choice(list(elite.keys()))[0]
+                rand_elite = self.__rand.choice(list(elites.keys()))[0]
 
             if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite:
-                if self.__config.get_crossover_probability() == 0:
-                    self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
-                    ckt.copy_hardware_from(rand_elite)
-                else:
+                # if self.__config.get_crossover_probability() == 0:
+                #     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
+                #     ckt.copy_hardware_from(rand_elite)
+                # else:
+                #     self.__single_point_crossover(rand_elite, ckt)
+
+                if self.__rand.uniform(0,1) <= self.__config.get_crossover_probability():
                     self.__single_point_crossover(rand_elite, ckt)
+                else:
+                    self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
+                    ckt.copy_hardware_from(rand_elite)    
                 ckt.mutate()
 
     def __run_fractional_elite_tournament(self):
@@ -423,12 +434,17 @@ class CircuitPopulation:
         for ckt in self.__circuits:
             rand_elite = self.__rand.choice(elite_group)[0]
             if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite:
-                if self.__config.crossover_probability  == 0:
-                    self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
-                    ckt.replace_hardware_file(rand_elite.get_hardware_filepath)
-                else:
-                    self.__single_point_crossover(rand_elite, ckt)
+                # if self.__config.crossover_probability  == 0:
+                #     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
+                #     ckt.replace_hardware_file(rand_elite.get_hardware_filepath)
+                # else:
+                #     self.__single_point_crossover(rand_elite, ckt)
 
+                if self.__rand.uniform(0,1) <= self.__config.get_crossover_probability():
+                    self.__single_point_crossover(rand_elite, ckt)
+                else:
+                    self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
+                    ckt.copy_hardware_from(rand_elite)    
                 ckt.mutate()
 
     # SECTION Getters.
