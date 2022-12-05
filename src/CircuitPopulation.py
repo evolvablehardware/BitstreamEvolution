@@ -159,6 +159,9 @@ class CircuitPopulation:
         self.__next_epoch()
         
         while(self.get_current_epoch() < self.__config.get_n_generations()):
+        
+            self.__log_event(3, "Starting evo cycle", self.get_current_epoch(), "<", self.__config.get_n_generations(), "?")
+        
             # Since sortedcontainers don't update when the value by
             # which an item is sorted gets updated, we have to add the
             # Circuits to a new list after we evaluate them and then
@@ -182,9 +185,10 @@ class CircuitPopulation:
                 else:
                     fitness = circuit.evaluate_pulse_count()
                     
-                if fitness > self.__config.get_variance_threshold():
+                # Commented out for now while we test
+                '''if fitness > self.__config.get_variance_threshold():
                     self.__log_event(1, "{} fitness: {}".format(circuit, fitness))
-                    return
+                    return'''
                 fitness_sum += fitness
                 reevaulated_circuits.add(circuit)
             epoch_time = time() - start
@@ -312,8 +316,8 @@ class CircuitPopulation:
             self.__log_error(1, "Elite_sum is negative. Exiting...")
             exit()
 
-        self.__log_event(3, "Elite Group:", elites.keys())
-        self.__log_event(3, "Elite Probabilites:", elites.values())
+        self.__log_event(2, "Elite Group:", elites.keys())
+        self.__log_event(2, "Elite Probabilites:", elites.values())
 
         # For all Circuits in this CircuitPopulation, choose a random
         # elite (based on the associated probabilities calculated above)
@@ -332,8 +336,10 @@ class CircuitPopulation:
             else:
                 rand_elite = self.__rand.choice(list(elite.keys()))[0]
 
-            #self.__log_event(3, "Elite", rand_elite)
-
+            self.__log_event(2, "Elite", rand_elite)
+            
+            # NOTE: This makes it possible for the top circuit to be mutated... if multiple circuits have the same top fitness, then they can
+            # both meet up here and end up mutating one or both of the circuits, which can bring down the best fitness line temporarily
             if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite:
                 if self.__config.get_crossover_probability() == 0:
                     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
@@ -477,10 +483,44 @@ class CircuitPopulation:
         running_total = 0
         n = len(self.__circuits)
         num_pairs = n * (n-1) / 2
-        for i in range(n):
+        
+        self.__log_event(2, "Starting Hamming Distance Calculation")
+        
+        bitstreams = []
+        if self.__config.get_simulation_mode() == "FULLY_SIM":
+            bitstreams = map(lambda c: c.get_sim_bitstream(), self.__circuits)
+        else:
+            bitstreams = map(lambda c: c.get_intrinsic_modifiable_bitstream(), self.__circuits)
+        bitstreams = list(bitstreams)
+        
+        self.__log_event(3, "HDIST - Bitstreams mapped")
+        
+        # We now have all the bitstreams, we can do the faster hamming calculation by comparing each bit of them
+        # Then we multiply the count of 1s for that bit by the count of 0s for that bit and add it to the running_total
+        # Divide that by # of pairs at the end (calculation shown below)
+        running_total = 0
+        n = len(self.__circuits)
+        num_pairs = n * (n-1) / 2
+        self.__log_event(3, "HDIST - Entering loop")
+        for i in range(len(bitstreams[0])):
+            ones_count = 0
+            zero_count = 0
+            for j in range(n):
+                if bitstreams[j][i] == 0:
+                    zero_count = zero_count + 1
+                else:
+                    ones_count = ones_count + 1
+            running_total = running_total + ones_count * zero_count
+            self.__log_event(3, "HDIST - Added ", ones_count * zero_count)
+        
+        running_total = running_total / num_pairs        
+        self.__log_event(3, "HDIST - Final value", running_total)
+        return running_total
+        
+        '''for i in range(n):
             for j in range(i+1, n, 1):
                 running_total = running_total + self.__single_hamming_dist(self.__circuits[i], self.__circuits[j])
-        return running_total / num_pairs
+        return running_total / num_pairs'''
     def __single_hamming_dist(self, ckt1, ckt2):
         """
         Calculates and returns the Hamming distance between two circuits
