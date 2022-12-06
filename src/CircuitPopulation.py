@@ -81,8 +81,10 @@ class CircuitPopulation:
         population_size = config.get_population_size()
         self.__n_elites = int(ceil(elitism_fraction * population_size))
 
-    # TODO Add docstring.
     def populate(self):
+        """
+        Creates initial population.
+        """
         for index in range(1, self.__config.get_population_size() + 1):
             ckt = Circuit(
                 index,
@@ -138,13 +140,16 @@ class CircuitPopulation:
 
     def __next_epoch(self):
         """
-        Increases the generation count by 1
+        Moves to the next generation/epoch
+        Currently, only needs to increase the generation by 1
+        All other generation-specific behavior will be derived from this value
         """
         self.__current_epoch += 1
 
     def evolve(self):
         """
-        Runs an evolutionary loop and records the circuit with the highest fitness throughout the loop
+        Runs an evolutionary loop and records the circuit with the highest fitness throughout the loop,
+        while also storing statistics in a file for the plot to access
         """
         if len(self.__circuits) == 0:
             self.__log_error(1, "Attempting to evolve with empty population. Exiting...")
@@ -413,9 +418,9 @@ class CircuitPopulation:
                 ckt.mutate()
 
     def __run_fractional_elite_tournament(self):
-        '''
+        """
         Compares every circuit in the population to a random elite. If circuit has a lower fitness, crossover or mutate the circuit
-        '''
+        """
         self.__log_info(2, "Number of Elites: ", str(self.__n_elites))
         self.__log_info(2, "Ranked Fitness: ", self.__circuits)
 
@@ -494,7 +499,6 @@ class CircuitPopulation:
     def avg_hamming_dist(self):
         """
         Calculates and returns the average Hamming distance for the population
-        Currently runs in O(N^2) time
         """
         running_total = 0
         n = len(self.__circuits)
@@ -532,29 +536,6 @@ class CircuitPopulation:
         running_total = running_total / num_pairs        
         self.__log_event(3, "HDIST - Final value", running_total)
         return running_total
-        
-        '''for i in range(n):
-            for j in range(i+1, n, 1):
-                running_total = running_total + self.__single_hamming_dist(self.__circuits[i], self.__circuits[j])
-        return running_total / num_pairs'''
-    def __single_hamming_dist(self, ckt1, ckt2):
-        """
-        Calculates and returns the Hamming distance between two circuits
-        """
-        # If we are doing full simulation, need to compare array bitstreams
-        # Otherwise, look at the hardware files
-        if self.__config.get_simulation_mode() == "FULLY_SIM":
-            bs1 = ckt1.get_sim_bitstream()
-            bs2 = ckt2.get_sim_bitstream()
-        else:
-            # TODO: Modify to search only for the modifiable bits: this will make the function run much faster (currently, it is very slow)
-            bs1 = ckt1.get_intrinsic_modifiable_bitstream()
-            bs2 = ckt2.get_intrinsic_modifiable_bitstream()
-        count = 0
-        for i in range(len(bs1)):
-            if bs1[i] != bs2[i]:
-                count = count + 1
-        return count
 
     def count_unique(self):
         """
@@ -615,7 +596,7 @@ class CircuitPopulation:
     
     def __files_eq(self, fp1, fp2):
         """
-        Returns true if the files are equal (have the same content), otherwise not
+        Returns true if the files are equal (have the same content)
         """
         content1 = []
         content2 = []

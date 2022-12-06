@@ -174,6 +174,7 @@ class Circuit:
         """
         Measure the fitness of this circuit using the ??? fitness
         function
+        TODO: Clarify
         """
         data_file = open(self.__data_filepath, "rb")
         data = data_file.readlines()
@@ -298,6 +299,7 @@ class Circuit:
     def __mutate_actual(self):
         """
         Mutate the configuration of this circuit.
+        This involves checking the mutation chance per-bit and, if it passes, randomly assigning that bit
         """
         
         # Set tile to the first location of the substring ".logic_tile"
@@ -417,7 +419,7 @@ class Circuit:
         
     def __crossover_actual(self, parent, crossover_point):
         """
-        Copy part of the configuration from parent into this circuit.
+        Copy part of the hardware file from parent into this circuit's hardware file.
         """
         parent_hw_file = parent.get_hardware_file()
         tile = parent_hw_file.find(b".logic_tile")
@@ -439,7 +441,8 @@ class Circuit:
     # TODO Add error checking here
     def update_hardware_file(self, pos, length, data):
         """
-        Make changes to the hardware file associated with this circuit.
+        Make changes to the hardware file associated with this circuit, updating it
+        with the value in "data"
         """
         self.__hardware_file[pos:pos + length] = data
 
@@ -463,24 +466,30 @@ class Circuit:
         hardware_file.close()
 
     def copy_hardware_from(self, source):
-        """Copy the hardware from a source circuit to this circuit."""
+        """
+        Copy the hardware from a source circuit to this circuit.
+        """
         source.write_hardware_changes()
         self.replace_hardware_file(source.get_hardware_filepath())
 
     # SECTION Getters.
     def get_fitness(self):
-        """Returns the fitness of this circuit."""
+        """
+        Returns the fitness of this circuit.
+        """
         return self.__fitness
 
-    # TODO Add docstring.
     def get_hardware_file(self):
+        """
+        Returns the hardware file of this circuit
+        """
         return self.__hardware_file
 
     # NOTE may need to add the file extension here (.asc)
     def get_hardware_filepath(self):
         """
         Returns the path to the hardware file associated with this
-        Circuit.
+        Circuit (the raw .asc)
         """
         return self.__hardware_filepath
 
@@ -488,7 +497,7 @@ class Circuit:
     def get_bitstream_filepath(self):
         """
         Returns the path to the bitstream file associated with this
-        Circuit.
+        Circuit (the compiled .bin)
         """
         return self.__bitstream_filepath
 
@@ -500,14 +509,16 @@ class Circuit:
         return self.__data_filepath
 
     def get_index(self):
-        """Returns the index of this Circuit."""
+        """
+        Returns the index of this Circuit, as provided upon initialization.
+        """
         return self.__index
 
     # SECTION Miscellanious helper functions.
     def __tile_is_included(self, pos):
-    
         """
         Determines whether a given tile is available for modificiation.
+        NOTE: Tile = the .logic_tile in the asc file.
         """
         # Replace these magic values with a more generalized solution
         # Magic values are indicative of the underlying hardware (ice40hx1k)

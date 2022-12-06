@@ -114,6 +114,7 @@ def animate_waveform(i):
             x, y = line.split(',')
             xs.append(int(x))
             ys.append(float(y))
+    # TODO: ax3 is not defined here. Where is it supposed to be defined?
     ax3.clear()
     ax3.set_ylim([0, 1000])
     ax3.plot(pulse_trigger, "r--")
