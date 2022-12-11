@@ -427,6 +427,7 @@ is a list of the options, their description, and their possible values:
 | Analysis Directory | The directory to put the analysis files | Any directory | ./workspace/analysis |
 | Monitor File Path | The path to put the monitor file | Any file path | ./data/monitor |
 | Log Level | The amount of logs to show; higher log level means more detailed logs are shown | 1-3 | 2 |
+| Fitness Function | The fitness function to use | PULSE_COUNT, VARIANCE |  |
 <!--TODO ALIFE2021 Describe these -->
 *TODO Describe these*
 
