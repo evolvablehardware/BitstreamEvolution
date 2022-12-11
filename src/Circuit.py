@@ -54,7 +54,7 @@ class Circuit:
         hardware_file.close()
         
         # If simulation mode, then we don't compile or read the binary or anything, just simply keep a bitstream of 100 bits we modify in here
-        self.__simulation_bitstream = [0] * 20;
+        self.__simulation_bitstream = [0] * 100;
 
     def __compile(self):
         """

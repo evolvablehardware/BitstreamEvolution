@@ -407,6 +407,8 @@ is a list of the options, their description, and their possible values:
 | Selection | The type of selection to perform | SINGLE_ELITE, FRAC_ELITE, CLASSIC_TOURN, FIT_PROP_SEL| CLASSIC_TOURN |
 | Variance threshold | The target signal variance from initial random search | 3-8 | 4 |
 | Seed Mode | The method to generate the initial random circuits | *TODO Add Seed Modes to CircuitPopulation.Py and List them here* | RAND_FROM_SEED |
+| Simulation Mode | The level of simulation to run | FULLY_INTRINSIC, SIM_HARDWARE, FULLY_SIM | FULLY_INTRINSIC |
+| Diversity Measure | The method to use to measure diversity | UNIQUE, HAMMING_DIST | HAMMING_DIST |
 
 ##### Selection methods
 <!--TODO ALIFE2021 Describe the various selection methods-->
@@ -417,6 +419,14 @@ is a list of the options, their description, and their possible values:
 *TODO Describe the various initialization modes*
 
 #### Logging parameters
+| Parameter | Description | Possible Values | Recommended Values |
+|-----------|-------------|-----------------|--------------------|
+| ASC Directory | The directory to put the asc files (raw bitstreams) | Any directory | ./workspace/experiment_asc |
+| BIN Directory | The directory to put the bin files (compiled bitstreams) | Any directory | ./workspace/experiment_bin |
+| Data Directory | The directory to put the data files (MCU read data) | Any directory | ./workspace/experiment_data |
+| Analysis Directory | The directory to put the analysis files | Any directory | ./workspace/analysis |
+| Monitor File Path | The path to put the monitor file | Any file path | ./data/monitor |
+| Log Level | The amount of logs to show; higher log level means more detailed logs are shown | 1-3 | 2 |
 <!--TODO ALIFE2021 Describe these -->
 *TODO Describe these*
 
