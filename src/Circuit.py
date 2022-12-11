@@ -342,7 +342,9 @@ class Circuit:
                             # Therefore, we have to set it to either ASCII 0 (48) or ASCII 1 (49), not actual 0 or 1, which represent different characters
                             # and will corrupt the file if we mutate in this way
                             prev = self.__hardware_file[pos]
-                            self.__hardware_file[pos] = self.__rand.integers(48, 50)
+                            # 48 = 0, 49 = 1. To flip, just need to do (48+49) - the current value (48+49=97)
+                            # This now always flips the bit instead of randomly assigning it every time
+                            self.__hardware_file[pos] = 97 - prev
                             # Note: If prev != 48 or 49, then we changed the wrong value because it was not a 0 or 1 previously
                             self.__log_event(3, "Mutating:", self, "@", row, ",", col, "previous was", prev)
 
