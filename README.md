@@ -409,6 +409,7 @@ is a list of the options, their description, and their possible values:
 | Seed Mode | The method to generate the initial random circuits | *TODO Add Seed Modes to CircuitPopulation.Py and List them here* | RAND_FROM_SEED |
 | Simulation Mode | The level of simulation to run | FULLY_INTRINSIC, SIM_HARDWARE, FULLY_SIM | FULLY_INTRINSIC |
 | Diversity Measure | The method to use to measure diversity | NONE, UNIQUE, HAMMING_DIST | HAMMING_DIST |
+| Fitness Function | The fitness function to use | PULSE_COUNT, VARIANCE |  |
 
 ##### Selection methods
 <!--TODO ALIFE2021 Describe the various selection methods-->
@@ -427,7 +428,6 @@ is a list of the options, their description, and their possible values:
 | Analysis Directory | The directory to put the analysis files | Any directory | ./workspace/analysis |
 | Monitor File Path | The path to put the monitor file | Any file path | ./data/monitor |
 | Log Level | The amount of logs to show; higher log level means more detailed logs are shown | 1-3 | 2 |
-| Fitness Function | The fitness function to use | PULSE_COUNT, VARIANCE |  |
 <!--TODO ALIFE2021 Describe these -->
 *TODO Describe these*
 
