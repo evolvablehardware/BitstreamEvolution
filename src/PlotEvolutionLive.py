@@ -67,6 +67,7 @@ def animate_generation(i):
 
 # fig2 = plt.figure()
 ax2 = fig.add_subplot(2,1,1)
+ax3 = ax2.twinx()
 def animate_epoch(i):
     graph_data = open('workspace/bestlivedata.log','r').read()
     lines = graph_data.split('\n')
@@ -94,7 +95,6 @@ def animate_epoch(i):
     ax2.plot(xs, ws, color="yellow") # Generation Average Fitness
     ax2.tick_params(axis='y', labelcolor='white')
     
-    ax3 = ax2.twinx()
     ax3.clear()
     ax3.plot(xs, ds, color="#5a70ed") # Generation diversity measure
     ax3.tick_params(axis='y', labelcolor='#5a70ed')

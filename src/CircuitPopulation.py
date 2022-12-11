@@ -510,10 +510,11 @@ class CircuitPopulation:
         if self.__config.get_simulation_mode() == "FULLY_SIM":
             bitstreams = map(lambda c: c.get_sim_bitstream(), self.__circuits)
         else:
-            bitstreams = map(lambda c: c.get_intrinsic_modifiable_bitstream(), self.__circuits)
+            # Need to convert the char byte values to 0s and 1s along the way
+            bitstreams = map(lambda c: list(map(lambda char: char-48, c.get_intrinsic_modifiable_bitstream())), self.__circuits)
         bitstreams = list(bitstreams)
         
-        self.__log_event(3, "HDIST - Bitstreams mapped")
+        self.__log_event(3, "HDIST - Bitstreams mapped", bitstreams)
         
         # We now have all the bitstreams, we can do the faster hamming calculation by comparing each bit of them
         # Then we multiply the count of 1s for that bit by the count of 0s for that bit and add it to the running_total
