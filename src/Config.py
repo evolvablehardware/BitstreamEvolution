@@ -66,6 +66,9 @@ class Config:
 	def get_diversity_measure(self):
 		return self.get_ga_parameters("DIVERSITY_MEASURE")
 
+	def get_fitness_func(self):
+		return self.get_ga_parameters("FITNESS_FUNC")
+
 	# SECTION Getters for logging parameters.
 	def get_asc_directory(self):
 		return Path(self.get_logging_parameters("ASC_DIR"))

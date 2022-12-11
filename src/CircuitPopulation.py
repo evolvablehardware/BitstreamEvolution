@@ -188,7 +188,12 @@ class CircuitPopulation:
                 elif self.__config.get_simulation_mode() == "SIM_HARDWARE":
                     fitness = circuit.evaluate_sim_hardware()
                 else:
-                    fitness = circuit.evaluate_pulse_count()
+                    func = self.__config.get_fitness_func()
+                    if func == "PULSE_COUNT":
+                        fitness = circuit.evaluate_pulse_count()
+                    elif func == "VARIANCE":
+                        fitness = circuit.evaluate_variance()
+                    #fitness = circuit.evaluate_variance()
                     
                 # Commented out for now while we test
                 '''if fitness > self.__config.get_variance_threshold():
