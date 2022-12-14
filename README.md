@@ -404,7 +404,7 @@ is a list of the options, their description, and their possible values:
 | Crossover probability | The probability of replacing a bit in one bitstream from a bit from another during crossover | 0.0 - 1.0 | 0.1 - 0.5 |
 | Elitism fraction | The percentage of most fit circuits to protect from modification in a given generation | 0.0 - 1.0 | 0.1 |
 | Desired frequency | The target frequency of the evolved oscillator | (In Hertz) 1 - 1000000 | 1000 |
-| Selection | The type of selection to perform | SINGLE_ELITE, FRAC_ELITE, CLASSIC_TOURN, FIT_PROP_SEL| CLASSIC_TOURN |
+| Selection | The type of selection to perform | SINGLE_ELITE, FRAC_ELITE, CLASSIC_TOURN, FIT_PROP_SEL RANK_PROP_SEL | CLASSIC_TOURN |
 | Variance threshold | The target signal variance from initial random search | 3-8 | 4 |
 | Seed Mode | The method to generate the initial random circuits | *TODO Add Seed Modes to CircuitPopulation.Py and List them here* | RAND_FROM_SEED |
 | Simulation Mode | The level of simulation to run | FULLY_INTRINSIC, SIM_HARDWARE, FULLY_SIM | FULLY_INTRINSIC |

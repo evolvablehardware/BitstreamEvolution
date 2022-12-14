@@ -343,14 +343,12 @@ class CircuitPopulation:
                     self.__n_elites,
                     p=list(elites.values())
                 )[0]
-            else:
+            else: # If fitness isn't negative, this should never happen
                 rand_elite = self.__rand.choice(list(elites.keys()))[0]
 
             self.__log_event(2, "Elite", rand_elite)
             
-            # NOTE: This makes it possible for the top circuit to be mutated... if multiple circuits have the same top fitness, then they can
-            # both meet up here and end up mutating one or both of the circuits, which can bring down the best fitness line temporarily
-            if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite:
+            if ckt.get_fitness() < rand_elite.get_fitness() and ckt not in elites:
                 # if self.__config.get_crossover_probability() == 0:
                 #     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
                 #     ckt.copy_hardware_from(rand_elite)
@@ -405,10 +403,10 @@ class CircuitPopulation:
                     self.__n_elites,
                     p=list(elites.values())
                 )[0]
-            else:
+            else: # If fitness isn't negative, this should never happen
                 rand_elite = self.__rand.choice(list(elites.keys()))[0]
 
-            if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite:
+            if ckt.get_fitness() <= rand_elite.get_fitness() and ckt not in elites:
                 # if self.__config.get_crossover_probability() == 0:
                 #     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
                 #     ckt.copy_hardware_from(rand_elite)
@@ -443,7 +441,7 @@ class CircuitPopulation:
         # disabled) and then mutate the Circuit.
         for ckt in self.__circuits:
             rand_elite = self.__rand.choice(elite_group)[0]
-            if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite:
+            if ckt.get_fitness() < rand_elite.get_fitness() and ckt != rand_elite:
                 # if self.__config.crossover_probability  == 0:
                 #     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
                 #     ckt.replace_hardware_file(rand_elite.get_hardware_filepath)
