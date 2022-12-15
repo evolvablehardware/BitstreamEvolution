@@ -264,7 +264,7 @@ class Circuit:
             self.__log_event(1, "Unity achieved: {}".format(self))
             self.__fitness = 1
         elif pulse_count == 0:
-            self.__fitness = var
+            self.__fitness = 0 #var
         else:
             self.__fitness = var + (1.0 / desired_freq - pulse_count)
         
@@ -346,7 +346,7 @@ class Circuit:
                             # This now always flips the bit instead of randomly assigning it every time
                             self.__hardware_file[pos] = 97 - prev
                             # Note: If prev != 48 or 49, then we changed the wrong value because it was not a 0 or 1 previously
-                            self.__log_event(3, "Mutating:", self, "@", row, ",", col, "previous was", prev)
+                            self.__log_event(3, "Mutating:", self, "@(", row, ",", col, ") previous was", prev)
 
             # Find the next logic tile, and start again
             # Will return -1 if .logic_tile isn't found, and the while loop will exit
