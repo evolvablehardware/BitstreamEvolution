@@ -297,8 +297,8 @@ class CircuitPopulation:
         for ckt in self.__circuits:
             # Mutate the hardware of every circuit that is not the best
             if ckt != best:
-                if ckt.get_fitness() <= best.fitness():
-                    ckt.copy_hardware_from()
+                if ckt.get_fitness() <= best.get_fitness():
+                    #ckt.copy_hardware_from(best)
                     ckt.mutate()
             else:
                 self.__log_info(2, ckt, "is current BEST")
@@ -451,7 +451,7 @@ class CircuitPopulation:
         # disabled) and then mutate the Circuit.
         for ckt in self.__circuits:
             rand_elite = self.__rand.choice(elite_group)
-            if ckt.get_fitness() < rand_elite.get_fitness() and ckt != rand_elite:
+            if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite and ckt not in elite_group:
                 # if self.__config.crossover_probability  == 0:
                 #     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
                 #     ckt.replace_hardware_file(rand_elite.get_hardware_filepath)
