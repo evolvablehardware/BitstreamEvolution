@@ -102,19 +102,19 @@ class CircuitPopulation:
 
         # Randomize initial circuits until waveform variance or
         # pulses are found
-        if not self.__config.get_simulation_mode() == "FULLY_INTRINSIC":
-            pass  # No randomization implemented for simulation mode
+        if self.__config.get_simulation_mode() != "FULLY_INTRINSIC":
+            pass # No randomization implemented for simulation mode
         elif self.__config.get_randomization_type() == "PULSE":
-            self.__log_info(2, "PULSE randomization mode selected.")
+            self.__log_info(1, "PULSE randomization mode selected.")
             self.__randomize_until_pulses()
         elif self.__config.get_randomization_type() == "VARIANCE":
-            self.__log_info(2, "VARIANCE randomization mode selected.")
+            self.__log_info(1, "VARIANCE randomization mode selected.")
             if self.config.variance_threshold() <= 0:
                 self.log_error(INVALID_VARIANCE_ERR_MSG)
             else:
                 self.__randomize_until_variance()
         elif self.__config.get_randomization_type() == "NO":
-            self.__log_info(2, "NO randomization mode selected.")
+            self.__log_info(1, "NO randomization mode selected.")
         else:
             self.__log_error(1, RANDOMIZE_UNTIL_NOT_SET_ERR_MSG)
 
@@ -126,11 +126,14 @@ class CircuitPopulation:
         while no_pulses_generated:
             # NOTE Randomize until pulses will continue mutating and
             # not revert to the original seed-hardware until restarting
+            self.__log_event(3, "Mutating to generate pulses")
             for circuit in self.__circuits:
                 circuit.mutate()
                 pulses = circuit.evaluate_pulse_count()
                 if (pulses > 0):
                     no_pulses_generated = False
+                    self.__log_info(3, "Pulse generated! Exiting randomization", pulses)
+                    break
 
     # NOTE This is whole function going to be upgraded to handle a from-scratch circuit seeding process.
     # https://github.com/evolvablehardware/BitstreamEvolution/issues/3
