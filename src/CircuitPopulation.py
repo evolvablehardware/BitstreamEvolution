@@ -27,11 +27,12 @@ SEED_HARDWARE_FILEPATH = Path("data/seed-hardware.asc")
 
 # The basename (filename without path or extensions) of the Circuit
 # hardware, bitstream, and data files.
-CIRCUIT_FILE_BASENAME="hardware"
+CIRCUIT_FILE_BASENAME = "hardware"
 
 # Create a named tuple for easy and clear storage of information about
 # a Circuit (currently its name and fitness)
 CircuitInfo = namedtuple("CircuitInfo", ["name", "fitness"])
+
 
 class CircuitPopulation:
     # SECTION Initialization functions
@@ -74,7 +75,8 @@ class CircuitPopulation:
         elif config.get_selection_type() == "RANK_PROP_SEL":
             self.__run_selection = self.__run_rank_proportional_selection
         else:
-            self.__log_error(1, "Invalid Selection method in config.ini. Exiting...")
+            self.__log_error(
+                1, "Invalid Selection method in config.ini. Exiting...")
             exit()
 
         elitism_fraction = config.get_elitism_fraction()
@@ -134,7 +136,7 @@ class CircuitPopulation:
                     break
 
     # NOTE This is whole function going to be upgraded to handle a from-scratch circuit seeding process.
-    # https://github.com/evolvablehardware/BitstreamEvolution/issues/3 
+    # https://github.com/evolvablehardware/BitstreamEvolution/issues/3
     def __randomize_until_variance(self):
         """
         Randomizes population until minimum variance is found
@@ -155,7 +157,8 @@ class CircuitPopulation:
         while also storing statistics in a file for the plot to access
         """
         if len(self.__circuits) == 0:
-            self.__log_error(1, "Attempting to evolve with empty population. Exiting...")
+            self.__log_error(
+                1, "Attempting to evolve with empty population. Exiting...")
             exit()
 
         # Set initial values for 'best' data
@@ -165,11 +168,12 @@ class CircuitPopulation:
         )
         self.__best_epoch = 0
         self.__next_epoch()
-        
+
         while(self.get_current_epoch() < self.__config.get_n_generations()):
-        
-            self.__log_event(3, "Starting evo cycle", self.get_current_epoch(), "<", self.__config.get_n_generations(), "?")
-        
+
+            self.__log_event(3, "Starting evo cycle", self.get_current_epoch(
+            ), "<", self.__config.get_n_generations(), "?")
+
             # Since sortedcontainers don't update when the value by
             # which an item is sorted gets updated, we have to add the
             # Circuits to a new list after we evaluate them and then
@@ -184,7 +188,7 @@ class CircuitPopulation:
             for circuit in self.__circuits:
                 # If evaluate returns true, then a circuit has surpassed
                 # the threshold and we are done.
-                
+
                 # Biggest difference between Fully Instrinsic and Hardware Sim: The fitness evaluation
                 if self.__config.get_simulation_mode() == "FULLY_SIM":
                     fitness = circuit.evaluate_sim()
@@ -197,7 +201,7 @@ class CircuitPopulation:
                     elif func == "VARIANCE":
                         fitness = circuit.evaluate_variance()
                     #fitness = circuit.evaluate_variance()
-                    
+
                 # Commented out for now while we test
                 '''if fitness > self.__config.get_variance_threshold():
                     self.__log_event(1, "{} fitness: {}".format(circuit, fitness))
@@ -211,7 +215,8 @@ class CircuitPopulation:
             # recorded best, make it the recorded best.
             best_circuit_info = self.get_overall_best_circuit_info()
             self.__log_event(2, "Best circuit info", best_circuit_info.fitness)
-            self.__log_event(2, "Circuit 0 info", self.__circuits[0].get_fitness())
+            self.__log_event(2, "Circuit 0 info",
+                             self.__circuits[0].get_fitness())
             if self.__circuits[0].get_fitness() > best_circuit_info.fitness:
                 self.__overall_best_circuit_info = CircuitInfo(
                     str(self.__circuits[0]),
@@ -223,7 +228,7 @@ class CircuitPopulation:
             self.__logger.log_generation(self, epoch_time)
             self.__run_selection()
             self.__next_epoch()
-            
+
             # Calculate the diversity measure
             diversity = 0
             if self.__config.get_diversity_measure() == "HAMMING_DIST":
@@ -262,23 +267,23 @@ class CircuitPopulation:
             ckt2_fitness = ckt2.get_fitness()
             if ckt1_fitness > ckt2_fitness:
                 self.__log_event(3,
-                    "Fitness {}: {} > Fitness {}: {}".format(
-                        ckt1,
-                        ckt1.get_fitness(),
-                        ckt2,
-                        ckt2.get_fitness()
-                ))
+                                 "Fitness {}: {} > Fitness {}: {}".format(
+                                     ckt1,
+                                     ckt1.get_fitness(),
+                                     ckt2,
+                                     ckt2.get_fitness()
+                                 ))
 
                 self.__single_point_crossover(ckt1, ckt2)
                 ckt2.mutate()
             else:
                 self.__log_event(3,
-                    "Fitness {}: {} < Fitness {}: {}".format(
-                        ckt1,
-                        ckt1.get_fitness(),
-                        ckt2,
-                        ckt2.get_fitness()
-                ))
+                                 "Fitness {}: {} < Fitness {}: {}".format(
+                                     ckt1,
+                                     ckt1.get_fitness(),
+                                     ckt2,
+                                     ckt2.get_fitness()
+                                 ))
 
                 self.__single_point_crossover(ckt2, ckt1)
                 ckt1.mutate()
@@ -287,7 +292,8 @@ class CircuitPopulation:
         """
         Set the hardware of every circuit that is not the best to a mutated version of the best circuit's hardware
         """
-        self.__log_event(3, "Tournament Number: {}".format(str(self.get_current_epoch())))
+        self.__log_event(3, "Tournament Number: {}".format(
+            str(self.get_current_epoch())))
 
         best = self.get_best_circuit()
         for ckt in self.__circuits:
@@ -295,7 +301,7 @@ class CircuitPopulation:
             # best) with the current best Circuit's hardware and then
             # mutate them.
             if ckt != best:
-                if  ckt.get_fitness() <= best.fitness():
+                if ckt.get_fitness() <= best.fitness():
                     ckt.copy_hardware_from()
                     ckt.mutate()
             else:
@@ -314,7 +320,7 @@ class CircuitPopulation:
         # a probabilty value (used later for crossover/copying/mutation).
         elites = {}
         elite_sum = 0
-        
+
         for i in range(self.__n_elites):
             elites[self.__circuits[i]] = 0
             elite_sum += self.__circuits[i].get_fitness()
@@ -340,33 +346,33 @@ class CircuitPopulation:
         # disabled).
         elite_prob_sum = sum(elites.values())
         for ckt in self.__circuits:
-            if elite_prob_sum > 0:
-                rand_elite = self.__rand.choice(
-                    list(elites.keys()),
-                    self.__n_elites,
-                    p=list(elites.values())
-                )[0]
+            if self.__n_elites != 0:
+                if elite_prob_sum > 0:
+                    rand_elite = self.__rand.choice(
+                        list(elites.keys()),
+                        self.__n_elites,
+                        p=list(elites.values())
+                    )[0]
+                else:  # If fitness isn't negative, this should never happen
+                    rand_elite = self.__rand.choice(list(elites.keys()))[0]
             else:
-                rand_elite = self.__rand.choice(list(elites.keys()))[0]
+                rand_elite = self.__rand.choice(self.__circuits)
 
             self.__log_event(2, "Elite", rand_elite)
-            
-            # NOTE: This makes it possible for the top circuit to be mutated... if multiple circuits have the same top fitness, then they can
-            # both meet up here and end up mutating one or both of the circuits, which can bring down the best fitness line temporarily
-            if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite:
-                # if self.__config.get_crossover_probability() == 0:
-                #     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
-                #     ckt.copy_hardware_from(rand_elite)
-                # else:
-                #     self.__single_point_crossover(rand_elite, ckt)
 
-                if self.__rand.uniform(0,1) <= self.__config.get_crossover_probability():
+            if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite and ckt not in elites:
+                # if self.__config.get_crossover_probability() == 0:
+                # 	self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
+                # 	ckt.copy_hardware_from(rand_elite)
+                # else:
+                # 	self.__single_point_crossover(rand_elite, ckt)
+                if self.__rand.uniform(0, 1) <= self.__config.get_crossover_probability():
                     self.__single_point_crossover(rand_elite, ckt)
                 else:
                     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
-                    ckt.copy_hardware_from(rand_elite)      
+                    ckt.copy_hardware_from(rand_elite)
                 ckt.mutate()
-                
+
     def __run_rank_proportional_selection(self):
         '''
         Compares every circuit in the population to a random elite (chosen proportionally based on each elite's rank).
@@ -379,7 +385,7 @@ class CircuitPopulation:
         # Circuits. Based on their fitness values, map each Circuit with
         # a probabilty value (used later for crossover/copying/mutation).
         elites = {}
-        #can use summation formula since sum of ranks is the sum of natural numbers
+        # can use summation formula since sum of ranks is the sum of natural numbers
         elite_sum = (self.__n_elites) * (self.__n_elites + 1) / 2
         if (elite_sum > 0):
             for i in range(self.__n_elites):
@@ -392,7 +398,7 @@ class CircuitPopulation:
 
         self.__log_event(3, "Elite Group:", elites.keys())
         self.__log_event(3, "Elite Probabilites:", elites.values())
-            #self.__log_event(3, "Elite", rand_elite)
+        #self.__log_event(3, "Elite", rand_elite)
 
         # For all Circuits in this CircuitPopulation, choose a random
         # elite (based on the associated probabilities calculated above)
@@ -402,27 +408,30 @@ class CircuitPopulation:
         # disabled).
         elite_prob_sum = sum(elites.values())
         for ckt in self.__circuits:
-            if elite_prob_sum > 0:
-                rand_elite = self.__rand.choice(
-                    list(elites.keys()),
-                    self.__n_elites,
-                    p=list(elites.values())
-                )[0]
+            if self.__n_elites != 0:
+                if elite_prob_sum > 0:
+                    rand_elite = self.__rand.choice(
+                        list(elites.keys()),
+                        self.__n_elites,
+                        p=list(elites.values())
+                    )[0]
+                else:  # If fitness isn't negative, this should never happen
+                    rand_elite = self.__rand.choice(list(elites.keys()))[0]
             else:
-                rand_elite = self.__rand.choice(list(elites.keys()))[0]
+                rand_elite = self.__rand.choice(self.__circuits)
 
-            if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite:
+            if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite and ckt not in elites:
                 # if self.__config.get_crossover_probability() == 0:
                 #     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
                 #     ckt.copy_hardware_from(rand_elite)
                 # else:
                 #     self.__single_point_crossover(rand_elite, ckt)
 
-                if self.__rand.uniform(0,1) <= self.__config.get_crossover_probability():
+                if self.__rand.uniform(0, 1) <= self.__config.get_crossover_probability():
                     self.__single_point_crossover(rand_elite, ckt)
                 else:
                     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
-                    ckt.copy_hardware_from(rand_elite)    
+                    ckt.copy_hardware_from(rand_elite)
                 ckt.mutate()
 
     def __run_fractional_elite_tournament(self):
@@ -446,18 +455,18 @@ class CircuitPopulation:
         # disabled) and then mutate the Circuit.
         for ckt in self.__circuits:
             rand_elite = self.__rand.choice(elite_group)[0]
-            if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite:
+            if ckt.get_fitness() < rand_elite.get_fitness() and ckt != rand_elite:
                 # if self.__config.crossover_probability  == 0:
                 #     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
                 #     ckt.replace_hardware_file(rand_elite.get_hardware_filepath)
                 # else:
                 #     self.__single_point_crossover(rand_elite, ckt)
 
-                if self.__rand.uniform(0,1) <= self.__config.get_crossover_probability():
+                if self.__rand.uniform(0, 1) <= self.__config.get_crossover_probability():
                     self.__single_point_crossover(rand_elite, ckt)
                 else:
                     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
-                    ckt.copy_hardware_from(rand_elite)    
+                    ckt.copy_hardware_from(rand_elite)
                 ckt.mutate()
 
     # SECTION Getters.
@@ -494,13 +503,15 @@ class CircuitPopulation:
 
         # Replace magic values with more generalized solutions
         if self.__config.get_simulation_mode() == "FULLY_SIM":
-            crossover_point = self.__rand.integers(1, len(self.__circuits[0].get_sim_bitstream()) - 1)
+            crossover_point = self.__rand.integers(
+                1, len(self.__circuits[0].get_sim_bitstream()) - 1)
         elif self.__config.get_routing_type() == "MOORE":
-            crossover_point = self.__rand.integers(1,3)
+            crossover_point = self.__rand.integers(1, 3)
         elif self.__config.get_routing_type() == "NWSE":
-            crossover_point = self.__rand.integers(13,15)
+            crossover_point = self.__rand.integers(13, 15)
         else:
-            self.__log_error(1, "Invalid routing type specified in config.ini. Exiting...")
+            self.__log_error(
+                1, "Invalid routing type specified in config.ini. Exiting...")
             exit()
         dest.copy_genes_from(source, crossover_point)
 
@@ -511,19 +522,20 @@ class CircuitPopulation:
         running_total = 0
         n = len(self.__circuits)
         num_pairs = n * (n-1) / 2
-        
+
         self.__log_event(2, "Starting Hamming Distance Calculation")
-        
+
         bitstreams = []
         if self.__config.get_simulation_mode() == "FULLY_SIM":
             bitstreams = map(lambda c: c.get_sim_bitstream(), self.__circuits)
         else:
             # Need to convert the char byte values to 0s and 1s along the way
-            bitstreams = map(lambda c: list(map(lambda char: char-48, c.get_intrinsic_modifiable_bitstream())), self.__circuits)
+            bitstreams = map(lambda c: list(map(
+                lambda char: char-48, c.get_intrinsic_modifiable_bitstream())), self.__circuits)
         bitstreams = list(bitstreams)
-        
+
         self.__log_event(3, "HDIST - Bitstreams mapped", bitstreams)
-        
+
         # We now have all the bitstreams, we can do the faster hamming calculation by comparing each bit of them
         # Then we multiply the count of 1s for that bit by the count of 0s for that bit and add it to the running_total
         # Divide that by # of pairs at the end (calculation shown below)
@@ -541,8 +553,8 @@ class CircuitPopulation:
                     ones_count = ones_count + 1
             running_total = running_total + ones_count * zero_count
             self.__log_event(3, "HDIST - Added ", ones_count * zero_count)
-        
-        running_total = running_total / num_pairs        
+
+        running_total = running_total / num_pairs
         self.__log_event(3, "HDIST - Final value", running_total)
         return running_total
 
@@ -555,14 +567,16 @@ class CircuitPopulation:
             for ckt in self.__circuits:
                 bitstreams.append(ckt.get_sim_bitstream())
             bitstreams = self.__unique(bitstreams)
-            self.__log_event(2, "Number of Unique Individuals:", len(bitstreams)) 
+            self.__log_event(
+                2, "Number of Unique Individuals:", len(bitstreams))
             return len(bitstreams)
-            
+
         # If not FULLY_SIM, then run this
         # TODO: Optimize
         bin_dir = self.__config.get_bin_directory()
         dir_list = os.listdir(bin_dir)
-        files = [f for f in dir_list if os.path.isfile(str(bin_dir)+'/'+f)] # Filter out non-files
+        files = [f for f in dir_list if os.path.isfile(
+            str(bin_dir)+'/'+f)]  # Filter out non-files
         unique_file_paths = []
         for file in files:
             full_path = str(bin_dir) + '/' + file
@@ -573,9 +587,10 @@ class CircuitPopulation:
                     break
             if not not_unique:
                 unique_file_paths.append(full_path)
-        self.__log_event(2, "Number of Unique Individuals:", len(unique_file_paths))
+        self.__log_event(2, "Number of Unique Individuals:",
+                         len(unique_file_paths))
         return len(unique_file_paths)
-    
+
     def __unique(self, arrays):
         """
         Returns an array of unique arrays from the input
@@ -591,7 +606,7 @@ class CircuitPopulation:
             if shouldAdd:
                 soln.append(a)
         return soln
-        
+
     def __arr_eq(self, ar1, ar2):
         """
         Returns True if the arrays or equal or False otherwise
@@ -602,7 +617,7 @@ class CircuitPopulation:
             if ar1[i] != ar2[i]:
                 return False
         return True
-    
+
     def __files_eq(self, fp1, fp2):
         """
         Returns true if the files are equal (have the same content)
