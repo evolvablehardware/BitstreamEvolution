@@ -54,7 +54,14 @@ class Circuit:
         hardware_file.close()
         
         # If simulation mode, then we don't compile or read the binary or anything, just simply keep a bitstream of 100 bits we modify in here
-        self.__simulation_bitstream = [0] * 100;
+        self.__simulation_bitstream = [0] * 100
+
+    def randomize_bits(self):
+        # Simply set mutation chance to 100%
+        if self.__config.get_simulation_mode() == "FULLY_SIM":
+            self.__mutate_simulation(True)
+        else:
+            self.__mutate_actual(True)
 
     def __compile(self):
         """
@@ -279,34 +286,34 @@ class Circuit:
         Only the full simulation mode uses a special function, otherwise we use the default to operate on the hardware files
         """
         if self.__config.get_simulation_mode() == "FULLY_SIM":
-            self.__mutate_simulation()
+            self.__mutate_simulation(False)
         else:
-            self.__mutate_actual()
+            self.__mutate_actual(False)
     
-    def __mutate_simulation(self):
+    def __mutate_simulation(self, all_random):
         """
         Mutate the simulation mode circuit
+        self.__config.get_mutation_probability()
         """
-        # Pick a random position and flip it
-        pos = self.__rand.integers(0, len(self.__simulation_bitstream))
-        value = self.__simulation_bitstream[pos]
-        if value == 0:
-            self.__simulation_bitstream[pos] = 1
-        else:
-            self.__simulation_bitstream[pos] = 0
-    
-    # TODO Initialize function to avoid conditional checks?
-    def __mutate_actual(self):
+        # Try to mutate each bit, flip if possible
+        for i in range(0, len(self.__simulation_bitstream)):
+            if all_random:
+                self.__simulation_bitstream[i] = self.__rand.integers(0, 2)
+            else:
+                if self.__config.get_mutation_probability() >= self.__rand.uniform(0,1):
+                    # Mutate this bit
+                    self.__simulation_bitstream[i] = 1 - self.__simulation_bitstream[i]
+
+    def __mutate_actual(self, all_random):
         """
         Mutate the configuration of this circuit.
-        This involves checking the mutation chance per-bit and, if it passes, randomly assigning that bit
+        This involves checking the mutation chance per-bit and, if it passes, flipping that bit
         """
         
         # Set tile to the first location of the substring ".logic_tile"
         # The b prefix makes the string an instance of the "bytes" type
         # The .logic_tile header indicates that there is a tile, so the "tile" variable stores the starting point of the current tile
         tile = self.__hardware_file.find(b".logic_tile")
-        
         
         while tile > 0:
             # Set pos to the position of this tile, but with the length of ".logic_tile" added so it is in front of where we have the x/y coords
@@ -332,21 +339,24 @@ class Circuit:
                 # Iterate over each row and the columns that we can access within each row
                 for row in rows:
                     for col in self.__config.get_accessed_columns():
-                        # This will get us to individual bits. If the mutation probability passes, then...
-                        if self.__config.get_mutation_probability() >= self.__rand.uniform(0,1):
-                            # ... our position is now going to be the start of the first line, plus the line size multiplied to get to our desired row,
-                            # and finally added to the column (with the int cast to sanitize user input)
-                            pos = line_start + line_size * (row - 1) + int(col)
-                            # Set this bit to either a 0 or 1 randomly
-                            # Keep in mind that these are BYTES that we are modifying, not characters
-                            # Therefore, we have to set it to either ASCII 0 (48) or ASCII 1 (49), not actual 0 or 1, which represent different characters
-                            # and will corrupt the file if we mutate in this way
-                            prev = self.__hardware_file[pos]
-                            # 48 = 0, 49 = 1. To flip, just need to do (48+49) - the current value (48+49=97)
-                            # This now always flips the bit instead of randomly assigning it every time
-                            self.__hardware_file[pos] = 97 - prev
-                            # Note: If prev != 48 or 49, then we changed the wrong value because it was not a 0 or 1 previously
-                            self.__log_event(3, "Mutating:", self, "@(", row, ",", col, ") previous was", prev)
+                        # This will get us to individual bits. If the mutation probability passes
+                        # Our position is now going to be the start of the first line, plus the line size multiplied to get to our desired row,
+                        # and finally added to the column (with the int cast to sanitize user input)
+                        pos = line_start + line_size * (row - 1) + int(col)
+                        if all_random:
+                            self.__hardware_file[pos] = self.__rand.integers(48, 50)
+                        else:
+                            if self.__config.get_mutation_probability() >= self.__rand.uniform(0,1):
+                                # Set this bit to either a 0 or 1 randomly
+                                # Keep in mind that these are BYTES that we are modifying, not characters
+                                # Therefore, we have to set it to either ASCII 0 (48) or ASCII 1 (49), not actual 0 or 1, which represent different characters
+                                # and will corrupt the file if we mutate in this way
+                                prev = self.__hardware_file[pos]
+                                # 48 = 0, 49 = 1. To flip, just need to do (48+49) - the current value (48+49=97)
+                                # This now always flips the bit instead of randomly assigning it every time
+                                self.__hardware_file[pos] = 97 - prev
+                                # Note: If prev != 48 or 49, then we changed the wrong value because it was not a 0 or 1 previously
+                                self.__log_event(3, "Mutating:", self, "@(", row, ",", col, ") previous was", prev)
 
             # Find the next logic tile, and start again
             # Will return -1 if .logic_tile isn't found, and the while loop will exit

@@ -87,6 +87,8 @@ class CircuitPopulation:
         """
         Creates initial population.
         """
+        # Always creates a circuit with the seed file, but if we have certain randomization
+        # modes then perform necessary operations
         for index in range(1, self.__config.get_population_size() + 1):
             ckt = Circuit(
                 index,
@@ -97,6 +99,12 @@ class CircuitPopulation:
                 self.__config,
                 self.__rand
             )
+            if self.__config.get_init_mode() == "RANDOM":
+                ckt.randomize_bits()
+            elif self.__config.get_init_mode() == "CLONE_SEED_MUTATE":
+                # Call mutate once on this circuit
+                ckt.mutate()
+
             self.__circuits.add(ckt)
             self.__log_event(3, "Created circuit: {0}".format(ckt))
 
@@ -532,7 +540,7 @@ class CircuitPopulation:
                 lambda char: char-48, c.get_intrinsic_modifiable_bitstream())), self.__circuits)
         bitstreams = list(bitstreams)
 
-        self.__log_event(3, "HDIST - Bitstreams mapped", bitstreams)
+        #self.__log_event(3, "HDIST - Bitstreams mapped", bitstreams)
 
         # We now have all the bitstreams, we can do the faster hamming calculation by comparing each bit of them
         # Then we multiply the count of 1s for that bit by the count of 0s for that bit and add it to the running_total
@@ -550,7 +558,7 @@ class CircuitPopulation:
                 else:
                     ones_count = ones_count + 1
             running_total = running_total + ones_count * zero_count
-            self.__log_event(3, "HDIST - Added ", ones_count * zero_count)
+            #self.__log_event(3, "HDIST - Added ", ones_count * zero_count)
 
         running_total = running_total / num_pairs
         self.__log_event(3, "HDIST - Final value", running_total)

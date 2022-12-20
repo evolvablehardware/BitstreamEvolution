@@ -50,6 +50,7 @@ class Config:
 	def get_variance_threshold(self):
 		return int(self.get_ga_parameters("VARIANCE_THRESHOLD"))
 
+	# RANDOM, CLONE_SEED, CLONE_SEED_MUTATE
 	def get_init_mode(self):
 		return self.get_ga_parameters("INIT_MODE")
 
