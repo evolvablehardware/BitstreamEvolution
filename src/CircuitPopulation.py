@@ -223,6 +223,8 @@ class CircuitPopulation:
                     self.__circuits[0].get_fitness()
                 )
                 self.__best_epoch = self.get_current_epoch()
+                # Copy this circuit to the best file
+                copyfile(self.__circuits[0].get_hardware_file_path(), self.__config.get_best_file())
                 self.__log_event(2, "New best found")
 
             self.__logger.log_generation(self, epoch_time)

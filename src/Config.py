@@ -90,6 +90,9 @@ class Config:
 
 	def get_datetime_format(self):
 		return self.get_logging_parameters("DATETIME_FORMAT")
+
+	def get_best_file(self):
+		return self.get_logging_parameters("BEST_FILE")
 		
 	# There are 3 log levels (1, 2, 3)
 	# 3 will log the most information, 1 will log the least
