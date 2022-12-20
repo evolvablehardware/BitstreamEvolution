@@ -67,6 +67,7 @@ class Config:
 	def get_diversity_measure(self):
 		return self.get_ga_parameters("DIVERSITY_MEASURE")
 
+	# Pulse Count, Variance
 	def get_fitness_func(self):
 		return self.get_ga_parameters("FITNESS_FUNC")
 
