@@ -404,7 +404,7 @@ is a list of the options, their description, and their possible values:
 | Crossover probability | The probability of replacing a bit in one bitstream from a bit from another during crossover | 0.0 - 1.0 | 0.1 - 0.5 |
 | Elitism fraction | The percentage of most fit circuits to protect from modification in a given generation | 0.0 - 1.0 | 0.1 |
 | Desired frequency | The target frequency of the evolved oscillator | (In Hertz) 1 - 1000000 | 1000 |
-| Selection | The type of selection to perform | SINGLE_ELITE, FRAC_ELITE, CLASSIC_TOURN, FIT_PROP_SEL RANK_PROP_SEL | CLASSIC_TOURN |
+| Selection | The type of selection to perform | SINGLE_ELITE, FRAC_ELITE, CLASSIC_TOURN, FIT_PROP_SEL, RANK_PROP_SEL | CLASSIC_TOURN |
 | Variance threshold | The target signal variance from initial random search | 3-8 | 4 |
 | Seed Mode | The method to generate the initial random circuits | *TODO Add Seed Modes to CircuitPopulation.Py and List them here* | RAND_FROM_SEED |
 | Simulation Mode | The level of simulation to run | FULLY_INTRINSIC, SIM_HARDWARE, FULLY_SIM | FULLY_INTRINSIC |
@@ -412,8 +412,13 @@ is a list of the options, their description, and their possible values:
 | Fitness Function | The fitness function to use | PULSE_COUNT, VARIANCE |  |
 
 ##### Selection methods
-<!--TODO ALIFE2021 Describe the various selection methods-->
-*TODO Describe the various selection methods*
+| Method | Description |
+|--------|-------------|
+| SINGLE_ELITE | Mutates the hardware of every circuit that is not the current best circuit |
+| FRAC_ELITE | Creates a group of elite circuits from the population whose size is based on the elitism percentage. Mutates the hardware of and performs crossover on every non-elite |
+| CLASSIC_TOURN | Randomly pairs together every circuit in the population and compares them. Keeps the winner the same and mutates and performs crossover on the loser |
+| FIT_PROP_SEL | Creates a group of elite circuits from the population whose size is based on the elitism percentage. Every non-elite is compared to a random elite chosen based on the elites' fitnesses and is mutated and crossed with the elite |
+| RANK_PROP_SEL | Same as above, but the elite is chosen randomly based on the elites' ranks |
 
 ##### Initialization modes
 <!--TODO ALIFE2021 Describe the various initialization modes-->

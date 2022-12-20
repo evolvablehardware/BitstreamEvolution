@@ -263,46 +263,42 @@ class CircuitPopulation:
         # some genes from the fittest of the two to the least fittest of
         # the two and mutate the latter.
         for ckt1, ckt2 in CircuitPopulation.__group(population, 2):
-            ckt1_fitness = ckt1.get_fitness()
-            ckt2_fitness = ckt2.get_fitness()
-            if ckt1_fitness > ckt2_fitness:
-                self.__log_event(3,
-                                 "Fitness {}: {} > Fitness {}: {}".format(
-                                     ckt1,
-                                     ckt1.get_fitness(),
-                                     ckt2,
-                                     ckt2.get_fitness()
-                                 ))
+            winner = ckt1
+            loser = ckt2
+            if ckt2.get_fitness() > ckt1.get_fitness():
+                winner = ckt2
+                loser = ckt1
 
-                self.__single_point_crossover(ckt1, ckt2)
-                ckt2.mutate()
+            self.__log_event(3,
+                            "Fitness {}: {} < Fitness {}: {}".format(
+                                loser,
+                                loser.get_fitness(),
+                                winner,
+                                winner.get_fitness()
+                            ))
+
+            if self.__rand.uniform(0, 1) <= self.__config.get_crossover_probability():
+                self.__single_point_crossover(winner, loser)
             else:
-                self.__log_event(3,
-                                 "Fitness {}: {} < Fitness {}: {}".format(
-                                     ckt1,
-                                     ckt1.get_fitness(),
-                                     ckt2,
-                                     ckt2.get_fitness()
-                                 ))
+                self.__log_event(3, "Cloning:", winner, " ---> ", loser)
+                loser.copy_hardware_from(winner)
 
-                self.__single_point_crossover(ckt2, ckt1)
-                ckt1.mutate()
+            loser.mutate()
+
 
     def __run_single_elite_tournament(self):
         """
-        Set the hardware of every circuit that is not the best to a mutated version of the best circuit's hardware
+        Mutates the hardware of every circuit that is not the current best circuit
         """
         self.__log_event(3, "Tournament Number: {}".format(
             str(self.get_current_epoch())))
 
-        best = self.get_best_circuit()
+        best = self.__circuits[0]
         for ckt in self.__circuits:
-            # Replace the hardware of all the Circuits (except for the
-            # best) with the current best Circuit's hardware and then
-            # mutate them.
+            # Mutate the hardware of every circuit that is not the best
             if ckt != best:
-                if ckt.get_fitness() <= best.fitness():
-                    ckt.copy_hardware_from()
+                if ckt.get_fitness() <= best.get_fitness():
+                    #ckt.copy_hardware_from(best)
                     ckt.mutate()
             else:
                 self.__log_info(2, ckt, "is current BEST")
@@ -454,8 +450,8 @@ class CircuitPopulation:
         # the elite's perform crossover (or clone if crossover is
         # disabled) and then mutate the Circuit.
         for ckt in self.__circuits:
-            rand_elite = self.__rand.choice(elite_group)[0]
-            if ckt.get_fitness() < rand_elite.get_fitness() and ckt != rand_elite:
+            rand_elite = self.__rand.choice(elite_group)
+            if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite and ckt not in elite_group:
                 # if self.__config.crossover_probability  == 0:
                 #     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
                 #     ckt.replace_hardware_file(rand_elite.get_hardware_filepath)
