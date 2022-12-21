@@ -3,6 +3,7 @@ from time import time, sleep
 from shutil import copyfile
 from mmap import mmap
 from io import SEEK_CUR
+from statistics import stdev
 
 # TODO Integrate globals in a more elegant manner.
 RUN_CMD = "iceprog"
@@ -191,6 +192,7 @@ class Circuit:
         variance_sum = 0
         total_samples = 500
         waveform = []
+        variances = []
         for i in range(total_samples-1):
             # NOTE Signal Variance is calculated by summing the absolute difference of
             # sequential voltage samples from the microcontroller.
@@ -204,6 +206,11 @@ class Circuit:
                 # Append the variance to the waveform list
                 waveform.append(initial1)
 
+                # Stability: if we want stable waves, we should want to differences between points to be
+                # similar. i.e. we want to minimize the differences between these differences
+                # Can do 1/[(std. deviation)+0.01] to find a fitness value for the stability
+                # To do that we'll start by storing the variances to its own collection
+                variances.append(variance)
 
                 if initial1 != None and initial1 < 1000:
                     variance_sum += variance
@@ -219,9 +226,14 @@ class Circuit:
                 waveLive.write(str(i) + ", " + str(points) + "\n")
                 i += 1
 
-        self.__fitness = variance_sum / total_samples
-        # return self.__fitness
+        # Calculate standard deviation of the variances
+        var_std_dev = stdev(variances)
 
+        # Create two fitness values, one for variance maximization, one for stability
+        stability_fitness = 1 / (var_std_dev + 0.01)
+        var_max_fitness = variance_sum / total_samples
+        self.__fitness = var_max_fitness
+        
         # TODO ALIFE2021 Make sure alllivedata.log is cleared before run
         with open("workspace/alllivedata.log", "br+") as allLive:
             line = allLive.readline()

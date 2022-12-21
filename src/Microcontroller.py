@@ -120,6 +120,8 @@ class Microcontroller:
                 break
 
         # TODO  This whole section can probably be optimized
+        # Reads in 500 samples from MCU, with each being 10microseconds apart
+        # Then, dumps into a file
         while (b"FINISHED\n" not in line):
             line = self.__serial.read_until()
             if line != b"\n" and line != b"START\n" and line != b"FINISHED\n" and line != b"FINISHED\n":
