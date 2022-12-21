@@ -90,10 +90,14 @@ class CircuitPopulation:
         # Always creates a circuit with the seed file, but if we have certain randomization
         # modes then perform necessary operations
         for index in range(1, self.__config.get_population_size() + 1):
+            if self.__config.get_init_mode() == "EXISTING_POPULATION":
+                seedArg = False
+            else:
+                seedArg = SEED_HARDWARE_FILEPATH
             ckt = Circuit(
                 index,
                 "hardware" + str(index),
-                SEED_HARDWARE_FILEPATH,
+                seedArg,
                 self.__microcontroller,
                 self.__logger,
                 self.__config,

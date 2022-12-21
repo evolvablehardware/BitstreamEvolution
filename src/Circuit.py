@@ -45,7 +45,9 @@ class Circuit:
         self.__data_filepath = data_dir.joinpath(filename + ".log")
 
         # SECTION Intialize the hardware file
-        copyfile(template, self.__hardware_filepath)
+        # If template is falsy, won't copy the file
+        if template:
+            copyfile(template, self.__hardware_filepath)
 
         # Since the hardware file is written to and read from a lot, we
         # mmap it to improve preformance.
