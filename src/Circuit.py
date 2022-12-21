@@ -210,6 +210,7 @@ class Circuit:
                 # similar. i.e. we want to minimize the differences between these differences
                 # Can do 1/[(std. deviation)+0.01] to find a fitness value for the stability
                 # To do that we'll start by storing the variances to its own collection
+                # NOTE: This encourages frequencies that match the sampling rate
                 variances.append(variance)
 
                 if initial1 != None and initial1 < 1000:
@@ -230,6 +231,9 @@ class Circuit:
         var_std_dev = stdev(variances)
 
         # Create two fitness values, one for variance maximization, one for stability
+        # Probably don't want to use stability value on its own; it rewards stagnant waveforms
+        # just as much as oscillating ones (i.e. sample of 500, 500, 500, 500 will have max stability_fitness,
+        # as will one that goes 400, 500, 400, 500). Should combine with variance maximizing fitness somehow
         stability_fitness = 1 / (var_std_dev + 0.01)
         var_max_fitness = variance_sum / total_samples
         self.__fitness = var_max_fitness
