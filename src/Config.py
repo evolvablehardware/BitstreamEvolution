@@ -50,6 +50,8 @@ class Config:
 	def get_variance_threshold(self):
 		return int(self.get_ga_parameters("VARIANCE_THRESHOLD"))
 
+	# RANDOM (randomizes all available bits), CLONE_SEED (copies one seed individual to every circuit), 
+	# CLONE_SEED_MUTATE (clones the seed but also mutates each individual), EXISTING_POPULATION (uses the existing population files)
 	def get_init_mode(self):
 		return self.get_ga_parameters("INIT_MODE")
 
@@ -72,6 +74,7 @@ class Config:
 	def get_diversity_measure(self):
 		return self.get_ga_parameters("DIVERSITY_MEASURE")
 
+	# Pulse Count, Variance
 	def get_fitness_func(self):
 		return self.get_ga_parameters("FITNESS_FUNC")
 
@@ -96,6 +99,9 @@ class Config:
 
 	def get_datetime_format(self):
 		return self.get_logging_parameters("DATETIME_FORMAT")
+
+	def get_best_file(self):
+		return self.get_logging_parameters("BEST_FILE")
 		
 	# There are 3 log levels (1, 2, 3)
 	# 3 will log the most information, 1 will log the least
