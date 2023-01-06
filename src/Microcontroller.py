@@ -1,5 +1,6 @@
 from serial import Serial
 from time import time
+import numpy as np
 
 class Microcontroller:
     def __log_event(self, level, *event):
@@ -141,11 +142,13 @@ class Microcontroller:
 
 
     def measure_arduino(self, circuit):
+        """
+        Tells the arduino to start readin data, collects the data, and records the average of the data
+        """
         data_file = open(circuit.get_data_filepath(), "wb")
         buf = []
 
         samples = self.__config.get_num_samples()
-
 
         for i in range(0, samples):
             self.__serial.reset_input_buffer()
@@ -177,12 +180,59 @@ class Microcontroller:
 
                 end = time() - start
 
-                # TODO weighted sample calculation
-                weighted_sample = buf[i]
-                data_file.write(bytes[weighted_sample])
+        weighted_sample = 0
+        match self.__config.get_sampling_method():
+            case "AVG":
+                weighted_sample = self.sampling_avg(buf)
+            case "OUTLIERS":
+                weighted_sample = self.sampling_outliers(buf)
+            case "PERCENTAGE":
+                weighted_sample = self.sampling_percentage(buf)
+            case _:
+                weighted_sample = self.sampling_median(buf)
 
-                #TODO log data
+        data_file.write(bytes[weighted_sample])
 
-                data_file.close()
+        #TODO log data
+
+        data_file.close()
+
+
+    def sampling_avg(self, data):
+        """
+        Returns the average of the passed in data
+        """
+        return np.average(data)
+
+    def sampling_median(self,data):
+        """
+        Returns the median of the passed in data
+        """
+        return np.median(data)
+
+    def sampling_outliers(self, data):
+        """
+        Removes any outliers (> 2 standard deviations away from the mean) and returns the mean
+        """
+        mean = np.average(data)
+        std = np.std(data)
+
+        #probably can be done better using filter
+        new = []
+        for i in data:
+            if (i < mean - 2*std) or (i > mean + 2*std):
+                new.append(i)
+
+
+        return np.average(new)
+
+    def sampling_percentage(self, data):
+        """
+        Removes the bottom and top 10% of datapoints and returns the mean
+        """
+        data = np.sort(data)
+        n = int(0.1*len(data))
+        return np.average(data[n : (len(data)-n)])
+
 
 
