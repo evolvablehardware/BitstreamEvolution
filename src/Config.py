@@ -128,7 +128,10 @@ class Config:
 	# 3 will log the most information, 1 will log the least
 	# So when putting a log level as an arg to a log event, higher numbers = seen less often
 	def get_log_level(self):
-		return int(self.get_logging_parameters("LOG_LEVEL"))
+		input = int(self.get_logging_parameters("LOG_LEVEL"))
+		valid_vals = [1, 2, 3]
+		self.check_valid_value("logging level", input, valid_vals)
+		return input
 
 	# SECTION Getters for system parameters.
 	def get_fpga(self):
@@ -155,9 +158,9 @@ class Config:
 
 	def check_valid_value(self, param_name, user_input, allowed_values):
 		if not user_input in allowed_values:
-			self.log_error(1, "Invalid " + param_name + " '" + user_input + "'. Valid selection types are: " + ", ".join(allowed_values))
+			self.log_error("Invalid " + param_name + " '" + str(user_input) + "'. Valid selection types are: " + 
+			", ".join(list(map(lambda x: str(x), allowed_values))))
 			exit()
 		
-	def log_error(self, level, *msg):
-		if self.__config.get_log_level() >= level:
-			print("ERROR: ", FAIL, *msg, ENDC, file=self.__log_file)
+	def log_error(self, *msg):
+		print("ERROR: ", FAIL, *msg, ENDC)
