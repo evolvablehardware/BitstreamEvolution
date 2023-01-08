@@ -15,8 +15,14 @@ config = Config(config_parser)
 
 style.use('dark_background')
 
+rows = 2
+has_wf_plot = False
+if config.get_simulation_mode() == 'FULLY_INTRINSIC':
+    rows = 3
+    has_wf_plot = True
+
 fig = plt.figure()
-ax1 = fig.add_subplot(2,1,2)
+ax1 = fig.add_subplot(rows, 1, 2)
 ax1.set_xticks(range(1, config.get_population_size(), 1))
 def animate_generation(i):
     avg_fitness = []
@@ -56,9 +62,9 @@ def animate_generation(i):
     ax1.plot(target_freq, "r--")
     ax1.plot(base, "w-")
     ax1.plot(avg_fitness, color="violet")
-    if config.get_using_pulse_function() and not config.get_simulation_mode() == "FULLY_INTRINSIC":
+    '''if not config.get_simulation_mode() == "FULLY_INTRINSIC":
         ax1.set_yscale('symlog')
-        ax1.set_ylim([0, 1000000])
+        ax1.set_ylim([0, 1000000])'''
     # ax1.plot.stem(xs,ys,  color="green", use_line_collection=True)
     ax1.scatter(xs, ys)
     # plt.stem(xs, ys, markerfmt="bo", linefmt="b-", use_line_collection=True)
@@ -66,7 +72,7 @@ def animate_generation(i):
     ax1.set(xlabel='Circuit Number', ylabel='Fitness', title='Circuit Fitness this Generation')
 
 # fig2 = plt.figure()
-ax2 = fig.add_subplot(2,1,1)
+ax2 = fig.add_subplot(rows, 1, 1)
 ax3 = ax2.twinx()
 def animate_epoch(i):
     graph_data = open('workspace/bestlivedata.log','r').read()
@@ -102,7 +108,8 @@ def animate_epoch(i):
     
     ax2.set(xlabel='Generation', ylabel='Fitness', title='Best Circuit Fitness per Generation')
 
-#ax3 = fig.add_subplot(2,1,2)
+if has_wf_plot:
+    ax4 = fig.add_subplot(rows, 1, 3)
 def animate_waveform(i):    
     graph_data = open('workspace/waveformlivedata.log','r').read()
     lines = graph_data.split('\n')
@@ -114,18 +121,18 @@ def animate_waveform(i):
             x, y = line.split(',')
             xs.append(int(x))
             ys.append(float(y))
-    # TODO: ax3 is not defined here. Where is it supposed to be defined?
-    ax3.clear()
-    ax3.set_ylim([0, 1000])
-    ax3.plot(pulse_trigger, "r--")
-    ax3.plot(xs, ys, color="blue")
-    ax3.set(xlabel='Time (50 mS Total)', ylabel='Voltage (normalized)', title='Current Hardware Waveform')
+    ax4.clear()
+    ax4.set_ylim([0, 1000])
+    if config.get_measurement_type() == 'PULSE_COUNT':
+        ax4.plot(pulse_trigger, "r--")
+    ax4.plot(xs, ys, color="blue")
+    ax4.set(xlabel='Time (50 mS Total)', ylabel='Voltage (normalized)', title='Current Hardware Waveform')
 
 ani2 = animation.FuncAnimation(fig, animate_epoch)
-if not config.get_using_pulse_function():
-    # fig3 = plt.figure()
-    # ani3 = animation.FuncAnimation(fig, animate_waveform, interval=200)
-    pass
+# fig3 = plt.figure()
+if has_wf_plot:
+    ani3 = animation.FuncAnimation(fig, animate_waveform, interval=200)
+    
 ani = animation.FuncAnimation(fig, animate_generation)
 
 plt.subplots_adjust(hspace=0.50)
