@@ -188,7 +188,7 @@ class Microcontroller:
                 weighted_sample = self.sampling_outliers(buf)
             case "PERCENTAGE":
                 weighted_sample = self.sampling_percentage(buf)
-            case _:
+            case "MEDIAN":
                 weighted_sample = self.sampling_median(buf)
 
         data_file.write(bytes[weighted_sample])

@@ -70,14 +70,17 @@ class Config:
 	def get_measurement_type(self):
 		input = self.get_ga_parameters("MEASUREMENT_TYPE")
 		valid_vals = ["ADC", "PULSE_COUNT", "PULSE_WIDTH"]
-		self.check_valid_value("init mode", input, valid_vals)
+		self.check_valid_value("measurement type", input, valid_vals)
 		return input
 
 	def get_num_samples(self):
 		return self.get_ga_parameters("NUM_SAMPLES")
 
 	def get_sampling_method(self):
-		return self.get_ga_parameters("SAMPLING_METHOD")
+		input = self.get_ga_parameters("SAMPLING_METHOD")
+		valid_vals = ["AVG", "MEDIAN", "PERCENTAGE", "OUTLIERS"]
+		self.check_valid_value("sampling method", input, valid_vals)
+		return input
 
 	# We have 3 types of mode. There's FULLY_INTRINSIC, SIM_HARDWARE, and FULLY_SIM
 	# FULLY_INTRINSIC: Runs the experiments on the actual hardware. Full normal experiment setup
