@@ -2,6 +2,9 @@ from pathlib import Path
 
 # TODO Add handling for missing values
 # NOTE Fails ungracefully at missing values currently
+
+FAIL = '\033[91m'
+ENDC = '\033[0m'
 class Config:
 	def __init__(self, config_parser):
 		self.__config_parser = config_parser
@@ -42,10 +45,16 @@ class Config:
 		return int(self.get_ga_parameters("DESIRED_FREQ"))
 
 	def get_selection_type(self):
-		return self.get_ga_parameters("SELECTION")
+		input = self.get_ga_parameters("SELECTION")
+		valid_vals = ["SINGLE_ELITE", "FRAC_ELITE", "CLASSIC_TOURN", "FIT_PROP_SEL", "RANK_PROP_SEL"]
+		self.check_valid_value("selection type", input, valid_vals)
+		return input
 
 	def get_randomization_type(self):
-		return self.get_ga_parameters("RANDOMIZE_UNTIL")
+		input = self.get_ga_parameters("RANDOMIZE_UNTIL")
+		valid_vals = ["PULSE", "VARIANCE", "NO"]
+		self.check_valid_value("randomization type", input, valid_vals)
+		return input
 
 	def get_variance_threshold(self):
 		return int(self.get_ga_parameters("VARIANCE_THRESHOLD"))
@@ -53,7 +62,10 @@ class Config:
 	# RANDOM (randomizes all available bits), CLONE_SEED (copies one seed individual to every circuit), 
 	# CLONE_SEED_MUTATE (clones the seed but also mutates each individual), EXISTING_POPULATION (uses the existing population files)
 	def get_init_mode(self):
-		return self.get_ga_parameters("INIT_MODE")
+		input = self.get_ga_parameters("INIT_MODE")
+		valid_vals = ["RANDOM", "CLONE_SEED", "CLONE_SEED_MUTATE", "EXISTING_POPULATION"]
+		self.check_valid_value("init mode", input, valid_vals)
+		return input
 
 	def get_using_pulse_function(self):
 		return self.get_ga_parameters("PULSE_FUNC") == "True"
@@ -72,14 +84,23 @@ class Config:
 	# SIM_HARDWARE: Simulation mode, but using an arbitrary function operating on compiled binary files
 	# FULLY_SIM: Simulation mode, but operating on a small array of arbitrary bit values
 	def get_simulation_mode(self):
-		return self.get_ga_parameters("SIMULATION_MODE")
+		input = self.get_ga_parameters("SIMULATION_MODE")
+		valid_vals = ["FULLY_INTRINSIC", "FULLY_SIM", "SIM_HARDWARE"]
+		self.check_valid_value("simulation mode", input, valid_vals)
+		return input
 	
 	def get_diversity_measure(self):
-		return self.get_ga_parameters("DIVERSITY_MEASURE")
+		input = self.get_ga_parameters("DIVERSITY_MEASURE")
+		valid_vals = ["HAMMING_DIST", "UNIQUE"]
+		self.check_valid_value("diversity measure", input, valid_vals)
+		return input
 
 	# Pulse Count, Variance
 	def get_fitness_func(self):
-		return self.get_ga_parameters("FITNESS_FUNC")
+		input = self.get_ga_parameters("FITNESS_FUNC")
+		valid_vals = ["VARIANCE", "PULSE_COUNT"]
+		self.check_valid_value("fitness function", input, valid_vals)
+		return input
 
 	# SECTION Getters for logging parameters.
 	def get_asc_directory(self):
@@ -110,7 +131,10 @@ class Config:
 	# 3 will log the most information, 1 will log the least
 	# So when putting a log level as an arg to a log event, higher numbers = seen less often
 	def get_log_level(self):
-		return int(self.get_logging_parameters("LOG_LEVEL"))
+		input = int(self.get_logging_parameters("LOG_LEVEL"))
+		valid_vals = [1, 2, 3]
+		self.check_valid_value("logging level", input, valid_vals)
+		return input
 
 	# SECTION Getters for system parameters.
 	def get_fpga(self):
@@ -134,3 +158,12 @@ class Config:
 
 	def get_mcu_read_timeout(self):
 		return float(self.get_hardware_parameters("MCU_READ_TIMEOUT"))
+
+	def check_valid_value(self, param_name, user_input, allowed_values):
+		if not user_input in allowed_values:
+			self.log_error("Invalid " + param_name + " '" + str(user_input) + "'. Valid selection types are: " + 
+			", ".join(list(map(lambda x: str(x), allowed_values))))
+			exit()
+		
+	def log_error(self, *msg):
+		print("ERROR: ", FAIL, *msg, ENDC)
