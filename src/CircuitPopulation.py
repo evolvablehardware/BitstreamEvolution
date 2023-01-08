@@ -90,13 +90,15 @@ class CircuitPopulation:
         # Always creates a circuit with the seed file, but if we have certain randomization
         # modes then perform necessary operations
         for index in range(1, self.__config.get_population_size() + 1):
+            file_name = "hardware" + str(index)
+            # Can set seedArg to FALSE and the circuit will not copy from an existing file
             if self.__config.get_init_mode() == "EXISTING_POPULATION":
-                seedArg = False
+                seedArg = self.__config.get_init_pop_directory().joinpath(file_name + ".asc")
             else:
                 seedArg = SEED_HARDWARE_FILEPATH
             ckt = Circuit(
                 index,
-                "hardware" + str(index),
+                file_name,
                 seedArg,
                 self.__microcontroller,
                 self.__logger,
