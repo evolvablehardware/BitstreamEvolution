@@ -58,6 +58,15 @@ class Config:
 	def get_using_pulse_function(self):
 		return self.get_ga_parameters("PULSE_FUNC") == "True"
 
+	def get_measurement_type(self):
+		return self.get_ga_parameters("MEASUREMENT_TYPE")
+
+	def get_num_samples(self):
+		return self.get_ga_parameters("NUM_SAMPLES")
+
+	def get_sampling_method(self):
+		return self.get_ga_parameters("SAMPLING_METHOD")
+
 	# We have 3 types of mode. There's FULLY_INTRINSIC, SIM_HARDWARE, and FULLY_SIM
 	# FULLY_INTRINSIC: Runs the experiments on the actual hardware. Full normal experiment setup
 	# SIM_HARDWARE: Simulation mode, but using an arbitrary function operating on compiled binary files

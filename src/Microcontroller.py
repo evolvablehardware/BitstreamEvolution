@@ -1,5 +1,6 @@
 from serial import Serial
 from time import time
+import numpy as np
 
 class Microcontroller:
     def __log_event(self, level, *event):
@@ -138,3 +139,100 @@ class Microcontroller:
 
         data_file.close()
         self.__log_event(2, "Completed writing to data file")
+
+
+    def measure_arduino(self, circuit):
+        """
+        Tells the arduino to start readin data, collects the data, and records the average of the data
+        """
+        data_file = open(circuit.get_data_filepath(), "wb")
+        buf = []
+
+        samples = self.__config.get_num_samples()
+
+        for i in range(0, samples):
+            self.__serial.reset_input_buffer()
+            self.__serial.reset_output_buffer()
+
+            if(self.__config.get_measurement_type() == "PULSE_WIDTH"):
+                self.__serial.write(b'3')
+            else:
+                self.__serial.write(b'1') #pulse count
+
+            start = time()
+            self.__log_event(3, "Starting MCU loop...")
+
+            while True:
+                self.__log_event(3, "Serial reading...")
+                p = self.__serial.read()
+                self.__log_event(3, "Serial read done")
+                if (time() - start) >= self.__config.get_mcu_read_timeout():
+                    self.__log_warning(1, "Time Exceeded. Halting MCU Reading")
+                    break
+                # TODO We should be able to do whatever this line does better
+                # This is currently doing a poor job at REGEXing the MCU serial return - can be done better
+                # It's supposed to handle exceptions from transmission loss (i.e. dropped or additional spaces, shifted colons, etc)
+                self.__log_event(3, "Pulled", p, "from MCU")
+                if (p != b"" and b":" not in p and b"START" not in p and b"FINISH" not in p and b" " not in p):
+                    p = p.translate(None, b"\r\n")
+                    buf.append(p)
+                    break
+
+                end = time() - start
+
+        weighted_sample = 0
+        match self.__config.get_sampling_method():
+            case "AVG":
+                weighted_sample = self.sampling_avg(buf)
+            case "OUTLIERS":
+                weighted_sample = self.sampling_outliers(buf)
+            case "PERCENTAGE":
+                weighted_sample = self.sampling_percentage(buf)
+            case _:
+                weighted_sample = self.sampling_median(buf)
+
+        data_file.write(bytes[weighted_sample])
+
+        #TODO log data
+
+        data_file.close()
+
+
+    def sampling_avg(self, data):
+        """
+        Returns the average of the passed in data
+        """
+        return np.average(data)
+
+    def sampling_median(self,data):
+        """
+        Returns the median of the passed in data
+        """
+        return np.median(data)
+
+    def sampling_outliers(self, data):
+        """
+        Removes any outliers (> 2 standard deviations away from the mean) and returns the mean
+        """
+        mean = np.average(data)
+        std = np.std(data)
+
+        #probably can be done better using filter
+        new = []
+        for i in data:
+            if (i < mean - 2*std) or (i > mean + 2*std):
+                new.append(i)
+
+
+        return np.average(new)
+
+    def sampling_percentage(self, data):
+        """
+        Removes the bottom and top 10% of datapoints and returns the mean
+        """
+        data = np.sort(data)
+        n = int(0.1*len(data))
+        return np.average(data[n : (len(data)-n)])
+
+
+

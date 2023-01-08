@@ -103,6 +103,8 @@ void loop(){
          buf[i]= tempResult;
          i++;
        }
+
+      Serial.print(result);
       Serial.print("FINISHED\nFINISHED\nFINISHED\n");
       delay(10); //3016/1508 Delay to load the FPGA
       
