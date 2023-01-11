@@ -430,6 +430,7 @@ is a list of the options, their description, and their possible values:
 | CLONE_SEED_MUTATE | Clones the seed hardware to every individual in the population, and mutates each individual |
 | RANDOM | Randomly assigns all (modifiable) bits of each individual |
 | EXISTING_POPULATION | Completely copies the existing population from the specified directory |
+
 *Note: The FULLY_SIM simulation mode will use the RANDOM initialization mode every time
 
 #### Logging parameters
