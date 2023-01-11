@@ -411,7 +411,7 @@ is a list of the options, their description, and their possible values:
 | Diversity measure | The method to use to measure diversity | NONE, UNIQUE, HAMMING_DIST | HAMMING_DIST |
 | Fitness function | The fitness function to use | PULSE_COUNT, VARIANCE |  |
 | Sampling method | Used to filter the collected sample data into one representative value | AVG, OUTLIERS, PERCENTAGE, MEDIAN | MEDIAN |
-| Measurement type | What data to measure | PULSE_COUNT, PULSE_WIDTH | PULSE_WIDTH |
+| Measurement type | What data to measure | PULSE_COUNT, PULSE_WIDTH | PULSE_COUNT |
 | Number of samples | The number of samples to take for each fitness calculation | 1+ | 3 |
 
 ##### Selection methods
@@ -424,8 +424,13 @@ is a list of the options, their description, and their possible values:
 | RANK_PROP_SEL | Same as above, but the elite is chosen randomly based on the elites' ranks |
 
 ##### Initialization modes
-<!--TODO ALIFE2021 Describe the various initialization modes-->
-*TODO Describe the various initialization modes*
+| Mode | Description |
+|--------|-------------|
+| CLONE_SEED | Clones the seed hardware to every individual in the population (i.e. all individuals are the same at the start) |
+| CLONE_SEED_MUTATE | Clones the seed hardware to every individual in the population, and mutates each individual |
+| RANDOM | Randomly assigns all (modifiable) bits of each individual |
+| EXISTING_POPULATION | Completely copies the existing population from the specified directory |
+*Note: The FULLY_SIM simulation mode will use the RANDOM initialization mode every time
 
 #### Logging parameters
 | Parameter | Description | Possible Values | Recommended Values |
