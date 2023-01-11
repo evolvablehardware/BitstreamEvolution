@@ -433,6 +433,14 @@ is a list of the options, their description, and their possible values:
 
 *Note: The FULLY_SIM simulation mode will use the RANDOM initialization mode every time
 
+##### Simulation Modes
+| Mode | Description |
+|--------|-------------|
+| FULLY_INTRINSIC | Compiles hardware files, then uploads to FPGA. This option is the only one that evaluates fitness on the hardware |
+| SIM_HARDWARE | Compiles hardware files, but arbitrarily evaluates fitness all on the host computer. This option is useful for verifying that mutation and crossover are functional |
+| FULLY_SIM | Generates an arbitrary bitstream and evaluates it arbitrarily. This option is useful for verifying the evolutionary processes are functional |
+
+*Note: FULLY_INTRINSIC should be used unless verification of some process is being done
 #### Logging parameters
 | Parameter | Description | Possible Values | Recommended Values |
 |-----------|-------------|-----------------|--------------------|
