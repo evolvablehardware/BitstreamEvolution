@@ -113,7 +113,7 @@ if has_wf_plot:
 def animate_waveform(i):    
     graph_data = open('workspace/waveformlivedata.log','r').read()
     lines = graph_data.split('\n')
-    pulse_trigger = [400]*500
+    pulse_trigger = [341]*500
     xs = []
     ys = []
     for line in lines:
