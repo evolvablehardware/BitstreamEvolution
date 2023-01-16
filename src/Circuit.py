@@ -179,6 +179,23 @@ class Circuit:
         run(cmd_str)
         sleep(1)
 
+    def __read_variance_data(self):
+        data_file = open(self.__data_filepath, "rb")
+        data = data_file.readlines()
+        total_samples = 500
+        waveform = []
+        for i in range(total_samples-1):
+            try:
+                x = int(data[i].strip().split(b": ", 1)[1])
+                waveform.append(x)
+            except:
+                self.__log_error(1, "FAILED TO READ {} AT LINE {} -> ZEROIZING LINE".format(
+                    self,
+                    i
+                ))
+                waveform.append(0)
+        return waveform
+
     # NOTE Using log files instead of a data buffer in the event of premature termination
     def __measure_variance_fitness(self):
         """
@@ -191,35 +208,30 @@ class Circuit:
 
         variance_sum = 0
         total_samples = 500
-        waveform = []
+        waveform = self.__read_variance_data()
         variances = []
-        for i in range(total_samples-1):
+        for i in range(len(waveform)-1):
             # NOTE Signal Variance is calculated by summing the absolute difference of
             # sequential voltage samples from the microcontroller.
-            try:
-                # Capture the next point in the data file to a variable
-                initial1 = int(data[i].strip().split(b": ", 1)[1])
-                # Capture the next point + 1 in the data file to a variable
-                initial2 = int(data[i + 1].strip().split(b": ", 1)[1])
-                # Take the absolute difference of the two points and store to a variable
-                variance = abs(initial2 - initial1)
-                # Append the variance to the waveform list
-                waveform.append(initial1)
+            # Capture the next point in the data file to a variable
+            initial1 = waveform[i] #int(data[i].strip().split(b": ", 1)[1])
+            # Capture the next point + 1 in the data file to a variable
+            initial2 = waveform[i+1] #int(data[i + 1].strip().split(b": ", 1)[1])
+            # Take the absolute difference of the two points and store to a variable
+            variance = abs(initial2 - initial1)
+            # Append the variance to the waveform list
+            # Removed since we do this already
+            #waveform.append(initial1)
 
-                # Stability: if we want stable waves, we should want to differences between points to be
-                # similar. i.e. we want to minimize the differences between these differences
-                # Can do 1/[(std. deviation)+0.01] to find a fitness value for the stability
-                # To do that we'll start by storing the variances to its own collection
-                # NOTE: This encourages frequencies that match the sampling rate
-                variances.append(variance)
+            # Stability: if we want stable waves, we should want to differences between points to be
+            # similar. i.e. we want to minimize the differences between these differences
+            # Can do 1/[(std. deviation)+0.01] to find a fitness value for the stability
+            # To do that we'll start by storing the variances to its own collection
+            # NOTE: This encourages frequencies that match the sampling rate
+            variances.append(variance)
 
-                if initial1 != None and initial1 < 1000:
-                    variance_sum += variance
-            except:
-                self.__log_error(1, "FAILED TO READ {} AT LINE {} -> ZEROIZING LINE".format(
-                    self,
-                    i
-                ))
+            if initial1 != None and initial1 < 1000:
+                variance_sum += variance
 
         with open("workspace/waveformlivedata.log", "w+") as waveLive:
             i = 1
