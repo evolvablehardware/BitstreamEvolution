@@ -4,6 +4,7 @@ from shutil import copyfile
 from mmap import mmap
 from io import SEEK_CUR
 from statistics import stdev
+import math
 
 # TODO Integrate globals in a more elegant manner.
 RUN_CMD = "iceprog"
@@ -56,8 +57,10 @@ class Circuit:
         self.__hardware_file = mmap(hardware_file.fileno(), 0)
         hardware_file.close()
         
-        # If simulation mode, then we don't compile or read the binary or anything, just simply keep a bitstream of 100 bits we modify in here
-        self.__simulation_bitstream = [0] * 100
+        # In simulation mode, we simulate a waveform by summing sine functions
+        # We have 2^18 possible sine functions in our method
+        # This means we have 2^18 bits in our bitstream
+        self.__simulation_bitstream = [0] * int(math.pow(2, 18))
 
     def randomize_bits(self):
         # Simply set mutation chance to 100%
@@ -107,9 +110,47 @@ class Circuit:
         Just evaluate the simulation bitstream (count # of 1s)
         """
         
-        self.__fitness = self.__simulation_bitstream.count(1)
-	
-        return self.__fitness
+        #self.__fitness = self.__simulation_bitstream.count(1)
+        # Need to sum up the waveforms of every 1 that appears in our bitstream
+        sine_funcs = []
+        for pos in range(len(self.__simulation_bitstream)):
+            if self.__simulation_bitstream[pos] == 1:
+                # Need to calculate sine function for this position
+                sine_funcs.append(self.__generate_sine_func(pos))
+
+        # Ok now we need to generate our waveform
+        num_samples = 500
+        waveform = []
+        for i in range(num_samples):
+            sum = 0
+            for func in sine_funcs:
+                sum = sum + func(i)
+            waveform.append(sum)
+
+        return self.__measure_variance_fitness(waveform)
+    
+    def __generate_sine_func(self, pos):
+        # 0-4 y-off; 5-8 amp; 9-13 periodicity; 18-17 phase shift
+        # Use "r" for the value retrieved from the bits
+        # d = 16r+128 (r < 16) OR 16r+384 (r >=16)
+        # a = 8r
+        # b = 1/5(floor(2r)/20)^2
+        # c = r/8 * 2PI/b
+        # y = a*sin(b*(x+c))+d
+        dr = pos & 0b11111
+        ar = pos & 0b111100000 >> 4
+        br = pos & 0b11111000000000 >> 9
+        cr = pos & 0b111100000000000000 >> 14
+        if dr < 16:
+            d = 16*dr+128
+        else:
+            d = 16*dr+384
+        a = 8*ar
+        b = math.pow(math.floor(2*br) / 20, 2) / 5 + 1
+        c = (cr / 8) * (2 * math.pi / b)
+        self.__log_event(3, "Function created: y=", a, "* sin(", b, "(x+", c, ")+", d)
+        return (lambda x: a * math.sin(b * (x + c)) + d)
+
 
     def evaluate_sim_hardware(self):
         """
@@ -144,7 +185,8 @@ class Circuit:
             elapsed
         )
 
-        return self.__measure_variance_fitness()
+        waveform = self.__read_variance_data()
+        return self.__measure_variance_fitness(waveform)
 
     def evaluate_pulse_count(self):
         """
@@ -197,18 +239,15 @@ class Circuit:
         return waveform
 
     # NOTE Using log files instead of a data buffer in the event of premature termination
-    def __measure_variance_fitness(self):
+    def __measure_variance_fitness(self, waveform):
         """
         Measure the fitness of this circuit using the ??? fitness
         function
         TODO: Clarify
         """
-        data_file = open(self.__data_filepath, "rb")
-        data = data_file.readlines()
 
         variance_sum = 0
         total_samples = 500
-        waveform = self.__read_variance_data()
         variances = []
         for i in range(len(waveform)-1):
             # NOTE Signal Variance is calculated by summing the absolute difference of

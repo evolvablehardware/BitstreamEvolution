@@ -17,7 +17,7 @@ style.use('dark_background')
 
 rows = 2
 has_wf_plot = False
-if config.get_simulation_mode() == 'FULLY_INTRINSIC':
+if config.get_simulation_mode() == 'FULLY_INTRINSIC' or config.get_simulation_mode() == 'FULLY_SIM':
     rows = 3
     has_wf_plot = True
 
