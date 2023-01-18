@@ -34,6 +34,7 @@ class Circuit:
         self.__logger = logger
         self.__rand = rand
         self.__fitness = 0
+        self.__mean_voltage = 0 #needed for combined fitness func
 
         # SECTION Build the relevant paths
         asc_dir = config.get_asc_directory()
@@ -163,6 +164,22 @@ class Circuit:
 
         return self.__measure_pulse_fitness()
 
+    def evaluate_combined(self):
+        """
+        Upload and run this circuit and take a combined measure of fitness
+        """
+        start = time()
+        self.__run()
+        self.__microcontroller.measure_signal()
+
+        elapsed = time() - start
+        self.__log_event(1,
+            "TIME TAKEN RUNNING AND LOGGING ---------------------- ",
+            elapsed
+        )
+
+        return self.__measure_combined_fitness()
+
     def __run(self):
         """
         Compiles this Circuit, uploads it, and runs it on the FPGA
@@ -229,6 +246,7 @@ class Circuit:
 
         var_max_fitness = variance_sum / total_samples
         self.__fitness = var_max_fitness
+        self.__mean_voltage = sum(waveform) / len(waveform) #used by combined fitness func
         
         # TODO ALIFE2021 Make sure alllivedata.log is cleared before run
         with open("workspace/alllivedata.log", "br+") as allLive:
@@ -284,6 +302,25 @@ class Circuit:
             self.__fitness = var
         else:
             self.__fitness = var + (1.0 / desired_freq - pulse_count)
+        
+        return self.__fitness
+
+    def __measure_combined_fitness(self):
+        """
+        Calculates the circuit's fitness based on a combination of it's pulse count and variance
+        """
+        # Using the different between average and threshhold voltage since pulse count is normally 0
+        # pulseFitness = self.__measure_pulse_fitness()
+        pulseFitness = abs(self.__mean_voltage - 350) #I forget exactly what the threshold is
+        pulseWeight = self.__config.get_pulse_weight()
+
+        varFitness = self.__measure_variance_fitness()
+        varWeight = self.__config.get_var_weight()
+
+        if self.__config.get_fitness_mode == "ADD":
+            self.__fitness = (pulseWeight * pulseFitness) + (varWeight * varFitness)
+        else: #MULT
+            self.__fitness = pulseFitness * varFitness
         
         return self.__fitness
  
