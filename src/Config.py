@@ -109,7 +109,7 @@ class Config:
 		return input
 
 	def get_fitness_mode(self):
-		input = self.get_ga_parameters("FITNESS_MODE")
+		input = self.get_fitness_parameters("FITNESS_MODE")
 		valid_vals = ["ADD", "MULT"]
 		self.check_valid_value("fitness mode", input, valid_vals)
 		return input
