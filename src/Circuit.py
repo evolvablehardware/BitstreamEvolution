@@ -311,7 +311,7 @@ class Circuit:
         """
         # Using the different between average and threshhold voltage since pulse count is normally 0
         # pulseFitness = self.__measure_pulse_fitness()
-        pulseFitness = abs(self.__mean_voltage - 350) #I forget exactly what the threshold is
+        pulseFitness = 1 / (abs(self.__mean_voltage - 350) + 1)#I forget exactly what the threshold is
         pulseWeight = self.__config.get_pulse_weight()
 
         varFitness = self.__measure_variance_fitness()

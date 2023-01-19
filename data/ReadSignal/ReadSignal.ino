@@ -72,7 +72,7 @@ void loop(){
         delay(10); //3016/1508 Delay to load the FPGA
       }
       else if (x == pulseCountMeasureSelection){
-        Serial.print("START\nSTART\nSTART\n");
+        //Serial.print("START\nSTART\nSTART\n"); // currently breaks measure_pulses()
         //PULSE COUNT   //using interrupt
         cli(); //disable interrupt pin
         pulseCount = 0;
@@ -81,7 +81,7 @@ void loop(){
         // Check to see if this is actually one second
         delay(1000);
         Serial.println(pulseCount);
-        Serial.print("FINISHED\nFINISHED\nFINISHED\n");
+        // Serial.print("FINISHED\nFINISHED\nFINISHED\n");  // currently breaks measure_pulses()
         delay(10); //3016/1508 Delay to load the FPGA
       }
 

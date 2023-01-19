@@ -123,7 +123,7 @@ class CircuitPopulation:
             self.__randomize_until_pulses()
         elif self.__config.get_randomization_type() == "VARIANCE":
             self.__log_info(1, "VARIANCE randomization mode selected.")
-            if self.config.variance_threshold() <= 0:
+            if self.__config.get_variance_threshold() <= 0:
                 self.log_error(INVALID_VARIANCE_ERR_MSG)
             else:
                 self.__randomize_until_variance()
