@@ -314,13 +314,19 @@ class Circuit:
         pulseFitness = 1 / (abs(self.__mean_voltage - 350) + 1)#I forget exactly what the threshold is
         pulseWeight = self.__config.get_pulse_weight()
 
+        self.__log_event(3, "Pulse Fitness: ", pulseFitness)
+
         varFitness = self.__measure_variance_fitness()
         varWeight = self.__config.get_var_weight()
+
+        self.__log_event(3, "Varaince Fitness: ", varFitness)
 
         if self.__config.get_fitness_mode == "ADD":
             self.__fitness = (pulseWeight * pulseFitness) + (varWeight * varFitness)
         else: #MULT
             self.__fitness = pulseFitness * varFitness
+
+        self.__log_event(3, "Combined Fitness: ", self.__fitness)
         
         return self.__fitness
  
