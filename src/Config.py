@@ -115,10 +115,10 @@ class Config:
 		return input
 	
 	def get_pulse_weight(self):
-		return float(self.get_ga_parameters("PULSE_WEIGHT"))
+		return float(self.get_fitness_parameters("PULSE_WEIGHT"))
 
 	def get_var_weight(self):
-		return float(self.get_ga_parameters("VAR_WEIGHT"))
+		return float(self.get_fitness_parameters("VAR_WEIGHT"))
 
 	# SECTION Getters for logging parameters.
 	def get_asc_directory(self):

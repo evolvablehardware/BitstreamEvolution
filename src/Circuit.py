@@ -170,7 +170,7 @@ class Circuit:
         """
         start = time()
         self.__run()
-        self.__microcontroller.measure_signal()
+        self.__microcontroller.measure_signal(self)
 
         elapsed = time() - start
         self.__log_event(1,
@@ -319,7 +319,7 @@ class Circuit:
         varFitness = self.__measure_variance_fitness()
         varWeight = self.__config.get_var_weight()
 
-        self.__log_event(3, "Varaince Fitness: ", varFitness)
+        self.__log_event(3, "Variance Fitness: ", varFitness)
 
         if self.__config.get_fitness_mode == "ADD":
             self.__fitness = (pulseWeight * pulseFitness) + (varWeight * varFitness)
