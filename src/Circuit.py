@@ -107,10 +107,9 @@ class Circuit:
     
     def evaluate_sim(self):
         """
-        Just evaluate the simulation bitstream (count # of 1s)
+        Just evaluate the simulation bitstream (use sine function combinations, with variance formula)
         """
         
-        #self.__fitness = self.__simulation_bitstream.count(1)
         # Need to sum up the waveforms of every 1 that appears in our bitstream
         sine_funcs = []
         for pos in range(len(self.__simulation_bitstream)):
@@ -339,7 +338,7 @@ class Circuit:
         """
         # Using the different between average and threshhold voltage since pulse count is normally 0
         # pulseFitness = self.__measure_pulse_fitness()
-        pulseFitness = 1 / (abs(self.__mean_voltage - 350) + 1)#I forget exactly what the threshold is
+        pulseFitness = 1 / (abs(self.__mean_voltage - 341) + 1)
         pulseWeight = self.__config.get_pulse_weight()
 
         self.__log_event(3, "Pulse Fitness: ", pulseFitness)
