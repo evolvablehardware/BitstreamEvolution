@@ -409,7 +409,7 @@ is a list of the options, their description, and their possible values:
 | Seed Mode | The method to generate the initial random circuits | *TODO Add Seed Modes to CircuitPopulation.Py and List them here* | RAND_FROM_SEED |
 | Simulation mode | The level of simulation to run | FULLY_INTRINSIC, SIM_HARDWARE, FULLY_SIM | FULLY_INTRINSIC |
 | Diversity measure | The method to use to measure diversity | NONE, UNIQUE, HAMMING_DIST | HAMMING_DIST |
-| Fitness function | The fitness function to use | PULSE_COUNT, VARIANCE |  |
+| Fitness function | The fitness function to use | PULSE_COUNT, VARIANCE, COMBINED |  |
 | Sampling method | Used to filter the collected sample data into one representative value | AVG, OUTLIERS, PERCENTAGE, MEDIAN | MEDIAN |
 | Measurement type | What data to measure | PULSE_COUNT, PULSE_WIDTH | PULSE_COUNT |
 | Number of samples | The number of samples to take for each fitness calculation | 1+ | 3 |
@@ -441,6 +441,14 @@ is a list of the options, their description, and their possible values:
 | FULLY_SIM | Generates an arbitrary bitstream and evaluates it arbitrarily. This option is useful for verifying the evolutionary processes are functional |
 
 *Note: FULLY_INTRINSIC should be used unless verification of some process is being done
+
+#### Fitness Function Parameters
+| Parameter | Description | Possible Values | Recommended Values |
+|-----------|-------------|-----------------|--------------------|
+| FITNESS_MODE | How to combine the fitnesses | ADD, MULT | |
+| PULSE_WEIGHT | What weigthing to use for closeness to the trigger voltage in combined fitness| 0.0 - 1.0 | |
+| VAR_WEIGHT | What weigthing to use for variance in combined fitness | 0.0 - 1.0 | |
+
 #### Logging parameters
 | Parameter | Description | Possible Values | Recommended Values |
 |-----------|-------------|-----------------|--------------------|

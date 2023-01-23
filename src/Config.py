@@ -22,6 +22,9 @@ class Config:
 	def get_hardware_parameters(self, param):
 		return self.__config_parser.get("HARDWARE PARAMETERS", param)
 
+	def get_fitness_parameters(self, param):
+		return self.__config_parser.get("FITNESS FUNC PARAMETERS", param)
+
 	# SECTION Getters for GA Parameters.
 	def get_population_size(self):
 		return int(self.get_ga_parameters("POPULATION_SIZE"))
@@ -101,9 +104,21 @@ class Config:
 	# Pulse Count, Variance
 	def get_fitness_func(self):
 		input = self.get_ga_parameters("FITNESS_FUNC")
-		valid_vals = ["VARIANCE", "PULSE_COUNT"]
+		valid_vals = ["VARIANCE", "PULSE_COUNT", "COMBINED"]
 		self.check_valid_value("fitness function", input, valid_vals)
 		return input
+
+	def get_fitness_mode(self):
+		input = self.get_fitness_parameters("FITNESS_MODE")
+		valid_vals = ["ADD", "MULT"]
+		self.check_valid_value("fitness mode", input, valid_vals)
+		return input
+	
+	def get_pulse_weight(self):
+		return float(self.get_fitness_parameters("PULSE_WEIGHT"))
+
+	def get_var_weight(self):
+		return float(self.get_fitness_parameters("VAR_WEIGHT"))
 
 	# SECTION Getters for logging parameters.
 	def get_asc_directory(self):
