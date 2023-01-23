@@ -93,15 +93,24 @@ class CircuitPopulation:
         # modes then perform necessary operations
 
         sine_funcs = []
+        self.__sine_strs = []
         for i in range(100):
             # Don't let amplitude and y-offset get too out of hand
-            a = random.uniform(0, 10)
+            a = random.uniform(0, 100)
             b = random.uniform(0.02, 2)
             c = (random.randint(0, 7) / 8) * (2 * math.pi / b)
             d = random.uniform(100, 900)
-            sine_funcs.append((lambda x: a * math.sin(b * (x + c)) + d))
+            # We provide many parameters with default values here, because Python closures
+            # work like JS using the "var" keyword, and do not "properly" create environments the way we'd expect
+            # For this reason, we add default parameters, providing our current var values to them
+            # This works because the variable values are then *evaluated* as the lambda (closure) is constructed
+            # Before this fix, we had a bug where every single sine function would be exactly the same;
+            # all holding a/b/c/d values from the very last function to be generated
+            sine_funcs.append((lambda x,a=a,b=b,c=c,d=d: a * math.sin(b * (x + c)) + d))
+            sine_str = "Sine function: " + str(i) + " | y = " + str(a) + " * sin(" + str(b) + " * (x + " + str(c) + ")) + " + str(d)
+            self.__sine_strs.append(sine_str)
             if self.__config.get_simulation_mode() == "FULLY_SIM":
-                self.__log_event(1, "Sine function: ", i, "y=", a, "* sin(", b, "* (x +", c, ")) +", d)
+                self.__log_event(1, sine_str)
 
         for index in range(1, self.__config.get_population_size() + 1):
             file_name = "hardware" + str(index)
@@ -241,6 +250,23 @@ class CircuitPopulation:
                 reevaulated_circuits.add(circuit)
             epoch_time = time() - start
             self.__circuits = reevaulated_circuits
+
+            """
+            # TESTING
+            # Go over each sim bitstream and grab all the common sine waves
+            self.__log_event(1, "====================================")
+            self.__log_event(1, "Common sine functions")
+            for i in range(len(self.__sine_strs)):
+                in_all = True
+                for ckt in self.__circuits:
+                    if ckt.get_sim_bitstream()[i] != 1:
+                        #print("C", i, "not in ckt", ckt)
+                        in_all = False
+                        break
+                if in_all:
+                    self.__log_event(self.__sine_strs[i])
+            self.__log_event(1, "====================================")
+            """
 
             # If one of the new Circuits has a higher fitness than our
             # recorded best, make it the recorded best.
