@@ -4,6 +4,7 @@ from shutil import copyfile
 from mmap import mmap
 from io import SEEK_CUR
 from statistics import stdev
+import math
 
 # TODO Integrate globals in a more elegant manner.
 RUN_CMD = "iceprog"
@@ -26,7 +27,7 @@ class Circuit:
         """
         return self.__filename
 
-    def __init__(self, index, filename, template, mcu, logger, config, rand):
+    def __init__(self, index, filename, template, mcu, logger, config, rand, sine_funcs):
         self.__index = index
         self.__filename = filename
         self.__microcontroller = mcu
@@ -57,7 +58,8 @@ class Circuit:
         self.__hardware_file = mmap(hardware_file.fileno(), 0)
         hardware_file.close()
         
-        # If simulation mode, then we don't compile or read the binary or anything, just simply keep a bitstream of 100 bits we modify in here
+        # Used for the sine simulation mode; up to 100 sine waves
+        self.__src_sine_funcs = sine_funcs
         self.__simulation_bitstream = [0] * 100
 
     def randomize_bits(self):
@@ -108,9 +110,25 @@ class Circuit:
         Just evaluate the simulation bitstream (count # of 1s)
         """
         
-        self.__fitness = self.__simulation_bitstream.count(1)
-	
-        return self.__fitness
+        #self.__fitness = self.__simulation_bitstream.count(1)
+        # Need to sum up the waveforms of every 1 that appears in our bitstream
+        sine_funcs = []
+        for pos in range(len(self.__simulation_bitstream)):
+            if self.__simulation_bitstream[pos] == 1:
+                # Need to calculate sine function for this position
+                sine_funcs.append(self.__src_sine_funcs[pos])
+
+        # Ok now we need to generate our waveform
+        num_samples = 500
+        waveform = []
+        for i in range(num_samples):
+            sum = 0
+            for func in sine_funcs:
+                sum = sum + func(i)
+            # Taking the average keeps it within the drawable range
+            waveform.append(sum / len(sine_funcs))
+
+        return self.__measure_variance_fitness(waveform)
 
     def evaluate_sim_hardware(self):
         """
@@ -145,7 +163,8 @@ class Circuit:
             elapsed
         )
 
-        return self.__measure_variance_fitness()
+        waveform = self.__read_variance_data()
+        return self.__measure_variance_fitness(waveform)
 
     def evaluate_pulse_count(self):
         """
@@ -214,18 +233,15 @@ class Circuit:
         return waveform
 
     # NOTE Using log files instead of a data buffer in the event of premature termination
-    def __measure_variance_fitness(self):
+    def __measure_variance_fitness(self, waveform):
         """
         Measure the fitness of this circuit using the ??? fitness
         function
         TODO: Clarify
         """
-        data_file = open(self.__data_filepath, "rb")
-        data = data_file.readlines()
 
         variance_sum = 0
         total_samples = 500
-        waveform = self.__read_variance_data()
         variances = []
         for i in range(len(waveform)-1):
             # NOTE Signal Variance is calculated by summing the absolute difference of
