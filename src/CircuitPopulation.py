@@ -95,11 +95,13 @@ class CircuitPopulation:
         sine_funcs = []
         for i in range(100):
             # Don't let amplitude and y-offset get too out of hand
-            a = random.randint(0, 500)
-            b = math.pow(math.floor(random.randint(1, 64)) / 20, 2) / 5 + 1
-            c = (random.randint(0, 10) / 10) * (2 * math.pi / b)
-            d = random.randint(100, 900)
+            a = random.uniform(0, 10)
+            b = random.uniform(0.02, 2)
+            c = (random.randint(0, 7) / 8) * (2 * math.pi / b)
+            d = random.uniform(100, 900)
             sine_funcs.append((lambda x: a * math.sin(b * (x + c)) + d))
+            if self.__config.get_simulation_mode() == "FULLY_SIM":
+                self.__log_event(1, "Sine function: ", i, "y=", a, "* sin(", b, "* (x +", c, ")) +", d)
 
         for index in range(1, self.__config.get_population_size() + 1):
             file_name = "hardware" + str(index)

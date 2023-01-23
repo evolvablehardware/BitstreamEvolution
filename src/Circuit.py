@@ -126,7 +126,7 @@ class Circuit:
                 sum = sum + func(i)
             # Taking the average keeps it within the drawable range
             waveform.append(sum / len(sine_funcs))
-
+        
         return self.__measure_variance_fitness(waveform)
 
     def evaluate_sim_hardware(self):
@@ -196,7 +196,8 @@ class Circuit:
             elapsed
         )
 
-        return self.__measure_combined_fitness()
+        waveform = self.__read_variance_data()
+        return self.__measure_combined_fitness(waveform)
 
     def __run(self):
         """
@@ -332,7 +333,7 @@ class Circuit:
         
         return self.__fitness
 
-    def __measure_combined_fitness(self):
+    def __measure_combined_fitness(self, waveform):
         """
         Calculates the circuit's fitness based on a combination of it's pulse count and variance
         """
@@ -343,7 +344,7 @@ class Circuit:
 
         self.__log_event(3, "Pulse Fitness: ", pulseFitness)
 
-        varFitness = self.__measure_variance_fitness()
+        varFitness = self.__measure_variance_fitness(waveform)
         varWeight = self.__config.get_var_weight()
 
         self.__log_event(3, "Variance Fitness: ", varFitness)
