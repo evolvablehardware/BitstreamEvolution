@@ -12,6 +12,8 @@ from itertools import zip_longest
 from collections import namedtuple
 from time import time
 from subprocess import run
+import random
+import math
 
 RANDOMIZE_UNTIL_NOT_SET_ERR_MSG = '''\
 RANDOMIZE_UNTIL not set in config.ini, continuing without randomization'''
@@ -89,6 +91,16 @@ class CircuitPopulation:
         """
         # Always creates a circuit with the seed file, but if we have certain randomization
         # modes then perform necessary operations
+
+        sine_funcs = []
+        for i in range(100):
+            # Don't let amplitude and y-offset get too out of hand
+            a = random.randint(0, 500)
+            b = math.pow(math.floor(random.randint(1, 64)) / 20, 2) / 5 + 1
+            c = (random.randint(0, 10) / 10) * (2 * math.pi / b)
+            d = random.randint(100, 900)
+            sine_funcs.append((lambda x: a * math.sin(b * (x + c)) + d))
+
         for index in range(1, self.__config.get_population_size() + 1):
             file_name = "hardware" + str(index)
             # Can set seedArg to FALSE and the circuit will not copy from an existing file
@@ -103,7 +115,8 @@ class CircuitPopulation:
                 self.__microcontroller,
                 self.__logger,
                 self.__config,
-                self.__rand
+                self.__rand,
+                sine_funcs
             )
             if self.__config.get_init_mode() == "RANDOM":
                 ckt.randomize_bits()

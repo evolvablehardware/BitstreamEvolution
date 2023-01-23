@@ -27,7 +27,7 @@ class Circuit:
         """
         return self.__filename
 
-    def __init__(self, index, filename, template, mcu, logger, config, rand):
+    def __init__(self, index, filename, template, mcu, logger, config, rand, sine_funcs):
         self.__index = index
         self.__filename = filename
         self.__microcontroller = mcu
@@ -57,10 +57,9 @@ class Circuit:
         self.__hardware_file = mmap(hardware_file.fileno(), 0)
         hardware_file.close()
         
-        # In simulation mode, we simulate a waveform by summing sine functions
-        # We have 2^18 possible sine functions in our method
-        # This means we have 2^18 bits in our bitstream
-        self.__simulation_bitstream = [0] * int(math.pow(2, 18))
+        # Used for the sine simulation mode; up to 100 sine waves
+        self.__src_sine_funcs = sine_funcs
+        self.__simulation_bitstream = [0] * 100
 
     def randomize_bits(self):
         # Simply set mutation chance to 100%
@@ -116,7 +115,7 @@ class Circuit:
         for pos in range(len(self.__simulation_bitstream)):
             if self.__simulation_bitstream[pos] == 1:
                 # Need to calculate sine function for this position
-                sine_funcs.append(self.__generate_sine_func(pos))
+                sine_funcs.append(self.__src_sine_funcs[pos])
 
         # Ok now we need to generate our waveform
         num_samples = 500
@@ -125,32 +124,10 @@ class Circuit:
             sum = 0
             for func in sine_funcs:
                 sum = sum + func(i)
-            waveform.append(sum)
+            # Taking the average keeps it within the drawable range
+            waveform.append(sum / len(sine_funcs))
 
         return self.__measure_variance_fitness(waveform)
-    
-    def __generate_sine_func(self, pos):
-        # 0-4 y-off; 5-8 amp; 9-13 periodicity; 18-17 phase shift
-        # Use "r" for the value retrieved from the bits
-        # d = 16r+128 (r < 16) OR 16r+384 (r >=16)
-        # a = 8r
-        # b = 1/5(floor(2r)/20)^2
-        # c = r/8 * 2PI/b
-        # y = a*sin(b*(x+c))+d
-        dr = pos & 0b11111
-        ar = pos & 0b111100000 >> 4
-        br = pos & 0b11111000000000 >> 9
-        cr = pos & 0b111100000000000000 >> 14
-        if dr < 16:
-            d = 16*dr+128
-        else:
-            d = 16*dr+384
-        a = 8*ar
-        b = math.pow(math.floor(2*br) / 20, 2) / 5 + 1
-        c = (cr / 8) * (2 * math.pi / b)
-        self.__log_event(3, "Function created: y=", a, "* sin(", b, "(x+", c, ")+", d)
-        return (lambda x: a * math.sin(b * (x + c)) + d)
-
 
     def evaluate_sim_hardware(self):
         """
