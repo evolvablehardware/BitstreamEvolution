@@ -352,7 +352,7 @@ class Circuit:
         if self.__config.get_fitness_mode() == "ADD":
             self.__fitness = (pulseWeight * pulseFitness) + (varWeight * varFitness)
         else: #MULT
-            self.__fitness = pulseFitness * varFitness
+            self.__fitness = pow(pulseFitness, pulseWeight) * pow(varFitness, varWeight)
 
         self.__log_event(3, "Combined Fitness: ", self.__fitness)
         
