@@ -49,7 +49,7 @@ class Config:
 
 	def get_selection_type(self):
 		input = self.get_ga_parameters("SELECTION")
-		valid_vals = ["SINGLE_ELITE", "FRAC_ELITE", "CLASSIC_TOURN", "FIT_PROP_SEL", "RANK_PROP_SEL"]
+		valid_vals = ["SINGLE_ELITE", "FRAC_ELITE", "CLASSIC_TOURN", "FIT_PROP_SEL", "RANK_PROP_SEL", "MAP_ELITES"]
 		self.check_valid_value("selection type", input, valid_vals)
 		return input
 

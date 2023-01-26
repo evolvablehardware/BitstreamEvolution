@@ -4,6 +4,7 @@ from matplotlib import style
 import configparser
 import re
 from Config import Config
+import math
 
 """
 Static parameters can be found and changed in the config.ini file in the root project folder
@@ -16,13 +17,19 @@ config = Config(config_parser)
 style.use('dark_background')
 
 rows = 2
+cols = 1
 has_wf_plot = False
 if config.get_simulation_mode() == 'FULLY_INTRINSIC' or config.get_simulation_mode() == 'FULLY_SIM':
     rows = 3
     has_wf_plot = True
 
+has_map_plot = False
+if config.get_selection_type() == 'MAP_ELITES':
+    cols = 2
+    has_map_plot = True
+
 fig = plt.figure()
-ax1 = fig.add_subplot(rows, 1, 2)
+ax1 = fig.add_subplot(rows, cols, 2)
 ax1.set_xticks(range(1, config.get_population_size(), 1))
 def animate_generation(i):
     avg_fitness = []
@@ -72,7 +79,7 @@ def animate_generation(i):
     ax1.set(xlabel='Circuit Number', ylabel='Fitness', title='Circuit Fitness this Generation')
 
 # fig2 = plt.figure()
-ax2 = fig.add_subplot(rows, 1, 1)
+ax2 = fig.add_subplot(rows, cols, 1)
 ax3 = ax2.twinx()
 def animate_epoch(i):
     graph_data = open('workspace/bestlivedata.log','r').read()
@@ -109,7 +116,7 @@ def animate_epoch(i):
     ax2.set(xlabel='Generation', ylabel='Fitness', title='Best Circuit Fitness per Generation')
 
 if has_wf_plot:
-    ax4 = fig.add_subplot(rows, 1, 3)
+    ax4 = fig.add_subplot(rows, cols, 3)
 def animate_waveform(i):    
     graph_data = open('workspace/waveformlivedata.log','r').read()
     lines = graph_data.split('\n')
@@ -123,16 +130,47 @@ def animate_waveform(i):
             ys.append(float(y))
     ax4.clear()
     ax4.set_ylim([0, 1000])
-    if config.get_measurement_type() == 'PULSE_COUNT':
-        ax4.plot(pulse_trigger, "r--")
+    ax4.plot(pulse_trigger, "r--")
     ax4.plot(xs, ys, color="blue")
     ax4.set(xlabel='Time (50 mS Total)', ylabel='Voltage (normalized)', title='Current Hardware Waveform')
 
-ani2 = animation.FuncAnimation(fig, animate_epoch)
-# fig3 = plt.figure()
-if has_wf_plot:
-    ani3 = animation.FuncAnimation(fig, animate_waveform, interval=200)
+if has_map_plot:
+    ax5 = fig.add_subplot(rows, cols, 4)
+def animate_map(i):
+    graph_data = open('workspace/maplivedata.log','r').read()
+    lines = graph_data.split('\n')
+    scale_factor = int(lines[0])
+    lines.pop(0) # Remove scale factor from the lines set
+    xs = []
+    ys = []
+    sizes = []
+    row = 0
+    col = 0
     
+    for line in lines:
+        col = col + 1
+        if col > math.ceil(1024 / scale_factor):
+            col = 0
+            row = row + 1
+        if len(line) > 1:
+            fit = float(line)
+            sizes.append(fit)
+            xs.append((col + 0.5) * scale_factor)
+            ys.append((row + 0.5) * scale_factor)
+
+    ax5.clear()
+    ax5.scatter(xs, ys, s=sizes)
+    ax5.set(xlabel='Max Voltage (norm)', ylabel='Min Voltage (norm)', title='Elite Map')
+
+
+ani2 = animation.FuncAnimation(fig, animate_epoch)
+
+if has_wf_plot:
+    ani3 = animation.FuncAnimation(fig, animate_waveform)#, interval=200)
+
+if has_map_plot:
+    ani4 = animation.FuncAnimation(fig, animate_map)
+
 ani = animation.FuncAnimation(fig, animate_generation)
 
 plt.subplots_adjust(hspace=0.50)

@@ -76,6 +76,8 @@ class CircuitPopulation:
             self.__run_selection = self.__run_fitness_proportional_selection
         elif config.get_selection_type() == "RANK_PROP_SEL":
             self.__run_selection = self.__run_rank_proportional_selection
+        elif config.get_selection_type() == "MAP_ELITES":
+            self.__run_selection = self.__run_map_elites_selection
         else:
             self.__log_error(
                 1, "Invalid Selection method in config.ini. Exiting...")
@@ -109,8 +111,8 @@ class CircuitPopulation:
             sine_funcs.append((lambda x,a=a,b=b,c=c,d=d: a * math.sin(b * (x + c)) + d))
             sine_str = "Sine function: " + str(i) + " | y = " + str(a) + " * sin(" + str(b) + " * (x + " + str(c) + ")) + " + str(d)
             self.__sine_strs.append(sine_str)
-            if self.__config.get_simulation_mode() == "FULLY_SIM":
-                self.__log_event(1, sine_str)
+            #if self.__config.get_simulation_mode() == "FULLY_SIM":
+                #self.__log_event(1, sine_str)
 
         for index in range(1, self.__config.get_population_size() + 1):
             file_name = "hardware" + str(index)
@@ -523,6 +525,46 @@ class CircuitPopulation:
                     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
                     ckt.copy_hardware_from(rand_elite)
                 ckt.mutate()
+
+    def __run_map_elites_selection(self):
+        """
+        This version of map elites will protect the highest-fitness individual in each "square"
+        We're going to have slightly granular squares to make sure that circuits have room to spread out early
+        to hopefully promote diversity
+        Group size length of 50 means we'll have 20x20 groups (400)
+        """
+        # If the value is not a circuit (i.e. it is 0) then we know the spot is open to be filled in
+        # Go up to 21 since upper bound is 1024
+        elite_map = [[0]*21]*21
+        # Evaluate each circuit's fitness and where it falls on the elite map
+        ELITE_MAP_SCALE_FACTOR = 50
+        # Populate elite map first
+        for ckt in self.__circuits:
+            row = math.floor(ckt.get_low_value() / ELITE_MAP_SCALE_FACTOR)
+            col = math.floor(ckt.get_high_value() / ELITE_MAP_SCALE_FACTOR)
+            if elite_map[row][col] == 0 or ckt.get_fitness() > elite_map[row][col].get_fitness():
+                elite_map[row][col] = ckt
+        # Clone to all non-elites and mutate
+        elites = list(filter(lambda x: x != 0, [j for sub in elite_map for j in sub]))
+
+        for ckt in self.__circuits:
+            # If not an elite, then we will clone and mutate
+            if not ckt in elites:
+                #rand_elite = self.__rand.choice(elites)
+                #ckt.copy_hardware_from(rand_elite)
+                ckt.mutate()
+
+        with open("workspace/maplivedata.log", "a") as liveFile:
+            # First line describes granularity/scale factor
+            liveFile.write("{}\n".format(str(ELITE_MAP_SCALE_FACTOR)))
+            # If square is empty, write a "blank" to that line
+            for sl in elite_map:
+                for ckt in sl:
+                    to_write = ""
+                    if ckt != 0:
+                        to_write = str(ckt.get_fitness())
+                    liveFile.write("{}\n".format(to_write))
+
 
     # SECTION Getters.
     def get_current_best_circuit(self):

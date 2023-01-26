@@ -62,6 +62,10 @@ class Circuit:
         self.__src_sine_funcs = sine_funcs
         self.__simulation_bitstream = [0] * 100
 
+        # Values for MAP elites
+        self.__low_val = 0
+        self.__high_val = 0
+
     def randomize_bits(self):
         # Simply set mutation chance to 100%
         if self.__config.get_simulation_mode() == "FULLY_SIM":
@@ -243,6 +247,9 @@ class Circuit:
         variance_sum = 0
         total_samples = 500
         variances = []
+        # Reset high/low vals to min/max respectively
+        self.__low_val = 1024
+        self.__high_val = 0
         for i in range(len(waveform)-1):
             # NOTE Signal Variance is calculated by summing the absolute difference of
             # sequential voltage samples from the microcontroller.
@@ -255,6 +262,11 @@ class Circuit:
             # Append the variance to the waveform list
             # Removed since we do this already
             #waveform.append(initial1)
+
+            if initial1 < self.__low_val:
+                self.__low_val = initial1
+            if initial1 > self.__high_val:
+                self.__high_val = initial1
 
             # Stability: if we want stable waves, we should want to differences between points to be
             # similar. i.e. we want to minimize the differences between these differences
@@ -643,6 +655,12 @@ class Circuit:
         is_y_valid = y in VALID_TILE_Y
 
         return is_x_valid and is_y_valid
+
+    # Values for MAP elites
+    def get_low_value(self):
+        return self.__low_val
+    def get_high_value(self):
+        return self.__high_val
 
     def __log_event(self, level, *event):
         """
