@@ -554,7 +554,7 @@ class CircuitPopulation:
                 #ckt.copy_hardware_from(rand_elite)
                 ckt.mutate()
 
-        with open("workspace/maplivedata.log", "a") as liveFile:
+        with open("workspace/maplivedata.log", "w+") as liveFile:
             # First line describes granularity/scale factor
             liveFile.write("{}\n".format(str(ELITE_MAP_SCALE_FACTOR)))
             # If square is empty, write a "blank" to that line
