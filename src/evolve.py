@@ -24,7 +24,6 @@ logger = Logger(config, explanation)
 mcu = Microcontroller(config, logger)
 population = CircuitPopulation(mcu, config, logger)
 
-
 population.populate()
 population.evolve()
 

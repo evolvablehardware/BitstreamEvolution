@@ -10,27 +10,7 @@ import math
 Static parameters can be found and changed in the config.ini file in the root project folder
 DO NOT CHANGE THEM HERE
 """
-config_parser = configparser.ConfigParser()
-config_parser.read("data/config.ini")
-config = Config(config_parser)
 
-style.use('dark_background')
-
-rows = 2
-cols = 1
-has_wf_plot = False
-if config.get_simulation_mode() == 'FULLY_INTRINSIC' or config.get_simulation_mode() == 'FULLY_SIM':
-    rows = 3
-    has_wf_plot = True
-
-has_map_plot = False
-if config.get_selection_type() == 'MAP_ELITES':
-    cols = 2
-    has_map_plot = True
-
-fig = plt.figure()
-ax1 = fig.add_subplot(rows, cols, 2)
-ax1.set_xticks(range(1, config.get_population_size(), 1))
 def animate_generation(i):
     avg_fitness = []
     graph_data = open('workspace/alllivedata.log','r').read()
@@ -79,8 +59,6 @@ def animate_generation(i):
     ax1.set(xlabel='Circuit Number', ylabel='Fitness', title='Circuit Fitness this Generation')
 
 # fig2 = plt.figure()
-ax2 = fig.add_subplot(rows, cols, 1)
-ax3 = ax2.twinx()
 def animate_epoch(i):
     graph_data = open('workspace/bestlivedata.log','r').read()
     lines = graph_data.split('\n')
@@ -115,8 +93,7 @@ def animate_epoch(i):
     
     ax2.set(xlabel='Generation', ylabel='Fitness', title='Best Circuit Fitness per Generation')
 
-if has_wf_plot:
-    ax4 = fig.add_subplot(rows, cols, 3)
+
 def animate_waveform(i):    
     graph_data = open('workspace/waveformlivedata.log','r').read()
     lines = graph_data.split('\n')
@@ -134,8 +111,6 @@ def animate_waveform(i):
     ax4.plot(xs, ys, color="blue")
     ax4.set(xlabel='Time (50 mS Total)', ylabel='Voltage (normalized)', title='Current Hardware Waveform')
 
-if has_map_plot:
-    ax5 = fig.add_subplot(rows, cols, 4)
 def animate_map(i):
     graph_data = open('workspace/maplivedata.log','r').read()
     lines = graph_data.split('\n')
@@ -144,34 +119,63 @@ def animate_map(i):
     xs = []
     ys = []
     sizes = []
-    row = 0
-    col = 0
     
     for line in lines:
-        col = col + 1
-        if col > math.ceil(1024 / scale_factor):
-            col = 0
-            row = row + 1
-        if len(line) > 1:
-            fit = float(line)
+        vals = line.split(' ')
+        if (len(vals) > 2 and len(vals[2]) > 0):
+            row = int(vals[0])
+            col = int(vals[1])
+            fit = float(vals[2])
             sizes.append(fit)
             xs.append((col + 0.5) * scale_factor)
             ys.append((row + 0.5) * scale_factor)
 
     ax5.clear()
     ax5.scatter(xs, ys, s=sizes)
+    ax5.set_xlim(0, 1024)
+    ax5.set_ylim(0, 1024)
     ax5.set(xlabel='Max Voltage (norm)', ylabel='Min Voltage (norm)', title='Elite Map')
 
+config_parser = configparser.ConfigParser()
+config_parser.read("data/config.ini")
+config = Config(config_parser)
 
-ani2 = animation.FuncAnimation(fig, animate_epoch)
+style.use('dark_background')
+
+rows = 2
+cols = 1
+has_wf_plot = False
+if config.get_simulation_mode() == 'FULLY_INTRINSIC' or config.get_simulation_mode() == 'FULLY_SIM':
+    rows = rows + 1
+    has_wf_plot = True
+
+has_map_plot = False
+if config.get_selection_type() == 'MAP_ELITES':
+    # Replace the fitness plot with the map plot
+    has_map_plot = True
+
+fig = plt.figure()
+
+ax2 = fig.add_subplot(rows, cols, 1)
+ax3 = ax2.twinx()
+if has_wf_plot:
+    ax4 = fig.add_subplot(rows, cols, 3)
+
+if has_map_plot:
+    ax5 = fig.add_subplot(rows, cols, 2)
+else:
+    ax1 = fig.add_subplot(rows, cols, 2)
+    ax1.set_xticks(range(1, config.get_population_size(), 1))
 
 if has_wf_plot:
     ani3 = animation.FuncAnimation(fig, animate_waveform)#, interval=200)
 
 if has_map_plot:
     ani4 = animation.FuncAnimation(fig, animate_map)
+else:
+    ani = animation.FuncAnimation(fig, animate_generation)
 
-ani = animation.FuncAnimation(fig, animate_generation)
+ani2 = animation.FuncAnimation(fig, animate_epoch)
 
 plt.subplots_adjust(hspace=0.50)
 plt.show()

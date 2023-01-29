@@ -531,11 +531,14 @@ class CircuitPopulation:
         This version of map elites will protect the highest-fitness individual in each "square"
         We're going to have slightly granular squares to make sure that circuits have room to spread out early
         to hopefully promote diversity
-        Group size length of 50 means we'll have 20x20 groups (400)
+        Group size length of 50 means we'll have 21x21 groups
         """
         # If the value is not a circuit (i.e. it is 0) then we know the spot is open to be filled in
         # Go up to 21 since upper bound is 1024
-        elite_map = [[0]*21]*21
+        # Can't do [[0]*21]*21 because this will make all the sub-arrays point to same memory location
+        elite_map = []
+        for i in range(22):
+            elite_map.append([0]*21)
         # Evaluate each circuit's fitness and where it falls on the elite map
         ELITE_MAP_SCALE_FACTOR = 50
         # Populate elite map first
@@ -558,12 +561,14 @@ class CircuitPopulation:
             # First line describes granularity/scale factor
             liveFile.write("{}\n".format(str(ELITE_MAP_SCALE_FACTOR)))
             # If square is empty, write a "blank" to that line
-            for sl in elite_map:
-                for ckt in sl:
+            for r in range(len(elite_map)):
+                sl = elite_map[r]
+                for c in range(len(sl)):
+                    ckt = sl[c]
                     to_write = ""
                     if ckt != 0:
                         to_write = str(ckt.get_fitness())
-                    liveFile.write("{}\n".format(to_write))
+                    liveFile.write("{} {} {}\n".format(r, c, to_write))
 
 
     # SECTION Getters.
