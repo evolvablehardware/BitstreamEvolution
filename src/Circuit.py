@@ -541,6 +541,11 @@ class Circuit:
 
             tile = parent.get_hardware_file().find(b".logic_tile", tile + 1)
 
+    def copy_sim(self, src):
+        self.__simulation_bitstream = []
+        for val in src.get_sim_bitstream():
+            self.__simulation_bitstream.append(val)
+
     # SECTION Functions involving the underlying hardware
 
     # TODO Add error checking here
