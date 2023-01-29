@@ -139,12 +139,18 @@ def animate_map(i):
     min_size = 1
     old_range = max_fit - min_fit
     new_range = max_size - min_size
+    
+    all_colors = [ 'red', '#ff8000', 'yellow', 'green', 'blue', '#4400ff', 'magenta' ]
+    color_i = 0
+    colors = []
     for f in fits:
         size = (f - min_fit) * new_range / old_range + min_size
         sizes.append(size)
+        colors.append(all_colors[color_i])
+        color_i = color_i + 1 % len(all_colors)
 
     ax5.clear()
-    ax5.scatter(xs, ys, s=sizes)
+    ax5.scatter(xs, ys, s=sizes, c=colors)
     ax5.set_xlim(0, 1024)
     ax5.set_ylim(0, 1024)
     #ax5.set_xticks(np.arange(0, 1024, 50), minor=True)
