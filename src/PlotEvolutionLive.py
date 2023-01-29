@@ -5,6 +5,7 @@ import configparser
 import re
 from Config import Config
 import math
+import numpy as np
 
 """
 Static parameters can be found and changed in the config.ini file in the root project folder
@@ -119,21 +120,36 @@ def animate_map(i):
     xs = []
     ys = []
     sizes = []
-    
+    fits = []
+
     for line in lines:
         vals = line.split(' ')
         if (len(vals) > 2 and len(vals[2]) > 0):
             row = int(vals[0])
             col = int(vals[1])
             fit = float(vals[2])
-            sizes.append(fit)
+            fits.append(fit)
             xs.append((col + 0.5) * scale_factor)
             ys.append((row + 0.5) * scale_factor)
+
+    # We'll make 50 the size of the largest individual, and 1 the size of the smallest
+    min_fit = min(fits)
+    max_fit = max(fits)
+    max_size = 50
+    min_size = 1
+    old_range = max_fit - min_fit
+    new_range = max_size - min_size
+    for f in fits:
+        size = (f - min_fit) * new_range / old_range + min_size
+        sizes.append(size)
 
     ax5.clear()
     ax5.scatter(xs, ys, s=sizes)
     ax5.set_xlim(0, 1024)
     ax5.set_ylim(0, 1024)
+    #ax5.set_xticks(np.arange(0, 1024, 50), minor=True)
+    #ax5.set_yticks(np.arange(0, 1024, 50), minor=True)
+    #ax5.grid(color = '#363636', which = 'minor')
     ax5.set(xlabel='Max Voltage (norm)', ylabel='Min Voltage (norm)', title='Elite Map')
 
 config_parser = configparser.ConfigParser()
