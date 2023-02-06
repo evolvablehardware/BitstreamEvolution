@@ -173,7 +173,7 @@ style.use('dark_background')
 rows = 2
 cols = 1
 has_wf_plot = False
-if config.get_simulation_mode() == 'FULLY_INTRINSIC' or config.get_simulation_mode() == 'FULLY_SIM':
+if (config.get_simulation_mode() == 'FULLY_INTRINSIC' and config.get_fitness_func() != "PULSE_COUNT") or config.get_simulation_mode() == 'FULLY_SIM':
     rows = rows + 1
     has_wf_plot = True
 

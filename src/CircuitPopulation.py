@@ -185,13 +185,17 @@ class CircuitPopulation:
         while no_pulses_generated:
             # NOTE Randomize until pulses will continue mutating and
             # not revert to the original seed-hardware until restarting
-            self.__log_event(3, "Mutating to generate pulses")
+            self.__log_event(3, "Randomizing to generate pulses")
             for circuit in self.__circuits:
-                circuit.mutate()
-                pulses = circuit.evaluate_pulse_count()
-                if (pulses > 0):
+                #circuit.mutate()
+                # Changed to randomize_bitstream to provide higher search space...
+                # May be a bad idea, since mutate can use seed hardware. We'll see how this one does
+                circuit.randomize_bits()
+                fitness = circuit.evaluate_pulse_count()
+                var_th = self.__config.get_variance_threshold()
+                if (fitness > var_th):
                     no_pulses_generated = False
-                    self.__log_info(3, "Pulse generated! Exiting randomization", pulses)
+                    self.__log_info(3, "Pulse generated! Exiting randomization. Fitness:", fitness)
                     break
 
     # NOTE This is whole function going to be upgraded to handle a from-scratch circuit seeding process.
@@ -200,7 +204,16 @@ class CircuitPopulation:
         """
         Randomizes population until minimum variance is found
         """
-        pass
+        # Variance threshold is the desired variance
+        variance = 0
+        while variance < self.__config.get_variance_threshold():
+            self.__log_event(3, "Randomizing to generate variance")
+            for circuit in self.__circuits:
+                circuit.randomize_bits()
+                variance = circuit.evaluate_variance()
+                self.__log_info(3, "Variance generated:", variance)
+
+        self.__log_info(3, "Variance generated! Exiting randomization. Fitness:", variance)
 
     def __next_epoch(self):
         """
