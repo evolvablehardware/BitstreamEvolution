@@ -159,6 +159,7 @@ def animate_map(i):
 
     ax5.set_xlim(0, 1024)
     ax5.set_ylim(0, 1024)
+    ax5.set_aspect('equal')
     #ax5.set_xticks(np.arange(0, 1024, 50), minor=True)
     #ax5.set_yticks(np.arange(0, 1024, 50), minor=True)
     #ax5.grid(color = '#363636', which = 'minor')
