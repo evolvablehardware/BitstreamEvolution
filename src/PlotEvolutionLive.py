@@ -115,40 +115,40 @@ def animate_waveform(i):
 def animate_map(i):
     graph_data = open('workspace/maplivedata.log','r').read()
     lines = graph_data.split('\n')
-    scale_factor = int(lines[0])
-    lines.pop(0) # Remove scale factor from the lines set
     xs = []
     ys = []
     sizes = []
     fits = []
-
-    for line in lines:
-        vals = line.split(' ')
-        if (len(vals) > 2 and len(vals[2]) > 0):
-            row = int(vals[0])
-            col = int(vals[1])
-            fit = float(vals[2])
-            fits.append(fit)
-            xs.append((col + 0.5) * scale_factor)
-            ys.append((row + 0.5) * scale_factor)
-
-    # We'll make 50 the size of the largest individual, and 1 the size of the smallest
-    min_fit = min(fits)
-    max_fit = max(fits)
-    max_size = 50
-    min_size = 1
-    old_range = max_fit - min_fit
-    new_range = max_size - min_size
-    
-    all_colors = [ 'red', '#ff8000', 'yellow', 'green', 'blue', '#4400ff', 'magenta' ]
-    color_i = 0
     colors = []
-    for f in fits:
-        size = (f - min_fit) * new_range / old_range + min_size
-        sizes.append(size)
-        colors.append(all_colors[color_i])
-        color_i = color_i + 1 % len(all_colors)
+    if len(lines) > 0 and len(lines[0]) > 0:
+        scale_factor = int(lines[0])
+        lines.pop(0) # Remove scale factor from the lines set
 
+        for line in lines:
+            vals = line.split(' ')
+            if (len(vals) > 2 and len(vals[2]) > 0):
+                row = int(vals[0])
+                col = int(vals[1])
+                fit = float(vals[2])
+                fits.append(fit)
+                xs.append((col + 0.5) * scale_factor)
+                ys.append((row + 0.5) * scale_factor)
+
+        # We'll make 25 the size of the largest individual, and 1 the size of the smallest
+        min_fit = min(fits)
+        max_fit = max(fits)
+        max_size = 25
+        min_size = 1
+        old_range = max_fit - min_fit
+        new_range = max_size - min_size
+        
+        all_colors = [ 'red', '#ff8000', 'yellow', 'green', 'blue', '#4400ff', 'magenta' ]
+        color_i = 0
+        for f in fits:
+            size = (f - min_fit) * new_range / old_range + min_size
+            sizes.append(size)
+            colors.append(all_colors[color_i])
+            color_i = color_i + 1 % len(all_colors)
     
     ax5.clear()
 
