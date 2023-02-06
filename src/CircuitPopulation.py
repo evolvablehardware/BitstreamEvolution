@@ -303,6 +303,8 @@ class CircuitPopulation:
                 self.__log_event(2, "New best found")
 
             self.__logger.log_generation(self, epoch_time)
+            # The circuits that are protected from randomization
+            self.__protected_elites = []
             self.__run_selection()
 
             # Remove bottom X% of population to replace with random circuits
@@ -311,7 +313,8 @@ class CircuitPopulation:
                 amt = int(self.__config.get_random_injection() * self.__config.get_population_size())
                 circuits_to_randomize = self.__circuits[-amt:]
                 for ckt in circuits_to_randomize:
-                    ckt.randomize_bits()
+                    if ckt not in self.__protected_elites:
+                        ckt.randomize_bits()
 
             self.__next_epoch()
 
@@ -380,6 +383,7 @@ class CircuitPopulation:
             str(self.get_current_epoch())))
 
         best = self.__circuits[0]
+        self.__protected_elites.append(best)
         for ckt in self.__circuits:
             # Mutate the hardware of every circuit that is not the best
             if ckt != best:
@@ -419,6 +423,7 @@ class CircuitPopulation:
 
         self.__log_event(2, "Elite Group:", elites.keys())
         self.__log_event(2, "Elite Probabilites:", elites.values())
+        self.__protected_elites = elites.keys()
 
         # For all Circuits in this CircuitPopulation, choose a random
         # elite (based on the associated probabilities calculated above)
@@ -480,6 +485,7 @@ class CircuitPopulation:
 
         self.__log_event(3, "Elite Group:", elites.keys())
         self.__log_event(3, "Elite Probabilites:", elites.values())
+        self.__protected_elites = elites.keys()
         #self.__log_event(3, "Elite", rand_elite)
 
         # For all Circuits in this CircuitPopulation, choose a random
@@ -535,6 +541,7 @@ class CircuitPopulation:
         # generated above. If the Circuit's fitness is less than than
         # the elite's perform crossover (or clone if crossover is
         # disabled) and then mutate the Circuit.
+        self.__protected_elites = elite_group
         for ckt in self.__circuits:
             rand_elite = self.__rand.choice(elite_group)
             if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite and ckt not in elite_group:
@@ -562,6 +569,8 @@ class CircuitPopulation:
         elite_map = self.__generate_map()
         # Clone to all non-elites and mutate
         elites = list(filter(lambda x: x != 0, [j for sub in elite_map for j in sub]))
+        
+        self.__protected_elites = elites
 
         for ckt in self.__circuits:
             # If not an elite, then we will clone and mutate
@@ -569,6 +578,13 @@ class CircuitPopulation:
                 rand_elite = self.__rand.choice(elites)
                 ckt.copy_hardware_from(rand_elite)
                 ckt.mutate()
+        
+        if not hasattr(self, 'last_cnt'):
+            self.last_cnt = 0
+
+        if self.last_cnt > len(elites):
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        self.last_cnt = len(elites)
 
         with open("workspace/maplivedata.log", "w+") as liveFile:
             # First line describes granularity/scale factor
