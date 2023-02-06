@@ -31,6 +31,8 @@ SEED_HARDWARE_FILEPATH = Path("data/seed-hardware.asc")
 # hardware, bitstream, and data files.
 CIRCUIT_FILE_BASENAME = "hardware"
 
+ELITE_MAP_SCALE_FACTOR = 50
+
 # Create a named tuple for easy and clear storage of information about
 # a Circuit (currently its name and fitness)
 CircuitInfo = namedtuple("CircuitInfo", ["name", "fitness"])
@@ -141,7 +143,7 @@ class CircuitPopulation:
             self.__circuits.add(ckt)
             self.__log_event(3, "Created circuit: {0}".format(ckt))
 
-        # If map-elites selection method selected, then randomly generate until we fill up 25% of the map (~110 dots)
+        # If map-elites selection method selected, then randomly generate until we fill up 25% of the map
         '''if self.__config.get_selection_type() == 'MAP_ELITES':
             self.__log_event(1, 'Randomizing until map is 25% full...')
             elites = list(filter(lambda x: x != 0, [j for sub in self.__generate_map() for j in sub]))
@@ -269,23 +271,6 @@ class CircuitPopulation:
                 reevaulated_circuits.add(circuit)
             epoch_time = time() - start
             self.__circuits = reevaulated_circuits
-
-            """
-            # TESTING
-            # Go over each sim bitstream and grab all the common sine waves
-            self.__log_event(1, "====================================")
-            self.__log_event(1, "Common sine functions")
-            for i in range(len(self.__sine_strs)):
-                in_all = True
-                for ckt in self.__circuits:
-                    if ckt.get_sim_bitstream()[i] != 1:
-                        #print("C", i, "not in ckt", ckt)
-                        in_all = False
-                        break
-                if in_all:
-                    self.__log_event(self.__sine_strs[i])
-            self.__log_event(1, "====================================")
-            """
 
             # If one of the new Circuits has a higher fitness than our
             # recorded best, make it the recorded best.
@@ -558,8 +543,8 @@ class CircuitPopulation:
         for ckt in self.__circuits:
             # If not an elite, then we will clone and mutate
             if not ckt in elites:
-                #rand_elite = self.__rand.choice(elites)
-                #ckt.copy_hardware_from(rand_elite)
+                rand_elite = self.__rand.choice(elites)
+                ckt.copy_hardware_from(rand_elite)
                 ckt.mutate()
 
         with open("workspace/maplivedata.log", "w+") as liveFile:
