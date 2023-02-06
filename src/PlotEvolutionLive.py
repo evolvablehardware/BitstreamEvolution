@@ -138,7 +138,7 @@ def animate_map(i):
         min_fit = min(fits)
         max_fit = max(fits)
         max_size = 25
-        min_size = 1
+        min_size = 5
         old_range = max_fit - min_fit
         new_range = max_size - min_size
         
@@ -148,7 +148,7 @@ def animate_map(i):
             size = (f - min_fit) * new_range / old_range + min_size
             sizes.append(size)
             colors.append(all_colors[color_i])
-            color_i = color_i + 1 % len(all_colors)
+            color_i = (color_i + 1) % len(all_colors)
     
     ax5.clear()
 

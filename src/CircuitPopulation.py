@@ -148,16 +148,20 @@ class CircuitPopulation:
             self.__log_event(1, 'Randomizing until map is 25% full...')
             elites = list(filter(lambda x: x != 0, [j for sub in self.__generate_map() for j in sub]))
             elite_count = len(elites)
-            while elite_count < 0.25 * (21 * 21 / 2):
-                self.__log_event(3, "Got %s%%" % (elite_count / (21*21/2) * 100))
+            while elite_count < 0.1 * (21 * 21 / 2):
+                self.__log_event(3, "Got %s%% (%s)" % (elite_count / (21*21/2) * 100, elite_count))
                 # Need to mutate non-elites
                 for ckt in self.__circuits:
                     if not ckt in elites:
                         ckt.copy_sim(random.choice(elites))
                         ckt.mutate()
+                        #ckt.randomize_bits()
                         ckt.evaluate_sim(False)
-                elites = list(filter(lambda x: x != 0, [j for sub in self.__generate_map() for j in sub]))
+
+                elite_map = self.__generate_map()
+                elites = list(filter(lambda x: x != 0, [j for sub in elite_map for j in sub]))
                 elite_count = len(elites)
+                self.__output_map_file(elite_map)
 
         # Randomize initial circuits until waveform variance or
         # pulses are found
@@ -579,13 +583,9 @@ class CircuitPopulation:
                 ckt.copy_hardware_from(rand_elite)
                 ckt.mutate()
         
-        if not hasattr(self, 'last_cnt'):
-            self.last_cnt = 0
+        self.__output_map_file(elite_map)
 
-        if self.last_cnt > len(elites):
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        self.last_cnt = len(elites)
-
+    def __output_map_file(self, elite_map):
         with open("workspace/maplivedata.log", "w+") as liveFile:
             # First line describes granularity/scale factor
             liveFile.write("{}\n".format(str(ELITE_MAP_SCALE_FACTOR)))
