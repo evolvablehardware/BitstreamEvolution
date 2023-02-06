@@ -35,6 +35,7 @@ CIRCUIT_FILE_BASENAME = "hardware"
 # a Circuit (currently its name and fitness)
 CircuitInfo = namedtuple("CircuitInfo", ["name", "fitness"])
 
+ELITE_MAP_SCALE_FACTOR = 50
 
 class CircuitPopulation:
     # SECTION Initialization functions
@@ -585,7 +586,6 @@ class CircuitPopulation:
         for i in range(22):
             elite_map.append([0]*21)
         # Evaluate each circuit's fitness and where it falls on the elite map
-        ELITE_MAP_SCALE_FACTOR = 50
         # Populate elite map first
         for ckt in self.__circuits:
             row = math.floor(ckt.get_low_value() / ELITE_MAP_SCALE_FACTOR)
