@@ -290,6 +290,15 @@ class CircuitPopulation:
 
             self.__logger.log_generation(self, epoch_time)
             self.__run_selection()
+
+            # Remove bottom X% of population to replace with random circuits
+            # (just randomize bitstream of the bottom X%)
+            if self.__config.get_random_injection() > 0:
+                amt = int(self.__config.get_random_injection() * self.__config.get_population_size())
+                circuits_to_randomize = self.__circuits[-amt:]
+                for ckt in circuits_to_randomize:
+                    ckt.randomize_bits()
+
             self.__next_epoch()
 
             # Calculate the diversity measure
