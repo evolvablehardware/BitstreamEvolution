@@ -149,8 +149,14 @@ def animate_map(i):
         colors.append(all_colors[color_i])
         color_i = color_i + 1 % len(all_colors)
 
+    
     ax5.clear()
+
+    # Add a line to the middle that separates possible from impossible cells
+    ax5.plot([0, 1024], [0, 1024], color='#444444', linewidth=0.5)
+
     ax5.scatter(xs, ys, s=sizes, c=colors)
+
     ax5.set_xlim(0, 1024)
     ax5.set_ylim(0, 1024)
     #ax5.set_xticks(np.arange(0, 1024, 50), minor=True)
