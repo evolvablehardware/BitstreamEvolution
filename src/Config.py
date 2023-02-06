@@ -156,7 +156,7 @@ class Config:
 	# So when putting a log level as an arg to a log event, higher numbers = seen less often
 	def get_log_level(self):
 		input = int(self.get_logging_parameters("LOG_LEVEL"))
-		valid_vals = [1, 2, 3]
+		valid_vals = [1, 2, 3, 4]
 		self.check_valid_value("logging level", input, valid_vals)
 		return input
 

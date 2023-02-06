@@ -187,10 +187,10 @@ class CircuitPopulation:
             # not revert to the original seed-hardware until restarting
             self.__log_event(3, "Randomizing to generate pulses")
             for circuit in self.__circuits:
-                #circuit.mutate()
+                circuit.mutate()
                 # Changed to randomize_bitstream to provide higher search space...
                 # May be a bad idea, since mutate can use seed hardware. We'll see how this one does
-                circuit.randomize_bits()
+                #circuit.randomize_bits()
                 fitness = circuit.evaluate_pulse_count()
                 var_th = self.__config.get_variance_threshold()
                 if (fitness > var_th):
@@ -263,7 +263,8 @@ class CircuitPopulation:
 
                 # Biggest difference between Fully Instrinsic and Hardware Sim: The fitness evaluation
                 if self.__config.get_simulation_mode() == "FULLY_SIM":
-                    fitness = circuit.evaluate_sim()
+                    func = self.__config.get_fitness_func()
+                    fitness = circuit.evaluate_sim(func == "COMBINED")
                 elif self.__config.get_simulation_mode() == "SIM_HARDWARE":
                     fitness = circuit.evaluate_sim_hardware()
                 else:
@@ -439,7 +440,7 @@ class CircuitPopulation:
             else:
                 rand_elite = self.__rand.choice(self.__circuits)
 
-            self.__log_event(2, "Elite", rand_elite)
+            self.__log_event(4, "Elite", rand_elite)
 
             if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite and ckt not in elites:
                 # if self.__config.get_crossover_probability() == 0:
@@ -450,7 +451,7 @@ class CircuitPopulation:
                 if self.__rand.uniform(0, 1) <= self.__config.get_crossover_probability():
                     self.__single_point_crossover(rand_elite, ckt)
                 else:
-                    self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
+                    self.__log_event(4, "Cloning:", rand_elite, " ---> ", ckt)
                     ckt.copy_hardware_from(rand_elite)
                 ckt.mutate()
 
@@ -564,7 +565,7 @@ class CircuitPopulation:
 
         for ckt in self.__circuits:
             # If not an elite, then we will clone and mutate
-            if not ckt in elites:
+            if ckt not in elites:
                 rand_elite = self.__rand.choice(elites)
                 ckt.copy_hardware_from(rand_elite)
                 ckt.mutate()
@@ -656,7 +657,7 @@ class CircuitPopulation:
         n = len(self.__circuits)
         num_pairs = n * (n-1) / 2
 
-        self.__log_event(2, "Starting Hamming Distance Calculation")
+        self.__log_event(4, "Starting Hamming Distance Calculation")
 
         bitstreams = []
         if self.__config.get_simulation_mode() == "FULLY_SIM":
@@ -667,15 +668,13 @@ class CircuitPopulation:
                 lambda char: char-48, c.get_intrinsic_modifiable_bitstream())), self.__circuits)
         bitstreams = list(bitstreams)
 
-        #self.__log_event(3, "HDIST - Bitstreams mapped", bitstreams)
-
         # We now have all the bitstreams, we can do the faster hamming calculation by comparing each bit of them
         # Then we multiply the count of 1s for that bit by the count of 0s for that bit and add it to the running_total
         # Divide that by # of pairs at the end (calculation shown below)
         running_total = 0
         n = len(self.__circuits)
         num_pairs = n * (n-1) / 2
-        self.__log_event(3, "HDIST - Entering loop")
+        self.__log_event(4, "HDIST - Entering loop")
         for i in range(len(bitstreams[0])):
             ones_count = 0
             zero_count = 0
@@ -685,10 +684,9 @@ class CircuitPopulation:
                 else:
                     ones_count = ones_count + 1
             running_total = running_total + ones_count * zero_count
-            #self.__log_event(3, "HDIST - Added ", ones_count * zero_count)
 
         running_total = running_total / num_pairs
-        self.__log_event(3, "HDIST - Final value", running_total)
+        self.__log_event(4, "HDIST - Final value", running_total)
         return running_total
 
     def count_unique(self):

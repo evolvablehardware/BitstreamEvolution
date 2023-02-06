@@ -109,7 +109,7 @@ class Circuit:
     # def evaluate(self):
     #     return 
     
-    def evaluate_sim(self):
+    def evaluate_sim(self, is_combined):
         """
         Just evaluate the simulation bitstream (use sine function combinations, with variance formula)
         """
@@ -131,7 +131,10 @@ class Circuit:
             # Taking the average keeps it within the drawable range
             waveform.append(sum / len(sine_funcs))
         
-        return self.__measure_variance_fitness(waveform)
+        if is_combined:
+            return self.__measure_combined_fitness(waveform)
+        else:
+            return self.__measure_variance_fitness(waveform)
 
     def evaluate_sim_hardware(self):
         """
@@ -349,17 +352,19 @@ class Circuit:
         """
         Calculates the circuit's fitness based on a combination of it's pulse count and variance
         """
-        # Using the different between average and threshhold voltage since pulse count is normally 0
-        # pulseFitness = self.__measure_pulse_fitness()
-        pulseFitness = 1 / (abs(self.__mean_voltage - 341) + 1)
-        pulseWeight = self.__config.get_pulse_weight()
 
-        self.__log_event(3, "Pulse Fitness: ", pulseFitness)
-
+        # need to evaluate var fitness first since it calculates the mean voltage
         varFitness = self.__measure_variance_fitness(waveform)
         varWeight = self.__config.get_var_weight()
 
-        self.__log_event(3, "Variance Fitness: ", varFitness)
+        # Using the different between average and threshhold voltage since pulse count is normally 0
+        # pulseFitness = self.__measure_pulse_fitness()
+        # Add 1 to it so that it is a whole number, and raising to a power will increase the value
+        pulseFitness = 1 / (abs(self.__mean_voltage - 341) + 1) + 1
+        pulseWeight = self.__config.get_pulse_weight()
+
+        self.__log_event(4, "Pulse Fitness: ", pulseFitness)
+        self.__log_event(4, "Variance Fitness: ", varFitness)
 
         if self.__config.get_fitness_mode() == "ADD":
             self.__fitness = (pulseWeight * pulseFitness) + (varWeight * varFitness)
@@ -449,7 +454,7 @@ class Circuit:
                                 # This now always flips the bit instead of randomly assigning it every time
                                 self.__hardware_file[pos] = 97 - prev
                                 # Note: If prev != 48 or 49, then we changed the wrong value because it was not a 0 or 1 previously
-                                self.__log_event(3, "Mutating:", self, "@(", row, ",", col, ") previous was", prev)
+                                self.__log_event(4, "Mutating:", self, "@(", row, ",", col, ") previous was", prev)
 
             # Find the next logic tile, and start again
             # Will return -1 if .logic_tile isn't found, and the while loop will exit
