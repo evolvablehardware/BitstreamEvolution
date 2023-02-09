@@ -365,7 +365,13 @@ class Circuit:
         # Using the different between average and threshhold voltage since pulse count is normally 0
         # pulseFitness = self.__measure_pulse_fitness()
         # Add 1 to it so that it is a whole number, and raising to a power will increase the value
-        pulseFitness = 1 / (abs(self.__mean_voltage - 341) + 1) + 1
+        #pulseFitness = 1 / (abs(self.__mean_voltage - 341) + 1) + 1
+        # Issue with old approach is graph was mostly a straight line with a spike at the target voltage
+        # We've changed to a somewhat normal distribution-like function to provide better encouragement
+        # Constants:
+        # The 341 is the target threshold voltage
+        # The 200 is used as a sort of "standard deviation"-esque variable. Raising it widens the graph
+        pulseFitness = 10 * math.exp(-0.5 * math.pow((self.__mean_voltage - 341) / 200, 2))
         pulseWeight = self.__config.get_pulse_weight()
 
         self.__log_event(4, "Pulse Fitness: ", pulseFitness)
