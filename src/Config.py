@@ -49,7 +49,7 @@ class Config:
 
 	def get_selection_type(self):
 		input = self.get_ga_parameters("SELECTION")
-		valid_vals = ["SINGLE_ELITE", "FRAC_ELITE", "CLASSIC_TOURN", "FIT_PROP_SEL", "RANK_PROP_SEL"]
+		valid_vals = ["SINGLE_ELITE", "FRAC_ELITE", "CLASSIC_TOURN", "FIT_PROP_SEL", "RANK_PROP_SEL", "MAP_ELITES"]
 		self.check_valid_value("selection type", input, valid_vals)
 		return input
 
@@ -61,6 +61,9 @@ class Config:
 
 	def get_variance_threshold(self):
 		return int(self.get_ga_parameters("VARIANCE_THRESHOLD"))
+
+	def get_random_injection(self):
+		return float(self.get_ga_parameters("RANDOM_INJECTION"))
 
 	# RANDOM (randomizes all available bits), CLONE_SEED (copies one seed individual to every circuit), 
 	# CLONE_SEED_MUTATE (clones the seed but also mutates each individual), EXISTING_POPULATION (uses the existing population files)
@@ -153,7 +156,7 @@ class Config:
 	# So when putting a log level as an arg to a log event, higher numbers = seen less often
 	def get_log_level(self):
 		input = int(self.get_logging_parameters("LOG_LEVEL"))
-		valid_vals = [1, 2, 3]
+		valid_vals = [1, 2, 3, 4]
 		self.check_valid_value("logging level", input, valid_vals)
 		return input
 

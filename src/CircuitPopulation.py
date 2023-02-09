@@ -31,10 +31,13 @@ SEED_HARDWARE_FILEPATH = Path("data/seed-hardware.asc")
 # hardware, bitstream, and data files.
 CIRCUIT_FILE_BASENAME = "hardware"
 
+ELITE_MAP_SCALE_FACTOR = 50
+
 # Create a named tuple for easy and clear storage of information about
 # a Circuit (currently its name and fitness)
 CircuitInfo = namedtuple("CircuitInfo", ["name", "fitness"])
 
+ELITE_MAP_SCALE_FACTOR = 50
 
 class CircuitPopulation:
     # SECTION Initialization functions
@@ -76,6 +79,8 @@ class CircuitPopulation:
             self.__run_selection = self.__run_fitness_proportional_selection
         elif config.get_selection_type() == "RANK_PROP_SEL":
             self.__run_selection = self.__run_rank_proportional_selection
+        elif config.get_selection_type() == "MAP_ELITES":
+            self.__run_selection = self.__run_map_elites_selection
         else:
             self.__log_error(
                 1, "Invalid Selection method in config.ini. Exiting...")
@@ -109,8 +114,8 @@ class CircuitPopulation:
             sine_funcs.append((lambda x,a=a,b=b,c=c,d=d: a * math.sin(b * (x + c)) + d))
             sine_str = "Sine function: " + str(i) + " | y = " + str(a) + " * sin(" + str(b) + " * (x + " + str(c) + ")) + " + str(d)
             self.__sine_strs.append(sine_str)
-            if self.__config.get_simulation_mode() == "FULLY_SIM":
-                self.__log_event(1, sine_str)
+            #if self.__config.get_simulation_mode() == "FULLY_SIM":
+                #self.__log_event(1, sine_str)
 
         for index in range(1, self.__config.get_population_size() + 1):
             file_name = "hardware" + str(index)
@@ -138,6 +143,26 @@ class CircuitPopulation:
             self.__circuits.add(ckt)
             self.__log_event(3, "Created circuit: {0}".format(ckt))
 
+        # If map-elites selection method selected, then randomly generate until we fill up 25% of the map
+        if self.__config.get_selection_type() == 'MAP_ELITES':
+            self.__log_event(1, 'Randomizing until map is 25% full...')
+            elites = list(filter(lambda x: x != 0, [j for sub in self.__generate_map() for j in sub]))
+            elite_count = len(elites)
+            while elite_count < 0.1 * (21 * 21 / 2):
+                self.__log_event(3, "Got %s%% (%s)" % (elite_count / (21*21/2) * 100, elite_count))
+                # Need to mutate non-elites
+                for ckt in self.__circuits:
+                    if not ckt in elites:
+                        ckt.copy_sim(random.choice(elites))
+                        ckt.mutate()
+                        #ckt.randomize_bits()
+                        ckt.evaluate_sim(False)
+
+                elite_map = self.__generate_map()
+                elites = list(filter(lambda x: x != 0, [j for sub in elite_map for j in sub]))
+                elite_count = len(elites)
+                self.__output_map_file(elite_map)
+
         # Randomize initial circuits until waveform variance or
         # pulses are found
         if self.__config.get_simulation_mode() != "FULLY_INTRINSIC":
@@ -164,13 +189,17 @@ class CircuitPopulation:
         while no_pulses_generated:
             # NOTE Randomize until pulses will continue mutating and
             # not revert to the original seed-hardware until restarting
-            self.__log_event(3, "Mutating to generate pulses")
+            self.__log_event(3, "Randomizing to generate pulses")
             for circuit in self.__circuits:
-                circuit.randomize_bits()
-                pulses = circuit.evaluate_pulse_count()
-                if (pulses > 0):
+                circuit.mutate()
+                # Changed to randomize_bitstream to provide higher search space...
+                # May be a bad idea, since mutate can use seed hardware. We'll see how this one does
+                #circuit.randomize_bits()
+                fitness = circuit.evaluate_pulse_count()
+                var_th = self.__config.get_variance_threshold()
+                if (fitness > var_th):
                     no_pulses_generated = False
-                    self.__log_info(3, "Pulse generated! Exiting randomization", pulses)
+                    self.__log_info(3, "Pulse generated! Exiting randomization. Fitness:", fitness)
                     break
 
     # NOTE This is whole function going to be upgraded to handle a from-scratch circuit seeding process.
@@ -179,7 +208,16 @@ class CircuitPopulation:
         """
         Randomizes population until minimum variance is found
         """
-        pass
+        # Variance threshold is the desired variance
+        variance = 0
+        while variance < self.__config.get_variance_threshold():
+            self.__log_event(3, "Randomizing to generate variance")
+            for circuit in self.__circuits:
+                circuit.randomize_bits()
+                variance = circuit.evaluate_variance()
+                self.__log_info(3, "Variance generated:", variance)
+
+        self.__log_info(3, "Variance generated! Exiting randomization. Fitness:", variance)
 
     def __next_epoch(self):
         """
@@ -229,7 +267,8 @@ class CircuitPopulation:
 
                 # Biggest difference between Fully Instrinsic and Hardware Sim: The fitness evaluation
                 if self.__config.get_simulation_mode() == "FULLY_SIM":
-                    fitness = circuit.evaluate_sim()
+                    func = self.__config.get_fitness_func()
+                    fitness = circuit.evaluate_sim(func == "COMBINED")
                 elif self.__config.get_simulation_mode() == "SIM_HARDWARE":
                     fitness = circuit.evaluate_sim_hardware()
                 else:
@@ -251,23 +290,6 @@ class CircuitPopulation:
             epoch_time = time() - start
             self.__circuits = reevaulated_circuits
 
-            """
-            # TESTING
-            # Go over each sim bitstream and grab all the common sine waves
-            self.__log_event(1, "====================================")
-            self.__log_event(1, "Common sine functions")
-            for i in range(len(self.__sine_strs)):
-                in_all = True
-                for ckt in self.__circuits:
-                    if ckt.get_sim_bitstream()[i] != 1:
-                        #print("C", i, "not in ckt", ckt)
-                        in_all = False
-                        break
-                if in_all:
-                    self.__log_event(self.__sine_strs[i])
-            self.__log_event(1, "====================================")
-            """
-
             # If one of the new Circuits has a higher fitness than our
             # recorded best, make it the recorded best.
             best_circuit_info = self.get_overall_best_circuit_info()
@@ -285,7 +307,19 @@ class CircuitPopulation:
                 self.__log_event(2, "New best found")
 
             self.__logger.log_generation(self, epoch_time)
+            # The circuits that are protected from randomization
+            self.__protected_elites = []
             self.__run_selection()
+
+            # Remove bottom X% of population to replace with random circuits
+            # (just randomize bitstream of the bottom X%)
+            if self.__config.get_random_injection() > 0:
+                amt = int(self.__config.get_random_injection() * self.__config.get_population_size())
+                circuits_to_randomize = self.__circuits[-amt:]
+                for ckt in circuits_to_randomize:
+                    if ckt not in self.__protected_elites:
+                        ckt.randomize_bits()
+
             self.__next_epoch()
 
             # Calculate the diversity measure
@@ -353,6 +387,7 @@ class CircuitPopulation:
             str(self.get_current_epoch())))
 
         best = self.__circuits[0]
+        self.__protected_elites.append(best)
         for ckt in self.__circuits:
             # Mutate the hardware of every circuit that is not the best
             if ckt != best:
@@ -392,6 +427,7 @@ class CircuitPopulation:
 
         self.__log_event(2, "Elite Group:", elites.keys())
         self.__log_event(2, "Elite Probabilites:", elites.values())
+        self.__protected_elites = elites.keys()
 
         # For all Circuits in this CircuitPopulation, choose a random
         # elite (based on the associated probabilities calculated above)
@@ -413,7 +449,7 @@ class CircuitPopulation:
             else:
                 rand_elite = self.__rand.choice(self.__circuits)
 
-            self.__log_event(2, "Elite", rand_elite)
+            self.__log_event(4, "Elite", rand_elite)
 
             if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite and ckt not in elites:
                 # if self.__config.get_crossover_probability() == 0:
@@ -424,7 +460,7 @@ class CircuitPopulation:
                 if self.__rand.uniform(0, 1) <= self.__config.get_crossover_probability():
                     self.__single_point_crossover(rand_elite, ckt)
                 else:
-                    self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
+                    self.__log_event(4, "Cloning:", rand_elite, " ---> ", ckt)
                     ckt.copy_hardware_from(rand_elite)
                 ckt.mutate()
 
@@ -453,6 +489,7 @@ class CircuitPopulation:
 
         self.__log_event(3, "Elite Group:", elites.keys())
         self.__log_event(3, "Elite Probabilites:", elites.values())
+        self.__protected_elites = elites.keys()
         #self.__log_event(3, "Elite", rand_elite)
 
         # For all Circuits in this CircuitPopulation, choose a random
@@ -508,6 +545,7 @@ class CircuitPopulation:
         # generated above. If the Circuit's fitness is less than than
         # the elite's perform crossover (or clone if crossover is
         # disabled) and then mutate the Circuit.
+        self.__protected_elites = elite_group
         for ckt in self.__circuits:
             rand_elite = self.__rand.choice(elite_group)
             if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite and ckt not in elite_group:
@@ -523,6 +561,63 @@ class CircuitPopulation:
                     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
                     ckt.copy_hardware_from(rand_elite)
                 ckt.mutate()
+
+    def __run_map_elites_selection(self):
+        """
+        This version of map elites will protect the highest-fitness individual in each "square"
+        We're going to have slightly granular squares to make sure that circuits have room to spread out early
+        to hopefully promote diversity
+        Group size length of 50 means we'll have 21x21 groups
+        """
+
+        elite_map = self.__generate_map()
+        # Clone to all non-elites and mutate
+        elites = list(filter(lambda x: x != 0, [j for sub in elite_map for j in sub]))
+
+        self.__protected_elites = elites
+
+        for ckt in self.__circuits:
+            # If not an elite, then we will clone and mutate
+            if ckt not in elites:
+                rand_elite = self.__rand.choice(elites)
+                ckt.copy_hardware_from(rand_elite)
+                ckt.mutate()
+        
+        self.__output_map_file(elite_map)
+
+    def __output_map_file(self, elite_map):
+        with open("workspace/maplivedata.log", "w+") as liveFile:
+            # First line describes granularity/scale factor
+            liveFile.write("{}\n".format(str(ELITE_MAP_SCALE_FACTOR)))
+            # If square is empty, write a "blank" to that line
+            for r in range(len(elite_map)):
+                sl = elite_map[r]
+                for c in range(len(sl)):
+                    ckt = sl[c]
+                    to_write = ""
+                    if ckt != 0:
+                        to_write = str(ckt.get_fitness())
+                    liveFile.write("{} {} {}\n".format(r, c, to_write))
+
+    def __generate_map(self):
+        """
+        Generates the elite map for this generation
+        """
+        # If the value is not a circuit (i.e. it is 0) then we know the spot is open to be filled in
+        # Go up to 21 since upper bound is 1024
+        # Can't do [[0]*21]*21 because this will make all the sub-arrays point to same memory location
+        elite_map = []
+        for i in range(22):
+            elite_map.append([0]*21)
+        # Evaluate each circuit's fitness and where it falls on the elite map
+        # Populate elite map first
+        for ckt in self.__circuits:
+            row = math.floor(ckt.get_low_value() / ELITE_MAP_SCALE_FACTOR)
+            col = math.floor(ckt.get_high_value() / ELITE_MAP_SCALE_FACTOR)
+            if elite_map[row][col] == 0 or ckt.get_fitness() > elite_map[row][col].get_fitness():
+                elite_map[row][col] = ckt
+        return elite_map
+
 
     # SECTION Getters.
     def get_current_best_circuit(self):
@@ -578,7 +673,7 @@ class CircuitPopulation:
         n = len(self.__circuits)
         num_pairs = n * (n-1) / 2
 
-        self.__log_event(2, "Starting Hamming Distance Calculation")
+        self.__log_event(4, "Starting Hamming Distance Calculation")
 
         bitstreams = []
         if self.__config.get_simulation_mode() == "FULLY_SIM":
@@ -589,15 +684,13 @@ class CircuitPopulation:
                 lambda char: char-48, c.get_intrinsic_modifiable_bitstream())), self.__circuits)
         bitstreams = list(bitstreams)
 
-        #self.__log_event(3, "HDIST - Bitstreams mapped", bitstreams)
-
         # We now have all the bitstreams, we can do the faster hamming calculation by comparing each bit of them
         # Then we multiply the count of 1s for that bit by the count of 0s for that bit and add it to the running_total
         # Divide that by # of pairs at the end (calculation shown below)
         running_total = 0
         n = len(self.__circuits)
         num_pairs = n * (n-1) / 2
-        self.__log_event(3, "HDIST - Entering loop")
+        self.__log_event(4, "HDIST - Entering loop")
         for i in range(len(bitstreams[0])):
             ones_count = 0
             zero_count = 0
@@ -607,10 +700,9 @@ class CircuitPopulation:
                 else:
                     ones_count = ones_count + 1
             running_total = running_total + ones_count * zero_count
-            #self.__log_event(3, "HDIST - Added ", ones_count * zero_count)
 
         running_total = running_total / num_pairs
-        self.__log_event(3, "HDIST - Final value", running_total)
+        self.__log_event(4, "HDIST - Final value", running_total)
         return running_total
 
     def count_unique(self):

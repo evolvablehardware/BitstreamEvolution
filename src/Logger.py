@@ -107,6 +107,7 @@ class Logger:
         open("workspace/alllivedata.log", "w").close()
         open("workspace/bestlivedata.log", "w").close()
         open("workspace/waveformlivedata.log", "w").close()
+        open("workspace/maplivedata.log", "w").close()
 
         # Determine if we need to the to initialize the analysis and
         # if so, do so.

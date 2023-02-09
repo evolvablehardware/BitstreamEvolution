@@ -62,6 +62,10 @@ class Circuit:
         self.__src_sine_funcs = sine_funcs
         self.__simulation_bitstream = [0] * 100
 
+        # Values for MAP elites
+        self.__low_val = 0
+        self.__high_val = 0
+
     def randomize_bits(self):
         # Simply set mutation chance to 100%
         if self.__config.get_simulation_mode() == "FULLY_SIM":
@@ -105,7 +109,7 @@ class Circuit:
     # def evaluate(self):
     #     return 
     
-    def evaluate_sim(self):
+    def evaluate_sim(self, is_combined):
         """
         Just evaluate the simulation bitstream (use sine function combinations, with variance formula)
         """
@@ -117,6 +121,11 @@ class Circuit:
                 # Need to calculate sine function for this position
                 sine_funcs.append(self.__src_sine_funcs[pos])
 
+        # Force them to have at least 10 sine functions turned on
+        if len(sine_funcs) <= 10:
+            self.__fitness = 0
+            return 0
+
         # Ok now we need to generate our waveform
         num_samples = 500
         waveform = []
@@ -127,7 +136,10 @@ class Circuit:
             # Taking the average keeps it within the drawable range
             waveform.append(sum / len(sine_funcs))
         
-        return self.__measure_variance_fitness(waveform)
+        if is_combined:
+            return self.__measure_combined_fitness(waveform)
+        else:
+            return self.__measure_variance_fitness(waveform)
 
     def evaluate_sim_hardware(self):
         """
@@ -243,6 +255,9 @@ class Circuit:
         variance_sum = 0
         total_samples = 500
         variances = []
+        # Reset high/low vals to min/max respectively
+        self.__low_val = 1024
+        self.__high_val = 0
         for i in range(len(waveform)-1):
             # NOTE Signal Variance is calculated by summing the absolute difference of
             # sequential voltage samples from the microcontroller.
@@ -255,6 +270,11 @@ class Circuit:
             # Append the variance to the waveform list
             # Removed since we do this already
             #waveform.append(initial1)
+
+            if initial1 < self.__low_val:
+                self.__low_val = initial1
+            if initial1 > self.__high_val:
+                self.__high_val = initial1
 
             # Stability: if we want stable waves, we should want to differences between points to be
             # similar. i.e. we want to minimize the differences between these differences
@@ -337,17 +357,25 @@ class Circuit:
         """
         Calculates the circuit's fitness based on a combination of it's pulse count and variance
         """
-        # Using the different between average and threshhold voltage since pulse count is normally 0
-        # pulseFitness = self.__measure_pulse_fitness()
-        pulseFitness = 1 / (abs(self.__mean_voltage - 341) + 1)
-        pulseWeight = self.__config.get_pulse_weight()
 
-        self.__log_event(3, "Pulse Fitness: ", pulseFitness)
-
+        # need to evaluate var fitness first since it calculates the mean voltage
         varFitness = self.__measure_variance_fitness(waveform)
         varWeight = self.__config.get_var_weight()
 
-        self.__log_event(3, "Variance Fitness: ", varFitness)
+        # Using the different between average and threshhold voltage since pulse count is normally 0
+        # pulseFitness = self.__measure_pulse_fitness()
+        # Add 1 to it so that it is a whole number, and raising to a power will increase the value
+        #pulseFitness = 1 / (abs(self.__mean_voltage - 341) + 1) + 1
+        # Issue with old approach is graph was mostly a straight line with a spike at the target voltage
+        # We've changed to a somewhat normal distribution-like function to provide better encouragement
+        # Constants:
+        # The 341 is the target threshold voltage
+        # The 200 is used as a sort of "standard deviation"-esque variable. Raising it widens the graph
+        pulseFitness = 10 * math.exp(-0.5 * math.pow((self.__mean_voltage - 341) / 200, 2))
+        pulseWeight = self.__config.get_pulse_weight()
+
+        self.__log_event(4, "Pulse Fitness: ", pulseFitness)
+        self.__log_event(4, "Variance Fitness: ", varFitness)
 
         if self.__config.get_fitness_mode() == "ADD":
             self.__fitness = (pulseWeight * pulseFitness) + (varWeight * varFitness)
@@ -437,7 +465,7 @@ class Circuit:
                                 # This now always flips the bit instead of randomly assigning it every time
                                 self.__hardware_file[pos] = 97 - prev
                                 # Note: If prev != 48 or 49, then we changed the wrong value because it was not a 0 or 1 previously
-                                self.__log_event(3, "Mutating:", self, "@(", row, ",", col, ") previous was", prev)
+                                self.__log_event(4, "Mutating:", self, "@(", row, ",", col, ") previous was", prev)
 
             # Find the next logic tile, and start again
             # Will return -1 if .logic_tile isn't found, and the while loop will exit
@@ -528,6 +556,11 @@ class Circuit:
                 self.update_hardware_file(pos, line_size, data)
 
             tile = parent.get_hardware_file().find(b".logic_tile", tile + 1)
+
+    def copy_sim(self, src):
+        self.__simulation_bitstream = []
+        for val in src.get_sim_bitstream():
+            self.__simulation_bitstream.append(val)
 
     # SECTION Functions involving the underlying hardware
 
@@ -643,6 +676,12 @@ class Circuit:
         is_y_valid = y in VALID_TILE_Y
 
         return is_x_valid and is_y_valid
+
+    # Values for MAP elites
+    def get_low_value(self):
+        return self.__low_val
+    def get_high_value(self):
+        return self.__high_val
 
     def __log_event(self, level, *event):
         """

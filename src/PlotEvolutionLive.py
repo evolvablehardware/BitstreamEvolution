@@ -4,26 +4,14 @@ from matplotlib import style
 import configparser
 import re
 from Config import Config
+import math
+import numpy as np
 
 """
 Static parameters can be found and changed in the config.ini file in the root project folder
 DO NOT CHANGE THEM HERE
 """
-config_parser = configparser.ConfigParser()
-config_parser.read("data/config.ini")
-config = Config(config_parser)
 
-style.use('dark_background')
-
-rows = 2
-has_wf_plot = False
-if config.get_simulation_mode() == 'FULLY_INTRINSIC' or config.get_simulation_mode() == 'FULLY_SIM':
-    rows = 3
-    has_wf_plot = True
-
-fig = plt.figure()
-ax1 = fig.add_subplot(rows, 1, 2)
-ax1.set_xticks(range(1, config.get_population_size(), 1))
 def animate_generation(i):
     avg_fitness = []
     graph_data = open('workspace/alllivedata.log','r').read()
@@ -72,8 +60,6 @@ def animate_generation(i):
     ax1.set(xlabel='Circuit Number', ylabel='Fitness', title='Circuit Fitness this Generation')
 
 # fig2 = plt.figure()
-ax2 = fig.add_subplot(rows, 1, 1)
-ax3 = ax2.twinx()
 def animate_epoch(i):
     graph_data = open('workspace/bestlivedata.log','r').read()
     lines = graph_data.split('\n')
@@ -108,8 +94,7 @@ def animate_epoch(i):
     
     ax2.set(xlabel='Generation', ylabel='Fitness', title='Best Circuit Fitness per Generation')
 
-if has_wf_plot:
-    ax4 = fig.add_subplot(rows, 1, 3)
+
 def animate_waveform(i):    
     graph_data = open('workspace/waveformlivedata.log','r').read()
     lines = graph_data.split('\n')
@@ -123,17 +108,103 @@ def animate_waveform(i):
             ys.append(float(y))
     ax4.clear()
     ax4.set_ylim([0, 1000])
-    if config.get_measurement_type() == 'PULSE_COUNT':
-        ax4.plot(pulse_trigger, "r--")
+    ax4.plot(pulse_trigger, "r--")
     ax4.plot(xs, ys, color="blue")
     ax4.set(xlabel='Time (50 mS Total)', ylabel='Voltage (normalized)', title='Current Hardware Waveform')
 
-ani2 = animation.FuncAnimation(fig, animate_epoch)
-# fig3 = plt.figure()
-if has_wf_plot:
-    ani3 = animation.FuncAnimation(fig, animate_waveform, interval=200)
+def animate_map(i):
+    graph_data = open('workspace/maplivedata.log','r').read()
+    lines = graph_data.split('\n')
+    xs = []
+    ys = []
+    sizes = []
+    fits = []
+    colors = []
+    if len(lines) > 0 and len(lines[0]) > 0:
+        scale_factor = int(lines[0])
+        lines.pop(0) # Remove scale factor from the lines set
+
+        for line in lines:
+            vals = line.split(' ')
+            if (len(vals) > 2 and len(vals[2]) > 0):
+                row = int(vals[0])
+                col = int(vals[1])
+                fit = float(vals[2])
+                fits.append(fit)
+                xs.append((col + 0.5) * scale_factor)
+                ys.append((row + 0.5) * scale_factor)
+
+        # We'll make 25 the size of the largest individual, and 1 the size of the smallest
+        min_fit = min(fits)
+        max_fit = max(fits)
+        max_size = 25
+        min_size = 5
+        old_range = max_fit - min_fit
+        new_range = max_size - min_size
+        
+        all_colors = [ 'red', '#ff8000', 'yellow', 'green', 'blue', '#4400ff', 'magenta' ]
+        color_i = 0
+        for f in fits:
+            size = (f - min_fit) * new_range / old_range + min_size
+            sizes.append(size)
+            colors.append(all_colors[color_i])
+            color_i = (color_i + 1) % len(all_colors)
     
-ani = animation.FuncAnimation(fig, animate_generation)
+    ax5.clear()
+
+    # Add a line to the middle that separates possible from impossible cells
+    ax5.plot([0, 1024], [0, 1024], color='#444444', linewidth=0.5)
+
+    ax5.scatter(xs, ys, s=sizes, c=colors)
+
+    ax5.set_xlim(0, 1024)
+    ax5.set_ylim(0, 1024)
+    ax5.set_aspect('equal')
+    #ax5.set_xticks(np.arange(0, 1024, 50), minor=True)
+    #ax5.set_yticks(np.arange(0, 1024, 50), minor=True)
+    #ax5.grid(color = '#363636', which = 'minor')
+    ax5.set(xlabel='Max Voltage (norm)', ylabel='Min Voltage (norm)', title='Elite Map')
+
+config_parser = configparser.ConfigParser()
+config_parser.read("data/config.ini")
+config = Config(config_parser)
+
+style.use('dark_background')
+
+rows = 2
+cols = 1
+has_wf_plot = False
+if (config.get_simulation_mode() == 'FULLY_INTRINSIC' and config.get_fitness_func() != "PULSE_COUNT") or config.get_simulation_mode() == 'FULLY_SIM':
+    rows = rows + 1
+    has_wf_plot = True
+
+has_map_plot = False
+if config.get_selection_type() == 'MAP_ELITES':
+    # Replace the fitness plot with the map plot
+    has_map_plot = True
+
+fig = plt.figure()
+
+ax2 = fig.add_subplot(rows, cols, 1)
+ax3 = ax2.twinx()
+if has_wf_plot:
+    ax4 = fig.add_subplot(rows, cols, 3)
+
+if has_map_plot:
+    ax5 = fig.add_subplot(rows, cols, 2)
+else:
+    ax1 = fig.add_subplot(rows, cols, 2)
+    ax1.set_xticks(range(1, config.get_population_size(), 1))
+
+if has_wf_plot:
+    ani3 = animation.FuncAnimation(fig, animate_waveform)#, interval=200)
+
+if has_map_plot:
+    ani4 = animation.FuncAnimation(fig, animate_map)
+else:
+    ani = animation.FuncAnimation(fig, animate_generation)
+
+ani2 = animation.FuncAnimation(fig, animate_epoch)
 
 plt.subplots_adjust(hspace=0.50)
 plt.show()
