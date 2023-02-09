@@ -166,7 +166,7 @@ class CircuitPopulation:
             # not revert to the original seed-hardware until restarting
             self.__log_event(3, "Mutating to generate pulses")
             for circuit in self.__circuits:
-                circuit.mutate()
+                circuit.randomize_bits()
                 pulses = circuit.evaluate_pulse_count()
                 if (pulses > 0):
                     no_pulses_generated = False
