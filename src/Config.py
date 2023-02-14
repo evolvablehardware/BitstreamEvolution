@@ -148,8 +148,8 @@ class Config:
 	def get_best_file(self):
 		return self.get_logging_parameters("BEST_FILE")
 
-	def get_init_pop_directory(self):
-		return Path(self.get_logging_parameters("SRC_POPULATION_DIR"))
+	def get_src_pops_dir(self):
+		return Path(self.get_logging_parameters("SRC_POPULATIONS_DIR"))
 		
 	# There are 3 log levels (1, 2, 3)
 	# 3 will log the most information, 1 will log the least

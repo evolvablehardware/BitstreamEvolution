@@ -1,4 +1,3 @@
-from os import name
 import os
 import numpy as np
 from typing import NamedTuple
@@ -114,14 +113,24 @@ class CircuitPopulation:
             sine_funcs.append((lambda x,a=a,b=b,c=c,d=d: a * math.sin(b * (x + c)) + d))
             sine_str = "Sine function: " + str(i) + " | y = " + str(a) + " * sin(" + str(b) + " * (x + " + str(c) + ")) + " + str(d)
             self.__sine_strs.append(sine_str)
-            #if self.__config.get_simulation_mode() == "FULLY_SIM":
-                #self.__log_event(1, sine_str)
+
+        if self.__config.get_init_mode() == "EXISTING_POPULATION":
+            # Need to assign where each circuit gets its source from
+            # Get number of subpopulations, then grab random circuits from each
+            subdirectories = next(os.walk(self.__config.get_src_pops_dir()))[1]
+            subdirectory_files = list(map(lambda dir: next(os.walk(self.__config.get_src_pops_dir().joinpath(dir)))[2], subdirectories))
+            # Just going to keep a running count of the index in subdirectories, and when it overflows we'll roll it back
+            subdirectory_index = 0
 
         for index in range(1, self.__config.get_population_size() + 1):
             file_name = "hardware" + str(index)
             # Can set seedArg to FALSE and the circuit will not copy from an existing file
             if self.__config.get_init_mode() == "EXISTING_POPULATION":
-                seedArg = self.__config.get_init_pop_directory().joinpath(file_name + ".asc")
+                #seedArg = self.__config.get_init_pop_directory().joinpath(file_name + ".asc")
+                rand_path = random.choice(subdirectory_files[subdirectory_index])
+                seedArg = self.__config.get_src_pops_dir().joinpath(subdirectories[subdirectory_index]).joinpath(rand_path)
+                print(seedArg)
+                subdirectory_index = (subdirectory_index + 1) % len(subdirectories)
             else:
                 seedArg = SEED_HARDWARE_FILEPATH
             ckt = Circuit(
