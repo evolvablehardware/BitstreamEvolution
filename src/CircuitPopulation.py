@@ -638,6 +638,16 @@ class CircuitPopulation:
                 elite_map[row][col] = ckt
         return elite_map
 
+    def __compare_bitstreams(self, stream1, stream2):
+        """
+        Returns the number of differences between the circuit and the hardware file
+        """
+        diffs = 0
+        for i in range(0, len(stream1)):
+            if stream1[i] != stream2[i]:
+                diffs = diffs + 1
+
+        return diffs
 
     # SECTION Getters.
     def get_current_best_circuit(self):

@@ -471,7 +471,7 @@ class Circuit:
             # Will return -1 if .logic_tile isn't found, and the while loop will exit
             tile = self.__hardware_file.find(b".logic_tile", tile + 1)
 
-    def __get_file_intrinsic_modifiable_bitstream(self, hardware_file):
+    def get_file_intrinsic_modifiable_bitstream(self, hardware_file):
         """
         Returns an array of bytes (that correspond to characters, so they will either be 48 or 49)
         These bytes represent the bits of the circuit's bitstream that can be modified. All other bits are left out
@@ -525,7 +525,7 @@ class Circuit:
         Returns an array of bytes (that correspond to characters, so they will either be 48 or 49)
         These bytes represent the bits of the circuit's bitstream that can be modified. All other bits are left out
         """
-        return self.__get_file_intrinsic_modifiable_bitstream(self.__hardware_file)
+        return self.get_file_intrinsic_modifiable_bitstream(self.__hardware_file)
     
     def copy_genes_from(self, parent, crossover_point):
         """
