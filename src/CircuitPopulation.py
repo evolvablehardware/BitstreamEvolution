@@ -144,7 +144,7 @@ class CircuitPopulation:
             self.__log_event(3, "Created circuit: {0}".format(ckt))
 
         # If map-elites selection method selected, then randomly generate until we fill up 25% of the map
-        if self.__config.get_selection_type() == 'MAP_ELITES':
+        '''if self.__config.get_selection_type() == 'MAP_ELITES':
             self.__log_event(1, 'Randomizing until map is 25% full...')
             elites = list(filter(lambda x: x != 0, [j for sub in self.__generate_map() for j in sub]))
             elite_count = len(elites)
@@ -161,7 +161,7 @@ class CircuitPopulation:
                 elite_map = self.__generate_map()
                 elites = list(filter(lambda x: x != 0, [j for sub in elite_map for j in sub]))
                 elite_count = len(elites)
-                self.__output_map_file(elite_map)
+                self.__output_map_file(elite_map)'''
 
         # Randomize initial circuits until waveform variance or
         # pulses are found
