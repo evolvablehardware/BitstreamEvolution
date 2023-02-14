@@ -13,6 +13,7 @@ from time import time
 from subprocess import run
 import random
 import math
+from mmap import mmap
 
 RANDOMIZE_UNTIL_NOT_SET_ERR_MSG = '''\
 RANDOMIZE_UNTIL not set in config.ini, continuing without randomization'''
@@ -89,6 +90,10 @@ class CircuitPopulation:
         population_size = config.get_population_size()
         self.__n_elites = int(ceil(elitism_fraction * population_size))
 
+        # The "reference" individual hardware files for each population
+        # We use these to determine which population a circuit was "sourced" from
+        self.__reference_files = []
+
     def populate(self):
         """
         Creates initial population.
@@ -119,6 +124,13 @@ class CircuitPopulation:
             # Get number of subpopulations, then grab random circuits from each
             subdirectories = next(os.walk(self.__config.get_src_pops_dir()))[1]
             subdirectory_files = list(map(lambda dir: next(os.walk(self.__config.get_src_pops_dir().joinpath(dir)))[2], subdirectories))
+            self.__reference_files = []
+            for i in range(0, len(subdirectories)):
+                file = open(self.__config.get_src_pops_dir()
+                    .joinpath(subdirectories[i])
+                    .joinpath(subdirectory_files[i][0]), "r+")
+                self.__reference_files.append(mmap(file.fileno(), 0))
+                file.close()
             # Just going to keep a running count of the index in subdirectories, and when it overflows we'll roll it back
             subdirectory_index = 0
 
@@ -129,7 +141,6 @@ class CircuitPopulation:
                 #seedArg = self.__config.get_init_pop_directory().joinpath(file_name + ".asc")
                 rand_path = random.choice(subdirectory_files[subdirectory_index])
                 seedArg = self.__config.get_src_pops_dir().joinpath(subdirectories[subdirectory_index]).joinpath(rand_path)
-                print(seedArg)
                 subdirectory_index = (subdirectory_index + 1) % len(subdirectories)
             else:
                 seedArg = SEED_HARDWARE_FILEPATH

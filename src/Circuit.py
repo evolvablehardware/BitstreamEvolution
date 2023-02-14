@@ -430,7 +430,7 @@ class Circuit:
             
             
             # Check if the position is legal to modify
-            if self.__tile_is_included(pos):
+            if self.__tile_is_included(self.__hardware_file, pos):
                 # Find the start and end of the line; the positions of the \n newline just before and at the end of this line
                 # The start is the newline position + 1, so the first valid bit character
                 # line_size is self-explanatory
@@ -471,16 +471,17 @@ class Circuit:
             # Will return -1 if .logic_tile isn't found, and the while loop will exit
             tile = self.__hardware_file.find(b".logic_tile", tile + 1)
 
-    def get_intrinsic_modifiable_bitstream(self):
+    def __get_file_intrinsic_modifiable_bitstream(self, hardware_file):
         """
         Returns an array of bytes (that correspond to characters, so they will either be 48 or 49)
         These bytes represent the bits of the circuit's bitstream that can be modified. All other bits are left out
         """
+
         # TODO: Convert this to be a single function that takes this functionality and the mutate_actual one. Function takes in a callback to call on each modifiable position
         # Set tile to the first location of the substring ".logic_tile"
         # The b prefix makes the string an instance of the "bytes" type
         # The .logic_tile header indicates that there is a tile, so the "tile" variable stores the starting point of the current tile
-        tile = self.__hardware_file.find(b".logic_tile")
+        tile = hardware_file.find(b".logic_tile")
         
         bitstream = []
         
@@ -488,15 +489,14 @@ class Circuit:
             # Set pos to the position of this tile, but with the length of ".logic_tile" added so it is in front of where we have the x/y coords
             pos = tile + len(".logic_tile")
             
-            
             # Check if the position is legal to modify
-            if self.__tile_is_included(pos):
+            if self.__tile_is_included(hardware_file, pos):
                 # Find the start and end of the line; the positions of the \n newline just before and at the end of this line
                 # The start is the newline position + 1, so the first valid bit character
                 # line_size is self-explanatory
                 # This finds the length of a standard line of bits (so the width of each data-containing line in this tile)
-                line_start = self.__hardware_file.find(b"\n", tile) + 1
-                line_end = self.__hardware_file.find(b"\n", line_start + 1)
+                line_start = hardware_file.find(b"\n", tile) + 1
+                line_end = hardware_file.find(b"\n", line_start + 1)
                 line_size = line_end - line_start + 1
 
                 # Determine which rows we can modify
@@ -511,14 +511,21 @@ class Circuit:
                         # This will get us to individual bits. Our position is now going to be the start of the first line, plus the line size multiplied to get to our desired row,
                         # and finally added to the column (with the int cast to sanitize user input)
                         pos = line_start + line_size * (row - 1) + int(col)
-                        byte = self.__hardware_file[pos]
+                        byte = hardware_file[pos]
                         bitstream.append(byte)
 
             # Find the next logic tile, and start again
             # Will return -1 if .logic_tile isn't found, and the while loop will exit
-            tile = self.__hardware_file.find(b".logic_tile", tile + 1)
+            tile = hardware_file.find(b".logic_tile", tile + 1)
             
         return bitstream
+
+    def get_intrinsic_modifiable_bitstream(self):
+        """
+        Returns an array of bytes (that correspond to characters, so they will either be 48 or 49)
+        These bytes represent the bits of the circuit's bitstream that can be modified. All other bits are left out
+        """
+        return self.__get_file_intrinsic_modifiable_bitstream(self.__hardware_file)
     
     def copy_genes_from(self, parent, crossover_point):
         """
@@ -546,7 +553,7 @@ class Circuit:
         tile = parent_hw_file.find(b".logic_tile")
         while tile > 0:
             pos = tile + len(".logic_tile")
-            if self.__tile_is_included(pos):
+            if self.__tile_is_included(self.__hardware_file, pos):
                 line_start = parent_hw_file.find(b"\n", tile) + 1
                 line_end = parent_hw_file.find(b"\n", line_start + 1)
                 line_size = line_end - line_start + 1
@@ -641,7 +648,7 @@ class Circuit:
         return self.__index
 
     # SECTION Miscellanious helper functions.
-    def __tile_is_included(self, pos):
+    def __tile_is_included(self, hardware_file, pos):
         """
         Determines whether a given tile is available for modificiation.
         NOTE: Tile = the .logic_tile in the asc file.
@@ -663,13 +670,13 @@ class Circuit:
         # However, we have a great problem now: what about multi-digit numbers?
         # Find the space that separates the x and y, and find the end of the line
         # Then, grab the bytes for x, grab the bytes for y, convert to strings, and parse those strings
-        space_pos = self.__hardware_file.find(b" ", pos + 1)
-        eol_pos = self.__hardware_file.find(b"\n", pos)
-        x_bytes = self.__hardware_file[pos:space_pos]
-        y_bytes = self.__hardware_file[space_pos:eol_pos]
+        space_pos = hardware_file.find(b" ", pos + 1)
+        eol_pos = hardware_file.find(b"\n", pos)
+        x_bytes = hardware_file[pos:space_pos]
+        y_bytes = hardware_file[space_pos:eol_pos]
         x_str = x_bytes.decode("utf-8").strip()
         y_str = y_bytes.decode("utf-8").strip()
-        #self.__log_event(3, "Attempting", x_str, ",", y_str, pos, self.__hardware_file[pos:pos + 100].decode("utf-8"), self)
+        #self.__log_event(3, "Attempting", x_str, ",", y_str, pos, hardware_file[pos:pos + 100].decode("utf-8"), self)
         x = int(x_str)
         y = int(y_str)
         is_x_valid = x in VALID_TILE_X
