@@ -86,6 +86,19 @@ class Circuit:
         # Re-map the hardware file
         self.__hardware_file = mmap(hardware_file.fileno(), 0)
         hardware_file.close()
+    
+    def get_info_comment(self):
+        '''
+        Returns the information contained within this circuit's info comment
+        '''
+        index = self.__hardware_file.find(b".comment INFO")
+        if index < 0:
+            return None
+        else:
+            start_index = index + len('.comment INFO ')
+            end_index = self.__hardware_file.find(b'\n', index)
+            line = self.__hardware_file[start_index:end_index]
+            return str(line, 'utf-8')
 
     def randomize_bits(self):
         # Simply set mutation chance to 100%
@@ -590,6 +603,7 @@ class Circuit:
     def __crossover_actual(self, parent, crossover_point):
         """
         Copy part of the hardware file from parent into this circuit's hardware file.
+        Additionally, need to copy the parent's info line
         """
         parent_hw_file = parent.get_hardware_file()
         tile = parent_hw_file.find(b".logic_tile")
@@ -605,6 +619,10 @@ class Circuit:
                 self.update_hardware_file(pos, line_size, data)
 
             tile = parent.get_hardware_file().find(b".logic_tile", tile + 1)
+        
+        # Need to update our info line to the parent's info line
+        comment = parent.get_info_comment()
+        self.set_info_comment(comment)
 
     def copy_sim(self, src):
         self.__simulation_bitstream = []

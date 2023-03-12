@@ -315,8 +315,6 @@ class CircuitPopulation:
                     return'''
                 fitness_sum += fitness
                 reevaulated_circuits.add(circuit)
-
-                circuit.set_info_comment('New Info!')
             epoch_time = time() - start
             self.__circuits = reevaulated_circuits
 
