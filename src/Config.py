@@ -151,12 +151,13 @@ class Config:
 	def get_src_pops_dir(self):
 		return Path(self.get_logging_parameters("SRC_POPULATIONS_DIR"))
 		
-	# There are 3 log levels (1, 2, 3)
-	# 3 will log the most information, 1 will log the least
+	# There are 5 log levels (0-4)
+	# 4 will log the most information, 1 will log the least
+	# 0 will log nothing
 	# So when putting a log level as an arg to a log event, higher numbers = seen less often
 	def get_log_level(self):
 		input = int(self.get_logging_parameters("LOG_LEVEL"))
-		valid_vals = [1, 2, 3, 4]
+		valid_vals = [0, 1, 2, 3, 4]
 		self.check_valid_value("logging level", input, valid_vals)
 		return input
 

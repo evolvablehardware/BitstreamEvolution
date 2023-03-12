@@ -66,6 +66,27 @@ class Circuit:
         self.__low_val = 0
         self.__high_val = 0
 
+    def set_info_comment(self, info):
+        '''
+        Sets the information comment at the top of this circuit's .asc file
+        '''
+        index = self.__hardware_file.find(b".comment INFO")
+        comment_line = ".comment INFO " + info.rstrip("\r\n") + "\n"
+        hardware_file = open(self.__hardware_filepath, "r+")
+        if index < 0:
+            content = hardware_file.read()
+            hardware_file.seek(0, 0)
+            hardware_file.write(comment_line + content)
+        else:
+            lines = hardware_file.readlines()
+            lines[0] = comment_line
+            hardware_file.truncate(0)
+            hardware_file.seek(0)
+            hardware_file.writelines(lines)
+        # Re-map the hardware file
+        self.__hardware_file = mmap(hardware_file.fileno(), 0)
+        hardware_file.close()
+
     def randomize_bits(self):
         # Simply set mutation chance to 100%
         if self.__config.get_simulation_mode() == "FULLY_SIM":

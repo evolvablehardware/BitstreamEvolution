@@ -152,6 +152,9 @@ class CircuitPopulation:
             elif self.__config.get_init_mode() == "CLONE_SEED_MUTATE":
                 # Call mutate once on this circuit
                 ckt.mutate()
+            elif self.__config.get_init_mode() == "EXISTING_POPULATION":
+                # Make sure the circuit puts a line at the top of its .asc file denoting the source population
+                ckt.set_info_comment(str(subdirectory_index))
 
             self.__circuits.add(ckt)
             self.__log_event(3, "Created circuit: {0}".format(ckt))
@@ -312,6 +315,8 @@ class CircuitPopulation:
                     return'''
                 fitness_sum += fitness
                 reevaulated_circuits.add(circuit)
+
+                circuit.set_info_comment('New Info!')
             epoch_time = time() - start
             self.__circuits = reevaulated_circuits
 
