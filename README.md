@@ -406,15 +406,17 @@ is a list of the options, their description, and their possible values:
 | Crossover probability | The probability of replacing a bit in one bitstream from a bit from another during crossover | 0.0 - 1.0 | 0.1 - 0.5 |
 | Elitism fraction | The percentage of most fit circuits to protect from modification in a given generation | 0.0 - 1.0 | 0.1 |
 | Desired frequency | The target frequency of the evolved oscillator | (In Hertz) 1 - 1000000 | 1000 |
-| Selection | The type of selection to perform | SINGLE_ELITE, FRAC_ELITE, CLASSIC_TOURN, FIT_PROP_SEL, RANK_PROP_SEL | CLASSIC_TOURN |
+| Selection | The type of selection to perform | SINGLE_ELITE, FRAC_ELITE, CLASSIC_TOURN, FIT_PROP_SEL, RANK_PROP_SEL | FIT_PROP_SEL |
+| Randomize until | The method used for randomizing the initial population | PULSE, VARIANCE, NO | NO |
 | Variance threshold | The target signal variance from initial random search | 3-8 | 4 |
-| Seed Mode | The method to generate the initial random circuits | *TODO Add Seed Modes to CircuitPopulation.Py and List them here* | RAND_FROM_SEED |
+| Init mode | The method to generate the initial random circuits | CLONE_SEED, CLONE_SEED_MUTATE, RANDOM, EXISTING_POPULATION | RANDOM |
 | Simulation mode | The level of simulation to run | FULLY_INTRINSIC, SIM_HARDWARE, FULLY_SIM | FULLY_INTRINSIC |
 | Diversity measure | The method to use to measure diversity | NONE, UNIQUE, HAMMING_DIST | HAMMING_DIST |
 | Fitness function | The fitness function to use | PULSE_COUNT, VARIANCE, COMBINED |  |
 | Sampling method | Used to filter the collected sample data into one representative value | AVG, OUTLIERS, PERCENTAGE, MEDIAN | MEDIAN |
-| Measurement type | What data to measure | PULSE_COUNT, PULSE_WIDTH | PULSE_COUNT |
+| Measurement type | What data to measure | PULSE_COUNT, PULSE_WIDTH, ADC | PULSE_COUNT |
 | Number of samples | The number of samples to take for each fitness calculation | 1+ | 3 |
+| Random injection | Thr probability of randomly injecting circuits into each generation | 0.0 - 1.0 | 0.0 - 0.15 |
 
 ##### Selection methods
 | Method | Description |
@@ -460,9 +462,9 @@ is a list of the options, their description, and their possible values:
 | Data Directory | The directory to put the data files (MCU read data) | Any directory | ./workspace/experiment_data |
 | Analysis Directory | The directory to put the analysis files | Any directory | ./workspace/analysis |
 | Monitor File Path | The path to put the monitor file | Any file path | ./data/monitor |
-| Log Level | The amount of logs to show; higher log level means more detailed logs are shown | 1-3 | 2 |
-<!--TODO ALIFE2021 Describe these -->
-*TODO Describe these*
+| Best file | The path to put the asc file of the best performing circuit throughout evolution | Any file path | ./workspace/best.asc |
+| Source Populations Directory | The directory consisting of source populations to use in initialization | Any directory | ./workspace/source_populations |
+| Log Level | The amount of logs to show; higher log level means more detailed logs are shown | 1-4 | 2 |
 
 #### System parameters
 | Parameter | Description | Possible Values |
