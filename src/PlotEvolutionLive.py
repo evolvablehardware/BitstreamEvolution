@@ -165,34 +165,36 @@ def animate_map(i):
     #ax5.grid(color = '#363636', which = 'minor')
     ax5.set(xlabel='Max Voltage (norm)', ylabel='Min Voltage (norm)', title='Elite Map')
 
-'''def animate_pops(i):
-    avg_fitness = []
-    graph_data = open('workspace/alllivedata.log','r').read()
+def animate_pops(i):
+    graph_data = open('workspace/poplivedata.log','r').read()
     lines = graph_data.split('\n')
     xs = []
     ys = []
     
+    x = 1
     for line in lines:
         if len(line) > 1:
-            x, y, z = line.split(',')
-            
-            ys.append(float(y))
-    avg = 0.0
-    if sum(ys) > 0:
-        avg = sum(ys)/len(ys)
-    else:
-        avg_fitness.append(avg)
-    ax1.clear()
-    # ax1.plot(xs, ys)
-    ax1.set_xlim([0, config.get_population_size()+1])
-    ax1.plot(target_freq, "r--")
-    ax1.plot(base, "w-")
-    ax1.plot(avg_fitness, color="violet")
-    # ax1.plot.stem(xs,ys,  color="green", use_line_collection=True)
-    ax1.scatter(xs, ys)
-    # plt.stem(xs, ys, markerfmt="bo", linefmt="b-", use_line_collection=True)
-    # plt.plot(xs, ys, color="blue")
-    ax1.set(xlabel='Circuit Number', ylabel='Fitness', title='Circuit Fitness this Generation')'''
+            xs.append(x)
+            x = x + 1
+
+            args = line.split(' ')
+            parsed = []
+            for i in range(len(args)):
+                if len(args[i]) > 0:
+                    parsed.append(int(args[i]))
+            if len(ys) <= 0:
+                # Haven't initialized the y's list yet, lets throw in an empty list for each out our source populations
+                for i in range(len(parsed)):
+                    ys.append([])
+
+            # Now we need to add to ys based on the index in parsed
+            for i in range(len(parsed)):
+                ys[i].append(parsed[i])
+    
+    if len(ys) > 0:
+        ax6.clear()
+        ax6.stackplot(xs, *ys)
+        ax6.set(xlabel='Generation', ylabel='Number from Population', title='Circuits from Each Source Population')
 
 config_parser = configparser.ConfigParser()
 config_parser.read("data/config.ini")
@@ -212,6 +214,11 @@ if config.get_selection_type() == 'MAP_ELITES':
     # Replace the fitness plot with the map plot
     has_map_plot = True
 
+has_pop_plot = False
+if config.get_init_mode() == 'EXISTING_POPULATION':
+    rows = rows + 1
+    has_pop_plot = True
+
 fig = plt.figure()
 
 ax2 = fig.add_subplot(rows, cols, 1)
@@ -225,6 +232,10 @@ else:
     ax1 = fig.add_subplot(rows, cols, 2)
     ax1.set_xticks(range(1, config.get_population_size(), 1))
 
+if has_pop_plot:
+    # Put this plot in the last slot
+    ax6 = fig.add_subplot(rows, cols, rows * cols)
+
 if has_wf_plot:
     ani3 = animation.FuncAnimation(fig, animate_waveform)#, interval=200)
 
@@ -232,6 +243,9 @@ if has_map_plot:
     ani4 = animation.FuncAnimation(fig, animate_map)
 else:
     ani = animation.FuncAnimation(fig, animate_generation)
+
+if has_pop_plot:
+    ani6 = animation.FuncAnimation(fig, animate_pops, interval=500)
 
 ani2 = animation.FuncAnimation(fig, animate_epoch)
 
