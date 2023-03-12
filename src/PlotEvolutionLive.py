@@ -32,7 +32,7 @@ def animate_generation(i):
     base = [config.get_desired_frequency()]*0
     for line in lines:
         if len(line) > 1:
-            x, y = line.split(',')
+            x, y, z = line.split(',')
             if x == "../hardware": x = "hardware0";
             match = re.match(r"([a-z]+)([0-9]+)", x, re.I)
             if match:
@@ -164,6 +164,35 @@ def animate_map(i):
     #ax5.set_yticks(np.arange(0, 1024, 50), minor=True)
     #ax5.grid(color = '#363636', which = 'minor')
     ax5.set(xlabel='Max Voltage (norm)', ylabel='Min Voltage (norm)', title='Elite Map')
+
+'''def animate_pops(i):
+    avg_fitness = []
+    graph_data = open('workspace/alllivedata.log','r').read()
+    lines = graph_data.split('\n')
+    xs = []
+    ys = []
+    
+    for line in lines:
+        if len(line) > 1:
+            x, y, z = line.split(',')
+            
+            ys.append(float(y))
+    avg = 0.0
+    if sum(ys) > 0:
+        avg = sum(ys)/len(ys)
+    else:
+        avg_fitness.append(avg)
+    ax1.clear()
+    # ax1.plot(xs, ys)
+    ax1.set_xlim([0, config.get_population_size()+1])
+    ax1.plot(target_freq, "r--")
+    ax1.plot(base, "w-")
+    ax1.plot(avg_fitness, color="violet")
+    # ax1.plot.stem(xs,ys,  color="green", use_line_collection=True)
+    ax1.scatter(xs, ys)
+    # plt.stem(xs, ys, markerfmt="bo", linefmt="b-", use_line_collection=True)
+    # plt.plot(xs, ys, color="blue")
+    ax1.set(xlabel='Circuit Number', ylabel='Fitness', title='Circuit Fitness this Generation')'''
 
 config_parser = configparser.ConfigParser()
 config_parser.read("data/config.ini")

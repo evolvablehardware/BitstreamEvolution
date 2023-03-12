@@ -171,9 +171,12 @@ class Circuit:
             waveform.append(sum / len(sine_funcs))
         
         if is_combined:
-            return self.__measure_combined_fitness(waveform)
+            fitness = self.__measure_combined_fitness(waveform)
         else:
-            return self.__measure_variance_fitness(waveform)
+            fitness = self.__measure_variance_fitness(waveform)
+
+        self.__update_all_live_data()
+        return fitness
 
     def evaluate_sim_hardware(self):
         """
@@ -190,6 +193,9 @@ class Circuit:
                 byte = f.read(1)
         
         self.__log_event(3, "Fitness: ", self.__fitness)
+
+        self.__update_all_live_data()
+
         return self.__fitness
 
     def evaluate_variance(self):
@@ -209,7 +215,9 @@ class Circuit:
         )
 
         waveform = self.__read_variance_data()
-        return self.__measure_variance_fitness(waveform)
+        fitness = self.__measure_variance_fitness(waveform)
+        self.__update_all_live_data()
+        return fitness
 
     def evaluate_pulse_count(self):
         """
@@ -226,7 +234,9 @@ class Circuit:
             elapsed
         )
 
-        return self.__measure_pulse_fitness()
+        fitness = self.__measure_pulse_fitness()
+        self.__update_all_live_data()
+        return fitness
 
     def evaluate_combined(self):
         """
@@ -243,7 +253,9 @@ class Circuit:
         )
 
         waveform = self.__read_variance_data()
-        return self.__measure_combined_fitness(waveform)
+        fitness = self.__measure_combined_fitness(waveform)
+        self.__update_all_live_data()
+        return fitness
 
     def measure_mean_voltage(self):
         """
@@ -347,30 +359,7 @@ class Circuit:
         var_max_fitness = variance_sum / total_samples
         self.__fitness = var_max_fitness
         self.__mean_voltage = sum(waveform) / len(waveform) #used by combined fitness func
-        
-        # TODO ALIFE2021 Make sure alllivedata.log is cleared before run
-        with open("workspace/alllivedata.log", "br+") as allLive:
-            line = allLive.readline()
-            while line != b'':
-                if line.find(str(self).encode()) >= 0:
-                    allLive.seek(-1 * len(line), SEEK_CUR)
-                    allLive.write(
-                        "{}, {}\n".format(
-                            self,
-                            str(self.__fitness).rjust(8))
-                        .encode()
-                    )
-                    allLive.flush()
-                    return self.__fitness
-                line = allLive.readline()
 
-            allLive.write("{}, {}\n".format(
-                    self,
-                    str(self.__fitness).rjust(8)
-                )
-                .encode()
-            )
-            allLive.flush()
         return self.__fitness
 
     # NOTE Using log files instead of a data buffer in the event of premature termination
@@ -441,6 +430,32 @@ class Circuit:
     def __measure_mean_voltage(self, waveform):
         self.__measure_variance_fitness(waveform)
         return self.__mean_voltage
+
+    def __update_all_live_data(self):
+        # TODO ALIFE2021 Make sure alllivedata.log is cleared before run
+        with open("workspace/alllivedata.log", "br+") as allLive:
+            line = allLive.readline()
+            while line != b'':
+                if line.find(str(self).encode()) >= 0:
+                    allLive.seek(-1 * len(line), SEEK_CUR)
+                    allLive.write(
+                        "{}, {}, {}\n".format(
+                            self,
+                            str(self.__fitness).rjust(8),
+                            self.get_info_comment().rjust(8))
+                        .encode()
+                    )
+                    allLive.flush()
+                    return
+                line = allLive.readline()
+
+            allLive.write("{}, {}, {}\n".format(
+                    self,
+                    str(self.__fitness).rjust(8),
+                    self.get_info_comment().rjust(8))
+                .encode()
+            )
+            allLive.flush()
 
     # SECTION Genetic Algorithm related functions
     

@@ -120,6 +120,7 @@ class CircuitPopulation:
             # Get number of subpopulations, then grab random circuits from each
             subdirectories = next(os.walk(self.__config.get_src_pops_dir()))[1]
             subdirectory_files = list(map(lambda dir: next(os.walk(self.__config.get_src_pops_dir().joinpath(dir)))[2], subdirectories))
+            self.__num_subpops = len(subdirectories)
             '''for i in range(0, len(subdirectories)):
                 file = open(self.__config.get_src_pops_dir()
                     .joinpath(subdirectories[i])
@@ -358,6 +359,7 @@ class CircuitPopulation:
                 diversity = self.count_unique()
             # Providing any invalid measure of diversity will make it constantly 0
 
+            # Write the generation data (avg/best/worst fitness, etc) to file
             with open("workspace/bestlivedata.log", "a") as liveFile:
                 avg = fitness_sum / self.__config.get_population_size()
                 # Format: Epoch, Best Fitness, Worst Fitness, Average Fitness, Ovr Best Fitness, Diversity Measure
@@ -369,6 +371,14 @@ class CircuitPopulation:
                     str(self.get_overall_best_circuit_info().fitness),
                     diversity
                 ))
+            
+            # Write the population counts to file (i.e. count of circuits from each source population)
+            with open("workspace/poplivedata.log", "a") as live_file:
+                counts = [0] * self.__num_subpops
+                for ckt in self.__circuits:
+                    population = int(ckt.get_info_comment())
+                    counts[population] = counts[population] + 1
+                live_file.write(("{} " * self.__num_subpops + "\n").format(*counts))
 
     # SECTION Selection algorithms.
     def __run_classic_tournament(self):
