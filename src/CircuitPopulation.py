@@ -90,10 +90,6 @@ class CircuitPopulation:
         population_size = config.get_population_size()
         self.__n_elites = int(ceil(elitism_fraction * population_size))
 
-        # The "reference" individual hardware files for each population
-        # We use these to determine which population a circuit was "sourced" from
-        self.__reference_files = []
-
     def populate(self):
         """
         Creates initial population.
@@ -124,19 +120,16 @@ class CircuitPopulation:
             # Get number of subpopulations, then grab random circuits from each
             subdirectories = next(os.walk(self.__config.get_src_pops_dir()))[1]
             subdirectory_files = list(map(lambda dir: next(os.walk(self.__config.get_src_pops_dir().joinpath(dir)))[2], subdirectories))
-            self.__reference_files = []
-            for i in range(0, len(subdirectories)):
+            '''for i in range(0, len(subdirectories)):
                 file = open(self.__config.get_src_pops_dir()
                     .joinpath(subdirectories[i])
                     .joinpath(subdirectory_files[i][0]), "r+")
-                self.__reference_files.append(mmap(file.fileno(), 0))
-                file.close()
+                file.close()'''
             # Just going to keep a running count of the index in subdirectories, and when it overflows we'll roll it back
             subdirectory_index = 0
 
         for index in range(1, self.__config.get_population_size() + 1):
             file_name = "hardware" + str(index)
-            # Can set seedArg to FALSE and the circuit will not copy from an existing file
             if self.__config.get_init_mode() == "EXISTING_POPULATION":
                 #seedArg = self.__config.get_init_pop_directory().joinpath(file_name + ".asc")
                 rand_path = random.choice(subdirectory_files[subdirectory_index])
@@ -649,17 +642,6 @@ class CircuitPopulation:
             if elite_map[row][col] == 0 or ckt.get_fitness() > elite_map[row][col].get_fitness():
                 elite_map[row][col] = ckt
         return elite_map
-
-    def __compare_bitstreams(self, stream1, stream2):
-        """
-        Returns the number of differences between the circuit and the hardware file
-        """
-        diffs = 0
-        for i in range(0, len(stream1)):
-            if stream1[i] != stream2[i]:
-                diffs = diffs + 1
-
-        return diffs
 
     # SECTION Getters.
     def get_current_best_circuit(self):
