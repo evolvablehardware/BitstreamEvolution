@@ -196,6 +196,8 @@ class CircuitPopulation:
                 self.log_error(INVALID_VARIANCE_ERR_MSG)
             else:
                 self.__randomize_until_variance()
+        elif self.__config.get_randomization_type() == "VOLTAGE":
+            self.__randomize_until_voltage()
         elif self.__config.get_randomization_type() == "NO":
             self.__log_info(1, "NO randomization mode selected.")
         else:
@@ -211,15 +213,25 @@ class CircuitPopulation:
             # not revert to the original seed-hardware until restarting
             self.__log_event(3, "Randomizing to generate pulses")
             for circuit in self.__circuits:
-                circuit.mutate()
-                # Changed to randomize_bitstream to provide higher search space...
-                # May be a bad idea, since mutate can use seed hardware. We'll see how this one does
-                #circuit.randomize_bits()
+                circuit.randomize_bits()
                 fitness = circuit.evaluate_pulse_count()
                 var_th = self.__config.get_variance_threshold()
                 if (fitness > var_th):
                     no_pulses_generated = False
-                    self.__log_info(3, "Pulse generated! Exiting randomization. Fitness:", fitness)
+                    self.__log_info(1, "Pulse generated! Exiting randomization. Fitness:", fitness)
+                    break
+    
+    def __randomize_until_voltage(self):
+        """
+        Randomizes population until a mean voltage is found near the desired value
+        """
+        while True:
+            self.__log_event(3, "Randomizing to get voltage")
+            for circuit in self.__circuits:
+                circuit.randomize_bits()
+                mean_voltage = circuit.measure_mean_voltage()
+                if (abs(mean_voltage - 341) < 10):
+                    self.__log_info(1, "Voltage Achieved! Exiting randomization. Voltage:", mean_voltage)
                     break
 
     # NOTE This is whole function going to be upgraded to handle a from-scratch circuit seeding process.

@@ -211,6 +211,24 @@ class Circuit:
         waveform = self.__read_variance_data()
         return self.__measure_combined_fitness(waveform)
 
+    def measure_mean_voltage(self):
+        """
+        Upload and run this circuit and take a mean voltage measure
+
+        """
+        start = time()
+        self.__run()
+        self.__microcontroller.measure_signal(self)
+
+        elapsed = time() - start
+        self.__log_event(1,
+            "TIME TAKEN RUNNING AND LOGGING ---------------------- ",
+            elapsed
+        )
+
+        waveform = self.__read_variance_data()
+        return self.__measure_mean_voltage(waveform)
+
     def __run(self):
         """
         Compiles this Circuit, uploads it, and runs it on the FPGA
@@ -386,6 +404,9 @@ class Circuit:
         
         return self.__fitness
  
+    def __measure_mean_voltage(self, waveform):
+        self.__measure_variance_fitness(waveform)
+        return self.__mean_voltage
 
     # SECTION Genetic Algorithm related functions
     

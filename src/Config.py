@@ -55,7 +55,7 @@ class Config:
 
 	def get_randomization_type(self):
 		input = self.get_ga_parameters("RANDOMIZE_UNTIL")
-		valid_vals = ["PULSE", "VARIANCE", "NO"]
+		valid_vals = ["PULSE", "VARIANCE", "VOLTAGE", "NO"]
 		self.check_valid_value("randomization type", input, valid_vals)
 		return input
 
