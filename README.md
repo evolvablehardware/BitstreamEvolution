@@ -472,8 +472,12 @@ is a list of the options, their description, and their possible values:
 | USB Path | The path to the USB device file | Any device file path (e.g. `/dev/ttyUSB0`) |
 
 #### Hardware parameters
-<!--TODO Describe these -->
-*TODO Describe these*
+| Parameter | Description | Possible Values | Recommended Values |
+|-----------|-------------|-----------------|--------------------|
+| Routing | Specifies what surround tiles a logic tile can connect to | MOORE, NEWSE | MOORE |
+| MCU Read Timeout | How long to wait to read from the mcu | 1+ | 1.1|
+| Serial Buad | The baudrate to use for serial communication | 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 31250, 38400, 57600, and 115200 | 115200 |
+| Accessed Columns | The columns in each logic tile's bitstream to modify throughout evolution | List of comma seperated numbers from 0 to 53 | 14,15,24,25,40,41|
 
 ### Running
 From the root directory of BitstreamEvolution run:

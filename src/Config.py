@@ -177,9 +177,6 @@ class Config:
 	def get_accessed_columns(self):
 		return self.get_hardware_parameters("ACCESSED_COLUMNS").split(",")
 
-	def get_protected_columns(self):
-		return self.get_hardware_parameters("PROTECTED_COLUMNS").split(",")
-
 	def get_mcu_read_timeout(self):
 		return float(self.get_hardware_parameters("MCU_READ_TIMEOUT"))
 
