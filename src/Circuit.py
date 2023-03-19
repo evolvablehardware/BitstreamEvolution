@@ -72,13 +72,13 @@ class Circuit:
         '''
         index = self.__hardware_file.find(b".comment FILE_ATTRIBUTES")
         if index < 0:
-            return None
+            return '0'
         else:
             newline_index = self.__hardware_file.find(b'\n', index)
             searchable_area = self.__hardware_file[index:newline_index]
             attr_index = searchable_area.find(bytes(attribute + '={', 'utf-8'))
             if attr_index < 0: # Value doesn't exist yet
-                return None
+                return '0'
             attr_index = attr_index + len(attribute + "={")
             end_index = searchable_area.find(b'}', attr_index)
             value_bytes = searchable_area[attr_index:end_index]
@@ -119,7 +119,6 @@ class Circuit:
                 before_attr = line[:attr_index]
                 after_attr = line[attr_end_index:]
                 line = before_attr + " " + attribute + "={" + value + "} " + after_attr + '\n'
-                print("bf", "'" + before_attr + "'", "af", "'" + after_attr + "'")
             lines[line_index] = line
             hardware_file.truncate(0)
             hardware_file.seek(0)
@@ -128,41 +127,6 @@ class Circuit:
         self.__hardware_file = mmap(hardware_file.fileno(), 0)
         hardware_file.close()
 
-
-
-    def set_info_comment(self, info):
-        '''
-        Sets the information comment at the top of this circuit's .asc file
-        '''
-        index = self.__hardware_file.find(b".comment INFO")
-        comment_line = ".comment INFO " + info.rstrip("\r\n") + "\n"
-        hardware_file = open(self.__hardware_filepath, "r+")
-        if index < 0:
-            content = hardware_file.read()
-            hardware_file.seek(0, 0)
-            hardware_file.write(comment_line + content)
-        else:
-            lines = hardware_file.readlines()
-            lines[0] = comment_line
-            hardware_file.truncate(0)
-            hardware_file.seek(0)
-            hardware_file.writelines(lines)
-        # Re-map the hardware file
-        self.__hardware_file = mmap(hardware_file.fileno(), 0)
-        hardware_file.close()
-    
-    def get_info_comment(self):
-        '''
-        Returns the information contained within this circuit's info comment
-        '''
-        index = self.__hardware_file.find(b".comment INFO")
-        if index < 0:
-            return '0'
-        else:
-            start_index = index + len('.comment INFO ')
-            end_index = self.__hardware_file.find(b'\n', index)
-            line = self.__hardware_file[start_index:end_index]
-            return str(line, 'utf-8')
 
     def randomize_bits(self):
         # Simply set mutation chance to 100%
@@ -506,7 +470,7 @@ class Circuit:
                         "{}, {}, {}\n".format(
                             self,
                             str(self.__fitness).rjust(8),
-                            self.get_info_comment().rjust(8))
+                            self.get_file_attribute('src_population').rjust(8))
                         .encode()
                     )
                     allLive.flush()
@@ -516,7 +480,7 @@ class Circuit:
             allLive.write("{}, {}, {}\n".format(
                     self,
                     str(self.__fitness).rjust(8),
-                    self.get_info_comment().rjust(8))
+                    self.get_file_attribute('src_population').rjust(8))
                 .encode()
             )
             allLive.flush()
@@ -685,23 +649,30 @@ class Circuit:
         Additionally, need to copy the parent's info line
         """
         parent_hw_file = parent.get_hardware_file()
-        tile = parent_hw_file.find(b".logic_tile")
-        while tile > 0:
-            pos = tile + len(".logic_tile")
-            if self.__tile_is_included(self.__hardware_file, pos):
-                line_start = parent_hw_file.find(b"\n", tile) + 1
+        # Need to keep track separately since we can have different-length comments
+        parent_tile = parent_hw_file.find(b".logic_tile")
+        my_tile = self.__hardware_file.find(b".logic_tile")
+        while my_tile > 0:
+            my_pos = my_tile + len(".logic_tile")
+            parent_pos = parent_tile + len(".logic_tile")
+            if self.__tile_is_included(self.__hardware_file, my_pos):
+                line_start = parent_hw_file.find(b"\n", parent_tile) + 1
                 line_end = parent_hw_file.find(b"\n", line_start + 1)
                 line_size = line_end - line_start + 1
 
-                pos = tile + line_size * (crossover_point - 1)
-                data = parent_hw_file[pos:pos + line_size]
-                self.update_hardware_file(pos, line_size, data)
+                my_pos = my_tile + line_size * (crossover_point - 1)
+                parent_pos = parent_tile + line_size * (crossover_point - 1)
 
-            tile = parent.get_hardware_file().find(b".logic_tile", tile + 1)
+                data = parent_hw_file[parent_pos:parent_pos + line_size]
+                self.update_hardware_file(my_pos, line_size, data)
+
+            parent_tile = parent_hw_file.find(b".logic_tile", parent_tile + 1)
+            my_tile = self.__hardware_file.find(b".logic_tile", my_tile + 1)
         
-        # Need to update our info line to the parent's info line
-        comment = parent.get_info_comment()
-        self.set_info_comment(comment)
+        # Need to set our source population to our parent's
+        src_pop = parent.get_file_attribute("src_population")
+        if src_pop != None:
+            self.set_file_attribute("src_population", src_pop)
 
     def copy_sim(self, src):
         self.__simulation_bitstream = []
@@ -815,7 +786,8 @@ class Circuit:
         y_bytes = hardware_file[space_pos:eol_pos]
         x_str = x_bytes.decode("utf-8").strip()
         y_str = y_bytes.decode("utf-8").strip()
-        #self.__log_event(3, "Attempting", x_str, ",", y_str, pos, hardware_file[pos:pos + 100].decode("utf-8"), self)
+        #print("Trying", self, "'" + x_str + "'", "'" + y_str + "'", "Pos was:", pos, "First bit is: ", "'" + str(hardware_file[pos:(pos+20)], 'utf-8') + "'",
+        #    "prev bit is: " + "'" + str(hardware_file[(pos-20):pos], 'utf-8') + "'")
         x = int(x_str)
         y = int(y_str)
         is_x_valid = x in VALID_TILE_X

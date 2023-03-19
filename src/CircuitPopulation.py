@@ -157,7 +157,7 @@ class CircuitPopulation:
                 ckt.mutate()
             elif self.__config.get_init_mode() == "EXISTING_POPULATION":
                 # Make sure the circuit puts a line at the top of its .asc file denoting the source population
-                ckt.set_info_comment(str(subdirectory_index))
+                ckt.set_file_attribute('src_population', str(subdirectory_index))
 
             self.__circuits.add(ckt)
             self.__log_event(3, "Created circuit: {0}".format(ckt))
@@ -352,8 +352,8 @@ class CircuitPopulation:
                     if ckt not in self.__protected_elites:
                         ckt.randomize_bits()
 
-            self.__next_epoch()
             self.__write_to_livedata()
+            self.__next_epoch()
 
 
     def __write_to_livedata(self):
@@ -385,7 +385,7 @@ class CircuitPopulation:
             with open("workspace/poplivedata.log", "a") as live_file:
                 counts = [0] * self.__num_subpops
                 for ckt in self.__circuits:
-                    population = int(ckt.get_info_comment())
+                    population = int(ckt.get_file_attribute('src_population'))
                     counts[population] = counts[population] + 1
                 live_file.write(("{} " * self.__num_subpops + "\n").format(*counts))
 
