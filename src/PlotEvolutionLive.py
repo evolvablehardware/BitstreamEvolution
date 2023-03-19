@@ -170,6 +170,8 @@ def animate_pops(i):
     lines = graph_data.split('\n')
     xs = []
     ys = []
+    ylabels = []
+    ylabel_i = 1
     
     x = 1
     for line in lines:
@@ -188,12 +190,15 @@ def animate_pops(i):
                     ys.append([])
 
             # Now we need to add to ys based on the index in parsed
+            ylabels.append("Population " + str(ylabel_i))
+            ylabel_i = ylabel_i + 1
             for i in range(len(parsed)):
                 ys[i].append(parsed[i])
     
     if len(ys) > 0:
         ax6.clear()
-        ax6.stackplot(xs, *ys)
+        ax6.stackplot(xs, ys, labels=ylabels)
+        ax6.legend(loc='upper right')
         ax6.set(xlabel='Generation', ylabel='Number from Population', title='Circuits from Each Source Population')
 
 config_parser = configparser.ConfigParser()
