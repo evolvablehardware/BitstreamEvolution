@@ -93,7 +93,7 @@ class Circuit:
         '''
         index = self.__hardware_file.find(b".comment INFO")
         if index < 0:
-            return None
+            return '0'
         else:
             start_index = index + len('.comment INFO ')
             end_index = self.__hardware_file.find(b'\n', index)

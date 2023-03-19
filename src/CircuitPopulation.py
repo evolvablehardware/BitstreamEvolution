@@ -115,12 +115,14 @@ class CircuitPopulation:
             sine_str = "Sine function: " + str(i) + " | y = " + str(a) + " * sin(" + str(b) + " * (x + " + str(c) + ")) + " + str(d)
             self.__sine_strs.append(sine_str)
 
+        self.__multiple_populations = False
         if self.__config.get_init_mode() == "EXISTING_POPULATION":
             # Need to assign where each circuit gets its source from
             # Get number of subpopulations, then grab random circuits from each
             subdirectories = next(os.walk(self.__config.get_src_pops_dir()))[1]
             subdirectory_files = list(map(lambda dir: next(os.walk(self.__config.get_src_pops_dir().joinpath(dir)))[2], subdirectories))
             self.__num_subpops = len(subdirectories)
+            self.__multiple_populations = True
             '''for i in range(0, len(subdirectories)):
                 file = open(self.__config.get_src_pops_dir()
                     .joinpath(subdirectories[i])
@@ -372,13 +374,14 @@ class CircuitPopulation:
                     diversity
                 ))
             
-            # Write the population counts to file (i.e. count of circuits from each source population)
-            with open("workspace/poplivedata.log", "a") as live_file:
-                counts = [0] * self.__num_subpops
-                for ckt in self.__circuits:
-                    population = int(ckt.get_info_comment())
-                    counts[population] = counts[population] + 1
-                live_file.write(("{} " * self.__num_subpops + "\n").format(*counts))
+            if self.__multiple_populations:
+                # Write the population counts to file (i.e. count of circuits from each source population)
+                with open("workspace/poplivedata.log", "a") as live_file:
+                    counts = [0] * self.__num_subpops
+                    for ckt in self.__circuits:
+                        population = int(ckt.get_info_comment())
+                        counts[population] = counts[population] + 1
+                    live_file.write(("{} " * self.__num_subpops + "\n").format(*counts))
 
     # SECTION Selection algorithms.
     def __run_classic_tournament(self):
