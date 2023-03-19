@@ -202,6 +202,9 @@ class CircuitPopulation:
         else:
             self.__log_error(1, RANDOMIZE_UNTIL_NOT_SET_ERR_MSG)
 
+        # Output the first data point to live data files
+        self.__write_to_livedata()
+
     def __randomize_until_pulses(self):
         """
         Randomizes population until minimum variance is found
@@ -291,7 +294,6 @@ class CircuitPopulation:
 
             # Evaluate all the Circuits in this CircuitPopulation.
             start = time()
-            fitness_sum = 0
             for circuit in self.__circuits:
                 # If evaluate returns true, then a circuit has surpassed
                 # the threshold and we are done.
@@ -316,7 +318,6 @@ class CircuitPopulation:
                 '''if fitness > self.__config.get_variance_threshold():
                     self.__log_event(1, "{} fitness: {}".format(circuit, fitness))
                     return'''
-                fitness_sum += fitness
                 reevaulated_circuits.add(circuit)
             epoch_time = time() - start
             self.__circuits = reevaulated_circuits
@@ -352,36 +353,41 @@ class CircuitPopulation:
                         ckt.randomize_bits()
 
             self.__next_epoch()
+            self.__write_to_livedata()
 
-            # Calculate the diversity measure
-            diversity = 0
-            if self.__config.get_diversity_measure() == "HAMMING_DIST":
-                diversity = self.avg_hamming_dist()
-            elif self.__config.get_diversity_measure() == "UNIQUE":
-                diversity = self.count_unique()
-            # Providing any invalid measure of diversity will make it constantly 0
 
-            # Write the generation data (avg/best/worst fitness, etc) to file
-            with open("workspace/bestlivedata.log", "a") as liveFile:
-                avg = fitness_sum / self.__config.get_population_size()
-                # Format: Epoch, Best Fitness, Worst Fitness, Average Fitness, Ovr Best Fitness, Diversity Measure
-                liveFile.write("{}, {}, {}, {}, {}, {}\n".format(
-                    str(self.get_current_epoch()),
-                    str(self.__circuits[0].get_fitness()),
-                    str(self.__circuits[-1].get_fitness()),
-                    str(avg),
-                    str(self.get_overall_best_circuit_info().fitness),
-                    diversity
-                ))
-            
-            if self.__multiple_populations:
-                # Write the population counts to file (i.e. count of circuits from each source population)
-                with open("workspace/poplivedata.log", "a") as live_file:
-                    counts = [0] * self.__num_subpops
-                    for ckt in self.__circuits:
-                        population = int(ckt.get_info_comment())
-                        counts[population] = counts[population] + 1
-                    live_file.write(("{} " * self.__num_subpops + "\n").format(*counts))
+    def __write_to_livedata(self):
+        fitness_sum = 0
+        for c in self.__circuits:
+            fitness_sum = fitness_sum + c.get_fitness()
+        # Calculate the diversity measure
+        diversity = 0
+        if self.__config.get_diversity_measure() == "HAMMING_DIST":
+            diversity = self.avg_hamming_dist()
+        elif self.__config.get_diversity_measure() == "UNIQUE":
+            diversity = self.count_unique()
+        # Providing any invalid measure of diversity will make it constantly 0
+        # Write the generation data (avg/best/worst fitness, etc) to file
+        with open("workspace/bestlivedata.log", "a") as liveFile:
+            avg = fitness_sum / self.__config.get_population_size()
+            # Format: Epoch, Best Fitness, Worst Fitness, Average Fitness, Ovr Best Fitness, Diversity Measure
+            liveFile.write("{}, {}, {}, {}, {}, {}\n".format(
+                str(self.get_current_epoch()),
+                str(self.__circuits[0].get_fitness()),
+                str(self.__circuits[-1].get_fitness()),
+                str(avg),
+                str(self.get_overall_best_circuit_info().fitness),
+                diversity
+            ))
+        
+        if self.__multiple_populations:
+            # Write the population counts to file (i.e. count of circuits from each source population)
+            with open("workspace/poplivedata.log", "a") as live_file:
+                counts = [0] * self.__num_subpops
+                for ckt in self.__circuits:
+                    population = int(ckt.get_info_comment())
+                    counts[population] = counts[population] + 1
+                live_file.write(("{} " * self.__num_subpops + "\n").format(*counts))
 
     # SECTION Selection algorithms.
     def __run_classic_tournament(self):
