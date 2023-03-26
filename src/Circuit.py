@@ -66,16 +66,17 @@ class Circuit:
         self.__low_val = 0
         self.__high_val = 0
 
-    def get_file_attribute(self, attribute):
+    @staticmethod
+    def get_file_attribute_st(mmapped_file, attribute):
         '''
-        Gets the value of attribute stored in a comment in the circuit's .asc file
+        Static get file attribute method; allows using without creating a full circuit object
         '''
-        index = self.__hardware_file.find(b".comment FILE_ATTRIBUTES")
+        index = mmapped_file.find(b".comment FILE_ATTRIBUTES")
         if index < 0:
             return '0'
         else:
-            newline_index = self.__hardware_file.find(b'\n', index)
-            searchable_area = self.__hardware_file[index:newline_index]
+            newline_index = mmapped_file.find(b'\n', index)
+            searchable_area = mmapped_file[index:newline_index]
             attr_index = searchable_area.find(bytes(attribute + '={', 'utf-8'))
             if attr_index < 0: # Value doesn't exist yet
                 return '0'
@@ -83,26 +84,28 @@ class Circuit:
             end_index = searchable_area.find(b'}', attr_index)
             value_bytes = searchable_area[attr_index:end_index]
             return str(value_bytes, 'utf-8')
-    
-    def set_file_attribute(self, attribute, value):
+
+    @staticmethod
+    def set_file_attribute_st(hardware_file, attribute, value):
         '''
-        Sets the value of the attribute stored in a comment in the circuit's .asc file
+        Static version of set file attribute; allows using without creating a full circuit object
         '''
         # Check if the comment exists
-        index = self.__hardware_file.find(b".comment FILE_ATTRIBUTES")
-        hardware_file = open(self.__hardware_filepath, "r+")
+        #hardware_file = open(file_path, "r+")
+        mmapped_file = mmap(hardware_file.fileno(), 0)
+        index = mmapped_file.find(b".comment FILE_ATTRIBUTES")
         if index < 0:
             # Create the comment
             comment_line = ".comment FILE_ATTRIBUTES " + attribute + "={" + value + "}\n"
             # This requires re-mapping the self.__hardware_file
-            hardware_file = open(self.__hardware_filepath, "r+")
+            #hardware_file = open(file_path, "r+")
             content = hardware_file.read()
             hardware_file.seek(0, 0)
             hardware_file.write(comment_line + content)
         else:
             # Check if the attribute exists
-            end_index = self.__hardware_file.find(b'\n', index)
-            line = str(self.__hardware_file[index:end_index], 'utf-8')
+            end_index = mmapped_file.find(b'\n', index)
+            line = str(mmapped_file[index:end_index], 'utf-8')
             attr_index = line.find(attribute + "={")
             lines = hardware_file.readlines()
             line_index = 0 # Index of the line that contains the attribute comment
@@ -124,6 +127,22 @@ class Circuit:
             hardware_file.seek(0)
             hardware_file.writelines(lines)
 
+        #self.__hardware_file = mmap(hardware_file.fileno(), 0)
+        #hardware_file.close()
+
+    def get_file_attribute(self, attribute):
+        '''
+        Gets the value of attribute stored in a comment in the circuit's .asc file
+        '''
+        return Circuit.get_file_attribute_st(self.__hardware_file, attribute)
+    
+    def set_file_attribute(self, attribute, value):
+        '''
+        Sets the value of the attribute stored in a comment in the circuit's .asc file
+        '''
+        hardware_file = open(self.__hardware_filepath, "r+")
+        Circuit.set_file_attribute_st(hardware_file, attribute, value)
+        # Re-map our hardware file
         self.__hardware_file = mmap(hardware_file.fileno(), 0)
         hardware_file.close()
 

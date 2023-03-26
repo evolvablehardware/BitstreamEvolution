@@ -37,6 +37,9 @@ ELITE_MAP_SCALE_FACTOR = 50
 # a Circuit (currently its name and fitness)
 CircuitInfo = namedtuple("CircuitInfo", ["name", "fitness"])
 
+# Named tuple for circuit's path and fitness; currently only used for combining populations
+CircuitPathInfo = namedtuple("CircuitPathInfo", ["path", "fitness"])
+
 ELITE_MAP_SCALE_FACTOR = 50
 
 class CircuitPopulation:
@@ -123,21 +126,36 @@ class CircuitPopulation:
             subdirectory_files = list(map(lambda dir: next(os.walk(self.__config.get_src_pops_dir().joinpath(dir)))[2], subdirectories))
             self.__num_subpops = len(subdirectories)
             self.__multiple_populations = True
-            '''for i in range(0, len(subdirectories)):
-                file = open(self.__config.get_src_pops_dir()
-                    .joinpath(subdirectories[i])
-                    .joinpath(subdirectory_files[i][0]), "r+")
-                file.close()'''
-            # Just going to keep a running count of the index in subdirectories, and when it overflows we'll roll it back
+            # Existing population setting, load in all circuits from each population and get the ones with the highest fitness
+            # If any are missing the fitness measure, then we will randomly select them.
+            # We could manually measure their fitnesses, but as of now we've decided that is too slow
+            all_subdir_circuits = []
+            for i in range(len(subdirectories)):
+                # Load every circuit
+                subdir_circuits = SortedKeyList(
+                    key=lambda ckt: -ckt.fitness
+                )
+                for file in subdirectory_files[i]:
+                    path = self.__config.get_src_pops_dir().joinpath(subdirectories[i]).joinpath(file)
+                    hw_file = open(path, "r+")
+                    mmapped_file = mmap(hw_file.fileno(), 0)
+                    hw_file.close()
+                    fitness = int(Circuit.get_file_attribute_st(mmapped_file, "fitness"))
+                    if fitness == None:
+                        fitness = 0
+                    subdir_circuits.add(CircuitPathInfo(path, fitness))
+
+                all_subdir_circuits.append(subdir_circuits)
             subdirectory_index = 0
 
         for index in range(1, self.__config.get_population_size() + 1):
             file_name = "hardware" + str(index)
             if self.__config.get_init_mode() == "EXISTING_POPULATION":
-                #seedArg = self.__config.get_init_pop_directory().joinpath(file_name + ".asc")
-                rand_path = random.choice(subdirectory_files[subdirectory_index])
-                seedArg = self.__config.get_src_pops_dir().joinpath(subdirectories[subdirectory_index]).joinpath(rand_path)
-                subdirectory_index = (subdirectory_index + 1) % len(subdirectories)
+                # Grab the top circuit from the current population, unless it is empty, then we'll jump to the next one
+                while len(all_subdir_circuits[subdirectory_index]) <= 0:
+                    subdirectory_index = (subdirectory_index + 1) % len(all_subdir_circuits)
+                seedArg = all_subdir_circuits[subdirectory_index].pop(0).path
+                subdirectory_index = (subdirectory_index + 1) % len(all_subdir_circuits)
             else:
                 seedArg = SEED_HARDWARE_FILEPATH
             ckt = Circuit(
@@ -314,7 +332,12 @@ class CircuitPopulation:
                         fitness = circuit.evaluate_combined()
                     #fitness = circuit.evaluate_variance()
 
+                # We've got the fitness we're evaluating the circuit off of, so make sure it gets
+                # added to the circuit's file attributes
+                circuit.set_file_attribute("fitness", str(fitness))
+
                 # Commented out for now while we test
+                # Pretty sure this was originally for pulse count only, leaving it commented out since things are working right now
                 '''if fitness > self.__config.get_variance_threshold():
                     self.__log_event(1, "{} fitness: {}".format(circuit, fitness))
                     return'''
