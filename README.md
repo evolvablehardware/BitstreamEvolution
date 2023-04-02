@@ -502,6 +502,19 @@ quit or interrupted for any reason.
 
 A simple fix for this is to disconnect and reconnect the FPGA.
 
+#### Arduino isn’t syncing with the programmer
+When uploading to the arduino, there may be an error: "avrdude: stk500_recv(): programmer is not responding." This occurs when the computer recognizes the arduino as a braille device.
+
+One way of fixing:
+for f in /usr/lib/udev/rules.d/*brltty*.rules; do
+    sudo ln -s /dev/null "/etc/udev/rules.d/$(basename "$f")"
+done
+
+sudo udevadm control --reload-rules
+
+The other, more permanent way:
+sudo apt remove brltty
+
 ## Contributing
 <!--TODO ALIFE2021 define the desired approach -->
 Join the movement! Email derek.whitley1@gmail.com to get added to the Slack group.
