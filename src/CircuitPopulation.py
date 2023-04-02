@@ -279,6 +279,16 @@ class CircuitPopulation:
         """
         self.__current_epoch += 1
 
+    def __should_continue_evo(self):
+        should_continue = True
+        if self.__config.using_n_generations():
+            if self.get_current_epoch() >= self.__config.get_n_generations():
+                should_continue = False
+        if self.__config.using_target_fitness():
+            if self.__overall_best_circuit_info.fitness >= self.__config.get_target_fitness():
+                should_continue = False
+        return should_continue
+
     def evolve(self):
         """
         Runs an evolutionary loop and records the circuit with the highest fitness throughout the loop,
@@ -297,10 +307,10 @@ class CircuitPopulation:
         self.__best_epoch = 0
         self.__next_epoch()
 
-        while(self.get_current_epoch() < self.__config.get_n_generations()):
+        while(self.__should_continue_evo()): #self.get_current_epoch() < self.__config.get_n_generations()):
 
-            self.__log_event(3, "Starting evo cycle", self.get_current_epoch(
-            ), "<", self.__config.get_n_generations(), "?")
+            #self.__log_event(3, "Starting evo cycle", self.get_current_epoch(
+            #), "<", self.__config.get_n_generations(), "?")
 
             # Since sortedcontainers don't update when the value by
             # which an item is sorted gets updated, we have to add the

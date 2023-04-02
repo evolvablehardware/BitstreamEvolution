@@ -29,8 +29,19 @@ class Config:
 	def get_population_size(self):
 		return int(self.get_ga_parameters("POPULATION_SIZE"))
 
+	# Since you can use target fitness instead of gens, we'll need options to see which is turned on
+	# Using both will 
+	def using_n_generations(self):
+		return self.get_ga_parameters("GENERATIONS") != "NONE"
+
 	def get_n_generations(self):
 		return int(self.get_ga_parameters("GENERATIONS"))
+
+	def using_target_fitness(self):
+		return self.get_ga_parameters("TARGET_FITNESS") != "NONE"
+
+	def get_target_fitness(self):
+		return float(self.get_ga_parameters("TARGET_FITNESS"))
 
 	def get_genotypic_length(self):
 		return int(self.get_ga_parameters("GENOTYPIC_LENGTH	"))

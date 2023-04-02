@@ -27,6 +27,8 @@ population = CircuitPopulation(mcu, config, logger)
 population.populate()
 population.evolve()
 
+logger.log_event(0, "Evolution has completed successfully")
+
 # SECTION Clean up resources
 
 
