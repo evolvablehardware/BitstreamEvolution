@@ -289,6 +289,25 @@ class CircuitPopulation:
                 should_continue = False
         return should_continue
 
+    def __eval_ckt(self, circuit):
+        # Biggest difference between Fully Instrinsic and Hardware Sim: The fitness evaluation
+        fitness = 0
+        if self.__config.get_simulation_mode() == "FULLY_SIM":
+            func = self.__config.get_fitness_func()
+            fitness = circuit.evaluate_sim(func == "COMBINED")
+        elif self.__config.get_simulation_mode() == "SIM_HARDWARE":
+            fitness = circuit.evaluate_sim_hardware()
+        else:
+            func = self.__config.get_fitness_func()
+            if func == "PULSE_COUNT":
+                fitness = circuit.evaluate_pulse_count()
+            elif func == "VARIANCE":
+                fitness = circuit.evaluate_variance()
+            elif func == "COMBINED":
+                fitness = circuit.evaluate_combined()
+            #fitness = circuit.evaluate_variance()
+        return fitness
+
     def evolve(self):
         """
         Runs an evolutionary loop and records the circuit with the highest fitness throughout the loop,
@@ -326,21 +345,7 @@ class CircuitPopulation:
                 # If evaluate returns true, then a circuit has surpassed
                 # the threshold and we are done.
 
-                # Biggest difference between Fully Instrinsic and Hardware Sim: The fitness evaluation
-                if self.__config.get_simulation_mode() == "FULLY_SIM":
-                    func = self.__config.get_fitness_func()
-                    fitness = circuit.evaluate_sim(func == "COMBINED")
-                elif self.__config.get_simulation_mode() == "SIM_HARDWARE":
-                    fitness = circuit.evaluate_sim_hardware()
-                else:
-                    func = self.__config.get_fitness_func()
-                    if func == "PULSE_COUNT":
-                        fitness = circuit.evaluate_pulse_count()
-                    elif func == "VARIANCE":
-                        fitness = circuit.evaluate_variance()
-                    elif func == "COMBINED":
-                        fitness = circuit.evaluate_combined()
-                    #fitness = circuit.evaluate_variance()
+                fitness = self.__eval_ckt(circuit)
 
                 # We've got the fitness we're evaluating the circuit off of, so make sure it gets
                 # added to the circuit's file attributes
@@ -387,6 +392,10 @@ class CircuitPopulation:
 
             self.__write_to_livedata()
             self.__next_epoch()
+
+        # We have finished evolution! Lets quickly re-evaluate the top circuit, since it
+        # will then output its waveform
+        self.__eval_ckt(self.__circuits[0])
 
 
     def __write_to_livedata(self):
