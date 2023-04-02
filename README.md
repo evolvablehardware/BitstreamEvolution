@@ -401,7 +401,8 @@ is a list of the options, their description, and their possible values:
 | Parameter | Description | Possible Values | Recommended Values |
 |-----------|-------------|-----------------|--------------------|
 | Population size | The number of circuits to evolve | 2 - 1000+ | 10 - 50 |
-| Generations | The maximum number of generations to iterate through | 2 - 1000+ | 50 - 500 |
+| Generations | The maximum number of generations to iterate through | 2 - 1000+ or NONE | 50 - 500 |
+| Target Fitness | The goal fitness; evolution terminates once any individual reaches this | 1-1000+ or NONE | NONE |
 | Mutation probability | The probability to flip a bit of the bitstream during mutation | 0.0 - 1.0 | (1 / genotypic length) = 0.0021 |
 | Crossover probability | The probability of replacing a bit in one bitstream from a bit from another during crossover | 0.0 - 1.0 | 0.1 - 0.5 |
 | Elitism fraction | The percentage of most fit circuits to protect from modification in a given generation | 0.0 - 1.0 | 0.1 |
