@@ -506,14 +506,18 @@ A simple fix for this is to disconnect and reconnect the FPGA.
 When uploading to the arduino, there may be an error: "avrdude: stk500_recv(): programmer is not responding." This occurs when the computer recognizes the arduino as a braille device.
 
 One way of fixing:
+```bash
 for f in /usr/lib/udev/rules.d/*brltty*.rules; do
     sudo ln -s /dev/null "/etc/udev/rules.d/$(basename "$f")"
 done
 
 sudo udevadm control --reload-rules
+```
 
 The other, more permanent way:
+```bash
 sudo apt remove brltty
+```
 
 ## Contributing
 <!--TODO ALIFE2021 define the desired approach -->
