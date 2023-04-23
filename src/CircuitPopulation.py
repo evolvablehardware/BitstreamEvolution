@@ -93,6 +93,11 @@ class CircuitPopulation:
         population_size = config.get_population_size()
         self.__n_elites = int(ceil(elitism_fraction * population_size))
 
+    @staticmethod
+    def __wipe_folder(dir):
+        for f in os.listdir(dir):
+            os.remove(os.path.join(dir, f))
+
     def populate(self):
         """
         Creates initial population.
@@ -117,6 +122,12 @@ class CircuitPopulation:
             sine_funcs.append((lambda x,a=a,b=b,c=c,d=d: a * math.sin(b * (x + c)) + d))
             sine_str = "Sine function: " + str(i) + " | y = " + str(a) + " * sin(" + str(b) + " * (x + " + str(c) + ")) + " + str(d)
             self.__sine_strs.append(sine_str)
+
+        # Wipe the current folder, so if we go from 100 circuits in one experiment to 50 in the next,
+        # we don't still have 100 (with 50 that we use and 50 residual ones)
+        CircuitPopulation.__wipe_folder(self.__config.get_asc_directory())
+        CircuitPopulation.__wipe_folder(self.__config.get_bin_directory())
+        CircuitPopulation.__wipe_folder(self.__config.get_data_directory())
 
         self.__multiple_populations = False
         if self.__config.get_init_mode() == "EXISTING_POPULATION":

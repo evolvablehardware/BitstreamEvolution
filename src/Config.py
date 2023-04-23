@@ -32,13 +32,13 @@ class Config:
 	# Since you can use target fitness instead of gens, we'll need options to see which is turned on
 	# Using both will 
 	def using_n_generations(self):
-		return self.get_ga_parameters("GENERATIONS") != "NONE"
+		return self.get_ga_parameters("GENERATIONS") != "IGNORE"
 
 	def get_n_generations(self):
 		return int(self.get_ga_parameters("GENERATIONS"))
 
 	def using_target_fitness(self):
-		return self.get_ga_parameters("TARGET_FITNESS") != "NONE"
+		return self.get_ga_parameters("TARGET_FITNESS") != "IGNORE"
 
 	def get_target_fitness(self):
 		return float(self.get_ga_parameters("TARGET_FITNESS"))
