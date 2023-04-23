@@ -91,6 +91,7 @@ def animate_epoch(i):
     ax3.plot(xs, ds, color="#5a70ed") # Generation diversity measure
     ax3.tick_params(axis='y', labelcolor='#5a70ed')
     ax3.set_ylabel('Diversity', color='#5a70ed')
+    ax3.set_ylim(bottom=0)
     
     ax2.set(xlabel='Generation', ylabel='Fitness', title='Best Circuit Fitness per Generation')
 
