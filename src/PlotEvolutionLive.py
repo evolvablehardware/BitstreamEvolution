@@ -202,6 +202,27 @@ def animate_pops(i):
         ax6.legend(loc='upper right')
         ax6.set(xlabel='Generation', ylabel='Number from Population', title='Circuits from Each Source Population')
 
+def anim_violin_plots(i):
+    data = open('workspace/violinlivedata.log','r').read()
+    collections = []
+    gens = []
+    widths = []
+    last = 0
+    lines = data.split('\n')
+    for line in lines:
+        if len(line) > 1:
+            vals = line.split(':')
+            gen = int(vals[0])
+            widths.append((gen - last) * 0.8)
+            last = gen
+            gens.append(gen)
+            pts = vals[1].split(',')
+            collections.append(list(map(lambda x: float(x), pts)))
+
+    if len(collections) > 0:
+        ax7.clear()
+        ax7.violinplot(collections, positions=gens, widths=widths)
+
 config_parser = configparser.ConfigParser()
 config_parser.read("data/config.ini")
 config = Config(config_parser)
@@ -226,6 +247,7 @@ if config.get_init_mode() == 'EXISTING_POPULATION':
     has_pop_plot = True
 
 fig = plt.figure()
+fig2 = plt.figure()
 
 ax2 = fig.add_subplot(rows, cols, 1)
 ax3 = ax2.twinx()
@@ -242,6 +264,8 @@ if has_pop_plot:
     # Put this plot in the last slot
     ax6 = fig.add_subplot(rows, cols, rows * cols)
 
+ax7 = fig2.add_subplot(1, 1, 1)
+
 if has_wf_plot:
     ani3 = animation.FuncAnimation(fig, animate_waveform)#, interval=200)
 
@@ -252,6 +276,8 @@ else:
 
 if has_pop_plot:
     ani6 = animation.FuncAnimation(fig, animate_pops, interval=500)
+
+ani7 = animation.FuncAnimation(fig2, anim_violin_plots)
 
 ani2 = animation.FuncAnimation(fig, animate_epoch)
 

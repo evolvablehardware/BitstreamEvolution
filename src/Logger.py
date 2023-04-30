@@ -109,6 +109,7 @@ class Logger:
         open("workspace/waveformlivedata.log", "w").close()
         open("workspace/maplivedata.log", "w").close()
         open("workspace/poplivedata.log", "w").close()
+        open("workspace/violinlivedata.log", "w").close()
 
         # Determine if we need to the to initialize the analysis and
         # if so, do so.

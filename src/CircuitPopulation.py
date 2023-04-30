@@ -410,6 +410,9 @@ class CircuitPopulation:
 
 
     def __write_to_livedata(self):
+        '''
+        Runs each generation to write data to live data files
+        '''
         fitness_sum = 0
         for c in self.__circuits:
             fitness_sum = fitness_sum + c.get_fitness()
@@ -441,6 +444,13 @@ class CircuitPopulation:
                     population = int(ckt.get_file_attribute('src_population'))
                     counts[population] = counts[population] + 1
                 live_file.write(("{} " * self.__num_subpops + "\n").format(*counts))
+
+        if (self.__current_epoch % 10 == 0) and (self.__current_epoch > 0):
+            with open("workspace/violinlivedata.log", "a") as live_file:
+                fits = []
+                for ckt in self.__circuits:
+                    fits.append(str(ckt.get_fitness()))
+                live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(fits)))
 
     # SECTION Selection algorithms.
     def __run_classic_tournament(self):
