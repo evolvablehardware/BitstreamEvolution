@@ -209,13 +209,12 @@ def anim_violin_plots(i):
     collections = []
     gens = []
     widths = []
-    last = 0
     lines = data.split('\n')
     # Decide which generations to include based on the number to have and the number available
     interval = len(lines) / MAX_VIOLIN_PLOTS
     if len(lines) < MAX_VIOLIN_PLOTS:
         interval = 1
-    # Makes sure the first generation displayed will always be generation 1
+    # Makes sure the first generation displayed will always be generation 2 (the first where we have interesting data)
     index = 1 - interval
     while int(index + interval) < len(lines):
         index = index + interval
@@ -224,11 +223,12 @@ def anim_violin_plots(i):
         if len(line) > 1:
             vals = line.split(':')
             gen = int(vals[0])
-            widths.append((gen - last) * 0.8)
-            last = gen
             gens.append(gen)
             pts = vals[1].split(',')
             collections.append(list(map(lambda x: float(x), pts)))
+
+    for i in range(0, len(collections)):
+        widths.append(interval * 0.5)
 
     if len(collections) > 0:
         ax7.clear()
