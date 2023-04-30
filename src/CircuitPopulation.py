@@ -445,7 +445,7 @@ class CircuitPopulation:
                     counts[population] = counts[population] + 1
                 live_file.write(("{} " * self.__num_subpops + "\n").format(*counts))
 
-        if (self.__current_epoch % 10 == 0) and (self.__current_epoch > 0):
+        if (self.__current_epoch > 0):
             with open("workspace/violinlivedata.log", "a") as live_file:
                 fits = []
                 for ckt in self.__circuits:

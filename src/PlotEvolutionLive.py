@@ -12,6 +12,8 @@ Static parameters can be found and changed in the config.ini file in the root pr
 DO NOT CHANGE THEM HERE
 """
 
+MAX_VIOLIN_PLOTS = 10
+
 def animate_generation(i):
     avg_fitness = []
     graph_data = open('workspace/alllivedata.log','r').read()
@@ -209,7 +211,15 @@ def anim_violin_plots(i):
     widths = []
     last = 0
     lines = data.split('\n')
-    for line in lines:
+    # Decide which generations to include based on the number to have and the number available
+    interval = len(lines) / MAX_VIOLIN_PLOTS
+    if len(lines) < MAX_VIOLIN_PLOTS:
+        interval = 1
+    index = 0
+    while int(index + interval) < len(lines):
+        index = index + interval
+        int_index = int(index)
+        line = lines[int_index]
         if len(line) > 1:
             vals = line.split(':')
             gen = int(vals[0])
