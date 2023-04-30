@@ -215,7 +215,8 @@ def anim_violin_plots(i):
     interval = len(lines) / MAX_VIOLIN_PLOTS
     if len(lines) < MAX_VIOLIN_PLOTS:
         interval = 1
-    index = 0
+    # Makes sure the first generation displayed will always be generation 1
+    index = 1 - interval
     while int(index + interval) < len(lines):
         index = index + interval
         int_index = int(index)
