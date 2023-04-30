@@ -415,7 +415,6 @@ is a list of the options, their description, and their possible values:
 | Diversity measure | The method to use to measure diversity | NONE, UNIQUE, HAMMING_DIST | HAMMING_DIST |
 | Fitness function | The fitness function to use | PULSE_COUNT, VARIANCE, COMBINED |  |
 | Sampling method | Used to filter the collected sample data into one representative value | AVG, OUTLIERS, PERCENTAGE, MEDIAN | MEDIAN |
-| Measurement type | What data to measure | PULSE_COUNT, PULSE_WIDTH, ADC | PULSE_COUNT |
 | Number of samples | The number of samples to take for each fitness calculation | 1+ | 3 |
 | Random injection | Thr probability of randomly injecting circuits into each generation | 0.0 - 1.0 | 0.0 - 0.15 |
 

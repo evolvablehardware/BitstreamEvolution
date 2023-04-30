@@ -84,12 +84,6 @@ class Config:
 		self.check_valid_value("init mode", input, valid_vals)
 		return input
 
-	def get_measurement_type(self):
-		input = self.get_ga_parameters("MEASUREMENT_TYPE")
-		valid_vals = ["ADC", "PULSE_COUNT", "PULSE_WIDTH"]
-		self.check_valid_value("measurement type", input, valid_vals)
-		return input
-
 	def get_num_samples(self):
 		return self.get_ga_parameters("NUM_SAMPLES")
 

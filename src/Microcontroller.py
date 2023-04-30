@@ -154,10 +154,14 @@ class Microcontroller:
             self.__serial.reset_input_buffer()
             self.__serial.reset_output_buffer()
 
-            if(self.__config.get_measurement_type() == "PULSE_WIDTH"):
+            # NOTE: This is the only area where we use measurement_type, a now-removed config param
+            # Need to modify this code as necessary for diff. fitness functions.
+            # Measurement should be determined purely by fitness function, not provided by user
+            '''if(self.__config.get_measurement_type() == "PULSE_WIDTH"):
                 self.__serial.write(b'3')
             else:
-                self.__serial.write(b'1') #pulse count
+                self.__serial.write(b'1') #pulse count'''
+            self.__serial.write(b'1')
 
             start = time()
             self.__log_event(3, "Starting MCU loop...")
