@@ -257,7 +257,7 @@ if config.get_init_mode() == 'EXISTING_POPULATION':
     rows = rows + 1
     has_pop_plot = True
 
-fig = plt.figure()
+fig = plt.figure(figsize=(8,7))
 fig2 = plt.figure()
 
 ax2 = fig.add_subplot(rows, cols, 1)
@@ -293,4 +293,5 @@ ani7 = animation.FuncAnimation(fig2, anim_violin_plots)
 ani2 = animation.FuncAnimation(fig, animate_epoch)
 
 plt.subplots_adjust(hspace=0.50)
+fig.tight_layout(pad=5.0)
 plt.show()
