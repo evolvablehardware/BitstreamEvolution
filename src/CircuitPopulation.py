@@ -151,7 +151,7 @@ class CircuitPopulation:
                     hw_file = open(path, "r+")
                     mmapped_file = mmap(hw_file.fileno(), 0)
                     hw_file.close()
-                    fitness = int(Circuit.get_file_attribute_st(mmapped_file, "fitness"))
+                    fitness = float(Circuit.get_file_attribute_st(mmapped_file, "fitness"))
                     if fitness == None:
                         fitness = 0
                     subdir_circuits.add(CircuitPathInfo(path, fitness))
