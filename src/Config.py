@@ -6,8 +6,10 @@ from pathlib import Path
 FAIL = '\033[91m'
 ENDC = '\033[0m'
 class Config:
-	def __init__(self, config_parser, logger):
+	def __init__(self, config_parser):
 		self.__config_parser = config_parser
+
+	def add_logger(self, logger):
 		self.__logger = logger
 
 	# SECTION Generic getters for options in the various sections.
