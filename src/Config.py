@@ -31,8 +31,8 @@ class Config:
 	# SECTION Getters for GA Parameters.
 	def get_population_size(self):
 		popSize = int(self.get_ga_parameters("POPULATION_SIZE"))
-		if popsize < 1:
-			self.__log_error("Invalid population size " + popSize + "'. Must be greater than zero.")
+		if popSize < 1:
+			self.__log_error(1, "Invalid population size " + str(popSize) + "'. Must be greater than zero.")
 			exit()
 		return popSize
 
@@ -44,13 +44,13 @@ class Config:
 	def get_n_generations(self):
 		try:
 			nGenerations = int(self.get_ga_parameters("GENERATIONS"))
-			if nGenerations < 1:
-				self.__log_error(1, "Invalid number of generations " + nGenerations + "'. Must be greater than zero.")
-				exit()
-			return nGenerations
 		except:
-			self.__log_warning(2, "Non-int user input for number of generations. Assuming that target fitness is being used as a stopping condition instead")
+			self.__log_warning(2, "Non-int user input for number of generations. Assuming that target fitness is being used as a stopping condition instead",)
 			return "IGNORE"
+		if nGenerations < 1:
+			self.__log_error(1, "Invalid number of generations " + str(nGenerations) + "'. Must be greater than zero.")
+			exit()
+		return nGenerations
 
 	def using_target_fitness(self):
 		return self.get_ga_parameters("TARGET_FITNESS") != "IGNORE"
@@ -58,52 +58,48 @@ class Config:
 	def get_target_fitness(self):
 		try:
 			targetFitness = float(self.get_ga_parameters("TARGET_FITNESS"))
-			if targetFitness < 0.0:
-				self.__log_error(1, "Invalid target fitness " + targetFitness + "'. Must be greater than zero.")
-				exit()
-			return targetFitness
 		except:
 			self.__log_warning(2, "Non-int user input for target fitness. Assuming that target fitness is being used as a stopping condition instead")
 			return "IGNORE"
-
-	#not used anywhere
-	def get_genotypic_length(self):
-		return int(self.get_ga_parameters("GENOTYPIC_LENGTH	"))
+		if targetFitness < 0.0:
+			self.__log_error(1, "Invalid target fitness " + str(targetFitness) + "'. Must be greater than zero.")
+			exit()
+		return targetFitness
 
 	def get_mutation_probability(self):
 		prob = float(self.get_ga_parameters("MUTATION_PROBABILITY"))
 		if prob < 0.0:
-			self.__log_error(1, "Invalid mutation probability " + prob + "'. Must be greater than zero.")
+			self.__log_error(1, "Invalid mutation probability " + str(prob) + "'. Must be greater than zero.")
 			exit()
 		if prob > 1.0:
-			self.__log_error(1, "Invalid mutation probability " + prob + "'. Must be less than one.")
+			self.__log_error(1, "Invalid mutation probability " + str(prob) + "'. Must be less than one.")
 			exit()
 		return prob
 
 	def get_crossover_probability(self):
 		prob = float(self.get_ga_parameters("CROSSOVER_PROBABILITY"))
 		if prob < 0.0:
-			self.__log_error(1, "Invalid crossover probability " + prob + "'. Must be greater than zero.")
+			self.__log_error(1, "Invalid crossover probability " + str(prob) + "'. Must be greater than zero.")
 			exit()
 		if prob > 1.0:
-			self.__log_error(1, "Invalid crossover probability " + prob + "'. Must be less than one.")
+			self.__log_error(1, "Invalid crossover probability " + str(prob) + "'. Must be less than one.")
 			exit()
 		return prob
 
 	def get_elitism_fraction(self):
 		frac = float(self.get_ga_parameters("ELITISM_FRACTION"))
 		if frac < 0.0:
-			self.__log_error(1, "Invalid elitism fraction " + frac + "'. Must be greater than zero.")
+			self.__log_error(1, "Invalid elitism fraction " + str(frac) + "'. Must be greater than zero.")
 			exit()
 		if frac > 1.0:
-			self.__log_error(1, "Invalid elistism probability " + frac + "'. Must be less than one.")
+			self.__log_error(1, "Invalid elistism probability " + str(frac) + "'. Must be less than one.")
 			exit()
 		return frac
 
 	def get_desired_frequency(self):
 		desiredFreq = int(self.get_ga_parameters("DESIRED_FREQ"))
 		if desiredFreq < 0:
-			self.__log_error("Invalid desired frequency " + desiredFreq + "'. Must be greater than zero.")
+			self.__log_error(1, "Invalid desired frequency " + str(desiredFreq) + "'. Must be greater than zero.")
 			exit()
 		return desiredFreq
 
@@ -122,17 +118,17 @@ class Config:
 	def get_variance_threshold(self):
 		varThreshold = int(self.get_ga_parameters("VARIANCE_THRESHOLD"))
 		if varThreshold < 0:
-			self.__log_error("Invalid varaince threshold " + varThreshold + "'. Must be greater than zero.")
+			self.__log_error(1, "Invalid varaince threshold " + str(varThreshold) + "'. Must be greater than zero.")
 			exit()
 		return varThreshold
 
 	def get_random_injection(self):
 		frac = float(self.get_ga_parameters("RANDOM_INJECTION"))
 		if frac < 0.0:
-			self.__log_error(1, "Invalid random injection rate " + frac + "'. Must be greater than zero.")
+			self.__log_error(1, "Invalid random injection rate " + str(frac) + "'. Must be greater than zero.")
 			exit()
 		if frac > 1.0:
-			self.__log_error(1, "Invalid random injection rate " + frac + "'. Must be less than one.")
+			self.__log_error(1, "Invalid random injection rate " + str(frac) + "'. Must be less than one.")
 			exit()
 		return frac
 
@@ -214,7 +210,7 @@ class Config:
 	def get_log_level(self):
 		input = int(self.get_logging_parameters("LOG_LEVEL"))
 		valid_vals = [0, 1, 2, 3, 4]
-		self.check_valid_value("logging level", input, valid_vals)
+		#self.check_valid_value("logging level", input, valid_vals)
 		return input
 
 	# SECTION Getters for system parameters.
@@ -239,9 +235,47 @@ class Config:
 
 	def check_valid_value(self, param_name, user_input, allowed_values):
 		if not user_input in allowed_values:
-			self.log_error("Invalid " + param_name + " '" + str(user_input) + "'. Valid selection types are: " + 
+			self.__log_error(1, "Invalid " + param_name + " '" + str(user_input) + "'. Valid selection types are: " + 
 			", ".join(list(map(lambda x: str(x), allowed_values))))
 			exit()
+	
+	def validate_all(self):
+		self.get_population_size()
+		self.using_n_generations()
+		self.get_n_generations()
+		self.using_target_fitness()
+		self.get_target_fitness()
+		self.get_mutation_probability()
+		self.get_crossover_probability()
+		self.get_elitism_fraction()
+		self.get_desired_frequency()
+		self.get_selection_type()
+		self.get_randomization_type()
+		self.get_variance_threshold()
+		self.get_random_injection()
+		self.get_init_mode()
+		self.get_simulation_mode()
+		self.get_diversity_measure()
+		self.get_fitness_func()
+		self.get_fitness_mode()
+		self.get_pulse_weight()
+		self.get_var_weight()
+		self.get_asc_directory()
+		self.get_bin_directory()
+		self.get_data_directory()
+		self.get_analysis_directory()
+		self.get_monitor_file()
+		self.get_launch_monitor()
+		self.get_datetime_format()
+		self.get_best_file()
+		self.get_src_pops_dir()
+		self.get_log_level()
+		self.get_fpga()
+		self.get_usb_path()
+		self.get_routing_type()
+		self.get_serial_baud()
+		self.get_accessed_columns()
+		self.get_mcu_read_timeout()
 		
 	def __log_event(self, level, *event):
 		"""

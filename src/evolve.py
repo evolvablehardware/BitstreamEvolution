@@ -22,6 +22,7 @@ explanation = input("Explain this experiment: ")
 
 logger = Logger(config, explanation)
 config.add_logger(logger)
+config.validate_all()
 mcu = Microcontroller(config, logger)
 population = CircuitPopulation(mcu, config, logger)
 
