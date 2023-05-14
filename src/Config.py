@@ -9,6 +9,9 @@ class Config:
 	def __init__(self, config_parser):
 		self.__config_parser = config_parser
 
+	def add_logger(self, logger):
+		self.__logger = logger
+
 	# SECTION Generic getters for options in the various sections.
 	def get_ga_parameters(self, param):
 		return self.__config_parser.get("GA PARAMETERS", param)
@@ -27,7 +30,11 @@ class Config:
 
 	# SECTION Getters for GA Parameters.
 	def get_population_size(self):
-		return int(self.get_ga_parameters("POPULATION_SIZE"))
+		popSize = int(self.get_ga_parameters("POPULATION_SIZE"))
+		if popSize < 1:
+			self.__log_error(1, "Invalid population size " + str(popSize) + "'. Must be greater than zero.")
+			exit()
+		return popSize
 
 	# Since you can use target fitness instead of gens, we'll need options to see which is turned on
 	# Using both will 
@@ -35,28 +42,66 @@ class Config:
 		return self.get_ga_parameters("GENERATIONS") != "IGNORE"
 
 	def get_n_generations(self):
-		return int(self.get_ga_parameters("GENERATIONS"))
+		try:
+			nGenerations = int(self.get_ga_parameters("GENERATIONS"))
+		except:
+			self.__log_warning(2, "Non-int user input for number of generations. Assuming that target fitness is being used as a stopping condition instead",)
+			return "IGNORE"
+		if nGenerations < 1:
+			self.__log_error(1, "Invalid number of generations " + str(nGenerations) + "'. Must be greater than zero.")
+			exit()
+		return nGenerations
 
 	def using_target_fitness(self):
 		return self.get_ga_parameters("TARGET_FITNESS") != "IGNORE"
 
 	def get_target_fitness(self):
-		return float(self.get_ga_parameters("TARGET_FITNESS"))
-
-	def get_genotypic_length(self):
-		return int(self.get_ga_parameters("GENOTYPIC_LENGTH	"))
+		try:
+			targetFitness = float(self.get_ga_parameters("TARGET_FITNESS"))
+		except:
+			self.__log_warning(2, "Non-int user input for target fitness. Assuming that target fitness is being used as a stopping condition instead")
+			return "IGNORE"
+		if targetFitness < 0.0:
+			self.__log_error(1, "Invalid target fitness " + str(targetFitness) + "'. Must be greater than zero.")
+			exit()
+		return targetFitness
 
 	def get_mutation_probability(self):
-		return float(self.get_ga_parameters("MUTATION_PROBABILITY"))
+		prob = float(self.get_ga_parameters("MUTATION_PROBABILITY"))
+		if prob < 0.0:
+			self.__log_error(1, "Invalid mutation probability " + str(prob) + "'. Must be greater than zero.")
+			exit()
+		if prob > 1.0:
+			self.__log_error(1, "Invalid mutation probability " + str(prob) + "'. Must be less than one.")
+			exit()
+		return prob
 
 	def get_crossover_probability(self):
-		return float(self.get_ga_parameters("CROSSOVER_PROBABILITY"))
+		prob = float(self.get_ga_parameters("CROSSOVER_PROBABILITY"))
+		if prob < 0.0:
+			self.__log_error(1, "Invalid crossover probability " + str(prob) + "'. Must be greater than zero.")
+			exit()
+		if prob > 1.0:
+			self.__log_error(1, "Invalid crossover probability " + str(prob) + "'. Must be less than one.")
+			exit()
+		return prob
 
 	def get_elitism_fraction(self):
-		return float(self.get_ga_parameters("ELITISM_FRACTION"))
+		frac = float(self.get_ga_parameters("ELITISM_FRACTION"))
+		if frac < 0.0:
+			self.__log_error(1, "Invalid elitism fraction " + str(frac) + "'. Must be greater than zero.")
+			exit()
+		if frac > 1.0:
+			self.__log_error(1, "Invalid elistism probability " + str(frac) + "'. Must be less than one.")
+			exit()
+		return frac
 
 	def get_desired_frequency(self):
-		return int(self.get_ga_parameters("DESIRED_FREQ"))
+		desiredFreq = int(self.get_ga_parameters("DESIRED_FREQ"))
+		if desiredFreq < 0:
+			self.__log_error(1, "Invalid desired frequency " + str(desiredFreq) + "'. Must be greater than zero.")
+			exit()
+		return desiredFreq
 
 	def get_selection_type(self):
 		input = self.get_ga_parameters("SELECTION")
@@ -71,10 +116,21 @@ class Config:
 		return input
 
 	def get_variance_threshold(self):
-		return int(self.get_ga_parameters("VARIANCE_THRESHOLD"))
+		varThreshold = int(self.get_ga_parameters("VARIANCE_THRESHOLD"))
+		if varThreshold < 0:
+			self.__log_error(1, "Invalid varaince threshold " + str(varThreshold) + "'. Must be greater than zero.")
+			exit()
+		return varThreshold
 
 	def get_random_injection(self):
-		return float(self.get_ga_parameters("RANDOM_INJECTION"))
+		frac = float(self.get_ga_parameters("RANDOM_INJECTION"))
+		if frac < 0.0:
+			self.__log_error(1, "Invalid random injection rate " + str(frac) + "'. Must be greater than zero.")
+			exit()
+		if frac > 1.0:
+			self.__log_error(1, "Invalid random injection rate " + str(frac) + "'. Must be less than one.")
+			exit()
+		return frac
 
 	# RANDOM (randomizes all available bits), CLONE_SEED (copies one seed individual to every circuit), 
 	# CLONE_SEED_MUTATE (clones the seed but also mutates each individual), EXISTING_POPULATION (uses the existing population files)
@@ -82,15 +138,6 @@ class Config:
 		input = self.get_ga_parameters("INIT_MODE")
 		valid_vals = ["RANDOM", "CLONE_SEED", "CLONE_SEED_MUTATE", "EXISTING_POPULATION"]
 		self.check_valid_value("init mode", input, valid_vals)
-		return input
-
-	def get_num_samples(self):
-		return self.get_ga_parameters("NUM_SAMPLES")
-
-	def get_sampling_method(self):
-		input = self.get_ga_parameters("SAMPLING_METHOD")
-		valid_vals = ["AVG", "MEDIAN", "PERCENTAGE", "OUTLIERS"]
-		self.check_valid_value("sampling method", input, valid_vals)
 		return input
 
 	# We have 3 types of mode. There's FULLY_INTRINSIC, SIM_HARDWARE, and FULLY_SIM
@@ -163,7 +210,7 @@ class Config:
 	def get_log_level(self):
 		input = int(self.get_logging_parameters("LOG_LEVEL"))
 		valid_vals = [0, 1, 2, 3, 4]
-		self.check_valid_value("logging level", input, valid_vals)
+		#self.check_valid_value("logging level", input, valid_vals)
 		return input
 
 	# SECTION Getters for system parameters.
@@ -188,9 +235,72 @@ class Config:
 
 	def check_valid_value(self, param_name, user_input, allowed_values):
 		if not user_input in allowed_values:
-			self.log_error("Invalid " + param_name + " '" + str(user_input) + "'. Valid selection types are: " + 
+			self.__log_error(1, "Invalid " + param_name + " '" + str(user_input) + "'. Valid selection types are: " + 
 			", ".join(list(map(lambda x: str(x), allowed_values))))
 			exit()
+	
+	def validate_all(self):
+		self.get_population_size()
+		self.using_n_generations()
+		self.get_n_generations()
+		self.using_target_fitness()
+		self.get_target_fitness()
+		self.get_mutation_probability()
+		self.get_crossover_probability()
+		self.get_elitism_fraction()
+		self.get_desired_frequency()
+		self.get_selection_type()
+		self.get_randomization_type()
+		self.get_variance_threshold()
+		self.get_random_injection()
+		self.get_init_mode()
+		self.get_simulation_mode()
+		self.get_diversity_measure()
+		self.get_fitness_func()
+		self.get_fitness_mode()
+		self.get_pulse_weight()
+		self.get_var_weight()
+		self.get_asc_directory()
+		self.get_bin_directory()
+		self.get_data_directory()
+		self.get_analysis_directory()
+		self.get_monitor_file()
+		self.get_launch_monitor()
+		self.get_datetime_format()
+		self.get_best_file()
+		self.get_src_pops_dir()
+		self.get_log_level()
+		self.get_fpga()
+		self.get_usb_path()
+		self.get_routing_type()
+		self.get_serial_baud()
+		self.get_accessed_columns()
+		self.get_mcu_read_timeout()
 		
-	def log_error(self, *msg):
-		print("ERROR: ", FAIL, *msg, ENDC)
+	def __log_event(self, level, *event):
+		"""
+		Emit an event-level log. This function is fulfilled through
+		the logger.
+		"""
+		self.__logger.log_event(level, *event)
+
+	def __log_info(self, level, *info):
+		"""
+		Emit an info-level log. This function is fulfilled through
+		the logger.
+		"""
+		self.__logger.log_info(level, *info)
+
+	def __log_error(self, level, *error):
+		"""
+		Emit an error-level log. This function is fulfilled through
+		the logger.
+		"""
+		self.__logger.log_error(level, *error)
+
+	def __log_warning(self, level, *warning):
+		"""
+		Emit a warning-level log. This function is fulfilled through
+		the logger.
+		"""
+		self.__logger.log_warning(level, *warning)
