@@ -414,8 +414,6 @@ is a list of the options, their description, and their possible values:
 | Simulation mode | The level of simulation to run | FULLY_INTRINSIC, SIM_HARDWARE, FULLY_SIM | FULLY_INTRINSIC |
 | Diversity measure | The method to use to measure diversity | NONE, UNIQUE, HAMMING_DIST | HAMMING_DIST |
 | Fitness function | The fitness function to use | PULSE_COUNT, VARIANCE, COMBINED |  |
-| Sampling method | Used to filter the collected sample data into one representative value | AVG, OUTLIERS, PERCENTAGE, MEDIAN | MEDIAN |
-| Number of samples | The number of samples to take for each fitness calculation | 1+ | 3 |
 | Random injection | Thr probability of randomly injecting circuits into each generation | 0.0 - 1.0 | 0.0 - 0.15 |
 
 ##### Selection methods
