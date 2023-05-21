@@ -121,7 +121,7 @@ class Circuit:
                 attr_end_index = line.find('}', attr_index) + 2
                 before_attr = line[:attr_index]
                 after_attr = line[attr_end_index:]
-                line = before_attr + " " + attribute + "={" + value + "} " + after_attr + '\n'
+                line = before_attr + attribute + "={" + value + "} " + after_attr + '\n'
             lines[line_index] = line
             hardware_file.truncate(0)
             hardware_file.seek(0)
