@@ -452,6 +452,12 @@ class CircuitPopulation:
                     fits.append(str(ckt.get_fitness()))
                 live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(fits)))
 
+        with open("workspace/heatmaplivedata.log", "a") as live_file:
+            best = self.__circuits[0]
+            waveform = best.__read_variance_data()
+            live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(waveform)))
+
+
     # SECTION Selection algorithms.
     def __run_classic_tournament(self):
         """
