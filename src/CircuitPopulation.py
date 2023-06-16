@@ -455,10 +455,7 @@ class CircuitPopulation:
         if (self.__current_epoch > 0):
             with open("workspace/heatmaplivedata.log", "a") as live_file:
                 best = self.__circuits[0]
-                wf = []
-                for pt in best._Circuit__read_variance_data():
-                    wf.append(str(pt))
-                live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(wf)))
+                live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(best.get_waveform())))
 
 
     # SECTION Selection algorithms.

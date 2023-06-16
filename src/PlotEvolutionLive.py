@@ -252,8 +252,6 @@ def anim_heatmap(i):
         line = lines[index]
         if len(line) > 1:
             vals = line.split(':')
-            gen = int(vals[0])
-            gens.append(gen)
             pts = vals[1].split(',')
             gens.append(index)
             bins = [0]*HEATMAP_BINS
@@ -264,10 +262,20 @@ def anim_heatmap(i):
 
     ax8.clear()
     if(len(lines) > 1):
-        ax8.imshow(np.transpose(collections), origin='lower')
-    # plt.xticks(ticks=plt.xticks()[0][1:], labels=interval*np.array(plt.xticks()[0][1:]))
-    # plt.yticks(ticks=plt.yticks()[0][1:], labels=bin_size*np.array(plt.yticks()[0][1:]))
-    ax8.tick_params(axis='y', labelcolor='white')
+        ax8.imshow(np.transpose(collections), origin='lower',cmap=plt.colormaps['magma'])
+
+    xlabels = []
+    xlabels.append(str(0))
+    for label in ax8.xaxis.get_ticklabels()[1:]:
+        xlabels.append(str(int(interval*int(label.get_text()))))
+    ax8.set_xticklabels(xlabels)
+
+    ylabels = []
+    ylabels.append(str(0))
+    for label in ax8.yaxis.get_ticklabels()[1:]:
+        ylabels.append(str(int(bin_size*int(label.get_text()))))
+    ax8.set_yticklabels(ylabels)
+
     ax8.set(xlabel='Generation', ylabel='Voltage (Normalized)')
 
 config_parser = configparser.ConfigParser()
