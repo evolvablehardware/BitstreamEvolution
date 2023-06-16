@@ -132,6 +132,7 @@ class Microcontroller:
                 break
 
         self.__log_event(2, "Finished reading microcontroller. Logging data to file.")
+        self.__log_event(5, "Waveform: ", buf)
 
         for i in buf:
             if b"FINISHED" not in i:

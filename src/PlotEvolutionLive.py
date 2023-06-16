@@ -237,7 +237,7 @@ def anim_violin_plots(i):
         ax7.violinplot(collections, positions=gens, widths=widths)
 
 def anim_heatmap(i):
-    data = open('workspace/heatmapdata.log','r').read()
+    data = open('workspace/heatmaplivedata.log','r').read()
     lines = data.split('\n')
     collections = []
     gens = []
@@ -262,12 +262,13 @@ def anim_heatmap(i):
                 bins[int(b)] += 1
             collections.append(list(map(lambda x: float(x), bins)))
 
-    ax2.clear()
-    ax2.imshow(np.transpose(collections), origin='lower')
+    ax8.clear()
+    if(len(lines) > 1):
+        ax8.imshow(np.transpose(collections), origin='lower')
     # plt.xticks(ticks=plt.xticks()[0][1:], labels=interval*np.array(plt.xticks()[0][1:]))
     # plt.yticks(ticks=plt.yticks()[0][1:], labels=bin_size*np.array(plt.yticks()[0][1:]))
-    ax2.tick_params(axis='y', labelcolor='white')
-    ax2.set(xlabel='Generation', ylabel='Voltage (Normalized)')
+    ax8.tick_params(axis='y', labelcolor='white')
+    ax8.set(xlabel='Generation', ylabel='Voltage (Normalized)')
 
 config_parser = configparser.ConfigParser()
 config_parser.read("data/config.ini")
