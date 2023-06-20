@@ -242,7 +242,8 @@ def anim_heatmap(i):
     collections = []
     gens = []
 
-    bin_size = int(1024 / HEATMAP_BINS)
+
+    bin_size = int(1050 / HEATMAP_BINS)
     interval = len(lines) / MAX_HEATMAP_GENS
     if len(lines) < MAX_HEATMAP_GENS:
         interval = 1
@@ -260,21 +261,31 @@ def anim_heatmap(i):
                 bins[int(b)] += 1
             collections.append(list(map(lambda x: float(x), bins)))
 
+
     ax8.clear()
     if(len(lines) > 1):
         ax8.imshow(np.transpose(collections), origin='lower',cmap=plt.colormaps['magma'])
 
+
     xlabels = []
     xlabels.append(str(0))
     for label in ax8.xaxis.get_ticklabels()[1:]:
-        xlabels.append(str(int(interval*int(label.get_text()))))
+        if "−" in label.get_text():
+            xlabels.append(str(0))
+        else:
+            xlabels.append(str(int(interval*float(label.get_text()))))
     ax8.set_xticklabels(xlabels)
+
 
     ylabels = []
     ylabels.append(str(0))
     for label in ax8.yaxis.get_ticklabels()[1:]:
-        ylabels.append(str(int(bin_size*int(label.get_text()))))
+        if "−" in label.get_text():
+            ylabels.append(str(0))
+        else:
+            ylabels.append(str(int(bin_size*float(label.get_text()))))
     ax8.set_yticklabels(ylabels)
+
 
     ax8.set(xlabel='Generation', ylabel='Voltage (Normalized)')
 
