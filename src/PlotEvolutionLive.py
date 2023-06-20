@@ -13,6 +13,8 @@ DO NOT CHANGE THEM HERE
 """
 
 MAX_VIOLIN_PLOTS = 10
+MAX_HEATMAP_GENS = 50
+HEATMAP_BINS = 32 
 
 def animate_generation(i):
     avg_fitness = []
@@ -234,6 +236,48 @@ def anim_violin_plots(i):
         ax7.clear()
         ax7.violinplot(collections, positions=gens, widths=widths)
 
+def anim_heatmap(i):
+    data = open('workspace/heatmaplivedata.log','r').read()
+    lines = data.split('\n')
+    collections = []
+    gens = []
+
+    bin_size = int(1024 / HEATMAP_BINS)
+    interval = len(lines) / MAX_HEATMAP_GENS
+    if len(lines) < MAX_HEATMAP_GENS:
+        interval = 1
+    index = -interval
+    while int(index + interval) < len(lines):
+        index = int(index + interval)
+        line = lines[index]
+        if len(line) > 1:
+            vals = line.split(':')
+            pts = vals[1].split(',')
+            gens.append(index)
+            bins = [0]*HEATMAP_BINS
+            for point in pts:
+                b = int(point) / bin_size
+                bins[int(b)] += 1
+            collections.append(list(map(lambda x: float(x), bins)))
+
+    ax8.clear()
+    if(len(lines) > 1):
+        ax8.imshow(np.transpose(collections), origin='lower',cmap=plt.colormaps['magma'])
+
+    xlabels = []
+    xlabels.append(str(0))
+    for label in ax8.xaxis.get_ticklabels()[1:]:
+        xlabels.append(str(int(interval*int(label.get_text()))))
+    ax8.set_xticklabels(xlabels)
+
+    ylabels = []
+    ylabels.append(str(0))
+    for label in ax8.yaxis.get_ticklabels()[1:]:
+        ylabels.append(str(int(bin_size*int(label.get_text()))))
+    ax8.set_yticklabels(ylabels)
+
+    ax8.set(xlabel='Generation', ylabel='Voltage (Normalized)')
+
 config_parser = configparser.ConfigParser()
 config_parser.read("data/config.ini")
 config = Config(config_parser)
@@ -289,6 +333,10 @@ if has_pop_plot:
     ani6 = animation.FuncAnimation(fig, animate_pops, interval=500)
 
 ani7 = animation.FuncAnimation(fig2, anim_violin_plots)
+
+fig3 = plt.figure()
+ax8 = fig3.add_subplot(1,1,1)
+ani8 = animation.FuncAnimation(fig3, anim_heatmap)
 
 ani2 = animation.FuncAnimation(fig, animate_epoch)
 

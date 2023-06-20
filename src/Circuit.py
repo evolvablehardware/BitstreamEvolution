@@ -355,6 +355,12 @@ class Circuit:
                 waveform.append(0)
         return waveform
 
+    def get_waveform(self):
+        wf = []
+        for pt in self.__read_variance_data():
+            wf.append(str(pt))
+        return wf
+
     # NOTE Using log files instead of a data buffer in the event of premature termination
     def __measure_variance_fitness(self, waveform):
         """
