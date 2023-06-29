@@ -220,6 +220,23 @@ class Config:
 	def get_usb_path(self):
 		return self.get_system_parameters("USB_PATH")
 
+	def using_transfer_interval(self):
+		return self.get_system_parameters("TRANSFER_INTERVAl") != "IGNORE"
+
+	def get_transfer_interval(self):
+		try:
+			interval = int(self.get_system_parameters("TRANSFER_INTERVAl"))
+		except:
+			self.__log_info(2, "Non-int user input for transfer interval. Evolution will occur on only one FPGA",)
+			return "IGNORE"
+		if interval < 1:
+			self.__log_error(1, "Invalid transfer interval size " + str(interval) + "'. Must be greater than zero.")
+			exit()
+		return interval
+	
+	def get_usb_path2(self):
+		return self.get_system_parameters("USB_PATH2")
+
 	# SECTION Getters for hardware parameters
 	def get_routing_type(self):
 		return self.get_hardware_parameters("ROUTING")

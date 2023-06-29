@@ -404,6 +404,10 @@ class CircuitPopulation:
             self.__write_to_livedata()
             self.__next_epoch()
 
+            if self.__config.using_transfer_interval():
+                if self.__current_epoch % self.__config.get_transfer_interval() == 0:
+                    self.__microcontroller.switch_serial()
+
         # We have finished evolution! Lets quickly re-evaluate the top circuit, since it
         # will then output its waveform
         self.__eval_ckt(self.__circuits[0])
