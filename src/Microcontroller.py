@@ -19,23 +19,26 @@ class Microcontroller:
         self.__logger = logger
         self.__config = config
         self.__log_event(1, "MCU SETTINGS ================================", config.get_usb_path(), config.get_serial_baud())
-        self.__serial1 =  Serial(
+        self.__serial =  Serial(
             config.get_usb_path(),
             config.get_serial_baud(),
         )
-        self.__serial2 =  Serial(
-            config.get_usb_path2(),
-            config.get_serial_baud(),
-        )
-        self.__serial1.dtr = False
-        self.__serial2.dtr = False
-        self.__serial = self.__serial1
+        self.__serial.dtr = False
+        self.__fpga = config.get_fpga()
 
     def switch_serial(self):
-        if(self.__serial == self.__serial1):
-            self.__serial = self.__serial2
-        else:
-            self.__serial = self.__serial1
+        self.__serial.reset_input_buffer()
+        self.__serial.reset_output_buffer()
+        self.__log_event(2, "Switching FPGAs")
+        self.__serial.write(b'4') 
+        if self.__fpga == self.__config.get_fpga():
+            self.__fpga = self.__config.get_fpga2()
+        else :
+            self.__fpga = self.__config.get_fpga()
+        self.__log_event(2, "Done switching FPGAs")
+
+    def get_fpga(self):
+        return self.__fpga
 
     def measure_pulses(self, circuit):
         samples = 2

@@ -131,6 +131,20 @@ class Config:
 			self.__log_error(1, "Invalid random injection rate " + str(frac) + "'. Must be less than one.")
 			exit()
 		return frac
+	
+	def using_transfer_interval(self):
+		return self.get_ga_parameters("TRANSFER_INTERVAl") != "IGNORE"
+
+	def get_transfer_interval(self):
+		try:
+			interval = int(self.get_ga_parameters("TRANSFER_INTERVAl"))
+		except:
+			self.__log_info(2, "Non-int user input for transfer interval. Evolution will occur on only one FPGA",)
+			return "IGNORE"
+		if interval < 1:
+			self.__log_error(1, "Invalid transfer interval size " + str(interval) + "'. Must be greater than zero.")
+			exit()
+		return interval
 
 	# RANDOM (randomizes all available bits), CLONE_SEED (copies one seed individual to every circuit), 
 	# CLONE_SEED_MUTATE (clones the seed but also mutates each individual), EXISTING_POPULATION (uses the existing population files)
@@ -216,26 +230,12 @@ class Config:
 	# SECTION Getters for system parameters.
 	def get_fpga(self):
 		return self.get_system_parameters("FPGA")
+	
+	def get_fpga2(self):
+		return self.get_system_parameters("FPGA2")
 
 	def get_usb_path(self):
 		return self.get_system_parameters("USB_PATH")
-
-	def using_transfer_interval(self):
-		return self.get_system_parameters("TRANSFER_INTERVAl") != "IGNORE"
-
-	def get_transfer_interval(self):
-		try:
-			interval = int(self.get_system_parameters("TRANSFER_INTERVAl"))
-		except:
-			self.__log_info(2, "Non-int user input for transfer interval. Evolution will occur on only one FPGA",)
-			return "IGNORE"
-		if interval < 1:
-			self.__log_error(1, "Invalid transfer interval size " + str(interval) + "'. Must be greater than zero.")
-			exit()
-		return interval
-	
-	def get_usb_path2(self):
-		return self.get_system_parameters("USB_PATH2")
 
 	# SECTION Getters for hardware parameters
 	def get_routing_type(self):
