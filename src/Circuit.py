@@ -353,6 +353,8 @@ class Circuit:
                     i
                 ))
                 waveform.append(0)
+
+        self.__log_event(5, "Waveform: ", waveform) 
         return waveform
 
     def get_waveform(self):
