@@ -116,7 +116,7 @@ class Config:
 		return input
 
 	def get_variance_threshold(self):
-		varThreshold = int(self.get_ga_parameters("VARIANCE_THRESHOLD"))
+		varThreshold = float(self.get_ga_parameters("VARIANCE_THRESHOLD"))
 		if varThreshold < 0:
 			self.__log_error(1, "Invalid varaince threshold " + str(varThreshold) + "'. Must be greater than zero.")
 			exit()

@@ -272,13 +272,24 @@ class CircuitPopulation:
         Randomizes population until minimum variance is found
         """
         # Variance threshold is the desired variance
+        bestVariance = 0
         variance = 0
-        while variance < self.__config.get_variance_threshold():
+        while bestVariance < self.__config.get_variance_threshold():
             self.__log_event(3, "Randomizing to generate variance")
             for circuit in self.__circuits:
                 circuit.randomize_bits()
                 variance = circuit.evaluate_variance()
                 self.__log_info(3, "Variance generated:", variance)
+
+                with open("workspace/randomizationdata.log", "a") as liveFile:
+                    liveFile.write(str(variance) + "\n")
+
+                if variance > bestVariance:
+                    self.__log_info(3, "New best variance: ", variance)
+                    bestVariance = variance
+                    self.__overall_best_circuit_info = CircuitInfo(str(circuit), variance)
+                    copyfile(circuit.get_hardware_file_path(), self.__config.get_best_file())
+                    break
 
         self.__log_info(3, "Variance generated! Exiting randomization. Fitness:", variance)
 
