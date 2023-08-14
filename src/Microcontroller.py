@@ -18,12 +18,13 @@ class Microcontroller:
     def __init__(self, config, logger):
         self.__logger = logger
         self.__config = config
-        self.__log_event(1, "MCU SETTINGS ================================", config.get_usb_path(), config.get_serial_baud())
-        self.__serial =  Serial(
-            config.get_usb_path(),
-            config.get_serial_baud(),
-        )
-        self.__serial.dtr = False
+        if config.get_simulation_mode() == "FULLY_INTRINSIC":
+            self.__log_event(1, "MCU SETTINGS ================================", config.get_usb_path(), config.get_serial_baud())
+            self.__serial =  Serial(
+                config.get_usb_path(),
+                config.get_serial_baud(),
+            )
+            self.__serial.dtr = False
 
     def measure_pulses(self, circuit):
         samples = 2
