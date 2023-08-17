@@ -11,12 +11,9 @@ from CircuitPopulation import CircuitPopulation
 from Circuit import Circuit
 from Config import Config
 from Logger import Logger
-from configparser import ConfigParser
 from subprocess import run
 
-config_parser = ConfigParser()
-config_parser.read("data/config.ini")
-config = Config(config_parser)
+config = Config("data/config.ini")
 
 explanation = input("Explain this experiment: ")
 

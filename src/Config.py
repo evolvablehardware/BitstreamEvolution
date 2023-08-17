@@ -1,4 +1,5 @@
 from pathlib import Path
+from configparser import ConfigParser
 
 # TODO Add handling for missing values
 # NOTE Fails ungracefully at missing values currently
@@ -6,8 +7,10 @@ from pathlib import Path
 FAIL = '\033[91m'
 ENDC = '\033[0m'
 class Config:
-	def __init__(self, config_parser):
-		self.__config_parser = config_parser
+	def __init__(self, filename):
+		self.__config_parser = ConfigParser()
+		self.__config_parser.read(filename)
+		self.__filename = filename
 
 	def add_logger(self, logger):
 		self.__logger = logger
@@ -192,7 +195,8 @@ class Config:
 		return Path(self.get_logging_parameters("MONITOR_FILE"))
 
 	def get_launch_monitor(self):
-		return bool(self.get_logging_parameters("LAUNCH_MONITOR"))
+		input = self.get_logging_parameters("LAUNCH_MONITOR")
+		return input == "true" or input == "True"	
 
 	def get_datetime_format(self):
 		return self.get_logging_parameters("DATETIME_FORMAT")
@@ -248,18 +252,18 @@ class Config:
 		self.get_mutation_probability()
 		self.get_crossover_probability()
 		self.get_elitism_fraction()
-		self.get_desired_frequency()
+		# self.get_desired_frequency()
 		self.get_selection_type()
 		self.get_randomization_type()
-		self.get_variance_threshold()
+		# self.get_variance_threshold()
 		self.get_random_injection()
 		self.get_init_mode()
 		self.get_simulation_mode()
 		self.get_diversity_measure()
 		self.get_fitness_func()
-		self.get_fitness_mode()
-		self.get_pulse_weight()
-		self.get_var_weight()
+		# self.get_fitness_mode()
+		# self.get_pulse_weight()
+		# self.get_var_weight()
 		self.get_asc_directory()
 		self.get_bin_directory()
 		self.get_data_directory()
@@ -268,14 +272,14 @@ class Config:
 		self.get_launch_monitor()
 		self.get_datetime_format()
 		self.get_best_file()
-		self.get_src_pops_dir()
+		# self.get_src_pops_dir()
 		self.get_log_level()
-		self.get_fpga()
-		self.get_usb_path()
-		self.get_routing_type()
-		self.get_serial_baud()
-		self.get_accessed_columns()
-		self.get_mcu_read_timeout()
+		# self.get_fpga()
+		# self.get_usb_path()
+		# self.get_routing_type()
+		# self.get_serial_baud()
+		# self.get_accessed_columns()
+		# self.get_mcu_read_timeout()
 		
 	def __log_event(self, level, *event):
 		"""
@@ -304,3 +308,9 @@ class Config:
 		the logger.
 		"""
 		self.__logger.log_warning(level, *warning)
+
+	# used by the logger to store a back-up of the config
+	# probably not the cleanest way to do this
+	def get_raw_data(self):
+		f = open(self.__filename, "r")
+		return f.read()

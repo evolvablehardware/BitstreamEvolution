@@ -1,5 +1,6 @@
 # config
 data/config.ini
+data/monitor
 
 # no need to include temp files
 workspace/

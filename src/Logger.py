@@ -67,33 +67,37 @@ class Logger:
 
     def __init_monitor(self):
         # Start the monitor
-        self.log_event(1, "Creating the monitor file...")
+        # self.log_event(1, "Creating the monitor file...")
 
         self.log_monitor(1, "{}{}".format(
             "Evolutionary Experiment Monitor".center(LINE_WIDTH),
             "\n"
         ))
-        self.log_monitor(1, "{}\n".format(DOUBLE_HLINE))
-        self.log_monitor(1, "Parameters and updates load during circuit evaluation")
-        self.log_monitor(1, ".\n" * 23)
+        self.log_monitor(1, "{}".format(DOUBLE_HLINE))
+        # self.log_monitor(1, "Parameters and updates load during circuit evaluation")
+        # self.log_monitor(1, ".\n" * 23)
+        self.log_monitor(1, str(self.__experiment_explanation))
+        self.log_monitor(1, "{}".format(DOUBLE_HLINE))
+        self.log_monitor(1, self.__config.get_raw_data())
+        self.log_monitor(1, "{}".format(DOUBLE_HLINE))
         self.__monitor_file.flush()
 
-        args = TERM_CMD + ["python3", "src/Monitor.py"]
-        try:
-            run(args, check=True, capture_output=True)
-        except OSError as e:
-            self.log_error(1, "An error occured while launching the process")
-        except CalledProcessError as e:
-            self.log_error(1, "An error occured in the launched process")
+        # args = TERM_CMD + ["python3", "src/Monitor.py"]
+        # try:
+        #     run(args, check=True, capture_output=True)
+        # except OSError as e:
+        #     self.log_error(1, "An error occured while launching Monitor.py")
+        # except CalledProcessError as e:
+        #     self.log_error(1, "An error occured in Monitor.py")
 
         self.log_event(1, "Launching the Live Plot window...")
         args = TERM_CMD + ["python3", "src/PlotEvolutionLive.py"]
         try:
             run(args, check=True, capture_output=True)
         except OSError as e:
-            self.log_error(1, "An error occured while launching the process")
+            self.log_error(1, "An error occured while launching PlotEvolutionLive.py")
         except CalledProcessError as e:
-            self.log_error(1, "An error occured in the launched process")
+            self.log_error(1, "An error occured in PlotEvolutionLive.py")
             self.log_error(1, e)
 
     def __init__(self, config, explanation):
@@ -120,8 +124,9 @@ class Logger:
 
         # Determine whether we need to launch the monitor and launch it
         # if so.
-        if config.get_launch_monitor():
-            self.__init_monitor()
+        # if config.get_launch_monitor():
+        #     self.__init_monitor()
+        self.__init_monitor()
 
     def log_generation(self, population, epoch_time):
         self.log_event(2, DOUBLE_HLINE)
@@ -148,26 +153,31 @@ class Logger:
         self.log_event(2, DOUBLE_HLINE)
         self.log_event(2, DOUBLE_HLINE)
 
-    def log_monitor(self, level, *msg):
-        if self.__config.get_log_level() >= level:
-            print(*msg, file=self.__monitor_file)
+    def log_monitor(self, prefix,  *msg):
+        if self.__config.get_launch_monitor():
+            print(prefix, *msg, file=self.__monitor_file)
 
     def log_event(self, level, *msg):
         if self.__config.get_log_level() >= level:
             print(*msg, file=self.__log_file)
+            self.log_monitor("", *msg)
 
     def log_info(self, level, *msg):
         if self.__config.get_log_level() >= level:
             print("INFO: ", OKBLUE, *msg, ENDC, file=self.__log_file)
+            self.log_monitor("INFO: ", *msg)
 
     def log_warning(self, level, *msg):
         if self.__config.get_log_level() >= level:
             print("WARNING: ", WARNING, *msg, ENDC, file=self.__log_file)
+            self.log_monitor("WARNING: ", *msg)
 
     def log_error(self, level, *msg):
         if self.__config.get_log_level() >= level:
             print("ERROR: ", FAIL, *msg, ENDC, file=self.__log_file)
+            self.log_monitor("ERROR: ", *msg)
 
     def log_critical(self, level, *msg):
         if self.__config.get_log_level() >= level:
             print("CRITICAL: ", FAIL, *msg, ENDC, file=self.__log_file)
+            self.log_monitor("CRITICAL: ", *msg)

@@ -289,9 +289,7 @@ def anim_heatmap(i):
 
     ax8.set(xlabel='Generation', ylabel='Voltage (Normalized)')
 
-config_parser = configparser.ConfigParser()
-config_parser.read("data/config.ini")
-config = Config(config_parser)
+config = Config("data/config.ini")
 
 style.use('dark_background')
 
