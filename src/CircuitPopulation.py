@@ -220,7 +220,7 @@ class CircuitPopulation:
             self.__randomize_until_pulses()
         elif self.__config.get_randomization_type() == "VARIANCE":
             self.__log_info(1, "VARIANCE randomization mode selected.")
-            if self.__config.get_variance_threshold() <= 0:
+            if self.__config.get_randomize_threshold() <= 0:
                 self.log_error(INVALID_VARIANCE_ERR_MSG)
             else:
                 self.__randomize_until_variance()
@@ -246,7 +246,7 @@ class CircuitPopulation:
             for circuit in self.__circuits:
                 circuit.randomize_bits()
                 fitness = circuit.evaluate_pulse_count()
-                var_th = self.__config.get_variance_threshold()
+                var_th = self.__config.get_randomize_threshold()
                 if (fitness > var_th):
                     no_pulses_generated = False
                     self.__log_info(1, "Pulse generated! Exiting randomization. Fitness:", fitness)
@@ -274,7 +274,7 @@ class CircuitPopulation:
         # Variance threshold is the desired variance
         bestVariance = 0
         variance = 0
-        while bestVariance < self.__config.get_variance_threshold():
+        while bestVariance < self.__config.get_randomize_threshold():
             self.__log_event(3, "Randomizing to generate variance")
             for circuit in self.__circuits:
                 circuit.randomize_bits()
@@ -375,7 +375,7 @@ class CircuitPopulation:
 
                 # Commented out for now while we test
                 # Pretty sure this was originally for pulse count only, leaving it commented out since things are working right now
-                '''if fitness > self.__config.get_variance_threshold():
+                '''if fitness > self.__config.get_randomize_threshold():
                     self.__log_event(1, "{} fitness: {}".format(circuit, fitness))
                     return'''
                 reevaulated_circuits.add(circuit)
