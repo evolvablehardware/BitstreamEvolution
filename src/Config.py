@@ -179,6 +179,13 @@ class Config:
 		return float(self.get_fitness_parameters("VAR_WEIGHT"))
 
 	# SECTION Getters for logging parameters.
+	def get_figure_directory(self):
+		return Path(self.get_logging_parameters("FIG_DIR"))
+	
+	def get_save_figs(self):
+		input = self.get_logging_parameters("save_figs")
+		return input == "true" or input == "True"
+	
 	def get_asc_directory(self):
 		return Path(self.get_logging_parameters("ASC_DIR"))
 
@@ -191,11 +198,11 @@ class Config:
 	def get_analysis_directory(self):
 		return Path(self.get_logging_parameters("ANALYSIS"))
 
-	def get_monitor_file(self):
-		return Path(self.get_logging_parameters("MONITOR_FILE"))
+	def get_log_file(self):
+		return Path(self.get_logging_parameters("LOG_FILE"))
 
-	def get_launch_monitor(self):
-		input = self.get_logging_parameters("LAUNCH_MONITOR")
+	def get_save_log(self):
+		input = self.get_logging_parameters("save_log")
 		return input == "true" or input == "True"	
 
 	def get_datetime_format(self):
@@ -268,8 +275,9 @@ class Config:
 		self.get_bin_directory()
 		self.get_data_directory()
 		self.get_analysis_directory()
-		self.get_monitor_file()
-		self.get_launch_monitor()
+		# self.get_monitor_file()
+		self.get_save_log()
+		self.get_save_figs()
 		self.get_datetime_format()
 		self.get_best_file()
 		# self.get_src_pops_dir()

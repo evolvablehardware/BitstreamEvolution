@@ -73,13 +73,13 @@ class Logger:
             "Evolutionary Experiment Monitor".center(LINE_WIDTH),
             "\n"
         ))
-        self.log_monitor(1, "{}".format(DOUBLE_HLINE))
+        self.log_monitor("", "{}".format(DOUBLE_HLINE))
         # self.log_monitor(1, "Parameters and updates load during circuit evaluation")
         # self.log_monitor(1, ".\n" * 23)
-        self.log_monitor(1, str(self.__experiment_explanation))
-        self.log_monitor(1, "{}".format(DOUBLE_HLINE))
-        self.log_monitor(1, self.__config.get_raw_data())
-        self.log_monitor(1, "{}".format(DOUBLE_HLINE))
+        self.log_monitor("", str(self.__experiment_explanation))
+        self.log_monitor("", "{}".format(DOUBLE_HLINE))
+        self.log_monitor("", self.__config.get_raw_data())
+        self.log_monitor("", "{}".format(DOUBLE_HLINE))
         self.__monitor_file.flush()
 
         # args = TERM_CMD + ["python3", "src/Monitor.py"]
@@ -89,6 +89,11 @@ class Logger:
         #     self.log_error(1, "An error occured while launching Monitor.py")
         # except CalledProcessError as e:
         #     self.log_error(1, "An error occured in Monitor.py")
+
+        #set up directory for saving files
+        figs_dir = self.__config.get_figure_directory()
+        if not figs_dir.exists():
+            figs_dir.mkdir()
 
         self.log_event(1, "Launching the Live Plot window...")
         args = TERM_CMD + ["python3", "src/PlotEvolutionLive.py"]
@@ -102,7 +107,7 @@ class Logger:
 
     def __init__(self, config, explanation):
         self.__config = config
-        self.__monitor_file = open(config.get_monitor_file(), "w")
+        self.__monitor_file = open(config.get_log_file(), "w")
         self.__log_file = stdout
         self.__experiment_explanation = explanation
 
@@ -154,7 +159,7 @@ class Logger:
         self.log_event(2, DOUBLE_HLINE)
 
     def log_monitor(self, prefix,  *msg):
-        if self.__config.get_launch_monitor():
+        if self.__config.get_save_log():
             print(prefix, *msg, file=self.__monitor_file)
 
     def log_event(self, level, *msg):

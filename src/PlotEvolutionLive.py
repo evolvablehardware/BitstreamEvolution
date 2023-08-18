@@ -99,6 +99,9 @@ def animate_epoch(i):
     
     ax2.set(xlabel='Generation', ylabel='Fitness', title='Best Circuit Fitness per Generation')
 
+    if(config.get_save_figs()):
+        fig.savefig(fig_dir.joinpath("main.png"))
+
 
 def animate_waveform(i):    
     graph_data = open('workspace/waveformlivedata.log','r').read()
@@ -236,6 +239,9 @@ def anim_violin_plots(i):
         ax7.clear()
         ax7.violinplot(collections, positions=gens, widths=widths)
 
+    if(config.get_save_figs()):
+        fig2.savefig(fig_dir.joinpath("violin_plots.png"))
+
 def anim_heatmap(i):
     data = open('workspace/heatmaplivedata.log','r').read()
     lines = data.split('\n')
@@ -289,7 +295,11 @@ def anim_heatmap(i):
 
     ax8.set(xlabel='Generation', ylabel='Voltage (Normalized)')
 
+    if(config.get_save_figs()):
+        fig3.savefig(fig_dir.joinpath("waveform_heatmap.png"))
+
 config = Config("data/config.ini")
+fig_dir = config.get_figure_directory()
 
 style.use('dark_background')
 
@@ -310,7 +320,7 @@ if config.get_init_mode() == 'EXISTING_POPULATION':
     rows = rows + 1
     has_pop_plot = True
 
-fig = plt.figure(figsize=(8,7))
+fig = plt.figure(figsize=(9,7))
 fig2 = plt.figure()
 
 ax2 = fig.add_subplot(rows, cols, 1)
