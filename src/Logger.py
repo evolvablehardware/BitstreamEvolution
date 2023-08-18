@@ -91,9 +91,9 @@ class Logger:
         #     self.log_error(1, "An error occured in Monitor.py")
 
         #set up directory for saving files
-        figs_dir = self.__config.get_figure_directory()
-        if not figs_dir.exists():
-            figs_dir.mkdir()
+        plots_dir = self.__config.get_plots_directory()
+        if not plots_dir.exists():
+            plots_dir.mkdir()
 
         self.log_event(1, "Launching the Live Plot window...")
         args = TERM_CMD + ["python3", "src/PlotEvolutionLive.py"]

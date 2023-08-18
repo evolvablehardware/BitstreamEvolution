@@ -94,13 +94,13 @@ def animate_epoch(i):
     ax3.clear()
     ax3.plot(xs, ds, color="#5a70ed") # Generation diversity measure
     ax3.tick_params(axis='y', labelcolor='#5a70ed')
-    ax3.set_ylabel('Diversity', color='#5a70ed')
+    ax3.set_ylabel('Diversioty', color='#5a70ed')
     ax3.set_ylim(bottom=0)
     
     ax2.set(xlabel='Generation', ylabel='Fitness', title='Best Circuit Fitness per Generation')
 
-    if(config.get_save_figs()):
-        fig.savefig(fig_dir.joinpath("main.png"))
+    if(config.get_save_plots()):
+        fig.savefig(plots_dir.joinpath("main.png"))
 
 
 def animate_waveform(i):    
@@ -239,8 +239,8 @@ def anim_violin_plots(i):
         ax7.clear()
         ax7.violinplot(collections, positions=gens, widths=widths)
 
-    if(config.get_save_figs()):
-        fig2.savefig(fig_dir.joinpath("violin_plots.png"))
+    if(config.get_save_plots()):
+        fig2.savefig(plots_dir.joinpath("violin_plots.png"))
 
 def anim_heatmap(i):
     data = open('workspace/heatmaplivedata.log','r').read()
@@ -295,11 +295,11 @@ def anim_heatmap(i):
 
     ax8.set(xlabel='Generation', ylabel='Voltage (Normalized)')
 
-    if(config.get_save_figs()):
-        fig3.savefig(fig_dir.joinpath("waveform_heatmap.png"))
+    if(config.get_save_plots()):
+        fig3.savefig(plots_dir.joinpath("waveform_heatmap.png"))
 
 config = Config("data/config.ini")
-fig_dir = config.get_figure_directory()
+plots_dir = config.get_plots_directory()
 
 style.use('dark_background')
 

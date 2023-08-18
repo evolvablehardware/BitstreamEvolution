@@ -438,14 +438,13 @@ class Circuit:
             self.__log_event(2, "NULL DATA FILE. ZEROIZING")
 
         desired_freq = self.__config.get_desired_frequency()
-        var = self.__config.get_variance_threshold()
         if pulse_count == desired_freq:
             self.__log_event(1, "Unity achieved: {}".format(self))
             self.__fitness = 1
         elif pulse_count == 0:
-            self.__fitness = var
+            self.__fitness = 0
         else:
-            self.__fitness = var + (1.0 / desired_freq - pulse_count)
+            self.__fitness = 1.0 / (desired_freq - pulse_count)
         
         return self.__fitness
 
@@ -473,7 +472,7 @@ class Circuit:
         self.__log_event(4, "Pulse Fitness: ", pulseFitness)
         self.__log_event(4, "Variance Fitness: ", varFitness)
 
-        if self.__config.get_fitness_mode() == "ADD":
+        if self.__config.get_combined_mode() == "ADD":
             self.__fitness = (pulseWeight * pulseFitness) + (varWeight * varFitness)
         else: #MULT
             self.__fitness = pow(pulseFitness, pulseWeight) * pow(varFitness, varWeight)
