@@ -465,8 +465,10 @@ is a list of the options, their description, and their possible values:
 | Log Level | The amount of logs to show; higher log level means more detailed logs are shown | 1-4 | 2 |
 | Save Log | Wether or not to save the logging output in a file | true, false | true |
 | Save Plots | Wether or not to save the plots as images throughout evolution | true, false | true |
+| Backup Workspace | Wether or not to save the workspace directory in a backup folder after evolution | true, false | true |
 | Log File | The file to save log output in | Any file path | ./workspace/log |
 | Plots Directory | The directory to put the plots in | Any directory | ./workspace/plots |
+| Output Directory | The directory to store previous workspaces in | Any directory not in ./workspace | ./prev_workspaces |
 | ASC Directory | The directory to put the asc files (raw bitstreams) | Any directory | ./workspace/experiment_asc |
 | BIN Directory | The directory to put the bin files (compiled bitstreams) | Any directory | ./workspace/experiment_bin |
 | Data Directory | The directory to put the data files (MCU read data) | Any directory | ./workspace/experiment_data |
@@ -492,6 +494,12 @@ From the root directory of BitstreamEvolution run:
 ```bash
 python3 src/evolve.py
 ```
+
+| Options | Description |
+|-----------|-------------|
+| -c | The config file this experiment uses |
+| -d | The experiment description |
+| -o | The output directory to store in the workspace in |
 
 BitstreamEvolution will begin to run and display information in separate windows
 that will appear (unless these have been disabled in the configuration).

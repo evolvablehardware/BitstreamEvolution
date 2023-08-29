@@ -2,8 +2,9 @@ from sys import stdout
 from datetime import datetime
 from subprocess import CalledProcessError, run
 from os.path import exists
+from os.path import join
 from os import mkdir
-from pathlib import Path
+from shutil import copytree
 
 # The window dimensions
 LINE_WIDTH = 112
@@ -117,15 +118,11 @@ class Logger:
         open("workspace/bestlivedata.log", "w").close()
         open("workspace/waveformlivedata.log", "w").close()
         open("workspace/maplivedata.log", "w").close()
-        open("workspace/poplivedata.log", "w").close()
-        open("workspace/violinlivedata.log", "w").close()
-        open("workspace/heatmaplivedata.log", "w").close()
-        open("workspace/randomizationdata.log", "w").close()
-
         # Determine if we need to the to initialize the analysis and
         # if so, do so.
-        if explanation != "test":
-            self.__init_analysis()
+        # currently removed since we're not currently storing any data, so there's a bunch of empty files and directories
+        # if explanation != "test":
+        #     self.__init_analysis()
 
         # Determine whether we need to launch the monitor and launch it
         # if so.
@@ -186,3 +183,10 @@ class Logger:
         if self.__config.get_log_level() >= level:
             print("CRITICAL: ", FAIL, *msg, ENDC, file=self.__log_file)
             self.log_monitor("CRITICAL: ", *msg)
+
+    def save_workspace(self, directory):
+        self.__monitor_file.close()
+        datetime_format = self.__config.get_datetime_format()
+        current_time = str(datetime.now().strftime(datetime_format))
+        current_time = current_time.replace('/', '-')
+        copytree("./workspace", join(directory, current_time))

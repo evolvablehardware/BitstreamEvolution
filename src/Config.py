@@ -199,6 +199,13 @@ class Config:
 		input = self.get_logging_parameters("save_plots")
 		return input == "true" or input == "True"
 	
+	def get_output_directory(self):
+		return Path(self.get_logging_parameters("OUTPUT_DIR"))
+	
+	def get_backup_workspace(self):
+		input = self.get_logging_parameters("backup_workspace")
+		return input == "true" or input == "True"
+	
 	def get_asc_directory(self):
 		return Path(self.get_logging_parameters("ASC_DIR"))
 

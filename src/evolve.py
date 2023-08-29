@@ -59,7 +59,7 @@ args=parser.parse_args()
 print(args) # probably should log this instead. not sure if with logger directly or through config.
 
 def validate_arguments():
-    if (not os.path.isdir(args.output_directory)) and (args.output_directory is not None):
+    if (args.output_directory is not None) and (not os.path.isdir(args.output_directory)):
         raise ValueError(f"Output directory not recognized: {args.output_directory}")
 
         #alternate solution if wanted to do more with exit statuses for bash scripting
@@ -74,6 +74,7 @@ if args.description is None:
     args.description = input("Explain this experiment: ")
 
 logger = Logger(config, args.description)
+logger.log_info(1, args)
 config.add_logger(logger)
 config.validate_all()
 validate_arguments()
@@ -97,7 +98,8 @@ if config.get_simulation_mode() == "FULLY_INTRINSIC":
         "data/hardware_blink.bin"
     ])
 
-
 if args.output_directory is not None:
     #copy simulation information to this output directory
-    pass
+    logger.save_workspace(args.output_directory)
+elif config.get_backup_workspace():
+    logger.save_workspace(config.get_output_directory())
