@@ -108,6 +108,7 @@ class Logger:
 
     def __init__(self, config, explanation):
         self.__config = config
+        self.__config.add_logger(self)
         self.__monitor_file = open(config.get_log_file(), "w")
         self.__log_file = stdout
         self.__experiment_explanation = explanation

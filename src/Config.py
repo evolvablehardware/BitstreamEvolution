@@ -1,5 +1,6 @@
 from pathlib import Path
 from configparser import ConfigParser
+from configparser import NoOptionError
 
 # TODO Add handling for missing values
 # NOTE Fails ungracefully at missing values currently
@@ -193,46 +194,85 @@ class Config:
 
 	# SECTION Getters for logging parameters.
 	def get_plots_directory(self):
-		return Path(self.get_logging_parameters("PLOTS_DIR"))
+		try:
+			return Path(self.get_logging_parameters("PLOTS_DIR"))
+		except NoOptionError:
+			return Path("./workspace/plots")
 	
 	def get_save_plots(self):
-		input = self.get_logging_parameters("save_plots")
-		return input == "true" or input == "True"
+		try:
+			input = self.get_logging_parameters("save_plots")
+			return input == "true" or input == "True"
+		except NoOptionError:
+			return True	
 	
 	def get_output_directory(self):
-		return Path(self.get_logging_parameters("OUTPUT_DIR"))
+		try:
+			return Path(self.get_logging_parameters("OUTPUT_DIR"))
+		except NoOptionError:
+			return Path("./prev_workspaces")
 	
 	def get_backup_workspace(self):
-		input = self.get_logging_parameters("backup_workspace")
-		return input == "true" or input == "True"
+		try:
+			input = self.get_logging_parameters("backup_workspace")
+			return input == "true" or input == "True"
+		except NoOptionError:
+				return True	
 	
 	def get_asc_directory(self):
-		return Path(self.get_logging_parameters("ASC_DIR"))
+		try:
+			return Path(self.get_logging_parameters("ASC_DIR"))
+		except NoOptionError:
+			return Path("./workspace/experiment_asc")
 
 	def get_bin_directory(self):
-		return Path(self.get_logging_parameters("BIN_DIR"))
+		try:
+			return Path(self.get_logging_parameters("BIN_DIR"))
+		except NoOptionError:
+			return Path("./workspace/experiment_bin")
 
 	def get_data_directory(self):
-		return Path(self.get_logging_parameters("DATA_DIR"))
+		try:
+			return Path(self.get_logging_parameters("DATA_DIR"))
+		except NoOptionError:
+			return Path("./workspace/experiment_data")
 
 	def get_analysis_directory(self):
-		return Path(self.get_logging_parameters("ANALYSIS"))
+		try:
+			return Path(self.get_logging_parameters("ANALYSIS"))
+		except NoOptionError:
+			return Path("./workspace/analysis")
 
 	def get_log_file(self):
-		return Path(self.get_logging_parameters("LOG_FILE"))
+		try:
+			return Path(self.get_logging_parameters("LOG_FILE"))
+		except NoOptionError:
+			return Path("./workspace/log")
 
 	def get_save_log(self):
-		input = self.get_logging_parameters("save_log")
-		return input == "true" or input == "True"	
+		try:
+			input = self.get_logging_parameters("save_log")
+			return input == "true" or input == "True"
+		except NoOptionError:
+			return True	
 
 	def get_datetime_format(self):
-		return self.get_logging_parameters("DATETIME_FORMAT")
+		try:
+			return self.get_logging_parameters("DATETIME_FORMAT")
+		except NoOptionError:
+			return Path("%%m/%%d/%%Y - %%H:%%M:%%S")
 
 	def get_best_file(self):
-		return self.get_logging_parameters("BEST_FILE")
+		try:
+			return self.get_logging_parameters("BEST_FILE")
+		except NoOptionError:
+			return Path("./workspace/best.asc")
 
 	def get_src_pops_dir(self):
-		return Path(self.get_logging_parameters("SRC_POPULATIONS_DIR"))
+		try:
+			return Path(self.get_logging_parameters("SRC_POPULATIONS_DIR"))
+		except NoOptionError:
+			return Path("./workspace/source_population")
 		
 	# There are 5 log levels (0-4)
 	# 4 will log the most information, 1 will log the least

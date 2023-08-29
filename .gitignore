@@ -5,6 +5,7 @@ data/monitor
 # no need to include temp files
 workspace/
 tools/
+prev_workspaces/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
