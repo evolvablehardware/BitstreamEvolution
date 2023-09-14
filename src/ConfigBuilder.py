@@ -7,7 +7,7 @@ Takes in an input config to use, and will output the fully-built config file to 
 when build_config is called
 '''
 class ConfigBuilder:
-    def __init__(self, input):
+    def __init__(self, input, override_base_config):
         self.__config_parser = ConfigParser()
         self.__config_parser.read(input)
 
