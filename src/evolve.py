@@ -22,8 +22,7 @@ import os
 program_name="evolve"
 program_description="""This program evolves a population of FPGA layouts (or simulations of them) acording to a predefined fitness function. 
 All files will presume the main directory of BitStreamEvolution unless absolute path given."""
-program_epilog="""The Config overrides seemed like they could be useful for specific parts of the config, such as the logging level or the simulation mode, but is unimplemented.
-For non-simulations, and Arduino and the Lattice iCE40 FPGA are also needed.
+program_epilog="""For non-simulations, and Arduino and the Lattice iCE40 FPGA are also needed.
 Exit Status:
 0 - No issues
 1 - Issue while running"""
