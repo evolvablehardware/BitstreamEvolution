@@ -13,9 +13,11 @@ when build_config is called
 '''
 class ConfigBuilder:
     def __init__(self, input, override_base_config = None):
+        self.__input = input
+        self.__override_base_config = override_base_config
+
         self.__config_parser = ConfigParser()
         self.__config_parser.read(input)
-        self.__override_base_config = override_base_config
 
         # Also read all the text so we can get the comments as well
         file = open(input, mode='r')
@@ -23,31 +25,58 @@ class ConfigBuilder:
         file.close()
 
     def build_config(self, output):
-        configvals = self.__get_config_values()
-        base_config_path = self.__override_base_config if self.__override_base_config != None else self.__config_parser.get(BASE_CONFIG_PARAM_SECTION, BASE_CONFIG_PARAM_NAME)
+        ''''''
 
-    def __get_config_values(self):
+    def __get_config_values_from_file(self, input, override_base_config = None):
+        '''
+        Returns the config values by reading in the file
+        This will include all config values, recursing into base configs if needed
+        '''
+        config_parser = ConfigParser()
+        config_parser.read(input)
+        file = open(input, mode='r')
+        config_lines = file.readlines()
+        file.close()
+        base_config_path = None
+        if override_base_config != None:
+            base_config_path = override_base_config
+        elif config_parser.has_option(BASE_CONFIG_PARAM_SECTION, BASE_CONFIG_PARAM_NAME):
+            base_config_path = config_parser.get(BASE_CONFIG_PARAM_SECTION, BASE_CONFIG_PARAM_NAME)
+        # Get the values from the base config & current config
+        config_values = self.__get_config_values(config_parser, config_lines)
+        base_values = []
+        if base_config_path != None:
+            base_values = self.__get_config_values_from_file(base_config_path)
+        # Okay, now we need to merge with the values we find in our own file
+        # To do this, we will add from base_values only if we don't currently have the specified value 
+        # in our config_values list
+        for val in base_values:
+            if not self.__config_values_contains(config_values, val):
+                config_values.append(val)
+        return config_values
+
+    def __get_config_values(self, config_parser, config_lines):
         '''
         This will return a list of ConfigValue
         This function reads the input file, gathering every config value
         It will basically just convert everything from config parser into our ConfigValue class
         '''
-        sections = self.__config_parser.sections()
+        sections = config_parser.sections()
         result_list = []
         for section in sections:
-            for (key, val) in self.__config_parser.items(section):
-                comment = self.__get_comment_for_param(section, key)
+            for (key, val) in config_parser.items(section):
+                comment = self.__get_comment_for_param(section, key, config_lines)
                 result_list.add(ConfigValue(section, key, val, comment))
 
-    def __get_comment_for_param(self, section, param):
+    def __get_comment_for_param(self, section, param, config_lines):
         '''
         This will find the specified section and return a list of comment lines (without the comment signifier)
         that appear above this config parameter
         '''
         # Need to find the line with this section
         section_line_index = -1
-        for i in range(len(self.__config_lines)):
-            line = self.__config_lines[i]
+        for i in range(len(config_lines)):
+            line = config_lines[i]
             if line == '[' + section + ']':
                 section_line_index = i
                 break
@@ -58,7 +87,7 @@ class ConfigBuilder:
         # has brackets (i.e. another section)
         param_line_index = section_line_index
         while True:
-            line = self.__config_lines[param_line_index]
+            line = config_lines[param_line_index]
             if line.startswith(param + '='):
                 # We've found the param line, so just break out since our index is properly set now
                 break
@@ -73,7 +102,7 @@ class ConfigBuilder:
         i = param_line_index
         comments = []
         while i >= 0:
-            line = self.__config_lines[i]
+            line = config_lines[i]
             if line.startswith(';'):
                 # Take out the first character, which is the ';'
                 comments.append(line[1:])
@@ -83,3 +112,9 @@ class ConfigBuilder:
             i = i - 1
 
         return comments
+
+    def __config_values_contains(self, config_values, config_value):
+        for val in config_values:
+            if val.section == config_value.section and val.param == config_value.param:
+                return True
+        return False
