@@ -4,12 +4,15 @@ from pathlib import Path
 
 from ConfigValue import ConfigValue
 
+BASE_CONFIG_PARAM_SECTION = 'TOP-LEVEL PARAMETERS'
+BASE_CONFIG_PARAM_NAME = 'base_config'
+
 '''
 Takes in an input config to use, and will output the fully-built config file to the specified path
 when build_config is called
 '''
 class ConfigBuilder:
-    def __init__(self, input, override_base_config):
+    def __init__(self, input, override_base_config = None):
         self.__config_parser = ConfigParser()
         self.__config_parser.read(input)
         self.__override_base_config = override_base_config
@@ -20,8 +23,8 @@ class ConfigBuilder:
         file.close()
 
     def build_config(self, output):
-
-        print('hi')
+        configvals = self.__get_config_values()
+        base_config_path = self.__override_base_config if self.__override_base_config != None else self.__config_parser.get(BASE_CONFIG_PARAM_SECTION, BASE_CONFIG_PARAM_NAME)
 
     def __get_config_values(self):
         '''
