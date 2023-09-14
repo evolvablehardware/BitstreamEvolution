@@ -1,11 +1,11 @@
-#
 # This runs as a separate program, taking in the input config path and the output path for the final config
-# It will follow the linked list of config files (with the default_config param)
+# It will follow the linked list of config files (with the base_config param)
 # and output the final config at the specified location
 
 # TODO: In output, add a comment at the top describing the list of config files it used
 
 import argparse
+import ConfigBuilder
 
 program_name="config_builder"
 program_description="""This program combines config files together and outputs a single, final config."""
@@ -21,3 +21,6 @@ args = parser.parse_args()
 
 input = args.input
 output = args.output
+
+configBuilder = ConfigBuilder(input)
+configBuilder.build(output)
