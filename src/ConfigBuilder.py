@@ -16,16 +16,13 @@ class ConfigBuilder:
         self.__input = input
         self.__override_base_config = override_base_config
 
-        self.__config_parser = ConfigParser()
-        self.__config_parser.read(input)
-
-        # Also read all the text so we can get the comments as well
-        file = open(input, mode='r')
-        self.__config_lines = file.readlines()
-        file.close()
-
     def build_config(self, output):
-        ''''''
+        '''
+        Uses the base configs of the input to build an internal representation of the final config file,
+        then output it to the specified output file
+        '''
+        config_values = self.__get_config_values_from_file(self.__input, self.__override_base_config)
+        # TODO: Save config_values to a file
 
     def __get_config_values_from_file(self, input, override_base_config = None):
         '''
