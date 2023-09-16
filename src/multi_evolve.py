@@ -45,6 +45,6 @@ output_directory = args.output_directory
 
 def evolve_list_of_configs(base_config,*configs):
     for config in configs:
-        pass
+        
 
 

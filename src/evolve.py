@@ -16,7 +16,7 @@ from subprocess import run
 import argparse
 import os
 
-#This argument configuration could be moved to a separate module, like config, if desired.
+## Command Line Argument And Help information for this file.
 
 #Program info for --help output
 program_name="evolve"
@@ -25,20 +25,22 @@ All files will presume the main directory of BitStreamEvolution unless absolute 
 program_epilog="""For non-simulations, and Arduino and the Lattice iCE40 FPGA are also needed.
 Exit Status:
 0 - No issues
-1 - Issue while running"""
-
-# Exit codes
-# 0 - Default for no issues
-# 1 - Default for errors
-# 130 - KeyboardInterrupt default (i.e. ctrl+c in therminal)
+1 - Issue while running
+130 - KeyboardInterrupt (ctrl+c)"""
 #Check exit codes by running `echo $?` after running the command.
 
-
+## Setting Default Values for Function Call
 default_config = "data/config.ini" #Use none if want specified
 default_base_config = "data/default_config.ini"
 default_output_directory = None #If not changed, information only saved internally.
 default_experiment_description = None #If not changed, requires user to enter.
 
+## Global Variables Used in this Function (not changed by user input)
+compiled_config_path = "./workspace/builtconfig.ini" # This is where the completed config from Config Builder is stored while evolution is active for easy access.
+
+
+
+## Creating an Argument Parser to Parse Arguments
 parser = argparse.ArgumentParser(prog=program_name,
                                  description=program_description,
                                  epilog=program_epilog)
@@ -53,6 +55,7 @@ parser.add_argument('-d','--description', type=str,default=default_experiment_de
                     help="The description of this simulation. Requires manual entry if not an argument.")
 # --help is added by default
 
+## Parsing Args and configuring Variables
 args=parser.parse_args()
 config = args.config
 base_config = args.base_config
@@ -61,6 +64,8 @@ output_directory = args.output_directory
 ## DELETE ME WHEN args are Logged
 print(args) # probably should log this instead. not sure if with logger directly or through config.
 
+## Don't know if this is needed, but it might be useful to validate all inputs especially if this is going to take a while to run.
+## It would also be nice if we could have script that could look over a bunch of configs
 def validate_arguments():
     if (args.output_directory is not None) and (not os.path.isdir(args.output_directory)):
         raise ValueError(f"Output directory not recognized: {args.output_directory}")
@@ -68,17 +73,18 @@ def validate_arguments():
         #alternate solution if wanted to do more with exit statuses for bash scripting
         #parser.exit(status=1, message=f"Output directory not recognized: {args.output_directory}")
 
-#create desired config
+## Creating the config that will be used.
 config_builder = ConfigBuilder(config,override_base_config=base_config)
-final_config_path = "./workspace/builtconfig.ini"
-config_builder.build_config(final_config_path)
+config_builder.build_config(compiled_config_path)
 
-config = Config(final_config_path)
+## Use config generated to run experiment
+config = Config(compiled_config_path)
 
-# get the explaination if not previously given
+## get the explaination if not previously given
 if args.description is None:
     args.description = input("Explain this experiment: ")
 
+## Run the Simulation
 logger = Logger(config, args.description)
 logger.log_info(1, args)
 config.add_logger(logger)
@@ -94,7 +100,6 @@ logger.log_event(0, "Evolution has completed successfully")
 
 # SECTION Clean up resources
 
-
 if config.get_simulation_mode() == "FULLY_INTRINSIC":
     # Upload a sample bitstream to the FPGA.
     run([
@@ -104,7 +109,7 @@ if config.get_simulation_mode() == "FULLY_INTRINSIC":
         "data/hardware_blink.bin"
     ])
 
-# make sure config file specified above ends up in output.
+# TODO: make sure config file specified above ends up in output.
 if output_directory is not None:
     #copy simulation information to this output directory
     logger.save_workspace(output_directory)
