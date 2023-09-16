@@ -1,5 +1,6 @@
 import argparse
-from evolve import program_description as evolve_description
+from evolve import program_description as evolve_program_description
+from evolve import evolve
 
 program_name="multi_evolve"
 program_description=f"""This function runs multiple evolution simulations specified by multiple config files.
@@ -7,7 +8,7 @@ All files will presume the main directory of BitStreamEvolution unless absolute 
 
 The Evolution Simulator works as follows: 
 ---
-{evolve_description}
+{evolve_program_description}
 ---
 """
 program_epilog="""
@@ -41,10 +42,14 @@ base_config = args.base_config
 output_directory = args.output_directory
 
 
-
-
+## need to add a way to create custom experiment descriptions.
 def evolve_list_of_configs(base_config,*configs):
     for config in configs:
-        
+        evolve(
+            primary_config_path=    config,
+            output_directory=       output_directory,
+            base_config_path=       base_config,
+            experiment_description= f"multiEvolve for config file: {config}"
+        )
 
 

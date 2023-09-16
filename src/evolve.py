@@ -55,15 +55,6 @@ parser.add_argument('-d','--description', type=str,default=default_experiment_de
                     help="The description of this simulation. Requires manual entry if not an argument.")
 # --help is added by default
 
-## Parsing Args and configuring Variables
-args=parser.parse_args()
-config = args.config
-base_config = args.base_config
-output_directory = args.output_directory
-
-## DELETE ME WHEN args are Logged
-print(args) # probably should log this instead. not sure if with logger directly or through config.
-
 ## Don't know if this is needed, but it might be useful to validate all inputs especially if this is going to take a while to run.
 ## It would also be nice if we could have script that could look over a bunch of configs
 def validate_arguments():
@@ -73,45 +64,69 @@ def validate_arguments():
         #alternate solution if wanted to do more with exit statuses for bash scripting
         #parser.exit(status=1, message=f"Output directory not recognized: {args.output_directory}")
 
-## Creating the config that will be used.
-config_builder = ConfigBuilder(config,override_base_config=base_config)
-config_builder.build_config(compiled_config_path)
+## This function performs evolution.
+def evolve(primary_config_path:str=default_config,
+           output_directory:str=default_output_directory,/,
+           experiment_description:str=default_experiment_description,
+           base_config_path:str=default_base_config)-> None:
 
-## Use config generated to run experiment
-config = Config(compiled_config_path)
+    ## Creating the config that will be used.
+    config_builder = ConfigBuilder(primary_config_path, override_base_config=base_config_path)
+    config_builder.build_config(compiled_config_path)
 
-## get the explaination if not previously given
-if args.description is None:
-    args.description = input("Explain this experiment: ")
+    ## Use config generated to run experiment
+    config = Config(compiled_config_path)
 
-## Run the Simulation
-logger = Logger(config, args.description)
-logger.log_info(1, args)
-config.add_logger(logger)
-config.validate_all()
-validate_arguments()
-mcu = Microcontroller(config, logger)
-population = CircuitPopulation(mcu, config, logger)
+    ## get the explaination if not previously given
+    if experiment_description is None:
+        experiment_description = input("Explain this experiment: ")
 
-population.populate()
-population.evolve()
+    ## Run the Simulation
+    logger = Logger(config, experiment_description)
+    # logger.log_info(1, args) - Not sure how to log arguments. This was my attempt to do so.
+    config.add_logger(logger)
+    config.validate_all()
+    validate_arguments()
+    mcu = Microcontroller(config, logger)
+    population = CircuitPopulation(mcu, config, logger)
 
-logger.log_event(0, "Evolution has completed successfully")
+    population.populate()
+    population.evolve()
 
-# SECTION Clean up resources
+    logger.log_event(0, "Evolution has completed successfully")
 
-if config.get_simulation_mode() == "FULLY_INTRINSIC":
-    # Upload a sample bitstream to the FPGA.
-    run([
-        "iceprog",
-        "-d",
-        "i:0x0403:0x6010:0",
-        "data/hardware_blink.bin"
-    ])
+    # SECTION Clean up resources
 
-# TODO: make sure config file specified above ends up in output.
-if output_directory is not None:
-    #copy simulation information to this output directory
-    logger.save_workspace(output_directory)
-elif config.get_backup_workspace():
-    logger.save_workspace(config.get_output_directory())
+    if config.get_simulation_mode() == "FULLY_INTRINSIC":
+        # Upload a sample bitstream to the FPGA.
+        run([
+            "iceprog",
+            "-d",
+            "i:0x0403:0x6010:0",
+            "data/hardware_blink.bin"
+        ])
+
+    # TODO: make sure config file specified above ends up in output.
+    if output_directory is not None:
+        #copy simulation information to this output directory
+        logger.save_workspace(output_directory)
+    elif config.get_backup_workspace():
+        logger.save_workspace(config.get_output_directory())
+
+## If called directly, use argparse to run, otherwise, just wait for function call to occour with needed information.
+if (__name__ == "__main__"):
+
+    ## Parsing Args and configuring Variables
+    args=parser.parse_args()
+
+    ## DELETE ME WHEN args are Logged
+    print(args) # probably should log this instead. not sure if with logger directly or through config.
+
+    ## Perform Evolution
+    evolve(
+        primary_config_path =       args.config,
+        base_config_path =          args.base_config,
+        output_directory =          args.output_directory,
+        experiment_description =    args.description
+    )
+
