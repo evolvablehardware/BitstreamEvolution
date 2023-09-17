@@ -99,13 +99,13 @@ class ConfigBuilder:
 
         # At this point we have our parameter line, just need to iterate backwards until
         # we hit a non-comment line
-        i = param_line_index
+        i = param_line_index - 1
         comments = []
         while i >= 0:
             line = config_lines[i]
             if line.startswith(';'):
-                # Take out the first character, which is the ';'
-                comments.append(line[1:])
+                # Take out the first character, which is the ';', and the whitespace at the end
+                comments.append(line[1:].rstrip())
             else:
                 # Non-comment line, so we should stop adding comments
                 break
@@ -119,8 +119,13 @@ class ConfigBuilder:
         '''
         sections = self.__consolidate_configvalues_by_section(config_values)
         file = open(output_path, 'w')
+        is_first_section = True
         for name, config_values in sections.items():
             # Add the section header to the file first
+            # If we are past the first section, add a newline in front of it
+            if not is_first_section:
+                file.write('\n')
+            is_first_section = False
             file.write('[' + name + ']\n')
             for config_value in config_values:
                 # Write the comments first, then the actual config value
