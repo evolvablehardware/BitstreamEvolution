@@ -2,6 +2,9 @@
 data/config.ini
 data/monitor
 
+# test outputs
+test/out
+
 # no need to include temp files
 workspace/
 tools/
