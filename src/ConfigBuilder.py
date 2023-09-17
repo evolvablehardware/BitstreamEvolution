@@ -1,6 +1,5 @@
 from configparser import ConfigParser
 import re
-
 from ConfigValue import ConfigValue
 
 BASE_CONFIG_PARAM_SECTION = 'TOP-LEVEL PARAMETERS'
@@ -21,7 +20,7 @@ class ConfigBuilder:
         then output it to the specified output file
         '''
         config_values = self.__get_config_values_from_file(self.__input, self.__override_base_config)
-        # TODO: Save config_values to a file
+        self.__output_config_to_file(config_values, output)
 
     def __get_config_values_from_file(self, input, override_base_config = None):
         '''
@@ -112,8 +111,35 @@ class ConfigBuilder:
 
         return comments
 
+    def __output_config_to_file(self, config_values, output_path):
+        '''
+        Outputs the specified config values to an output file
+        '''
+        sections = self.__consolidate_configvalues_by_section(config_values)
+        file = open(output_path, 'w')
+        for name, config_values in sections.items():
+            # Add the section header to the file first
+            file.write('[' + name + ']\n')
+            for config_value in config_values:
+                # Write the comments first, then the actual config value
+                for comment in config_value.comment:
+                    file.write(';' + comment + '\n')
+                # Now write the actual parameter itself
+                file.write(config_value.param + ' = ' + config_value.value + '\n')
+            
+        file.close()
+
     def __config_values_contains(self, config_values, config_value):
         for val in config_values:
             if val.section == config_value.section and val.param == config_value.param:
                 return True
         return False
+
+    def __consolidate_configvalues_by_section(self, config_values):
+        sections = dict()
+        for value in config_values:
+            if value.section in sections:
+                sections[value.section].append(value)
+            else:
+                sections[value.section] = [ value ]
+        return sections
