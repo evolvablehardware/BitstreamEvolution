@@ -1,6 +1,5 @@
 from configparser import ConfigParser
-from configparser import NoOptionError
-from pathlib import Path
+import re
 
 from ConfigValue import ConfigValue
 
@@ -74,7 +73,7 @@ class ConfigBuilder:
         section_line_index = -1
         for i in range(len(config_lines)):
             line = config_lines[i]
-            if line == '[' + section + ']':
+            if line.startswith('[' + section + ']'):
                 section_line_index = i
                 break
         # If section doesn't exist, need to throw error
@@ -82,17 +81,18 @@ class ConfigBuilder:
             raise Exception('The section ' + section + ' could not be found')
         # Next we need the line of this parameter, starting at the section line until we find a line that
         # has brackets (i.e. another section)
-        param_line_index = section_line_index
-        while True:
-            line = config_lines[param_line_index]
-            if line.startswith(param + '='):
+        param_line_index = -1
+        for i in range(section_line_index + 1, len(config_lines)):
+            line = config_lines[i]
+            if re.search(r"^" + re.escape(param) + r"\s*\=.*$", line) != None:
                 # We've found the param line, so just break out since our index is properly set now
+                param_line_index = i
                 break
             if line.startswith('['):
-                # We've found a new section without ever hitting our desired parameter,
-                # so throw an exception
-                raise Exception('The parameter ' + param + ' could not be found in section ' + section)
-            param_line_index = param_line_index + 1
+                break
+
+        if param_line_index < 0:
+            raise Exception('The parameter ' + param + ' could not be found in section ' + section + '\n' + str(config_lines[section_line_index:]))
 
         # At this point we have our parameter line, just need to iterate backwards until
         # we hit a non-comment line
