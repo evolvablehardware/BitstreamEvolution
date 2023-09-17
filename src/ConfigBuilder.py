@@ -5,6 +5,8 @@ from ConfigValue import ConfigValue
 BASE_CONFIG_PARAM_SECTION = 'TOP-LEVEL PARAMETERS'
 BASE_CONFIG_PARAM_NAME = 'base_config'
 
+# TODO: Add comment w/ list of config files used in the final config output
+
 '''
 Takes in an input config to use, and will output the fully-built config file to the specified path
 when build_config is called
