@@ -62,7 +62,9 @@ class ConfigBuilder:
         for section in sections:
             for (key, val) in config_parser.items(section):
                 comment = self.__get_comment_for_param(section, key, config_lines)
-                result_list.add(ConfigValue(section, key, val, comment))
+                result_list.append(ConfigValue(section, key, val, comment))
+        
+        return result_list
 
     def __get_comment_for_param(self, section, param, config_lines):
         '''
