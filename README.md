@@ -70,6 +70,7 @@ BitstreamEvolution alse requires the following Python libraries:
   * matplotlib
   * numpy
   * sortedcontainers
+  * pytest (optional, used to run tests if desired)
 
 ### Installing the dependencies
 Each of the dependencies above has a corresponding `apt` package of the
@@ -86,7 +87,7 @@ The Python libraries can be installed in one command in any Linux
 distribution as follows:
 
 ```bash
-python3 -m pip install pyserial numpy matplotlib sortedcontainers
+python3 -m pip install pyserial numpy matplotlib sortedcontainers pytest
 ```
 ### Configuring the BitstreamEvolution core
 Although BitstreamEvolution doesn't require any building or
@@ -532,6 +533,21 @@ sudo udevadm control --reload-rules
 The other, more permanent way:
 ```bash
 sudo apt remove brltty
+```
+
+### Running Test Cases
+Test case files are simple to run using the pytest framework. 
+To run the entire suite:
+```bash
+pytest "test/"
+```
+You can also specify the desired file to run:
+```bash
+pytest "test/test_config_builder.py"
+```
+Alternatively, you can run individual tests within a file like so:'
+```bash
+pytest "test/file.py::function"
 ```
 
 ## Contributing
