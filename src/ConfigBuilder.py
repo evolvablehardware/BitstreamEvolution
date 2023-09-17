@@ -105,7 +105,8 @@ class ConfigBuilder:
             line = config_lines[i]
             if line.startswith(';'):
                 # Take out the first character, which is the ';', and the whitespace at the end
-                comments.append(line[1:].rstrip())
+                # Since we're iterating backwards, need to append to the beginning of the list every time
+                comments.insert(0, line[1:].rstrip())
             else:
                 # Non-comment line, so we should stop adding comments
                 break

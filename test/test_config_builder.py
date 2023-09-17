@@ -11,13 +11,14 @@ def test_baseless():
     '''
     input = os.path.join('test', 'res', 'inputs', 'baseless_config.ini')
     output = os.path.join('test', 'out', 'baseless_output.ini')
+    expected = os.path.join('test', 'res', 'expected_out', 'baseless_expected.ini')
     configBuilder = ConfigBuilder(input)
     configBuilder.build_config(output)
-    assert True
+    __compare_files(expected, output)
 
 def __compare_files(path1, path2):
     '''
-    Reads in the contents of two files as a string list of lines, and asserts on the equality of each line
+    Reads in the contents of two files as a string list of lines, and returns on the equality of each line
     '''
     f1 = open(path1, 'r')
     f2 = open(path2, 'r')
@@ -27,8 +28,8 @@ def __compare_files(path1, path2):
     f2.close()
     assert len(lines1) == len(lines2)
     for i in range(len(lines1)):
-        l1 = lines1[i]
-        l2 = lines2[i]
+        l1 = lines1[i].rstrip()
+        l2 = lines2[i].rstrip()
         assert l1 == l2
 
 # Prevent this function from being run as a test
