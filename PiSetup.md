@@ -12,9 +12,20 @@ Pi tested on: CanaKit Raspberry Pi 4, 8GB RAM
 
 ### Install Ubuntu on the Pi
 Guide used: https://ubuntu.com/tutorials/how-to-install-ubuntu-desktop-on-raspberry-pi-4#1-overview
+OS used: Ubuntu Server 22.04.3 LTS
+
+### Connect to wifi on the Pi
+Guide used: https://ubuntu.com/core/docs/networkmanager/configure-wifi-connections
 
 ### Enable ssh on the Pi
 Guide used: https://linuxize.com/post/how-to-enable-ssh-on-ubuntu-20-04/
+Key commands:
+```bash
+sudo apt install openssh-server
+sudo systemctl status ssh
+sudo ufw allow ssh
+```
+I used my router's interface to find my Pi's IP address, but running `ip a` should also work. Currently, we haven't been able to ssh into the server version of Ubuntu from VSCode on Windows. However, we are able to using Linux WSL or PuTTY.
 
 ### Install tmux
 tmux is a terminal multiplexer that allows processes to continue running after a remote connection has been closed. As some of the steps in setting up took me hours to run, this is useful to have early on. More information on tmux [here](https://github.com/tmux/tmux/wiki).
@@ -57,7 +68,7 @@ tar -xf arduino-cli_latest_Linux_ARM64.tar.gz -z
 ```
 
 ### Compile and upload - same as normal
-I used `sudo dmesg | tail` to figure out the arduino’s device file. I had to add myself to the plugdev and dialout groups before I could upload to the arduino.
+I used `sudo dmesg | tail` to figure out the arduino’s device file. I had to add myself to the plugdev and dialout groups and then powercycle before I could upload to the arduino.
 ```bash
 sudo usermod -a -G dialout USERNAME
 sudo usermod -a -G plugdev USERNAME
