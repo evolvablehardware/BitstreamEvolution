@@ -62,6 +62,10 @@ class ConfigBuilder:
         result_list = []
         for section in sections:
             for (key, val) in config_parser.items(section):
+                if section == BASE_CONFIG_PARAM_SECTION and key == BASE_CONFIG_PARAM_NAME:
+                    # Always skip the base config parameter, it is considered not a true parameter and is
+                    # never in the result config
+                    continue
                 comment = self.__get_comment_for_param(section, key, config_lines)
                 result_list.append(ConfigValue(section, key, val, comment))
         
