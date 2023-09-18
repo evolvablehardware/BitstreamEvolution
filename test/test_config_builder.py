@@ -16,6 +16,17 @@ def test_baseless():
     configBuilder.build_config(output)
     __compare_files(expected, output)
 
+def test_single_base():
+    '''
+    This test a single config file with one base file
+    '''
+    input = os.path.join('test', 'res', 'inputs', 'tree_config1.ini')
+    output = os.path.join('test', 'out', 'tree1_output.ini')
+    expected = os.path.join('test', 'res', 'expected_out', 'tree1_expected.ini')
+    configBuilder = ConfigBuilder(input)
+    configBuilder.build_config(output)
+    __compare_files(expected, output)
+
 def __compare_files(path1, path2):
     '''
     Reads in the contents of two files as a string list of lines, and returns on the equality of each line
