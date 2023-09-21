@@ -59,13 +59,15 @@ def evolve_list_of_configs(base_config:str,
         
         if (print_action_only):
             print(f"multi-evolve:\{config:{config},output:{output_directory},base_config:{base_config},description:{experiment_description}\}")
-        else:
-            evolve(
-                primary_config_path=    config,
-                output_directory=       output_directory,
-                base_config_path=       base_config,
-                experiment_description= formatted_name
-            )
+
+        evolve(
+            primary_config_path=    config,
+            output_directory=       output_directory,
+            base_config_path=       base_config,
+            experiment_description= formatted_name,
+            print_action_only=      print_action_only
+        )
+        
         config_num += 1
 
 

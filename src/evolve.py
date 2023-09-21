@@ -13,6 +13,7 @@ from Circuit import Circuit
 from Config import Config
 from Logger import Logger
 from subprocess import run
+from arg_parse_scripts import add_bool_argument
 import argparse
 import os
 
@@ -53,22 +54,39 @@ parser.add_argument('-o','--output-directory', type=str,default=default_output_d
                     help=f"The directory output from the simulation is copied to after a successful simulation. Default: {default_output_directory}")
 parser.add_argument('-d','--description', type=str,default=default_experiment_description,
                     help="The description of this simulation. Requires manual entry if not an argument.")
+print_flags = {'enable':['-p','--print-only','--test','--no-action'],
+            'disable':['-np', '--no-print-only','--normal','--act']}
+add_bool_argument(parser,"print_only",flag_names=print_flags,default=False)
 # --help is added by default
 
 ## Don't know if this is needed, but it might be useful to validate all inputs especially if this is going to take a while to run.
 ## It would also be nice if we could have script that could look over a bunch of configs
-def validate_arguments():
-    if (args.output_directory is not None) and (not os.path.isdir(args.output_directory)):
-        raise ValueError(f"Output directory not recognized: {args.output_directory}")
+def validate_arguments(output_directory) -> str:
+    invalid_info = ""
+    if (output_directory is not None) and (not os.path.isdir(output_directory)):
+        invalid_info += (f"PATH_NOT_RECOGNIZED: Output directory not recognized: {output_directory}\n")
 
         #alternate solution if wanted to do more with exit statuses for bash scripting
         #parser.exit(status=1, message=f"Output directory not recognized: {args.output_directory}")
+    return invalid_info
 
 ## This function performs evolution.
 def evolve(primary_config_path:str=default_config,
            output_directory:str=default_output_directory,/,
            experiment_description:str=default_experiment_description,
-           base_config_path:str=default_base_config)-> None:
+           base_config_path:str=default_base_config,
+           print_action_only:bool=False)-> None:
+
+    if (print_action_only):
+        print('Running evolve.py in print only mode:')
+        print(f"Config: {primary_config_path}, Base Config: {base_config_path}, Output Directory: {output_directory}, Experiment Description: {experiment_description}.")
+        # TODO: If wish to validate operations would work properly, we should implement some validation of inputs
+        # This would quickly add confidence that the arguments would work properly, perhaps like this.
+        invalid_notifications = validate_arguments(output_directory)
+        print(invalid_notifications)
+
+        print('Execution of evolve.py Finished.')
+        return
 
     ## Creating the config that will be used.
     config_builder = ConfigBuilder(primary_config_path, override_base_config=base_config_path)
@@ -119,14 +137,16 @@ if (__name__ == "__main__"):
     ## Parsing Args and configuring Variables
     args=parser.parse_args()
 
-    ## DELETE ME WHEN args are Logged
-    print(args) # probably should log this instead. not sure if with logger directly or through config.
+    ## TODO: DELETE ME WHEN args are Logged
+    if (args.print_only):
+        print("Arguments Detected:  {args}") # probably should log this instead. not sure if with logger directly or through config.
 
     ## Perform Evolution
     evolve(
         primary_config_path =       args.config,
         base_config_path =          args.base_config,
         output_directory =          args.output_directory,
-        experiment_description =    args.description
+        experiment_description =    args.description,
+        print_action_only=          args.print_only
     )
 
