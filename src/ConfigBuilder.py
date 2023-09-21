@@ -21,14 +21,16 @@ class ConfigBuilder:
         Uses the base configs of the input to build an internal representation of the final config file,
         then output it to the specified output file
         '''
-        config_values = self.__get_config_values_from_file(self.__input, self.__override_base_config)
-        self.__output_config_to_file(config_values, output)
+        config_values, files_list = self.__get_config_values_from_file(self.__input, self.__override_base_config)
+        self.__output_config_to_file(config_values, files_list, output)
 
     def __get_config_values_from_file(self, input, override_base_config = None):
         '''
-        Returns the config values by reading in the file
+        Multi-value return
+        Returns the config values by reading in the file, and the list of config files used to build those values
         This will include all config values, recursing into base configs if needed
         '''
+        config_files_list = [ input ]
         config_parser = ConfigParser()
         config_parser.read(input)
         file = open(input, mode='r')
@@ -42,15 +44,18 @@ class ConfigBuilder:
         # Get the values from the base config & current config
         config_values = self.__get_config_values(config_parser, config_lines)
         base_values = []
+        base_config_files_list = []
         if base_config_path != None:
-            base_values = self.__get_config_values_from_file(base_config_path)
+            base_values, base_config_files_list = self.__get_config_values_from_file(base_config_path)
+
+        config_files_list = config_files_list + base_config_files_list
         # Okay, now we need to merge with the values we find in our own file
         # To do this, we will add from base_values only if we don't currently have the specified value 
         # in our config_values list
         for val in base_values:
             if not self.__config_values_contains(config_values, val):
                 config_values.append(val)
-        return config_values
+        return config_values, config_files_list
 
     def __get_config_values(self, config_parser, config_lines):
         '''
@@ -118,12 +123,20 @@ class ConfigBuilder:
 
         return comments
 
-    def __output_config_to_file(self, config_values, output_path):
+    def __output_config_to_file(self, config_values, files_list, output_path):
         '''
         Outputs the specified config values to an output file
         '''
         sections = self.__consolidate_configvalues_by_section(config_values)
         file = open(output_path, 'w')
+        # Write info comment at top, add list of config files used to build
+        file.write('; This configuration file was generated through combining the following files:\n')
+        for f in files_list:
+            # Convert Windows paths to Unix if necessary
+            file.write('; ' + f.replace('\\', '/') + '\n')
+        # Add a newline before the actual config stuff
+        file.write('\n')
+
         is_first_section = True
         for name, config_values in sections.items():
             # Add the section header to the file first
