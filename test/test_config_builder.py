@@ -38,6 +38,17 @@ def test_double_base():
     configBuilder.build_config(output)
     __compare_files(expected, output)
 
+def test_override_base():
+    '''
+    This tests a config file, but with the base config overridden
+    '''
+    input = os.path.join('test', 'res', 'inputs', 'tree_config2.ini')
+    output = os.path.join('test', 'out', 'override_output.ini')
+    expected = os.path.join('test', 'res', 'expected_out', 'override_expected.ini')
+    configBuilder = ConfigBuilder(input, override_base_config=os.path.join('test', 'res', 'inputs', 'baseless_config.ini'))
+    configBuilder.build_config(output)
+    __compare_files(expected, output)
+
 def __compare_files(path1, path2):
     '''
     Reads in the contents of two files as a string list of lines, and returns on the equality of each line
