@@ -18,11 +18,22 @@ def test_baseless():
 
 def test_single_base():
     '''
-    This test a single config file with one base file
+    This tests a single config file with one base file
     '''
     input = os.path.join('test', 'res', 'inputs', 'tree_config1.ini')
     output = os.path.join('test', 'out', 'tree1_output.ini')
     expected = os.path.join('test', 'res', 'expected_out', 'tree1_expected.ini')
+    configBuilder = ConfigBuilder(input)
+    configBuilder.build_config(output)
+    __compare_files(expected, output)
+
+def test_double_base():
+    '''
+    This tests a config file with 2 base files (layered)
+    '''
+    input = os.path.join('test', 'res', 'inputs', 'tree_config2.ini')
+    output = os.path.join('test', 'out', 'tree2_output.ini')
+    expected = os.path.join('test', 'res', 'expected_out', 'tree2_expected.ini')
     configBuilder = ConfigBuilder(input)
     configBuilder.build_config(output)
     __compare_files(expected, output)
