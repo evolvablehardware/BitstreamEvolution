@@ -1,3 +1,7 @@
+#! /bin/python3
+# This program calls evolve.py multiple times in order to run multiple evolutionary experiments.
+
+
 import argparse
 from evolve import program_description as evolve_program_description
 from evolve import evolve

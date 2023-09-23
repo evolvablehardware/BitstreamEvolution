@@ -1,3 +1,4 @@
+#! /bin/python3
 # Genetic Algorithm for Intrinsic Analog Hardware Evolution
 # FOR USE WITH LATTICE iCE40 FPGAs ONLY
 #
