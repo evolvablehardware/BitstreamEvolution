@@ -30,9 +30,9 @@ default_experiment_description = "multi_evolve.py for config file: '{config}' it
 parser = argparse.ArgumentParser(prog=program_name,
                                  description=program_description,
                                  epilog=program_epilog)
-parser.add_argument('-c','--configs',type=[str],nargs='*',default=default_config_array,
+parser.add_argument('-c','--configs',type=str,nargs='*',default=default_config_array,
                    help=f"")
-parser.add_argument('-bc','--base-config',typt=str,default=default_base_config,
+parser.add_argument('-bc','--base-config',type=str,default=default_base_config,
                     help= f"The config any unspecified values in the main config is pulled from. " +\
                         f"This overpowers the main config specified in the file if provided. Default: {default_base_config}")
 parser.add_argument('-o','--output-directory', type=str,default=default_output_directory,
@@ -81,7 +81,7 @@ if (__name__ == "__main__") :
     evolve_list_of_configs(
         base_config=args.base_config,
         output_directory=args.output_directory,
-        experiment_description=args.default_base_config,
+        experiment_description=args.description,
         print_action_only=args.print_only,
         configs=args.configs
     )

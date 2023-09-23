@@ -1,5 +1,5 @@
 #! /bin/python3
-# Genetic Algorithm for Intrinsic Analog Hardware Evolution
+#Genetic Algorithm for Intrinsic Analog Hardware Evolution
 # FOR USE WITH LATTICE iCE40 FPGAs ONLY
 #
 # This code can be used to evolve an analog oscillator
@@ -48,7 +48,7 @@ parser = argparse.ArgumentParser(prog=program_name,
                                  epilog=program_epilog)
 parser.add_argument('-c','--config',type=str,default=default_config,
                    help=f"The file this simulation is generated from. Default: {default_config}")
-parser.add_argument('-bc','--base-config',typt=str,default=default_base_config,
+parser.add_argument('-bc','--base-config',type=str,default=default_base_config,
                     help= f"The config any unspecified values in the main config is pulled from. " +\
                         f"This overpowers the main config specified in the file if provided. Default: {default_base_config}")
 parser.add_argument('-o','--output-directory', type=str,default=default_output_directory,
@@ -73,7 +73,7 @@ def validate_arguments(output_directory) -> str:
 
 ## This function performs evolution.
 def evolve(primary_config_path:str=default_config,
-           output_directory:str=default_output_directory,/,
+           output_directory:str=default_output_directory,*,
            experiment_description:str=default_experiment_description,
            base_config_path:str=default_base_config,
            print_action_only:bool=False)-> None:
