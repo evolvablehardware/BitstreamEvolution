@@ -1,7 +1,7 @@
 import argparse
 from evolve import program_description as evolve_program_description
 from evolve import evolve
-from arg_parse_scripts import add_bool_argument
+from arg_parse_utils import add_bool_argument
 
 program_name="multi_evolve"
 program_description=f"""This function runs multiple evolution simulations specified by multiple config files.

@@ -13,7 +13,7 @@ from Circuit import Circuit
 from Config import Config
 from Logger import Logger
 from subprocess import run
-from arg_parse_scripts import add_bool_argument
+from arg_parse_utils import add_bool_argument
 import argparse
 import os
 
