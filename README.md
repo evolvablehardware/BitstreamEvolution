@@ -393,8 +393,15 @@ that needs to be modified is the
 ### Configuration
 The project has various configuration options that can be specified in
 `data/config.ini`. The file`data/default_config.ini` contains the
-default options for the configuration and should not be modified. Below
-is a list of the options, their description, and their possible values:
+default options for the configuration and should not be modified. 
+
+The `TOP-LEVEL PARAMETER` `base_config` can be modified to specify a base config file.
+In the event of a missing config parameter, it will be filled in with that from the base config file.
+These can be stacked into a line of configuration files.
+The configuration files will be combined and the resulting file to use for evolution will
+be output. All parameters still must be specified at some point in the final configuration.
+
+Below is a list of the options, their description, and their possible values:
 
 <!-- NOTE Right now this only lists the most important options-->
 
