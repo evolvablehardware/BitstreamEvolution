@@ -3,8 +3,8 @@
 
 
 import argparse
-from evolve import program_description as evolve_program_description
-from evolve import evolve
+from Evolution import Evolution
+from evolve import BUILT_CONFIG_PATH, program_description as evolve_program_description
 from arg_parse_utils import add_bool_argument
 
 program_name="multi_evolve"
@@ -55,6 +55,7 @@ def evolve_list_of_configs(base_config:str,
     '{config_num}' for the itterastion number of the experiment."""
      #"multi_evolve.py for config file: '{config}' itteration number: {config_num}"
 
+    evolution = Evolution()
 
     config_num = 1
     for config in configs:
@@ -64,10 +65,11 @@ def evolve_list_of_configs(base_config:str,
         if (print_action_only):
             print(f"multi-evolve:\{config:{config},output:{output_directory},base_config:{base_config},description:{experiment_description}\}")
 
-        evolve(
+        evolution.evolve(
             primary_config_path=    config,
             output_directory=       output_directory,
             base_config_path=       base_config,
+            built_config_path=      BUILT_CONFIG_PATH,
             experiment_description= formatted_name,
             print_action_only=      print_action_only
         )
@@ -75,13 +77,12 @@ def evolve_list_of_configs(base_config:str,
         config_num += 1
 
 
-if (__name__ == "__main__") :
-    args=parser.parse_args()
-    
-    evolve_list_of_configs(
-        base_config=args.base_config,
-        output_directory=args.output_directory,
-        experiment_description=args.description,
-        print_action_only=args.print_only,
-        configs=args.configs
-    )
+args=parser.parse_args()
+
+evolve_list_of_configs(
+    base_config=args.base_config,
+    output_directory=args.output_directory,
+    experiment_description=args.description,
+    print_action_only=args.print_only,
+    configs=args.configs
+)
