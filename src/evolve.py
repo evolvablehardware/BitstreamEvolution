@@ -68,5 +68,6 @@ evolution.evolve(
     base_config_path =          args.base_config,
     output_directory =          args.output_directory,
     experiment_description =    args.description,
-    print_action_only=          args.print_only
+    built_config_path=          BUILT_CONFIG_PATH,
+    print_action_only=          args.print_only,
 )

@@ -8,15 +8,15 @@ import os
 
 class Evolution:
 
-    def __init__():
+    def __init__(self):
         '''Do nothing'''
 
     def evolve(self,
             primary_config_path:str,
-            output_directory:str,*,
             experiment_description:str,
             base_config_path:str,
             built_config_path:str,
+            output_directory:str=None,
             print_action_only:bool=False) -> None:
 
         if (print_action_only):
@@ -46,7 +46,7 @@ class Evolution:
         # logger.log_info(1, args) - Not sure how to log arguments. This was my attempt to do so.
         config.add_logger(logger)
         config.validate_all()
-        self.validate_arguments()
+        self.validate_arguments(output_directory)
         mcu = Microcontroller(config, logger)
         population = CircuitPopulation(mcu, config, logger)
 
