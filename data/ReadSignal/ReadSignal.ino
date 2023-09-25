@@ -26,7 +26,7 @@ void setup(){
     Serial.println("Began serial");
     while (!Serial);
     digitalWrite(LED_BUILTIN, HIGH);
-    digitalWrite(2, HIGH); // noise suppression on interrupt pin
+    // digitalWrite(2, HIGH); // noise suppression on interrupt pin - removed now since it was affecting reading from A0
     attachInterrupt(digitalPinToInterrupt(interrupt),pulseCounter, RISING); // can be changed from RISING to FALLING or CHANGE
 }
 
@@ -45,10 +45,6 @@ void loop(){
 //          buf[t] = analogRead(analogPin); //Read the AnalogPin
 //          delayMicroseconds(10); //Wait 10 uS
 //        }
-
-        //disable pulse counter
-        //leaving d2 high messed with the readings of a0
-        digitalWrite(2, LOW);
 
         for(int i=0; i<=499; i++){
             Serial.print(i+1);
@@ -69,9 +65,6 @@ void loop(){
 //        int timeTracker = 0;
 //        int result = 0;
 //        int i = 0;
-//        //disable pulse counter
-//        //leaving d2 high messed with the readings of a0
-//        digitalWrite(2, LOW);
 //        while (timeTracker <= 1050){ // 1.05ms
 //          long tempResult = pulseIn(analogPin, HIGH, 1050);
 //          if (tempResult >= 1000){
@@ -82,8 +75,6 @@ void loop(){
 //          buf[i]= tempResult;
 //          i++;
 //        }
-//        //re-enable pulse counter
-//        digitalWrite(2, HIGH);
 
         //PULSE COUNT   //using interrupt
         cli(); //disable interrupt pin
