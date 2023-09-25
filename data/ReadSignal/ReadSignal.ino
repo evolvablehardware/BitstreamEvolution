@@ -58,6 +58,10 @@ void loop(){
       if (x == ADCMeasureSelection){
         Serial.print("START\nSTART\nSTART\n");
 
+        //disable pulse counter
+        //leaving d2 high messed with the readings of a0
+        digitalWrite(2, LOW);
+
         for(int i=0; i<=499; i++){
             Serial.print(i+1);
             Serial.print(": ");
@@ -67,6 +71,9 @@ void loop(){
             //(500 samples delayed by 10us each results in a sampled time interval of 5ms)
             delayMicroseconds(10); 
         }
+
+        //re-enable pulse counter
+        digitalWrite(2, HIGH);
     
         Serial.print("FINISHED\nFINISHED\nFINISHED\n");
         delay(10); //3016/1508 Delay to load the FPGA
@@ -93,6 +100,10 @@ void loop(){
        int result = 0;
        int i = 0;
 
+       //disable pulse counter
+       //leaving d2 high messed with the readings of a0
+       digitalWrite(2, LOW);
+
        while (timeTracker <= 1050){ // 1.05ms
          long tempResult = pulseIn(analogPin, HIGH, 1050);
          if (tempResult >= 1000){
@@ -103,6 +114,9 @@ void loop(){
          buf[i]= tempResult;
          i++;
        }
+
+       //re-enable pulse counter
+        digitalWrite(2, HIGH);
 
       Serial.print(result);
       Serial.print("FINISHED\nFINISHED\nFINISHED\n");
