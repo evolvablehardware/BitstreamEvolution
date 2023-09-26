@@ -26,7 +26,7 @@ void setup(){
     Serial.println("Began serial");
     while (!Serial);
     digitalWrite(LED_BUILTIN, HIGH);
-    digitalWrite(2, HIGH); // noise suppression on interrupt pin
+    // digitalWrite(2, HIGH); // noise suppression on interrupt pin - removed now since it was affecting reading from A0
     attachInterrupt(digitalPinToInterrupt(interrupt),pulseCounter, RISING); // can be changed from RISING to FALLING or CHANGE
 }
 
