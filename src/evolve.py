@@ -55,19 +55,19 @@ add_bool_argument(parser,"print_only",flag_names=print_flags,default=False)
 # --help is added by default
 
 ## Parsing Args and configuring Variables
-args=parser.parse_args()
+__args=parser.parse_args()
 
 ## TODO: DELETE ME WHEN args are Logged
-if (args.print_only):
-    print("Arguments Detected:  {args}") # probably should log this instead. not sure if with logger directly or through config.
+if (__args.print_only):
+    print(f"Arguments Detected:  {__args}") # probably should log this instead. not sure if with logger directly or through config.
 
 # Run Evolution class, which actually executes an experiment
 evolution = Evolution()
 evolution.evolve(
-    primary_config_path =       args.config,
-    base_config_path =          args.base_config,
-    output_directory =          args.output_directory,
-    experiment_description =    args.description,
+    primary_config_path =       __args.config,
+    base_config_path =          __args.base_config,
+    output_directory =          __args.output_directory,
+    experiment_description =    __args.description,
     built_config_path=          BUILT_CONFIG_PATH,
-    print_action_only=          args.print_only,
+    print_action_only=          __args.print_only
 )
