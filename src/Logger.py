@@ -119,6 +119,10 @@ class Logger:
         open("workspace/bestlivedata.log", "w").close()
         open("workspace/waveformlivedata.log", "w").close()
         open("workspace/maplivedata.log", "w").close()
+        open("workspace/heatmaplivedata.log", "w").close()
+        open("workspace/violinlivedata.log", "w").close()
+        open("workspace/poplivedata.log", "w").close()
+        open("workspace/randomizationdata.log", "w").close()
         # Determine if we need to the to initialize the analysis and
         # if so, do so.
         # currently removed since we're not currently storing any data, so there's a bunch of empty files and directories
