@@ -75,10 +75,10 @@ def test_monkeypatch_stuff(monkeypatch):
     testEvolution = TestEvolution()
     #multi_evolve.evolution=testEvolution
     monkeypatch.setattr(multi_evolve,"evolution",testEvolution)
-    multi_evolve.evolve_list_of_configs(base_config="nonsense",
+    multi_evolve.evolve_list_of_configs(("nonsenseConfig1","nonsenseConfig2","nonsenseConfig3"),
+                           base_config="nonsense",
                            output_directory="nonsense directory",
                            experiment_description="nonsense description",
                            print_action_only=True)
-                           #configs=("nonsenseConfig1","nonsenseConfig2","nonsenseConfig3"))
     
     assert testEvolution.evolve_was_called() == True

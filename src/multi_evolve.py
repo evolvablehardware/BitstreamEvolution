@@ -47,11 +47,12 @@ add_bool_argument(parser,"print_only",flag_names=flags,default=False)
 evolution = Evolution()
 
 ## need to add a way to create custom experiment descriptions.
-def evolve_list_of_configs(base_config:str,
+def evolve_list_of_configs(*configs:str,
+                           base_config:str,
                            output_directory:str,
                            experiment_description:str,
                            print_action_only:bool=False,
-                           *configs:str):
+                           ):
     """This functin evolves a list of configs. 
     In experiment desctiption, the strings '{config}' for the current config's file path and 
     '{config_num}' for the itterastion number of the experiment."""
@@ -65,7 +66,7 @@ def evolve_list_of_configs(base_config:str,
         formatted_name = experiment_description.format(config=config,config_num=config_num)
         
         if (print_action_only):
-            print(f"multi-evolve:{config:{config},output:{output_directory},base_config:{base_config},description:{experiment_description}}")
+            print(f"multi-evolve:{{config:{config},output:{output_directory},base_config:{base_config},description:{experiment_description}}}")
 
         evolution.evolve(
             primary_config_path=    config,
@@ -82,11 +83,11 @@ def run():
     args=parser.parse_args()
 
     evolve_list_of_configs(
+        configs=args.configs,
         base_config=args.base_config,
         output_directory=args.output_directory,
         experiment_description=args.description,
-        print_action_only=args.print_only,
-        configs=args.configs
+        print_action_only=args.print_only
     )
 
 if __name__ == "__main__":
