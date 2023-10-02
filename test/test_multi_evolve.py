@@ -73,6 +73,7 @@ TestEvolution.__test__ = False
 
 def test_monkeypatch_stuff(monkeypatch):
     testEvolution = TestEvolution()
+    #multi_evolve.evolution=testEvolution
     monkeypatch.setattr(multi_evolve,"evolution",testEvolution)
     multi_evolve.evolve_list_of_configs(base_config="nonsense",
                            output_directory="nonsense directory",
