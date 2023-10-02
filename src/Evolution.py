@@ -9,9 +9,6 @@ import os
 class Evolution:
 
     def __init__(self):
-        #set to dict of arguments once used, primarily for tests
-        self.evolve_has_run = False
-        self.last_evolution_arguments_dict = None 
         '''Do nothing'''
 
     def evolve(self,
@@ -21,16 +18,6 @@ class Evolution:
             built_config_path:str,
             output_directory:str=None,
             print_action_only:bool=False) -> None:
-        
-        self.evolve_has_run = True
-        self.last_evolution_arguments_dict = {
-            "primary_config_path":      primary_config_path,
-            "experiment_description":   experiment_description,
-            "base_config_path":         base_config_path,
-            "built_config_path":        built_config_path,
-            "output_directory":         output_directory,
-            "print_action_only":        print_action_only
-        }
 
         if (print_action_only):
             print('Running evolve.py in print only mode:')

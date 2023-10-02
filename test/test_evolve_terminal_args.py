@@ -14,7 +14,7 @@ def test_terminal_connects():
 
 def test_evolve_runs_without_error():
     """Verify that evolve, running in --test mode does not error out, and writes to stdout"""
-    
+
     program = run("python3 src/evolve.py --test".split(" "),capture_output=True)
     empty = [None,'',b'']
     # assert no errors, standard printout
@@ -22,4 +22,5 @@ def test_evolve_runs_without_error():
     assert program.stderr in empty
     assert program.stdout not in empty
 
-#def test_mock_on_evolve
+#def test_mock_on_evolve()
+    

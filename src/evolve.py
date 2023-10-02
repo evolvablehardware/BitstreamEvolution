@@ -54,20 +54,24 @@ print_flags = {'enable':['-p','--print-only','--test','--no-action'],
 add_bool_argument(parser,"print_only",flag_names=print_flags,default=False)
 # --help is added by default
 
-## Parsing Args and configuring Variables
-__args=parser.parse_args()
+def run():
+    ## Parsing Args and configuring Variables
+    __args=parser.parse_args()
 
-## TODO: DELETE ME WHEN args are Logged
-if (__args.print_only):
-    print(f"Arguments Detected:  {__args}") # probably should log this instead. not sure if with logger directly or through config.
+    ## TODO: DELETE ME WHEN args are Logged
+    if (__args.print_only):
+        print(f"Arguments Detected:  {__args}") # probably should log this instead. not sure if with logger directly or through config.
 
-# Run Evolution class, which actually executes an experiment
-evolution = Evolution()
-evolution.evolve(
-    primary_config_path =       __args.config,
-    base_config_path =          __args.base_config,
-    output_directory =          __args.output_directory,
-    experiment_description =    __args.description,
-    built_config_path=          BUILT_CONFIG_PATH,
-    print_action_only=          __args.print_only
-)
+    # Run Evolution class, which actually executes an experiment
+    evolution = Evolution()
+    evolution.evolve(
+        primary_config_path =       __args.config,
+        base_config_path =          __args.base_config,
+        output_directory =          __args.output_directory,
+        experiment_description =    __args.description,
+        built_config_path=          BUILT_CONFIG_PATH,
+        print_action_only=          __args.print_only
+    )
+
+if __name__ == "__main__":
+    run()

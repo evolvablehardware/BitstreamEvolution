@@ -44,6 +44,8 @@ flags = {'enable':["-p","--print_only", "--no-action","--test"],
 add_bool_argument(parser,"print_only",flag_names=flags,default=False)
 # --help is added by default
 
+evolution = Evolution()
+
 ## need to add a way to create custom experiment descriptions.
 def evolve_list_of_configs(base_config:str,
                            output_directory:str,
@@ -55,7 +57,7 @@ def evolve_list_of_configs(base_config:str,
     '{config_num}' for the itterastion number of the experiment."""
      #"multi_evolve.py for config file: '{config}' itteration number: {config_num}"
 
-    evolution = Evolution()
+    
 
     config_num = 1
     for config in configs:
@@ -63,7 +65,7 @@ def evolve_list_of_configs(base_config:str,
         formatted_name = experiment_description.format(config=config,config_num=config_num)
         
         if (print_action_only):
-            print(f"multi-evolve:\{config:{config},output:{output_directory},base_config:{base_config},description:{experiment_description}\}")
+            print(f"multi-evolve:{config:{config},output:{output_directory},base_config:{base_config},description:{experiment_description}}")
 
         evolution.evolve(
             primary_config_path=    config,
@@ -76,13 +78,16 @@ def evolve_list_of_configs(base_config:str,
         
         config_num += 1
 
+def run():
+    args=parser.parse_args()
 
-args=parser.parse_args()
+    evolve_list_of_configs(
+        base_config=args.base_config,
+        output_directory=args.output_directory,
+        experiment_description=args.description,
+        print_action_only=args.print_only,
+        configs=args.configs
+    )
 
-evolve_list_of_configs(
-    base_config=args.base_config,
-    output_directory=args.output_directory,
-    experiment_description=args.description,
-    print_action_only=args.print_only,
-    configs=args.configs
-)
+if __name__ == "__main__":
+    run()
