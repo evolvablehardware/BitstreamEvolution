@@ -53,7 +53,7 @@ class TestEvolution(Evolution):
     def evolve_call_count(self)->int:
         return self.evolve_call_count
     
-    def assert_evolve_call_contains(self,callIndex,args:[(str,str)]):
+    def assert_evolve_call_contains(self,callIndex,args:[(str,any)]):
         call_argument_dict:dict = self.previous_evolve_argument_list[callIndex]
         for argument in args:
             if not argument[0] in call_argument_dict:
@@ -61,10 +61,10 @@ class TestEvolution(Evolution):
 
             assert argument[1] == call_argument_dict[argument[0]], f"Argument '{argument[0]}' did not match on evolve call index {callIndex}. {args[argument]} != {call_argument_dict[argument]}."
 
-    def assert_last_evolve_call_contains(self,args:[(str,str)]):
+    def assert_last_evolve_call_contains(self,args:[(str,any)]):
         self.assert_evolve_call_contains(len(self.previous_evolve_argument_list)-1,args)
 
-    def assert_all_calls_contain(self,args:[(str,str)]):
+    def assert_all_calls_contain(self,args:[(str,any)]):
         for call_dict_index in range(len(self.previous_evolve_argument_list)):
             self.assert_evolve_call_contains(call_dict_index,args)
 
