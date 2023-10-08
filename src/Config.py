@@ -160,6 +160,12 @@ class Config:
 			self.__log_error(1, "Invalid random threshold " + str(threshold) + "'. Must be greater than zero.")
 			exit()
 		return threshold
+
+	def get_randomize_mode(self):
+		input = self.get_init_parameters("RANDOMIZE_MODE")
+		valid_vals = ["RANDOM", "MUTATE"]
+		self.check_valid_value("randomization mode", input, valid_vals)
+		return input
 	
 	# SECTION Getters for stopping conditions parameters.
 	# Since you can use target fitness instead of gens, we'll need options to see which is turned on
@@ -330,6 +336,7 @@ class Config:
 		self.get_init_mode()
 		self.get_randomization_type()
 		self.get_randomize_threshold()
+		self.get_randomize_mode()
 
 		self.using_n_generations()
 		self.get_n_generations()
