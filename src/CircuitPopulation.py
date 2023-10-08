@@ -249,11 +249,12 @@ class CircuitPopulation:
                 else:
                     circuit.mutate()
 
-                fitness = circuit.evaluate_pulse_count()
-                var_th = self.__config.get_randomize_threshold()
-                if (fitness > var_th):
+                circuit.evaluate_pulse_count()
+                pulses = circuit.get_pulses()
+                th = self.__config.get_randomize_threshold()
+                if (pulses > th):
                     no_pulses_generated = False
-                    self.__log_info(1, "Pulse generated! Exiting randomization. Fitness:", fitness)
+                    self.__log_info(1, "Pulse generated! Exiting randomization. Pulses recorded:", pulses)
                     break
     
     def __randomize_until_voltage(self):
@@ -267,7 +268,7 @@ class CircuitPopulation:
                     circuit.randomize_bits()
                 else:
                     circuit.mutate()
-                    
+
                 mean_voltage = circuit.measure_mean_voltage()
                 if (abs(mean_voltage - 341) < 10):
                     self.__log_info(1, "Voltage Achieved! Exiting randomization. Voltage:", mean_voltage)

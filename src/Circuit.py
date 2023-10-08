@@ -36,6 +36,7 @@ class Circuit:
         self.__rand = rand
         self.__fitness = 0
         self.__mean_voltage = 0 #needed for combined fitness func
+        self.__pulses = 0 # Used to get pulses counted outside of circuit
 
         # SECTION Build the relevant paths
         asc_dir = config.get_asc_directory()
@@ -270,6 +271,7 @@ class Circuit:
         """
         Upload and run this circuit and count the number of pulses it
         generates.
+        Returns the fitness of this circuit
         """
         start = time()
         self.__run()
@@ -433,6 +435,7 @@ class Circuit:
         for i in range(len(data)):
             pulse_count += int(data[i])
         self.__log_event(3, "Pulses counted: {}".format(pulse_count))
+        self.__pulses = pulse_count
 
         if pulse_count == 0:
             self.__log_event(2, "NULL DATA FILE. ZEROIZING")
@@ -747,6 +750,12 @@ class Circuit:
         Returns the fitness of this circuit.
         """
         return self.__fitness
+
+    def get_pulses(self):
+        """
+        Returns the last pulse count recorded by the circuit
+        """
+        return self.__pulses
 
     def get_hardware_file(self):
         """

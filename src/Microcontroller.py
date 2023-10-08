@@ -66,7 +66,6 @@ class Microcontroller:
         buf_dif = 0
         weighted_count = 0
 
-        print(len(buf))
         for i in range(0, len(buf)):
             if buf[i] == b'':
                 buf[i] = 0
