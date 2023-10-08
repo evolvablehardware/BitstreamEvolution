@@ -444,7 +444,7 @@ class Circuit:
         elif pulse_count == 0:
             self.__fitness = 0
         else:
-            self.__fitness = 1.0 / (desired_freq - pulse_count)
+            self.__fitness = 1.0 / abs(desired_freq - pulse_count)
         
         return self.__fitness
 
