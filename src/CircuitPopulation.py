@@ -244,7 +244,11 @@ class CircuitPopulation:
             # not revert to the original seed-hardware until restarting
             self.__log_event(3, "Randomizing to generate pulses")
             for circuit in self.__circuits:
-                circuit.randomize_bits()
+                if self.__config.get_randomize_mode() == 'RANDOM':
+                    circuit.randomize_bits()
+                else:
+                    circuit.mutate()
+
                 fitness = circuit.evaluate_pulse_count()
                 var_th = self.__config.get_randomize_threshold()
                 if (fitness > var_th):
@@ -259,7 +263,11 @@ class CircuitPopulation:
         while True:
             self.__log_event(3, "Randomizing to get voltage")
             for circuit in self.__circuits:
-                circuit.randomize_bits()
+                if self.__config.get_randomize_mode() == 'RANDOM':
+                    circuit.randomize_bits()
+                else:
+                    circuit.mutate()
+                    
                 mean_voltage = circuit.measure_mean_voltage()
                 if (abs(mean_voltage - 341) < 10):
                     self.__log_info(1, "Voltage Achieved! Exiting randomization. Voltage:", mean_voltage)
