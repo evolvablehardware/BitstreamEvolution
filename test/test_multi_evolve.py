@@ -4,6 +4,7 @@ import pytest
 from collections.abc import Iterator  
 from functools import partial
 
+from typing import Callable
 #from typing import override
 def override(func):
     """Temporary structure before implement override in python 3.12 released Today... (10/2/2023) apearently."""
@@ -104,7 +105,7 @@ def test_evolution_object() -> Iterator[TestEvolution]:
     #any teardown code here
 
 @pytest.fixture
-def test_evolve_list_of_configs(test_evolution_object):# -> Iterator[function]:
+def test_evolve_list_of_configs(test_evolution_object) -> Iterator[Callable]:
     test_evolve_list_of_configs = partial(multi_evolve.evolve_list_of_configs_selecting_evolution,evolution_object=test_evolution_object)
     yield test_evolve_list_of_configs
 
@@ -114,7 +115,7 @@ def test_evolve_list_of_configs(test_evolution_object):# -> Iterator[function]:
 @pytest.mark.parametrize("configName",[("config1"),
                                        ("config2"),
                                        ("config3")])
-def test_single_configRecieved(configName:str,test_evolution_object:TestEvolution,test_evolve_list_of_configs):
+def test_single_configRecieved(configName:str,test_evolution_object:TestEvolution,test_evolve_list_of_configs:Callable):
     """Verify that when a single config is passed in multiEvolve works properly."""
     assert not test_evolution_object.evolve_was_called() 
     #multi_evolve.evolve_list_of_configs
