@@ -2,6 +2,7 @@
 import pytest
 
 from collections.abc import Iterator  
+from functools import partial
 
 #from typing import override
 def override(func):
@@ -73,6 +74,8 @@ class TestEvolution(Evolution):
 
 TestEvolution.__test__ = False
 
+# This function tests monkeypatch for a previous multi_evolve arrangement where evolution was declared internally and not passed in.
+""" 
 def test_monkeypatch_stuff(monkeypatch):
     testEvolution = TestEvolution()
     #multi_evolve.evolution=testEvolution
@@ -83,24 +86,39 @@ def test_monkeypatch_stuff(monkeypatch):
                            experiment_description="nonsense description",
                            print_action_only=True)
     
-    assert testEvolution.evolve_was_called() == True
+    assert testEvolution.evolve_was_called() == True """
 
+# Example of a fixture using monkeypatch to replace the object in a function.
+""" 
 @pytest.fixture
 def test_evolution_object(monkeypatch) -> Iterator[TestEvolution]:
     test_evolution = TestEvolution()
     monkeypatch.setattr(multi_evolve,"evolution",test_evolution)
     yield test_evolution
-    #any taredown code goes here
+    #any taredown code goes here """
+
+@pytest.fixture
+def test_evolution_object() -> Iterator[TestEvolution]:
+    test_evolution_object = TestEvolution()
+    yield test_evolution_object
+    #any teardown code here
+
+@pytest.fixture
+def test_evolve_list_of_configs(test_evolution_object):# -> Iterator[function]:
+    test_evolve_list_of_configs = partial(multi_evolve.evolve_list_of_configs_selecting_evolution,evolution_object=test_evolution_object)
+    yield test_evolve_list_of_configs
+
 
 
 
 @pytest.mark.parametrize("configName",[("config1"),
                                        ("config2"),
                                        ("config3")])
-def test_single_configRecieved(configName:str,test_evolution_object:TestEvolution):
+def test_single_configRecieved(configName:str,test_evolution_object:TestEvolution,test_evolve_list_of_configs):
     """Verify that when a single config is passed in multiEvolve works properly."""
     assert not test_evolution_object.evolve_was_called() 
-    multi_evolve.evolve_list_of_configs(
+    #multi_evolve.evolve_list_of_configs
+    test_evolve_list_of_configs(
         configName,
         base_config="base-config",
         output_directory="output-directory",
