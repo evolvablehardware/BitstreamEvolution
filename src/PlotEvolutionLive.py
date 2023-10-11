@@ -16,51 +16,27 @@ MAX_VIOLIN_PLOTS = 10
 MAX_HEATMAP_GENS = 50
 HEATMAP_BINS = 32 
 
+config = Config("data/config.ini")
+
 def animate_generation(i):
-    avg_fitness = []
     graph_data = open('workspace/alllivedata.log','r').read()
     lines = graph_data.split('\n')
     xs = []
     ys = []
     
-    # There used to be a bug where the program always believed it was in sim mode, but once that was fixed, the code below
-    # broke the chart on non-simulation mode. As such, the target frequency is just always set to 1728, which worked fine before
-    #if not config.get_simulation_mode() == "FULLY_INTRINSIC":
-        #target_freq = 1728
-        # Based on my calculations for the maximum number of bits we can 
-        # modify with our given search space constraints
-    #else:
-        #target_freq = [config.get_desired_frequency()]*(config.get_population_size+2)
-    target_freq = 1728
-    
-    base = [config.get_desired_frequency()]*0
     for line in lines:
         if len(line) > 1:
             x, y, z = line.split(',')
-            if x == "../hardware": x = "hardware0";
-            match = re.match(r"([a-z]+)([0-9]+)", x, re.I)
-            if match:
-                items = match.groups()
-                xs.append(int(items[1]))
+            xs.append(int(x))
             ys.append(float(y))
     avg = 0.0
-    if sum(ys) > 0:
+    if len(ys) > 0:
         avg = sum(ys)/len(ys)
-    else:
-        avg_fitness.append(avg)
+
     ax1.clear()
-    # ax1.plot(xs, ys)
     ax1.set_xlim([0, config.get_population_size()+1])
-    ax1.plot(target_freq, "r--")
-    ax1.plot(base, "w-")
-    ax1.plot(avg_fitness, color="violet")
-    '''if not config.get_simulation_mode() == "FULLY_INTRINSIC":
-        ax1.set_yscale('symlog')
-        ax1.set_ylim([0, 1000000])'''
-    # ax1.plot.stem(xs,ys,  color="green", use_line_collection=True)
+    ax1.hlines(y=avg, xmin=1, xmax=config.get_population_size(), color="violet", linestyles="dotted")
     ax1.scatter(xs, ys)
-    # plt.stem(xs, ys, markerfmt="bo", linefmt="b-", use_line_collection=True)
-    # plt.plot(xs, ys, color="blue")
     ax1.set(xlabel='Circuit Number', ylabel='Fitness', title='Circuit Fitness this Generation')
 
 # fig2 = plt.figure()
@@ -298,7 +274,6 @@ def anim_heatmap(i):
     if(config.get_save_plots()):
         fig3.savefig(plots_dir.joinpath("waveform_heatmap.png"))
 
-config = Config("data/config.ini")
 plots_dir = config.get_plots_directory()
 
 style.use('dark_background')
