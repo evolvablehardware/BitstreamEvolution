@@ -427,6 +427,8 @@ class CircuitPopulation:
         # We have finished evolution! Lets quickly re-evaluate the top circuit, since it
         # will then output its waveform
         self.__eval_ckt(self.__circuits[0])
+        # Also, log the name of the top circuit
+        self.__log_event(1, "Top Circuit in Final Generation:", self.__circuits[0])
 
 
     def __write_to_livedata(self):
