@@ -489,30 +489,30 @@ class Circuit:
         return self.__mean_voltage
 
     def __update_all_live_data(self):
-        # TODO ALIFE2021 Make sure alllivedata.log is cleared before run
-        with open("workspace/alllivedata.log", "br+") as allLive:
-            line = allLive.readline()
-            while line != b'':
-                if line.find(str(self).encode()) >= 0:
-                    allLive.seek(-1 * len(line), SEEK_CUR)
-                    allLive.write(
-                        "{}, {}, {}\n".format(
-                            self,
-                            str(self.__fitness).rjust(8),
-                            self.get_file_attribute('src_population').rjust(8))
-                        .encode()
-                    )
-                    allLive.flush()
-                    return
-                line = allLive.readline()
+        '''
+        Updates this circuit's entry in alllivedata.log (the circuit's fitness and source population)
+        '''
+        # Read in the file contents first
+        lines = []
+        with open("workspace/alllivedata.log", "r") as allLive:
+            lines = allLive.readlines()
 
-            allLive.write("{}, {}, {}\n".format(
-                    self,
-                    str(self.__fitness).rjust(8),
-                    self.get_file_attribute('src_population').rjust(8))
-                .encode()
-            )
-            allLive.flush()
+        # Modify the content internally
+        index = self.__index - 1
+        if len(lines) <= index:
+            print('adding lines', (index - len(lines) + 1), len(lines))
+            for i in range(index - len(lines) + 1):
+                lines.append("\n")
+
+        lines[index] = "{},{},{}\n".format(
+            self.__index, 
+            self.__fitness, 
+            self.get_file_attribute('src_population')
+        )
+
+        # Write these new liens to the file
+        with open("workspace/alllivedata.log", "w+") as allLive:
+            allLive.writelines(lines)
 
     # SECTION Genetic Algorithm related functions
     
