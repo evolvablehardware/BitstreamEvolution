@@ -71,7 +71,7 @@ class TestEvolution(Evolution):
             self.assert_evolve_call_contains(call_dict_index,args)
 
     def all_evolve_call_arguments(self)->[dict]:
-        return self.all_evolve_call_arguments
+        return self.previous_evolve_argument_list
 
 TestEvolution.__test__ = False
 
@@ -114,11 +114,12 @@ def test_evolve_list_of_configs(test_evolution_object) -> Iterator[Callable]:
 
 @pytest.mark.parametrize("configName",[("config1"),
                                        ("config2"),
-                                       ("config3")])
-def test_single_configRecieved(configName:str,test_evolution_object:TestEvolution,test_evolve_list_of_configs:Callable):
+                                       ("config3"),
+                                       ("config4")])
+def test_single_config_recieved(configName:str,test_evolution_object:TestEvolution,test_evolve_list_of_configs:Callable):
     """Verify that when a single config is passed in multiEvolve works properly."""
     assert not test_evolution_object.evolve_was_called() 
-    #multi_evolve.evolve_list_of_configs
+    #call evolve list of configs on test_evolution_object
     test_evolve_list_of_configs(
         configName,
         base_config="base-config",
@@ -133,5 +134,32 @@ def test_single_configRecieved(configName:str,test_evolution_object:TestEvolutio
                                                             (TestEvolution.EXPERIMENT_DESCRIPTION,"experiment-description"),
                                                             (TestEvolution.PRINT_ACTION_ONLY,False)])
 
+@pytest.mark.parametrize("configs_name",[("configs1","configs2","configs3"),
+                                        ("configA.txt","configB.txt"),
+                                        ("configThing.ini","configActivity.ini","anotherName.ini","things.ini","lastLittleThing.ini")
+                                        ])
+def test_multiple_config_recieved(configs_name:str,test_evolution_object:TestEvolution,test_evolve_list_of_configs:Callable):
+    """Verify that when multiple configs are passed in multiEvolve calls evolve properly."""
+    assert not test_evolution_object.evolve_was_called()
+
+    #call evolve on test object
+    test_evolve_list_of_configs(
+        configs_name,
+        base_config="base-config",
+        output_directory="output-directory",
+        experiment_description="experiment-description",
+        print_action_only=False
+    )
+
+    test_evolution_object.assert_all_calls_contain([(TestEvolution.BASE_CONFIG_PATH,"base-config"),
+                                                    (TestEvolution.OUTPUT_DIRECTORY,"output-directory"),
+                                                    (TestEvolution.EXPERIMENT_DESCRIPTION,"experiment-description"),
+                                                    (TestEvolution.PRINT_ACTION_ONLY,False)])
+    
+    # verify the configs are in the same order and are the same values
+    configs_evolved:[str] = list(map(lambda call: call[TestEvolution.PRIMARY_CONFIG_PATH], test_evolution_object.all_evolve_call_arguments()))
+
+    assert test_evolution_object.evolve_call_count == len(configs_name), "Incorrect number of calls, "+str(configs_evolved)+" should contain all"+str(configs_name)+"."
+    assert configs_name == configs_evolved
 
 
