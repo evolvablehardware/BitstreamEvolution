@@ -219,13 +219,18 @@ def anim_violin_plots(i):
         fig2.savefig(plots_dir.joinpath("violin_plots.png"))
 
 def anim_heatmap(i):
+    global max_pulses
     data = open('workspace/heatmaplivedata.log','r').read()
     lines = data.split('\n')
     collections = []
     gens = []
 
-
-    bin_size = int(1050 / HEATMAP_BINS)
+    if config.get_fitness_func() == "PULSE_COUNT":
+        max_val = max(32, max_pulses)
+    else:
+        max_val = 1024;
+    
+    bin_size = int(max_val / HEATMAP_BINS)
     interval = len(lines) / MAX_HEATMAP_GENS
     if len(lines) < MAX_HEATMAP_GENS:
         interval = 1
@@ -236,11 +241,16 @@ def anim_heatmap(i):
         if len(line) > 1:
             vals = line.split(':')
             pts = vals[1].split(',')
+            if config.get_fitness_func() == "PULSE_COUNT":
+                max_pulses = max(max_pulses, max((map(lambda x: int(x), pts))))
+
             gens.append(index)
             bins = [0]*HEATMAP_BINS
             for point in pts:
-                b = int(point) / bin_size
-                bins[int(b)] += 1
+                b = int(int(point) / bin_size)
+                if b >= len(bins):
+                    b = len(bins) - 1
+                bins[b] += 1
             collections.append(list(map(lambda x: float(x), bins)))
 
 
@@ -268,11 +278,13 @@ def anim_heatmap(i):
             ylabels.append(str(int(bin_size*float(label.get_text()))))
     ax8.set_yticklabels(ylabels)
 
-
-    ax8.set(xlabel='Generation', ylabel='Voltage (Normalized)')
+    if config.get_fitness_func() == "PULSE_COUNT":
+        ax8.set(xlabel='Generation', ylabel='Pulses')
+    else:
+        ax8.set(xlabel='Generation', ylabel='Voltage (Normalized)')
 
     if(config.get_save_plots()):
-        fig3.savefig(plots_dir.joinpath("waveform_heatmap.png"))
+        fig3.savefig(plots_dir.joinpath("heatmap.png"))
 
 plots_dir = config.get_plots_directory()
 
@@ -321,7 +333,8 @@ if has_wf_plot:
 if has_map_plot:
     ani4 = animation.FuncAnimation(fig, animate_map)
 else:
-    ani = animation.FuncAnimation(fig, animate_generation)
+    pass
+    # ani = animation.FuncAnimation(fig, animate_generation)
 
 if has_pop_plot:
     ani6 = animation.FuncAnimation(fig, animate_pops, interval=500)
@@ -330,6 +343,7 @@ ani7 = animation.FuncAnimation(fig2, anim_violin_plots)
 
 fig3 = plt.figure()
 ax8 = fig3.add_subplot(1,1,1)
+max_pulses = 0
 ani8 = animation.FuncAnimation(fig3, anim_heatmap)
 
 ani2 = animation.FuncAnimation(fig, animate_epoch)
