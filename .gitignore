@@ -2,6 +2,10 @@
 data/config.ini
 data/monitor
 
+# test outputs
+test/out/*
+!test/out/.gitkeep
+
 # no need to include temp files
 workspace/
 tools/

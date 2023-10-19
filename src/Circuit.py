@@ -147,7 +147,6 @@ class Circuit:
         self.__hardware_file = mmap(hardware_file.fileno(), 0)
         hardware_file.close()
 
-
     def randomize_bits(self):
         # Simply set mutation chance to 100%
         if self.__config.get_simulation_mode() == "FULLY_SIM":
@@ -309,7 +308,6 @@ class Circuit:
     def measure_mean_voltage(self):
         """
         Upload and run this circuit and take a mean voltage measure
-
         """
         start = time()
         self.__run()
