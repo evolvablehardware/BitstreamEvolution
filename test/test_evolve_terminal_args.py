@@ -22,5 +22,3 @@ def test_evolve_runs_without_error():
     assert program.stderr in empty
     assert program.stdout not in empty
 
-#def test_mock_on_evolve()
-    
