@@ -54,6 +54,7 @@ print_flags = {'enable':['-p','--print-only','--test','--no-action'],
 add_bool_argument(parser,"print_only",flag_names=print_flags,default=False)
 # --help is added by default
 
+
 def run():
     ## Parsing Args and configuring Variables
     __args=parser.parse_args()
@@ -73,5 +74,16 @@ def run():
         print_action_only=          __args.print_only
     )
 
+def evolve_argparse_test_with_namespace(arguments:str) -> argparse.Namespace:
+    """This function tests argparse on the arguments string, and gives the output as a raw namespace."""
+    __args = parser.parse_args(args=arguments.split(" "))
+    return __args
+
+"""
+def evolve_argparse_with_dataclass(arguments:str) -> Enum[str,any]:
+    __args = evolve_argparse_test_with_namespace(arguments)
+    output:dict[str,any]
+"""
+    
 if __name__ == "__main__":
     run()

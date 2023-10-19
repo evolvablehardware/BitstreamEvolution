@@ -2,8 +2,15 @@ import argparse
 from subprocess import run
 import os
 import pytest
+from typing import Callable
 
 #NOTE: This runs expecting to start in the BitstreamEvolution parent directory
+
+@pytest.fixture
+def evolve_arg_parse_function() -> Callable(str):
+    
+
+    pass
 
 def test_terminal_connects():
     """Verify that any failures are with the command running rather than our setup to run the command."""
