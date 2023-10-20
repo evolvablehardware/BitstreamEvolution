@@ -59,17 +59,12 @@ add_bool_argument(parser,"print_only",flag_names=print_flags,default=False)
 @dataclass
 class EvolveArgs():
     "These are the arguments used to perform evolutions and generally compiled from arguments passed in."
-    config: str = None
-    base_config: str = None
-    output_directory: str = None
-    description: str = None
-    built_config_path: str = None
-    print_only: bool = None
-
-    def __init__(self):
-        
-        
-        self.__fillArguments(__args)
+    config: str
+    base_config: str
+    output_directory: str
+    description: str 
+    built_config_path: str
+    print_only: bool
 
     def __init__(self,argument_string:str=None):
         "This function initializes EvolveArgs by parsing from terminal arguments, if argument_string passed, it parses arguments using that"
