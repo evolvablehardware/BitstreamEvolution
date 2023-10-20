@@ -8,7 +8,9 @@
 
 from Evolution import Evolution
 from arg_parse_utils import add_bool_argument
+from dataclasses import dataclass
 import argparse
+
 
 ## Command Line Argument And Help information for this file.
 
@@ -54,36 +56,62 @@ print_flags = {'enable':['-p','--print-only','--test','--no-action'],
 add_bool_argument(parser,"print_only",flag_names=print_flags,default=False)
 # --help is added by default
 
+@dataclass
+class EvolveArgs():
+    "These are the arguments used to perform evolutions and generally compiled from arguments passed in."
+    config: str = None
+    base_config: str = None
+    output_directory: str = None
+    description: str = None
+    built_config_path: str = None
+    print_only: bool = None
 
+    def __init__(self):
+        
+        
+        self.__fillArguments(__args)
+
+    def __init__(self,argument_string:str=None):
+        "This function initializes EvolveArgs by parsing from terminal arguments, if argument_string passed, it parses arguments using that"
+        if argument_string is None:
+            __args=parser.parse_args()
+        else:
+            __args = parser.parse_args(args=argument_string.split(" "))
+
+        self.config = __args.config
+        self.base_config = __args.base_config
+        self.output_directory = __args.output_directory
+        self.description = __args.description
+        self.built_config_path = BUILT_CONFIG_PATH
+        self.print_only = __args.print_only
+        
+
+def get_evolve_args_from_terminal() -> EvolveArgs:
+    "Generates EvolveArgs from terminal values"
+    return EvolveArgs()
+
+def get_evolve_args_from_argument_string(arguments:str) -> EvolveArgs:
+    "Generates EvolveArgs from string"
+    return EvolveArgs(arguments)
+    
 def run():
     ## Parsing Args and configuring Variables
-    __args=parser.parse_args()
+    args:EvolveArgs = get_evolve_args_from_terminal()
 
     ## TODO: DELETE ME WHEN args are Logged
-    if (__args.print_only):
-        print(f"Arguments Detected:  {__args}") # probably should log this instead. not sure if with logger directly or through config.
+    if (args.print_only):
+        print(f"Arguments Detected:  {args}") # probably should log this instead. not sure if with logger directly or through config.
 
     # Run Evolution class, which actually executes an experiment
     evolution = Evolution()
     evolution.evolve(
-        primary_config_path =       __args.config,
-        base_config_path =          __args.base_config,
-        output_directory =          __args.output_directory,
-        experiment_description =    __args.description,
-        built_config_path=          BUILT_CONFIG_PATH,
-        print_action_only=          __args.print_only
+        primary_config_path =       args.config,
+        base_config_path =          args.base_config,
+        output_directory =          args.output_directory,
+        experiment_description =    args.description,
+        built_config_path=          args.built_config_path,
+        print_action_only=          args.print_only
     )
 
-def evolve_argparse_test_with_namespace(arguments:str) -> argparse.Namespace:
-    """This function tests argparse on the arguments string, and gives the output as a raw namespace."""
-    __args = parser.parse_args(args=arguments.split(" "))
-    return __args
-
-"""
-def evolve_argparse_with_dataclass(arguments:str) -> Enum[str,any]:
-    __args = evolve_argparse_test_with_namespace(arguments)
-    output:dict[str,any]
-"""
-    
 if __name__ == "__main__":
     run()
