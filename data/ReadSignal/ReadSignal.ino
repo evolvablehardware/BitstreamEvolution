@@ -29,7 +29,7 @@ void setup(){
     //analogReference(EXTERNAL);
     
     pinMode(LED_BUILTIN, OUTPUT);
-    pinMode(interrupt, OUTPUT);
+    pinMode(interrupt, INPUT);
 
     digitalWrite(LED_BUILTIN, LOW);
     Serial.begin(115200);
