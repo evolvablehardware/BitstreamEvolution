@@ -10,6 +10,7 @@ from Evolution import Evolution
 from arg_parse_utils import add_bool_argument
 from dataclasses import dataclass
 import argparse
+from shlex import split as terminal_input_split
 
 
 ## Command Line Argument And Help information for this file.
@@ -71,7 +72,7 @@ class EvolveArgs():
         if argument_string is None:
             __args=parser.parse_args()
         else:
-            __args = parser.parse_args(args=argument_string.split(" "))
+            __args = parser.parse_args(args=terminal_input_split(argument_string,posix=False))
 
         self.config = __args.config
         self.base_config = __args.base_config
