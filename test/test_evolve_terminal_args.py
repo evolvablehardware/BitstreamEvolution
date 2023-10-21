@@ -99,6 +99,15 @@ def test_normal_queries(evolve_arg_parse_function:Callable[[str],evolve.EvolveAr
 def test_complex_queries(evolve_arg_parse_function:Callable[[str],evolve.EvolveArgs]):
     "This test runs some arguments with variations that specify all values."
 
+    """
+    ["-c","--config"]
+    ['-bc','--base-config']
+    ['-o','--output-directory']
+    ['-d','--description']
+    ['-p','--print-only','--test','--no-action']
+    ["",'-np', '--no-print-only','--normal','--act']
+    """
+
     configName = "thisStrangeConfig_File.thing.ini"
     baseConfigName = "baseConfig.ini"
     outputDirName = "output/directory/"
