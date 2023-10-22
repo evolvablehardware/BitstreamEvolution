@@ -438,14 +438,21 @@ class Circuit:
         if pulse_count == 0:
             self.__log_event(2, "NULL DATA FILE. ZEROIZING")
 
+        # Build a normal-ish distribution function where the "mean" is desired_freq,
+        # and the "standard deviation" is of our choosing (here we select 0.025*freq)
         desired_freq = self.__config.get_desired_frequency()
-        if pulse_count == desired_freq:
-            self.__log_event(1, "Unity achieved: {}".format(self))
-            self.__fitness = 1
-        elif pulse_count == 0:
-            self.__fitness = 0
-        else:
-            self.__fitness = 1.0 / abs(desired_freq - pulse_count)
+        deviation = 0.025 * desired_freq # 25 for 1,000 Hz, 250 for 10,000 Hz
+        # No need to check for this because it's included in the function
+        # Note: Fitness is still from 0-1
+        self.__fitness = math.exp(-0.5 * math.pow((pulse_count - desired_freq) / deviation, 2))
+
+        # if pulse_count == desired_freq:
+        #     self.__log_event(1, "Unity achieved: {}".format(self))
+        #     self.__fitness = 1
+        # elif pulse_count == 0:
+        #     self.__fitness = 0
+        # else:
+        #     self.__fitness = 1.0 / abs(desired_freq - pulse_count)
         
         return self.__fitness
 
