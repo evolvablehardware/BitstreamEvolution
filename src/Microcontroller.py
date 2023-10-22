@@ -23,6 +23,7 @@ class Microcontroller:
             self.__serial =  Serial(
                 config.get_usb_path(),
                 config.get_serial_baud(),
+                timeout=config.get_mcu_read_timeout()
             )
             self.__serial.dtr = False
 
@@ -47,7 +48,7 @@ class Microcontroller:
 
             while True:
                 self.__log_event(3, "Serial reading...")
-                p = self.__serial.read()
+                p = self.__serial.read_until()
                 self.__log_event(3, "Serial read done")
                 if (time() - start) >= self.__config.get_mcu_read_timeout():
                     self.__log_warning(1, "Time Exceeded. Halting MCU Reading")

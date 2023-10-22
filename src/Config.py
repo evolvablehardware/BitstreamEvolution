@@ -296,7 +296,7 @@ class Config:
 
 	def get_usb_path(self):
 		return self.get_system_parameters("USB_PATH")
-		self.get_monitor_file()
+		
 	# SECTION Getters for hardware parameters
 	def get_routing_type(self):
 		return self.get_hardware_parameters("ROUTING")

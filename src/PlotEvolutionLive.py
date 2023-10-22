@@ -37,7 +37,16 @@ def animate_generation(i):
     ax1.set_xlim([0, config.get_population_size()+1])
     ax1.hlines(y=avg, xmin=1, xmax=config.get_population_size(), color="violet", linestyles="dotted")
     ax1.scatter(xs, ys)
-    ax1.set(xlabel='Circuit Number', ylabel='Fitness', title='Circuit Fitness this Generation')
+    if config.get_fitness_func() == 'PULSE_COUNT':
+        title = 'Circuit Pulses this Generation'
+        ylabel = 'Pulses'
+        # Add a line for desired frequency
+        ax1.hlines(y=config.get_desired_frequency(), xmin=1, xmax=config.get_population_size(), color="red", linestyles="dotted")
+        ax1.set_ylim([0, None])
+    else:
+        title = 'Circuit Fitness this Generation'
+        ylabel = 'Fitness'
+    ax1.set(xlabel='Circuit Number', ylabel=ylabel, title=title)
 
 # fig2 = plt.figure()
 def animate_epoch(i):

@@ -504,9 +504,15 @@ class Circuit:
             for i in range(index - len(lines) + 1):
                 lines.append("\n")
 
+        # Shows pulse count in this chart if in PULSE_COUNT fitness func, and fitness otherwise
+        if self.__config.get_fitness_func() == 'PULSE_COUNT':
+            value = self.__pulses
+        else:
+            value = self.__fitness
+
         lines[index] = "{},{},{}\n".format(
             self.__index, 
-            self.__fitness, 
+            value,
             self.get_file_attribute('src_population')
         )
 
