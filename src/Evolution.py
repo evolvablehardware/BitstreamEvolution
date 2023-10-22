@@ -50,6 +50,11 @@ class Evolution:
         mcu = Microcontroller(config, logger)
         population = CircuitPopulation(mcu, config, logger)
 
+        self.output_directory = output_directory
+        self.config = config
+        self.logger = logger
+        self.population = population
+
         population.populate()
         population.evolve()
 
@@ -65,13 +70,16 @@ class Evolution:
                 "i:0x0403:0x6010:0",
                 "data/hardware_blink.bin"
             ])
+        
+        self.clean_up()
 
+    def clean_up(self):
         # TODO: make sure config file specified above ends up in output.
-        if output_directory is not None:
+        if self.output_directory is not None:
             #copy simulation information to this output directory
-            logger.save_workspace(output_directory)
-        elif config.get_backup_workspace():
-            logger.save_workspace(config.get_output_directory())
+            self.logger.save_workspace(self.utput_directory)
+        elif self.config.get_backup_workspace():
+            self.logger.save_workspace(self.config.get_output_directory())
 
     ## Don't know if this is needed, but it might be useful to validate all inputs 
     ## especially if this is going to take a while to run.

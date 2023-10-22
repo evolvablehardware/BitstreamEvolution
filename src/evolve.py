@@ -9,6 +9,8 @@
 from Evolution import Evolution
 from arg_parse_utils import add_bool_argument
 import argparse
+import signal
+import sys
 
 ## Command Line Argument And Help information for this file.
 
@@ -64,6 +66,14 @@ def run():
 
     # Run Evolution class, which actually executes an experiment
     evolution = Evolution()
+    def sig_int_handler(sig, frame):
+        print('User Interrupt')
+        evolution.clean_up()
+        # Still exit, but make sure we can save everything first
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, sig_int_handler)
+
     evolution.evolve(
         primary_config_path =       __args.config,
         base_config_path =          __args.base_config,
