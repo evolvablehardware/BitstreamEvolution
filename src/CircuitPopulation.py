@@ -380,7 +380,9 @@ class CircuitPopulation:
 
                 # We've got the fitness we're evaluating the circuit off of, so make sure it gets
                 # added to the circuit's file attributes
-                circuit.set_file_attribute("fitness", str(fitness))
+                # Only if we are in a sim mode with circuit files
+                if self.__config.get_simulation_mode() != 'FULLY_SIM':
+                    circuit.set_file_attribute("fitness", str(fitness))
 
                 # Commented out for now while we test
                 # Pretty sure this was originally for pulse count only, leaving it commented out since things are working right now

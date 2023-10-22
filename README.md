@@ -70,6 +70,7 @@ BitstreamEvolution alse requires the following Python libraries:
   * matplotlib
   * numpy
   * sortedcontainers
+  * pytest (optional, used to run tests if desired)
 
 ### Installing the dependencies
 Each of the dependencies above has a corresponding `apt` package of the
@@ -86,7 +87,7 @@ The Python libraries can be installed in one command in any Linux
 distribution as follows:
 
 ```bash
-python3 -m pip install pyserial numpy matplotlib sortedcontainers
+python3 -m pip install pyserial numpy matplotlib sortedcontainers pytest
 ```
 ### Configuring the BitstreamEvolution core
 Although BitstreamEvolution doesn't require any building or
@@ -392,8 +393,15 @@ that needs to be modified is the
 ### Configuration
 The project has various configuration options that can be specified in
 `data/config.ini`. The file`data/default_config.ini` contains the
-default options for the configuration and should not be modified. Below
-is a list of the options, their description, and their possible values:
+default options for the configuration and should not be modified. 
+
+The `TOP-LEVEL PARAMETER` `base_config` can be modified to specify a base config file.
+In the event of a missing config parameter, it will be filled in with that from the base config file.
+These can be stacked into a line of configuration files.
+The configuration files will be combined and the resulting file to use for evolution will
+be output. All parameters still must be specified at some point in the final configuration.
+
+Below is a list of the options, their description, and their possible values:
 
 <!-- NOTE Right now this only lists the most important options-->
 
@@ -532,6 +540,21 @@ sudo udevadm control --reload-rules
 The other, more permanent way:
 ```bash
 sudo apt remove brltty
+```
+
+### Running Test Cases
+Test case files are simple to run using the pytest framework. 
+To run the entire suite:
+```bash
+pytest "test/"
+```
+You can also specify the desired file to run:
+```bash
+pytest "test/test_config_builder.py"
+```
+Alternatively, you can run individual tests within a file like so:'
+```bash
+pytest "test/file.py::function"
 ```
 
 ## Contributing
