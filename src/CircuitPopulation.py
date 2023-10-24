@@ -475,15 +475,17 @@ class CircuitPopulation:
                 live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(fits)))
             
             if self.__config.get_simulation_mode() == "FULLY_INTRINSIC":
-                with open("workspace/heatmaplivedata.log", "a") as live_file2:
-                    if self.__config.get_fitness_func() != "PULSE_COUNT":
+                if self.__config.get_fitness_func() != "PULSE_COUNT":
+                    with open("workspace/heatmaplivedata.log", "a") as live_file2:
                         best = self.__circuits[0]
                         data = best.get_waveform()
-                    else:
+                        live_file2.write(("{}:{}\n").format(self.__current_epoch, ",".join(data)))
+                else:
+                    with open("workspace/pulselivedata.log", "a") as live_file3:
                         data = []    
                         for ckt in self.__circuits:
-                            data.append(ckt.get_pulses())
-                    live_file2.write(("{}:{}\n").format(self.__current_epoch, ",".join(data)))
+                            data.append(str(ckt.get_pulses()))
+                        live_file3.write(("{}:{}\n").format(self.__current_epoch, ",".join(data)))
 
 
     # SECTION Selection algorithms.

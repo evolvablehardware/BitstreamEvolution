@@ -120,6 +120,7 @@ class Logger:
         open("workspace/waveformlivedata.log", "w").close()
         open("workspace/maplivedata.log", "w").close()
         open("workspace/heatmaplivedata.log", "w").close()
+        open("workspace/pulselivedata.log", "w").close()
         open("workspace/violinlivedata.log", "w").close()
         open("workspace/poplivedata.log", "w").close()
         open("workspace/randomizationdata.log", "w").close()
