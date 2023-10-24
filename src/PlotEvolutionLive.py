@@ -229,7 +229,11 @@ def anim_violin_plots(i):
 
 def anim_heatmap(i):
     global max_pulses
-    data = open('workspace/heatmaplivedata.log','r').read()
+    if config.get_fitness_func() == "PULSE_COUNT":
+        data = open('workspace/pulselivedata.log','r').read()
+    else:
+        data = open('workspace/heatmaplivedata.log','r').read()
+    
     lines = data.split('\n')
     collections = []
     gens = []
@@ -267,7 +271,6 @@ def anim_heatmap(i):
     if(len(lines) > 1):
         ax8.imshow(np.transpose(collections), origin='lower',cmap=plt.colormaps['magma'])
 
-
     xlabels = []
     xlabels.append(str(0))
     for label in ax8.xaxis.get_ticklabels()[1:]:
@@ -276,7 +279,6 @@ def anim_heatmap(i):
         else:
             xlabels.append(str(int(interval*float(label.get_text()))))
     ax8.set_xticklabels(xlabels)
-
 
     ylabels = []
     ylabels.append(str(0))
@@ -294,6 +296,7 @@ def anim_heatmap(i):
 
     if(config.get_save_plots()):
         fig3.savefig(plots_dir.joinpath("heatmap.png"))
+        
 
 plots_dir = config.get_plots_directory()
 
