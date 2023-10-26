@@ -577,7 +577,8 @@ class Circuit:
         else:
             self.__run_at_each_modifiable(mutate_bit)
 
-    def __run_at_each_modifiable(self, lambda_func, hardware_file = None):
+    def __run_at_each_modifiable(self, lambda_func, hardware_file = None, accessible_columns = None,
+        routing_type=None):
         """
         Runs the lambda_func at every modifiable position
         Args passed to lambda_func: value of bit (as a byte), row, col
@@ -588,6 +589,12 @@ class Circuit:
 
         if hardware_file is None:
             hardware_file = self.__hardware_file
+
+        if accessible_columns is None:
+            accessible_columns = self.__config.get_accessed_columns()
+
+        if routing_type is None:
+            routing_type = self.__config.get_routing_type()
 
         # Set tile to the first location of the substring ".logic_tile"
         # The b prefix makes the string an instance of the "bytes" type
@@ -610,13 +617,13 @@ class Circuit:
 
                 # Determine which rows we can modify
                 # TODO ALIFE2021 The routing protocol here is dated and needs to mimic that of the Tone Discriminator
-                if self.__config.get_routing_type() == "MOORE":
+                if routing_type == "MOORE":
                     rows = [1, 2, 13]
-                elif self.__config.get_routing_type() == "NEWSE":
+                elif routing_type == "NEWSE":
                     rows = [1, 2]
                 # Iterate over each row and the columns that we can access within each row
                 for row in rows:
-                    for col in self.__config.get_accessed_columns():
+                    for col in accessible_columns:
                         # This will get us to individual bits. If the mutation probability passes
                         # Our position is now going to be the start of the first line, plus the line size multiplied to get to our desired row,
                         # and finally added to the column (with the int cast to sanitize user input)
@@ -652,7 +659,7 @@ class Circuit:
         """
         return self.get_file_intrinsic_modifiable_bitstream(self.__hardware_file)
     
-    def reconstruct_from_bistream(self, bitstream):
+    def reconstruct_from_bistream(self, bitstream, accessible_columns, routing_type):
         """
         Takes this circuit, and replaces all of its modifiable bits with those in
         the provided bitstream
@@ -663,7 +670,7 @@ class Circuit:
             new_bit = bitstream[i]
             i += 1
             return new_bit
-        self.__run_at_each_modifiable(handle_bit)
+        self.__run_at_each_modifiable(handle_bit, accessible_columns=accessible_columns, routing_type=routing_type)
 
     def copy_genes_from(self, parent, crossover_point):
         """
