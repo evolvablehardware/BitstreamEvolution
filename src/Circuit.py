@@ -556,7 +556,35 @@ class Circuit:
         Mutate the configuration of this circuit.
         This involves checking the mutation chance per-bit and, if it passes, flipping that bit
         """
+
+        def mutate_bit(bit, row, col, *rest):
+            if self.__config.get_mutation_probability() >= self.__rand.uniform(0,1):
+                # Set this bit to either a 0 or 1 randomly
+                # Keep in mind that these are BYTES that we are modifying, not characters
+                # Therefore, we have to set it to either ASCII 0 (48) or ASCII 1 (49), not actual 0 or 1, which represent different characters
+                # and will corrupt the file if we mutate in this way
+                # 48 = 0, 49 = 1. To flip, just need to do (48+49) - the current value (48+49=97)
+                # This now always flips the bit instead of randomly assigning it every time
+                # Note: If prev != 48 or 49, then we changed the wrong value because it was not a 0 or 1 previously
+                self.__log_event(4, "Mutating:", self, "@(", row, ",", col, ") previous was", bit)
+                return 97 - bit
         
+        def randomize_bit(*rest):
+            return self.__rand.integers(48, 50)
+
+        if all_random:
+            self.__run_at_each_modifiable(randomize_bit)
+        else:
+            self.__run_at_each_modifiable(mutate_bit)
+
+    def __run_at_each_modifiable(self, lambda_func):
+        """
+        Runs the lambda_func at every modifiable position
+        Args passed to lambda_func: value of bit (as a byte), row, col
+        If lambda_func returns a value (byte), then the bit is set to that number
+        If lambda_func returns None, then the bit is left unmodified
+        Keep in mind the bytes are the ASCII codes, so for example 49 = 1
+        """
         # Set tile to the first location of the substring ".logic_tile"
         # The b prefix makes the string an instance of the "bytes" type
         # The .logic_tile header indicates that there is a tile, so the "tile" variable stores the starting point of the current tile
@@ -565,7 +593,6 @@ class Circuit:
         while tile > 0:
             # Set pos to the position of this tile, but with the length of ".logic_tile" added so it is in front of where we have the x/y coords
             pos = tile + len(".logic_tile")
-            
             
             # Check if the position is legal to modify
             if self.__tile_is_included(self.__hardware_file, pos):
@@ -590,20 +617,11 @@ class Circuit:
                         # Our position is now going to be the start of the first line, plus the line size multiplied to get to our desired row,
                         # and finally added to the column (with the int cast to sanitize user input)
                         pos = line_start + line_size * (row - 1) + int(col)
-                        if all_random:
-                            self.__hardware_file[pos] = self.__rand.integers(48, 50)
-                        else:
-                            if self.__config.get_mutation_probability() >= self.__rand.uniform(0,1):
-                                # Set this bit to either a 0 or 1 randomly
-                                # Keep in mind that these are BYTES that we are modifying, not characters
-                                # Therefore, we have to set it to either ASCII 0 (48) or ASCII 1 (49), not actual 0 or 1, which represent different characters
-                                # and will corrupt the file if we mutate in this way
-                                prev = self.__hardware_file[pos]
-                                # 48 = 0, 49 = 1. To flip, just need to do (48+49) - the current value (48+49=97)
-                                # This now always flips the bit instead of randomly assigning it every time
-                                self.__hardware_file[pos] = 97 - prev
-                                # Note: If prev != 48 or 49, then we changed the wrong value because it was not a 0 or 1 previously
-                                self.__log_event(4, "Mutating:", self, "@(", row, ",", col, ") previous was", prev)
+                        bit_value = self.__hardware_file[pos]
+                        lambda_return = lambda_func(bit_value, row, col)
+                        if lambda_return is not None:
+                            # need to re-assign the bit
+                            self.__hardware_file[pos] = lambda_return
 
             # Find the next logic tile, and start again
             # Will return -1 if .logic_tile isn't found, and the while loop will exit
