@@ -577,7 +577,7 @@ class Circuit:
         else:
             self.__run_at_each_modifiable(mutate_bit)
 
-    def __run_at_each_modifiable(self, lambda_func):
+    def __run_at_each_modifiable(self, lambda_func, hardware_file = None):
         """
         Runs the lambda_func at every modifiable position
         Args passed to lambda_func: value of bit (as a byte), row, col
@@ -585,61 +585,14 @@ class Circuit:
         If lambda_func returns None, then the bit is left unmodified
         Keep in mind the bytes are the ASCII codes, so for example 49 = 1
         """
-        # Set tile to the first location of the substring ".logic_tile"
-        # The b prefix makes the string an instance of the "bytes" type
-        # The .logic_tile header indicates that there is a tile, so the "tile" variable stores the starting point of the current tile
-        tile = self.__hardware_file.find(b".logic_tile")
-        
-        while tile > 0:
-            # Set pos to the position of this tile, but with the length of ".logic_tile" added so it is in front of where we have the x/y coords
-            pos = tile + len(".logic_tile")
-            
-            # Check if the position is legal to modify
-            if self.__tile_is_included(self.__hardware_file, pos):
-                # Find the start and end of the line; the positions of the \n newline just before and at the end of this line
-                # The start is the newline position + 1, so the first valid bit character
-                # line_size is self-explanatory
-                # This finds the length of a standard line of bits (so the width of each data-containing line in this tile)
-                line_start = self.__hardware_file.find(b"\n", tile) + 1
-                line_end = self.__hardware_file.find(b"\n", line_start + 1)
-                line_size = line_end - line_start + 1
 
-                # Determine which rows we can modify
-                # TODO ALIFE2021 The routing protocol here is dated and needs to mimic that of the Tone Discriminator
-                if self.__config.get_routing_type() == "MOORE":
-                    rows = [1, 2, 13]
-                elif self.__config.get_routing_type() == "NEWSE":
-                    rows = [1, 2]
-                # Iterate over each row and the columns that we can access within each row
-                for row in rows:
-                    for col in self.__config.get_accessed_columns():
-                        # This will get us to individual bits. If the mutation probability passes
-                        # Our position is now going to be the start of the first line, plus the line size multiplied to get to our desired row,
-                        # and finally added to the column (with the int cast to sanitize user input)
-                        pos = line_start + line_size * (row - 1) + int(col)
-                        bit_value = self.__hardware_file[pos]
-                        lambda_return = lambda_func(bit_value, row, col)
-                        if lambda_return is not None:
-                            # need to re-assign the bit
-                            self.__hardware_file[pos] = lambda_return
+        if hardware_file is None:
+            hardware_file = self.__hardware_file
 
-            # Find the next logic tile, and start again
-            # Will return -1 if .logic_tile isn't found, and the while loop will exit
-            tile = self.__hardware_file.find(b".logic_tile", tile + 1)
-
-    def get_file_intrinsic_modifiable_bitstream(self, hardware_file):
-        """
-        Returns an array of bytes (that correspond to characters, so they will either be 48 or 49)
-        These bytes represent the bits of the circuit's bitstream that can be modified. All other bits are left out
-        """
-
-        # TODO: Convert this to be a single function that takes this functionality and the mutate_actual one. Function takes in a callback to call on each modifiable position
         # Set tile to the first location of the substring ".logic_tile"
         # The b prefix makes the string an instance of the "bytes" type
         # The .logic_tile header indicates that there is a tile, so the "tile" variable stores the starting point of the current tile
         tile = hardware_file.find(b".logic_tile")
-        
-        bitstream = []
         
         while tile > 0:
             # Set pos to the position of this tile, but with the length of ".logic_tile" added so it is in front of where we have the x/y coords
@@ -664,16 +617,32 @@ class Circuit:
                 # Iterate over each row and the columns that we can access within each row
                 for row in rows:
                     for col in self.__config.get_accessed_columns():
-                        # This will get us to individual bits. Our position is now going to be the start of the first line, plus the line size multiplied to get to our desired row,
+                        # This will get us to individual bits. If the mutation probability passes
+                        # Our position is now going to be the start of the first line, plus the line size multiplied to get to our desired row,
                         # and finally added to the column (with the int cast to sanitize user input)
                         pos = line_start + line_size * (row - 1) + int(col)
-                        byte = hardware_file[pos]
-                        bitstream.append(byte)
+                        bit_value = hardware_file[pos]
+                        lambda_return = lambda_func(bit_value, row, col)
+                        if lambda_return is not None:
+                            # need to re-assign the bit
+                            hardware_file[pos] = lambda_return
 
             # Find the next logic tile, and start again
             # Will return -1 if .logic_tile isn't found, and the while loop will exit
             tile = hardware_file.find(b".logic_tile", tile + 1)
-            
+
+    def get_file_intrinsic_modifiable_bitstream(self, hardware_file):
+        """
+        Returns an array of bytes (that correspond to characters, so they will either be 48 or 49)
+        These bytes represent the bits of the circuit's bitstream that can be modified. All other bits are left out
+        """
+        bitstream = []
+        def handle_bit(bit, *rest):
+            bitstream.append(bit)
+            return None
+        
+        self.__run_at_each_modifiable(handle_bit, hardware_file)
+
         return bitstream
 
     def get_intrinsic_modifiable_bitstream(self):
@@ -683,6 +652,19 @@ class Circuit:
         """
         return self.get_file_intrinsic_modifiable_bitstream(self.__hardware_file)
     
+    def reconstruct_from_bistream(self, bitstream):
+        """
+        Takes this circuit, and replaces all of its modifiable bits with those in
+        the provided bitstream
+        """
+        i = 0
+        def handle_bit(*rest):
+            nonlocal i
+            new_bit = bitstream[i]
+            i += 1
+            return new_bit
+        self.__run_at_each_modifiable(handle_bit)
+
     def copy_genes_from(self, parent, crossover_point):
         """
         Decide which crossover function to used based on configuration
