@@ -95,6 +95,8 @@ class CircuitPopulation:
 
     @staticmethod
     def __wipe_folder(dir):
+        if not os.path.exists(dir):
+            os.makedirs(dir)
         for f in os.listdir(dir):
             os.remove(os.path.join(dir, f))
 
@@ -128,6 +130,7 @@ class CircuitPopulation:
         CircuitPopulation.__wipe_folder(self.__config.get_asc_directory())
         CircuitPopulation.__wipe_folder(self.__config.get_bin_directory())
         CircuitPopulation.__wipe_folder(self.__config.get_data_directory())
+        CircuitPopulation.__wipe_folder(self.__config.get_generations_directory())
 
         self.__multiple_populations = False
         if self.__config.get_init_mode() == "EXISTING_POPULATION":
@@ -481,6 +484,12 @@ class CircuitPopulation:
                     best = self.__circuits[0]
                     live_file2.write(("{}:{}\n").format(self.__current_epoch, ",".join(best.get_waveform())))
 
+    def __save_generation(self):
+        """
+        Saves the current generation to the generations directory
+        Each generation gets its own file
+        """
+        # TODO:
 
     # SECTION Selection algorithms.
     def __run_classic_tournament(self):

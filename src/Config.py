@@ -249,6 +249,12 @@ class Config:
 		except NoOptionError:
 			return Path("./workspace/analysis")
 
+	def get_generations_directory(self):
+		try:
+			return Path(self.get_logging_parameters("GENERATIONS_DIR"))
+		except NoOptionError:
+			return Path("./workspace/generations")
+
 	def get_log_file(self):
 		try:
 			return Path(self.get_logging_parameters("LOG_FILE"))
