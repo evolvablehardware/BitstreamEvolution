@@ -87,6 +87,37 @@ def animate_epoch(i):
     if(config.get_save_plots()):
         fig.savefig(plots_dir.joinpath("main.png"))
 
+def animate_epoch_pulses(i):
+    graph_data = open('workspace/pulselivedata.log','r').read()
+    lines = graph_data.split('\n')
+    xs = [] # closest to desired frequency
+    ys = [] # avg # of pulses
+    zs = [] # min # of pulses
+    ws = [] # max # of pulses
+    ts = []
+    for line in lines:
+        if len(line) > 1:
+            t, d = line.split(':')
+            d = list(map(lambda x: int(x), d.split(',')))
+            xs.append(d[0])
+            ys.append(np.average(d))
+            zs.append(min(d))
+            ws.append(max(d))
+            ts.append(int(t))
+    ax9.clear()
+
+    ax9.plot(ts, zs, color="cornflowerblue", linewidth=0.75)
+    ax9.plot(ts, ws, color="coral", linewidth=0.75)
+    ax9.plot(ts, ys, color="yellow", linewidth=0.75)
+    ax9.plot(ts, xs, color="lime")
+    ax9.tick_params(axis='y', labelcolor='white')
+
+    ax9.hlines(y=config.get_desired_frequency(), xmin=1, xmax=len(lines), color="violet", linestyles="dotted")  
+    ax9.set(xlabel='Generation', ylabel='Pulses', title='Best Circuit Pulse Count per Generation')
+
+    if(config.get_save_plots()):
+        fig4.savefig(plots_dir.joinpath("pulses.png"))
+
 
 def animate_waveform(i):    
     graph_data = open('workspace/waveformlivedata.log','r').read()
@@ -227,6 +258,38 @@ def anim_violin_plots(i):
     if(config.get_save_plots()):
         fig2.savefig(plots_dir.joinpath("violin_plots.png"))
 
+def anim_violin_plots_pulse(i):
+    data = open('workspace/pulselivedata.log','r').read()
+    collections = []
+    gens = []
+    widths = []
+    lines = data.split('\n')
+    # Decide which generations to include based on the number to have and the number available
+    interval = len(lines) / MAX_VIOLIN_PLOTS
+    if len(lines) < MAX_VIOLIN_PLOTS:
+        interval = 1
+    # Makes sure the first generation displayed will always be generation 2 (the first where we have interesting data)
+    index = 1 - interval
+    while int(index + interval) < len(lines):
+        index = index + interval
+        int_index = int(index)
+        line = lines[int_index]
+        if len(line) > 1:
+            vals = line.split(':')
+            gen = int(vals[0])
+            gens.append(gen)
+            pts = vals[1].split(',')
+            collections.append(list(map(lambda x: float(x), pts)))
+
+    for i in range(0, len(collections)):
+        widths.append(interval * 0.5)
+
+    if len(collections) > 0:
+        ax10.clear()
+        ax10.violinplot(collections, positions=gens, widths=widths)
+        ax10.hlines(y=config.get_desired_frequency(), xmin=1, xmax=len(lines), color="violet", linestyles="dotted")  
+        ax10.set(xlabel='Generation', ylabel='Pulses')
+
 def anim_heatmap(i):
     global max_pulses
     if config.get_fitness_func() == "PULSE_COUNT":
@@ -359,6 +422,14 @@ max_pulses = 0
 ani8 = animation.FuncAnimation(fig3, anim_heatmap)
 
 ani2 = animation.FuncAnimation(fig, animate_epoch)
+
+if config.get_fitness_func() == "PULSE_COUNT":
+    fig4 = plt.figure()
+    ax9 = fig4.add_subplot(2,1,1)
+    anim9 = animation.FuncAnimation(fig4, animate_epoch_pulses)
+
+    ax10 = fig4.add_subplot(2,1,2)
+    anim10 = animation.FuncAnimation(fig4, anim_violin_plots_pulse)
 
 plt.subplots_adjust(hspace=0.50)
 fig.tight_layout(pad=5.0)
