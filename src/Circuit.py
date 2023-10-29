@@ -505,7 +505,6 @@ class Circuit:
         # Modify the content internally
         index = self.__index - 1
         if len(lines) <= index:
-            print('adding lines', (index - len(lines) + 1), len(lines))
             for i in range(index - len(lines) + 1):
                 lines.append("\n")
 

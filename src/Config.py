@@ -305,7 +305,9 @@ class Config:
 		
 	# SECTION Getters for hardware parameters
 	def get_routing_type(self):
-		return self.get_hardware_parameters("ROUTING")
+		input = self.get_hardware_parameters("ROUTING")
+		valid_vals = ["MOORE", "NEWSE"]
+		self.check_valid_value("routing type", input, valid_vals)
 
 	def get_serial_baud(self):
 		return int(self.get_hardware_parameters("SERIAL_BAUD"))
@@ -361,6 +363,7 @@ class Config:
 		self.get_best_file()
 		self.get_src_pops_dir()
 		self.get_datetime_format()
+		self.get_generations_directory()
 
 		self.get_fpga()
 		self.get_usb_path()

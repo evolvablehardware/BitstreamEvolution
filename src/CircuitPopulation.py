@@ -437,9 +437,9 @@ class CircuitPopulation:
 
 
     def __write_to_livedata(self):
-        '''
+        """
         Runs each generation to write data to live data files
-        '''
+        """
         fitness_sum = 0
         for c in self.__circuits:
             fitness_sum = fitness_sum + c.get_fitness()
@@ -484,12 +484,33 @@ class CircuitPopulation:
                     best = self.__circuits[0]
                     live_file2.write(("{}:{}\n").format(self.__current_epoch, ",".join(best.get_waveform())))
 
+            self.__save_generation()
+
     def __save_generation(self):
         """
         Saves the current generation to the generations directory
         Each generation gets its own file
         """
-        # TODO:
+        gen_lines = []
+        # At the top, add the necessary config params such as routing and accessed columns
+        gen_lines.append(self.__config.get_routing_type())
+        gen_lines.append(','.join(self.__config.get_accessed_columns()))
+        # Now, add the bitstream for each circuit on its own line
+        # We want the circuits in number order though
+        sorted_by_index = SortedKeyList(
+            key=lambda ckt: ckt.get_index()
+        )
+        for ckt in self.__circuits:
+            sorted_by_index.add(ckt)
+        # Now add each circuit
+        for ckt in sorted_by_index:
+            bitstream = ckt.get_intrinsic_modifiable_bitstream()
+            bitstring = ''.join(bitstream)
+            gen_lines.add(bitstring)
+        # Now actually write the file
+        path = self.__config.get_generations_directory().joinpath('gen' + str(self.__current_epoch) + '.log')
+        with open(path, 'w') as f:
+            f.writelines(gen_lines)
 
     # SECTION Selection algorithms.
     def __run_classic_tournament(self):
