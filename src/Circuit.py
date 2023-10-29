@@ -128,9 +128,6 @@ class Circuit:
             hardware_file.seek(0)
             hardware_file.writelines(lines)
 
-        #self.__hardware_file = mmap(hardware_file.fileno(), 0)
-        #hardware_file.close()
-
     def get_file_attribute(self, attribute):
         '''
         Gets the value of attribute stored in a comment in the circuit's .asc file
