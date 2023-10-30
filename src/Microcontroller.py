@@ -2,6 +2,9 @@ from serial import Serial
 from time import time
 import numpy as np
 
+from Circuit import Circuit
+import typing
+
 class Microcontroller:
     def __log_event(self, level, *event):
         self.__logger.log_event(level, *event)
@@ -27,7 +30,7 @@ class Microcontroller:
             )
             self.__serial.dtr = False
 
-    def measure_pulses(self, circuit):
+    def measure_pulses(self, circuit: Circuit):
         samples = 2
 
         # TODO Use pathlib here

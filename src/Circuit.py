@@ -5,6 +5,11 @@ from mmap import mmap
 from io import SEEK_CUR
 from statistics import stdev
 import math
+import typing
+
+from Microcontroller import Microcontroller
+from Logger import Logger
+from Config import Config
 
 # TODO Integrate globals in a more elegant manner.
 RUN_CMD = "iceprog"
@@ -27,7 +32,8 @@ class Circuit:
         """
         return self.__filename
 
-    def __init__(self, index, filename, template, mcu, logger, config, rand, sine_funcs):
+    def __init__(self, index: int, filename: str, template, mcu: Microcontroller, 
+            logger: Logger, config: Config, rand, sine_funcs):
         self.__index = index
         self.__filename = filename
         self.__microcontroller = mcu
