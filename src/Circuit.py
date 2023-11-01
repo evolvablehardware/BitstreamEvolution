@@ -757,6 +757,12 @@ class Circuit:
         """
         return self.__pulses
 
+    def get_mean_voltage(self):
+        """
+        Returns the last mean voltage recorded by the circuit
+        """
+        return self.__mean_voltage
+
     def get_hardware_file(self):
         """
         Returns the hardware file of this circuit
