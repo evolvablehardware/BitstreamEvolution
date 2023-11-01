@@ -55,7 +55,7 @@ class Evolution:
         self.logger = logger
         self.population = population
 
-        if config.get_simulation_mode != "INTRINSIC_SENSITIVITY":
+        if config.get_simulation_mode() != "INTRINSIC_SENSITIVITY":
             population.populate()
             population.evolve()
         else:
