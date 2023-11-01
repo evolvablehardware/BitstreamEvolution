@@ -420,6 +420,9 @@ class Circuit:
 
         return self.__fitness
 
+    def __is_tolerant_pulse_count(self):
+        return self.__config.get_fitness_func() == 'TOLERANT_PULSE_COUNT'
+
     # NOTE Using log files instead of a data buffer in the event of premature termination
     def __measure_pulse_fitness(self):
         """
@@ -441,21 +444,22 @@ class Circuit:
         if pulse_count == 0:
             self.__log_event(2, "NULL DATA FILE. ZEROIZING")
 
-        # Build a normal-ish distribution function where the "mean" is desired_freq,
-        # and the "standard deviation" is of our choosing (here we select 0.025*freq)
-        desired_freq = self.__config.get_desired_frequency()
-        deviation = 0.025 * desired_freq # 25 for 1,000 Hz, 250 for 10,000 Hz
-        # No need to check for this because it's included in the function
-        # Note: Fitness is still from 0-1
-        self.__fitness = math.exp(-0.5 * math.pow((pulse_count - desired_freq) / deviation, 2))
-
-        # if pulse_count == desired_freq:
-        #     self.__log_event(1, "Unity achieved: {}".format(self))
-        #     self.__fitness = 1
-        # elif pulse_count == 0:
-        #     self.__fitness = 0
-        # else:
-        #     self.__fitness = 1.0 / abs(desired_freq - pulse_count)
+        if self.__is_tolerant_pulse_count():
+            # Build a normal-ish distribution function where the "mean" is desired_freq,
+            # and the "standard deviation" is of our choosing (here we select 0.025*freq)
+            desired_freq = self.__config.get_desired_frequency()
+            deviation = 0.025 * desired_freq # 25 for 1,000 Hz, 250 for 10,000 Hz
+            # No need to check for this because it's included in the function
+            # Note: Fitness is still from 0-1
+            self.__fitness = math.exp(-0.5 * math.pow((pulse_count - desired_freq) / deviation, 2))
+        else:
+            if pulse_count == desired_freq:
+                self.__log_event(1, "Unity achieved: {}".format(self))
+                self.__fitness = 1
+            elif pulse_count == 0:
+                self.__fitness = 0
+            else:
+                self.__fitness = 1.0 / abs(desired_freq - pulse_count)
         
         return self.__fitness
 

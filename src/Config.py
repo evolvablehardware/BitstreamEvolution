@@ -55,7 +55,9 @@ class Config:
 	# SECTION Getters for Fitness Parameters.
 	def get_fitness_func(self):
 		input = self.get_fitness_parameters("FITNESS_FUNC")
-		valid_vals = ["VARIANCE", "PULSE_COUNT", "COMBINED"]
+		# We're leaving "PULSE_COUNT" for backwards-compatibility
+		# It will use the sensitive function
+		valid_vals = ["VARIANCE", "PULSE_COUNT", "TOLERANT_PULSE_COUNT", "SENSITIVE_PULSE_COUNT", "COMBINED"]
 		self.check_valid_value("fitness function", input, valid_vals)
 		return input
 	
