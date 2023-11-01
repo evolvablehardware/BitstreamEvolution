@@ -102,18 +102,18 @@ class CircuitPopulation:
         #create circuit object
         self.__log_info(1, "Creating circuit object for fitness sensitivity experiment")
         ckt = Circuit(
-                0,
-                "hardware0",
-                self.__config.get_test_circuit(),
-                self.__microcontroller,
-                self.__logger,
-                self.__config,
-                self.__rand,
-                self.__generate_sine_funcs()
-            )
+            1,
+            "hardware1",
+            self.__config.get_test_circuit(),
+            self.__microcontroller,
+            self.__logger,
+            self.__config,
+            self.__rand,
+            self.__generate_sine_funcs()
+        )
         
         #loop through trials and log fitness
-        for i in range(self.__config.get_sensitivity_trials())
+        for i in range(self.__config.get_sensitivity_trials()):
             fitness = self.__eval_ckt(ckt)
             with open("workspace/fitnesssensitivity.log", "a") as live_file:
                 if self.__config.get_fitness_func() == "PULSE_COUNT":
@@ -121,9 +121,9 @@ class CircuitPopulation:
                 else:
                     data2 = ckt.get_mean_voltage()
                 live_file.write(("{}:{},{}\n").format(str(i), fitness, data2))
-            self.__log_info(2, "Trial " + str(i) + " done. Fitness recorded and logged to file: " + str(fitness))
+            self.__log_event(2, "Trial " + str(i) + " done. Fitness recorded and logged to file: " + str(fitness))
 
-        self.__log_info(1, "Fitness sensitivity trails done.")
+        self.__log_event(1, "Fitness sensitivity trails done.")
 
     def __generate_sine_funcs(self):
         sine_funcs = []

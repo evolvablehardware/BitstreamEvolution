@@ -81,8 +81,12 @@ validate_arguments()
 mcu = Microcontroller(config, logger)
 population = CircuitPopulation(mcu, config, logger)
 
-population.populate()
-population.evolve()
+if config.get_simulation_mode() != "INTRINSIC_SENSITIVITY":
+    population.populate()
+    population.evolve()
+else:
+    population.run_fitness_sensitity()
+
 
 logger.log_event(0, "Evolution has completed successfully")
 

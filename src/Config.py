@@ -208,7 +208,7 @@ class Config:
 		except NoOptionError:
 			self.__log_error(1, "Invalid file path " + self.get_sensitivity_parameters("TEST_CIRCUIT") + " for test circuit.")
 
-	def get_sensitivity_trials(self);
+	def get_sensitivity_trials(self):
 		try:
 			trials = int(self.get_sensitivity_parameters("SENSITIVITY_TRIALS"))
 		except:
