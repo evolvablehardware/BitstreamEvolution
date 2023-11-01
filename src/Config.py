@@ -79,6 +79,9 @@ class Config:
 
 	def get_var_weight(self):
 		return float(self.get_fitness_parameters("VAR_WEIGHT"))
+	
+	def get_num_samples(self):
+		return int(self.get_fitness_parameters("NUM_SAMPLES"))
 
 
 	# SECTION Getters for GA Parameters.
@@ -334,6 +337,7 @@ class Config:
 		self.get_combined_mode()
 		self.get_pulse_weight()
 		self.get_var_weight()
+		self.get_num_samples()
 
 		self.get_population_size()
 		self.get_mutation_probability()
