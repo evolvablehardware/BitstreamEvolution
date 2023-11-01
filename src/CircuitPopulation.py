@@ -478,7 +478,8 @@ class CircuitPopulation:
                     best = self.__circuits[0]
                     live_file2.write(("{}:{}\n").format(self.__current_epoch, ",".join(best.get_waveform())))
 
-            self.__save_generation()
+            # TODO: Re-enable this. Temporarily disabled in case files get too large
+            #self.__save_generation()
 
     def __save_generation(self):
         """
