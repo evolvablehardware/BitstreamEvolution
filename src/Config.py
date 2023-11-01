@@ -317,6 +317,7 @@ class Config:
 		input = self.get_hardware_parameters("ROUTING")
 		valid_vals = ["MOORE", "NEWSE"]
 		self.check_valid_value("routing type", input, valid_vals)
+		return input
 
 	def get_serial_baud(self):
 		return int(self.get_hardware_parameters("SERIAL_BAUD"))

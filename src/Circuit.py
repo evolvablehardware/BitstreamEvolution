@@ -1,3 +1,4 @@
+from __future__ import annotations
 from subprocess import run
 from time import time, sleep
 from shutil import copyfile
@@ -5,11 +6,15 @@ from mmap import mmap
 from io import SEEK_CUR
 from statistics import stdev
 import math
+
 import typing
 
-from Microcontroller import Microcontroller
-from Logger import Logger
-from Config import Config
+# Ugly way to avoid circular imports
+# Will only import these at type-checking time, not at runtime
+if typing.TYPE_CHECKING:
+    from Microcontroller import Microcontroller
+    from Logger import Logger
+    from Config import Config
 
 # TODO Integrate globals in a more elegant manner.
 RUN_CMD = "iceprog"
@@ -277,7 +282,8 @@ class Circuit:
         """
         start = time()
         self.__run()
-        self.__microcontroller.measure_pulses(self)
+        #self.__microcontroller.measure_pulses(self)
+        self.__microcontroller.simple_measure_pulses(self, self.__config.get_num_samples())
 
         elapsed = time() - start
         self.__log_event(1,
@@ -434,14 +440,15 @@ class Circuit:
 
         # Extract the integer value from the log file indicating the pulses counted from
         # the microcontroller. Pulses are currently measured by Rising or Falling edges
-        # that cross the microcontrollers reference voltage (currently ~2.25 Volts)
-        pulse_count = 0
+        # that cross the microcontrollers reference voltage (currently ~2.25 Volts) [TODO: verify]
+        pulse_counts = []
         for i in range(len(data)):
-            pulse_count += int(data[i])
+            pulse_counts.append(int(data[i]))
+        pulse_count = min(pulse_counts)
         self.__log_event(3, "Pulses counted: {}".format(pulse_count))
         self.__pulses = pulse_count
 
-        if pulse_count == 0:
+        if len(pulse_counts) == 0:
             self.__log_event(2, "NULL DATA FILE. ZEROIZING")
 
         if self.__is_tolerant_pulse_count():
