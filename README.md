@@ -417,7 +417,7 @@ Below is a list of the options, their description, and their possible values:
 #### Fitness Function Parameters
 | Parameter | Description | Possible Values | Recommended Values |
 |-----------|-------------|-----------------|--------------------|
-| Fitness function | The fitness function to use | PULSE_COUNT, VARIANCE, COMBINED |  |
+| Fitness function | The fitness function to use | TOLERANT_PULSE_COUNT, SENSITIVE_PULSE_COUNT, VARIANCE, COMBINED |  |
 | Desired frequency | If using the pulse fitness function, the target frequency of the evolved oscillator | (In Hertz) 1 - 1000000 | 1000 |
 | COMBINED_MODE | If using the combined fitness function, how to combine the fitnesses | ADD, MULT | |
 | PULSE_WEIGHT | If using the combined fitness function, what weigthing to use for closeness to the trigger voltage in combined fitness| 0.0 - 1.0 | |
@@ -447,9 +447,10 @@ Below is a list of the options, their description, and their possible values:
 #### Initialization Parameters
 | Parameter | Description | Possible Values | Recommended Values |
 |-----------|-------------|-----------------|--------------------|
-| Init mode | The method to generate the initial random circuits | CLONE_SEED, CLONE_SEED_MUTATE, RANDOM, EXISTING_POPULATION | RANDOM |
+| Init mode | The method to generate the initial random circuits | CLONE_SEED, CLONE_SEED_MUTATE, RANDOM, EXISTING_POPULATION | RANDOM, CLONE_SEED_MUTATE |
 | Randomize until | The method used for randomizing the initial population | PULSE, VARIANCE, NO | NO |
 | Randomize threshold | The target fitness for initial random search before evolution begins| 3-8 | 4 |
+| Randomize mode | The method to use when "randomizing" each circuit | MUTATE, RANDOM | Depends on the situation. If a seed individual/population is used, then use MUTATE. Otherwise, use RANDOM |
 
 ##### Initialization Modes
 | Mode | Description |
