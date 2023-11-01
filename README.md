@@ -483,6 +483,7 @@ Below is a list of the options, their description, and their possible values:
 | Data Directory | The directory to put the data files (MCU read data) | Any directory | ./workspace/experiment_data |
 | Analysis Directory | The directory to put the analysis files | Any directory | ./workspace/analysis || Best file | The path to put the asc file of the best performing circuit throughout evolution | Any file path | ./workspace/best.asc |
 | Source Populations Directory | The directory consisting of source populations to use in initialization | Any directory | ./workspace/source_populations |
+| Generations Directory | The directory to put generation files into, when populations are saved each generation. The reconstruct command pulls from this directory | Any directory | ./workspace/generations |
 
 #### System parameters
 | Parameter | Description | Possible Values |
@@ -557,6 +558,11 @@ Alternatively, you can run individual tests within a file like so:'
 ```bash
 pytest "test/file.py::function"
 ```
+
+### Generation Reconstruction
+The code will automatically save each generation to a generation file in the generations directory (which is specified in the config)
+
+You can later reconstruct generations. This will bring the generation back into your ASC directory. This is done by running `python3 src/tools/reconstruct.py [generation #]`
 
 ## Contributing
 <!--TODO ALIFE2021 define the desired approach -->

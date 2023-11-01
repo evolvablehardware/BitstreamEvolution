@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from os import access
+import os
 from Circuit import Circuit
 from utilities import wipe_folder
 from Config import Config
@@ -27,10 +27,17 @@ parser.add_argument('-g','--generation',type=int,default=None,
 args = parser.parse_args()
 
 config = Config('./workspace/builtconfig.ini')
+
+gen_path = config.get_generations_directory().joinpath('gen' + str(args.generation) + '.log')
+
+if not os.path.isfile(gen_path):
+    print(f'Generation {args.generation} does not exist.')
+    exit(1)
+
 wipe_folder(config.get_asc_directory())
 
 # Read the generation file
-with open(config.get_generations_directory().joinpath('gen' + str(args.generation) + '.log'), 'r') as f:
+with open(gen_path, 'r') as f:
     gen_lines = f.readlines()
 
 # Check the first two lines, to get our necessary config values
