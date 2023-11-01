@@ -40,6 +40,9 @@ class Config:
 
 	def get_hardware_parameters(self, param):
 		return self.__config_parser.get("HARDWARE PARAMETERS", param)
+
+	def get_sensitivity_parameters(self, param):
+		return self.__config_parser.get("FITNESS SENSITIVITY PARAMETERS", param)
 	
 	# SECTION Getters for Top-Level Parameters.
 	# We have 3 types of mode. There's FULLY_INTRINSIC, SIM_HARDWARE, and FULLY_SIM
@@ -48,7 +51,7 @@ class Config:
 	# FULLY_SIM: Simulation mode, but operating on a small array of arbitrary bit values
 	def get_simulation_mode(self):
 		input = self.get_top_parameters("SIMULATION_MODE")
-		valid_vals = ["FULLY_INTRINSIC", "FULLY_SIM", "SIM_HARDWARE"]
+		valid_vals = ["FULLY_INTRINSIC", "FULLY_SIM", "SIM_HARDWARE", "INTRINSIC_SENSITIVITY"]
 		self.check_valid_value("simulation mode", input, valid_vals)
 		return input
 	
@@ -197,6 +200,24 @@ class Config:
 			self.__log_error(1, "Invalid target fitness " + str(targetFitness) + "'. Must be greater than zero.")
 			exit()
 		return targetFitness
+
+	# SECTION Getters for fitness sensitivity parameters.
+	def get_test_circuit(self):
+		try:
+			return Path(self.get_sensitivity_parameters("TEST_CIRCUIT"))
+		except NoOptionError:
+			self.__log_error(1, "Invalid file path " + self.get_sensitivity_parameters("TEST_CIRCUIT") + " for test circuit.")
+
+	def get_sensitivity_trials(self):
+		try:
+			trials = int(self.get_sensitivity_parameters("SENSITIVITY_TRIALS"))
+		except:
+			self.__log_error(1, "Non-int user input for the number of sensitivity trials to do.")
+			exit()
+		if trials < 1:
+			self.__log_error(1, "Invalid number of sensitivity trials" + str(trials) + "'. Must be greater than zero.")
+			exit()
+		return trials
 
 	# SECTION Getters for logging parameters.
 	def get_plots_directory(self):

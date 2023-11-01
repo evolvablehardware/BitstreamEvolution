@@ -361,9 +361,55 @@ def anim_heatmap(i):
         fig3.savefig(plots_dir.joinpath("heatmap.png"))
         
 
+def animate_sensitivity(i):
+    graph_data = open('workspace/fitnesssensitivity.log','r').read()
+    lines = graph_data.split('\n')
+    xs = []
+    ys = []
+    ts = []
+    for line in lines:
+        if len(line) > 1:
+            t,d = line.split(':')
+            d = d.split(",")
+            xs.append(float(d[0]))
+            ys.append(float(d[1]))
+            ts.append(float(t))
+    ax2.clear()
+    ax2.plot(ts, xs, color="dodgerblue") # fitness
+    ax2.tick_params(axis='y', labelcolor='white')
+    ax2.set_ylim(bottom=0)
+    
+    ax3.clear()
+    ax3.plot(ts, ys, color="gold") # number pulses or mean voltage
+    ax3.tick_params(axis='y', labelcolor='gold') 
+    ax3.set_ylim(bottom=0)
+    
+    ax2.set(xlabel='Generation', ylabel='Fitness', title='Circuit Fitness per Trial')
+
+    if config.get_fitness_func() != "PULSE_COUNT":
+        ax3.set_ylabel('Mean Voltage (Normalized)', color='gold')
+    else:
+        ax3.set_ylabel('Pulses', color='yellow')
+
+
+    if(config.get_save_plots()):
+        fig.savefig(plots_dir.joinpath("sensitivity.png"))
+
+
+
+
 plots_dir = config.get_plots_directory()
 
 style.use('dark_background')
+
+if (config.get_simulation_mode() == 'INTRINSIC_SENSITIVITY'):
+    fig = plt.figure(figsize=(9,7))
+    ax2 = fig.add_subplot(1, 1, 1)
+    ax3 = ax2.twinx()
+    ani = animation.FuncAnimation(fig, animate_sensitivity)
+    plt.show()
+    while True:
+        pass
 
 rows = 2
 cols = 1
