@@ -422,6 +422,7 @@ Below is a list of the options, their description, and their possible values:
 | COMBINED_MODE | If using the combined fitness function, how to combine the fitnesses | ADD, MULT | |
 | PULSE_WEIGHT | If using the combined fitness function, what weigthing to use for closeness to the trigger voltage in combined fitness| 0.0 - 1.0 | |
 | VAR_WEIGHT | If using the combined fitness function, what weigthing to use for variance in combined fitness | 0.0 - 1.0 | |
+| NUM_SAMPLES | Number of samples to record in pulse count fitness functions. The minimum number recorded will be used to determine the actual pulse fitness. Higher number of samples will take longer to run, but should result in more stable circuits | 1+ | 1-5 |
 
 #### GA parameters
 | Parameter | Description | Possible Values | Recommended Values |

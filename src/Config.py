@@ -81,7 +81,11 @@ class Config:
 		return float(self.get_fitness_parameters("VAR_WEIGHT"))
 	
 	def get_num_samples(self):
-		return int(self.get_fitness_parameters("NUM_SAMPLES"))
+		value = int(self.get_fitness_parameters("NUM_SAMPLES"))
+		if value < 0:
+			self.__log_error(1, "Invalid number of samples " + str(value) + "'. Must be greater than zero.")
+			exit()
+		return value
 
 
 	# SECTION Getters for GA Parameters.
