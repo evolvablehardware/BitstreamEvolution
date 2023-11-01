@@ -327,7 +327,7 @@ class CircuitPopulation:
             fitness = circuit.evaluate_sim_hardware()
         else:
             func = self.__config.get_fitness_func()
-            if func == "PULSE_COUNT":
+            if func == "PULSE_COUNT" or func == "TOLERANT_PULSE_COUNT" or func == "SENSITIVE_PULSE_COUNT":
                 fitness = circuit.evaluate_pulse_count()
             elif func == "VARIANCE":
                 fitness = circuit.evaluate_variance()
