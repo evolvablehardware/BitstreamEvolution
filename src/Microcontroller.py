@@ -71,6 +71,8 @@ class Microcontroller:
             end = time() - start
         # buf now has `samples` entries
         self.__log_event(2, 'Length of buffer:', len(buf))
+        if len(buf) == 0:
+            buf.append(0)
         for i in range(len(buf)):
             self.__log_event(2, f'Buffer entry {i}:', buf[i])
             buf[i] = int(buf[i])

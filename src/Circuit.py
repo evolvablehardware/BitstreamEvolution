@@ -20,6 +20,10 @@ if typing.TYPE_CHECKING:
 RUN_CMD = "iceprog"
 COMPILE_CMD = "icepack"
 
+def is_pulse_func(config):
+    return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
+            or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT')
+
 class Circuit:
     """
     Represents a manifestation of a particular configuration
@@ -444,7 +448,14 @@ class Circuit:
         pulse_counts = []
         for i in range(len(data)):
             pulse_counts.append(int(data[i]))
-        pulse_count = min(pulse_counts)
+        # Set pulse_count to whichever one is furthest away
+        dist = 0
+        for pc in pulse_counts:
+            this_dist = abs(pc - self.__config.get_desired_frequency())
+            if this_dist >= dist:
+                dist = this_dist
+                pulse_count = pc
+        
         self.__log_event(3, "Pulses counted: {}".format(pulse_count))
         self.__pulses = pulse_count
 
@@ -523,7 +534,7 @@ class Circuit:
                 lines.append("\n")
 
         # Shows pulse count in this chart if in PULSE_COUNT fitness func, and fitness otherwise
-        if self.__config.get_fitness_func() == 'PULSE_COUNT':
+        if is_pulse_func(self.__config):
             value = self.__pulses
         else:
             value = self.__fitness
