@@ -24,7 +24,7 @@ class Microcontroller:
     def __init__(self, config: Config, logger: Logger):
         self.__logger = logger
         self.__config = config
-        if config.get_simulation_mode() == "FULLY_INTRINSIC":
+        if config.get_simulation_mode() == "FULLY_INTRINSIC" or config.get_simulation_mode() == "INTRINSIC_SENSITIVITY":
             self.__log_event(1, "MCU SETTINGS ================================", config.get_usb_path(), config.get_serial_baud())
             self.__serial =  Serial(
                 config.get_usb_path(),
@@ -83,6 +83,8 @@ class Microcontroller:
 
     def measure_pulses(self, circuit: Circuit):
         samples = 2
+        if self.__config.get_simulation_mode() == "INTRINSIC_SENSITIVITY":
+            samples = 1
 
         # TODO Use pathlib here
         # Begin monitoring on load
