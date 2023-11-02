@@ -85,14 +85,14 @@ class Config:
 	
 	def get_num_samples(self):
 		value = int(self.get_fitness_parameters("NUM_SAMPLES"))
-		if value < 0:
+		if value < 1:
 			self.__log_error(1, "Invalid number of samples " + str(value) + "'. Must be greater than zero.")
 			exit()
 		return value
 
 	def get_num_passes(self):
 		value = int(self.get_fitness_parameters("NUM_PASSES"))
-		if value < 0:
+		if value < 1:
 			self.__log_error(1, "Invalid number of passes " + str(value) + "'. Must be greater than zero.")
 			exit()
 		return value

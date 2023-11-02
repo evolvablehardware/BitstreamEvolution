@@ -269,7 +269,7 @@ class Circuit:
 
         return self.__fitness
 
-    def evaluate_variance(self):
+    def evaluate_variance(self, record_data = False):
         """
         Upload and run this Circuit on the FPGA and analyze its
         performance.
@@ -287,7 +287,13 @@ class Circuit:
 
         waveform = self.__read_variance_data()
         fitness = self.__measure_variance_fitness(waveform)
-        self.__update_all_live_data()
+
+        if record_data:
+            # We will update all live data when all samples have been taken
+            self.__data.append(fitness)
+        else:
+            self.__update_all_live_data()
+
         return fitness
 
     def evaluate_pulse_count(self, record_data = False):
@@ -317,7 +323,7 @@ class Circuit:
 
         return fitness
 
-    def evaluate_combined(self):
+    def evaluate_combined(self, record_data = False):
         """
         Upload and run this circuit and take a combined measure of fitness
         """
@@ -333,7 +339,13 @@ class Circuit:
 
         waveform = self.__read_variance_data()
         fitness = self.__measure_combined_fitness(waveform)
-        self.__update_all_live_data()
+        
+        if record_data:
+            # We will update all live data when all samples have been taken
+            self.__data.append(fitness)
+        else:
+            self.__update_all_live_data()
+
         return fitness
 
     def measure_mean_voltage(self):
