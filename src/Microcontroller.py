@@ -2,6 +2,12 @@ from serial import Serial
 from time import time
 import numpy as np
 
+from Circuit import Circuit
+import typing
+
+from Config import Config
+from Logger import Logger
+
 class Microcontroller:
     def __log_event(self, level, *event):
         self.__logger.log_event(level, *event)
@@ -15,7 +21,7 @@ class Microcontroller:
     def __log_warning(self, level, *warning):
         self.__logger.log_warning(level, *warning)
 
-    def __init__(self, config, logger):
+    def __init__(self, config: Config, logger: Logger):
         self.__logger = logger
         self.__config = config
         if config.get_simulation_mode() == "FULLY_INTRINSIC":
@@ -27,7 +33,55 @@ class Microcontroller:
             )
             self.__serial.dtr = False
 
-    def measure_pulses(self, circuit):
+    def simple_measure_pulses(self, circuit: Circuit, samples: int):
+        """
+        This measure pulses function will poll the MCU a certain number of times,
+        and just put the raw pulse counts recorded into the circuit's data file
+        """
+        data_file = open(circuit.get_data_filepath(), "w")
+        lines = []
+        buf = []
+        for i in range(0, samples):
+            # Poll serial line until START signal
+            self.__log_event(3, f"Starting loop for reading (sample {i+1}/{samples})")
+            
+            self.__serial.reset_input_buffer()
+            self.__serial.reset_output_buffer()
+            # NOTE The MCU is expecting a string '1' if fitness isn't measured this may be why
+            self.__serial.write(b'1') 
+            start = time()
+            self.__log_event(3, f"Starting MCU loop... (sample {i+1}/{samples})")
+
+            while True:
+                self.__log_event(3, f"Serial reading... (sample {i+1}/{samples})")
+                p = self.__serial.read_until()
+                self.__log_event(3, f"Serial read done (sample {i+1}/{samples})")
+                if (time() - start) >= self.__config.get_mcu_read_timeout():
+                    self.__log_warning(1, f"Time Exceeded. Halting MCU Reading (sample {i+1}/{samples})")
+                    break
+                # TODO We should be able to do whatever this line does better
+                # This is currently doing a poor job at REGEXing the MCU serial return - can be done better
+                # It's supposed to handle exceptions from transmission loss (i.e. dropped or additional spaces, shifted colons, etc)
+                self.__log_event(3, "Pulled", p, f"from MCU (sample {i+1}/{samples})")
+                if (p != b"" and b":" not in p and b"START" not in p and b"FINISH" not in p and b" " not in p):
+                    p = p.translate(None, b"\r\n")
+                    buf.append(p)
+                    break
+
+            end = time() - start
+        # buf now has `samples` entries
+        self.__log_event(2, 'Length of buffer:', len(buf))
+        if len(buf) == 0:
+            buf.append(0)
+        for i in range(len(buf)):
+            self.__log_event(2, f'Buffer entry {i}:', buf[i])
+            buf[i] = int(buf[i])
+            lines.append(str(buf[i]) + "\n")
+
+        data_file.writelines(lines)
+        data_file.close()
+
+    def measure_pulses(self, circuit: Circuit):
         samples = 2
 
         # TODO Use pathlib here

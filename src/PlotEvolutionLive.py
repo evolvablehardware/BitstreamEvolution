@@ -18,6 +18,10 @@ HEATMAP_BINS = 32
 
 config = Config("data/config.ini")
 
+def is_pulse_func():
+    return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
+            or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT')
+
 def animate_generation(i):
     graph_data = open('workspace/alllivedata.log','r').read()
     lines = graph_data.split('\n')
@@ -37,7 +41,7 @@ def animate_generation(i):
     ax1.set_xlim([0, config.get_population_size()+1])
     ax1.hlines(y=avg, xmin=1, xmax=config.get_population_size(), color="violet", linestyles="dotted")
     ax1.scatter(xs, ys)
-    if config.get_fitness_func() == 'PULSE_COUNT':
+    if is_pulse_func():
         title = 'Circuit Pulses this Generation'
         ylabel = 'Pulses'
         # Add a line for desired frequency
@@ -305,7 +309,7 @@ style.use('dark_background')
 rows = 2
 cols = 1
 has_wf_plot = False
-if (config.get_simulation_mode() == 'FULLY_INTRINSIC' and config.get_fitness_func() != "PULSE_COUNT") or config.get_simulation_mode() == 'FULLY_SIM':
+if (config.get_simulation_mode() == 'FULLY_INTRINSIC' and not is_pulse_func()) or config.get_simulation_mode() == 'FULLY_SIM':
     rows = rows + 1
     has_wf_plot = True
 
