@@ -293,7 +293,7 @@ def anim_heatmap(i):
             ylabels.append(str(int(bin_size*float(label.get_text()))))
     ax8.set_yticklabels(ylabels)
 
-    if config.get_fitness_func() == "PULSE_COUNT":
+    if is_pulse_func():
         ax8.set(xlabel='Generation', ylabel='Pulses')
     else:
         ax8.set(xlabel='Generation', ylabel='Voltage (Normalized)')
