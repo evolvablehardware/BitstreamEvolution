@@ -52,7 +52,7 @@ class Circuit:
         self.__fitness = 0
         self.__mean_voltage = 0 #needed for combined fitness func
         self.__pulses = 0 # Used to get pulses counted outside of circuit
-        self.__data = [] # Used when taking multiple samples in a single generation
+        self.__data = [] # Used when taking multiple samples in a single generation. Stores the fitnesses
 
         # SECTION Build the relevant paths
         asc_dir = config.get_asc_directory()
@@ -198,6 +198,17 @@ class Circuit:
         """
         return self.__hardware_filepath
 
+    def calculate_fitness_from_data(self):
+        """
+        When multiple samples have been stored in self.__data, 
+        this function will take the lowest fitness and use that as our circuit's fitness
+        """
+        fit = min(self.__data)
+        self.__fitness = fit
+        self.__data = []
+        self.__update_all_live_data()
+        return fit
+
     # TODO Evaluate based on a fitness function defined in the config file
     # while still utilizing the existing or newly added evaluate functions in this class
     # def evaluate(self):
@@ -279,7 +290,7 @@ class Circuit:
         self.__update_all_live_data()
         return fitness
 
-    def evaluate_pulse_count(self, wipe_data = False, record_data = False):
+    def evaluate_pulse_count(self, record_data = False):
         """
         Upload and run this circuit and count the number of pulses it
         generates.
@@ -296,13 +307,14 @@ class Circuit:
             elapsed
         )
 
-        fitness, pulses = self.__measure_pulse_fitness()
-        if wipe_data:
-            self.__data = []
-        if record_data:
-            self.__data.append(pulses)
+        fitness = self.__measure_pulse_fitness()
 
-        self.__update_all_live_data()
+        if record_data:
+            # We will update all live data when all samples have been taken
+            self.__data.append(fitness)
+        else:
+            self.__update_all_live_data()
+
         return fitness
 
     def evaluate_combined(self):
@@ -470,7 +482,7 @@ class Circuit:
 
         self.__fitness = self.__calc_pulse_fitness(pulse_count)
         
-        return self.__fitness, pulse_count
+        return self.__fitness
 
     def __calc_pulse_fitness(self, pulses):
         """
