@@ -90,6 +90,12 @@ class Config:
 			exit()
 		return value
 
+	def get_num_passes(self):
+		value = int(self.get_fitness_parameters("NUM_PASSES"))
+		if value < 0:
+			self.__log_error(1, "Invalid number of passes " + str(value) + "'. Must be greater than zero.")
+			exit()
+		return value
 
 	# SECTION Getters for GA Parameters.
 	def get_population_size(self):
@@ -364,6 +370,7 @@ class Config:
 		self.get_pulse_weight()
 		self.get_var_weight()
 		self.get_num_samples()
+		self.get_num_passes()
 
 		self.get_population_size()
 		self.get_mutation_probability()
