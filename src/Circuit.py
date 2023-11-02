@@ -52,6 +52,7 @@ class Circuit:
         self.__fitness = 0
         self.__mean_voltage = 0 #needed for combined fitness func
         self.__pulses = 0 # Used to get pulses counted outside of circuit
+        self.__data = [] # Used when taking multiple samples in a single generation
 
         # SECTION Build the relevant paths
         asc_dir = config.get_asc_directory()
@@ -462,10 +463,10 @@ class Circuit:
         if len(pulse_counts) == 0:
             self.__log_event(2, "NULL DATA FILE. ZEROIZING")
 
+        desired_freq = self.__config.get_desired_frequency()
         if self.__is_tolerant_pulse_count():
             # Build a normal-ish distribution function where the "mean" is desired_freq,
             # and the "standard deviation" is of our choosing (here we select 0.025*freq)
-            desired_freq = self.__config.get_desired_frequency()
             deviation = 0.025 * desired_freq # 25 for 1,000 Hz, 250 for 10,000 Hz
             # No need to check for this because it's included in the function
             # Note: Fitness is still from 0-1
