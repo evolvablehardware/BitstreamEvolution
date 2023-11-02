@@ -279,7 +279,7 @@ class Circuit:
         self.__update_all_live_data()
         return fitness
 
-    def evaluate_pulse_count(self):
+    def evaluate_pulse_count(self, wipe_data = False, record_data = False):
         """
         Upload and run this circuit and count the number of pulses it
         generates.
@@ -296,7 +296,12 @@ class Circuit:
             elapsed
         )
 
-        fitness = self.__measure_pulse_fitness()
+        fitness, pulses = self.__measure_pulse_fitness()
+        if wipe_data:
+            self.__data = []
+        if record_data:
+            self.__data.append(pulses)
+
         self.__update_all_live_data()
         return fitness
 
@@ -463,24 +468,32 @@ class Circuit:
         if len(pulse_counts) == 0:
             self.__log_event(2, "NULL DATA FILE. ZEROIZING")
 
+        self.__fitness = self.__calc_pulse_fitness(pulse_count)
+        
+        return self.__fitness, pulse_count
+
+    def __calc_pulse_fitness(self, pulses):
+        """
+        Returns the fitness, based on the config's fitness function, for the specified number of pulses
+        """
         desired_freq = self.__config.get_desired_frequency()
+        fitness = 0
         if self.__is_tolerant_pulse_count():
             # Build a normal-ish distribution function where the "mean" is desired_freq,
             # and the "standard deviation" is of our choosing (here we select 0.025*freq)
             deviation = 0.025 * desired_freq # 25 for 1,000 Hz, 250 for 10,000 Hz
             # No need to check for this because it's included in the function
             # Note: Fitness is still from 0-1
-            self.__fitness = math.exp(-0.5 * math.pow((pulse_count - desired_freq) / deviation, 2))
+            fitness = math.exp(-0.5 * math.pow((pulses - desired_freq) / deviation, 2))
         else:
-            if pulse_count == desired_freq:
+            if pulses == desired_freq:
                 self.__log_event(1, "Unity achieved: {}".format(self))
-                self.__fitness = 1
-            elif pulse_count == 0:
-                self.__fitness = 0
+                fitness = 1
+            elif pulses == 0:
+                fitness = 0
             else:
-                self.__fitness = 1.0 / abs(desired_freq - pulse_count)
-        
-        return self.__fitness
+                fitness = 1.0 / abs(desired_freq - pulses)
+        return fitness
 
     def __measure_combined_fitness(self, waveform):
         """
