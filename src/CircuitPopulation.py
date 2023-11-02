@@ -402,17 +402,18 @@ class CircuitPopulation:
             # Evaluate all the Circuits in this CircuitPopulation.
             start = time()
 
-            for i in self.__config.get_num_passes():
-                for circuit in self.__circuits:
-                    self.__eval_ckt(circuit)
-            for circuit in self.__circuits:
-                circuit.calculate_fitness_from_data()
+            # for i in self.__config.get_num_passes():
+            #     for circuit in self.__circuits:
+            #         self.__eval_ckt(circuit)
+            # for circuit in self.__circuits:
+            #     circuit.calculate_fitness_from_data()
 
             for circuit in self.__circuits:
                 # If evaluate returns true, then a circuit has surpassed
                 # the threshold and we are done.
 
-                fitness = circuit.get_fitness() #self.__eval_ckt(circuit)
+                # fitness = circuit.get_fitness()
+                fitness = self.__eval_ckt(circuit)
 
                 # We've got the fitness we're evaluating the circuit off of, so make sure it gets
                 # added to the circuit's file attributes
