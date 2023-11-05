@@ -403,8 +403,11 @@ class CircuitPopulation:
             start = time()
 
             for i in range(self.__config.get_num_passes()):
-                for circuit in self.__circuits:
+                # Shuffle the circuits each time
+                circuits = np.random.permutation(self.__circuits)
+                for circuit in circuits:
                     self.__eval_ckt(circuit)
+            # We can keep the circuits in order after this
             for circuit in self.__circuits:
                 circuit.calculate_fitness_from_data()
 
