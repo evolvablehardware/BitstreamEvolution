@@ -203,7 +203,22 @@ class Circuit:
         When multiple samples have been stored in self.__data, 
         this function will take the lowest fitness and use that as our circuit's fitness
         """
-        fit = min(self.__data)
+        # Flatten the data list
+        data = [item for sublist in self.__data for item in sublist]
+        if self.__config.get_fitness_func() == "PULSE_CONSISTENCY":
+            # Get all values not between 1,000 and 100,000
+            invalid_data = [point for point in data if point < 1_000 or point > 100_000]
+            # If there are any "bad" pulse counts, we just say our fitness is 0
+            # Even one would break consistency anyway, we want to force things between the desired range
+            if len(invalid_data) > 0:
+                fit = 0
+                print(2, "Data had invalid values, fitness is 0")
+            else:
+                std = stdev(data)
+                fit = 1_000 / (std + 1)
+                print(2, "Consistency std", std, "data", data, "fitness", fit)
+        else:
+            fit = min(data)
         self.__fitness = fit
         self.__data = []
         self.__update_all_live_data()
@@ -313,15 +328,16 @@ class Circuit:
             elapsed
         )
 
-        fitness = self.__measure_pulse_fitness()
+        measure_result = self.__measure_pulse_fitness(record_data = record_data)
 
         if record_data:
             # We will update all live data when all samples have been taken
-            self.__data.append(fitness)
+            self.__data.append(measure_result)
         else:
             self.__update_all_live_data()
 
-        return fitness
+        # This is either the fitness or the list of pulses counted
+        return measure_result
 
     def evaluate_combined(self, record_data = False):
         """
@@ -464,10 +480,13 @@ class Circuit:
         return self.__config.get_fitness_func() == 'TOLERANT_PULSE_COUNT'
 
     # NOTE Using log files instead of a data buffer in the event of premature termination
-    def __measure_pulse_fitness(self):
+    def __measure_pulse_fitness(self, record_data = False):
         """
         Measures the fitness of this circuit using the pulse-count
         fitness function
+        TODO: Refactor
+        If record_data is true, then we will return the total pulses counted
+        Otherwise, we will return the calculated fitness
         """
         data_file = open(self.__data_filepath, "r")
         data = data_file.readlines()
@@ -478,6 +497,10 @@ class Circuit:
         pulse_counts = []
         for i in range(len(data)):
             pulse_counts.append(int(data[i]))
+        
+        if record_data:
+            return pulse_counts
+        
         # Set pulse_count to whichever one is furthest away
         dist = 0
         for pc in pulse_counts:

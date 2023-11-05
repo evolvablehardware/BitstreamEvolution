@@ -411,6 +411,11 @@ class Config:
 		self.get_serial_baud()
 		self.get_accessed_columns()
 		self.get_mcu_read_timeout()
+
+		# Make sure user follows our requirements
+		if self.get_fitness_func() == "PULSE_CONSISTENCY" and (self.get_num_passes() * self.get_num_samples()) <= 1:
+			self.__log_error(1, "PULSE_CONSISTENCY function can only be used with multiple samples/passes")
+			exit()
 		
 	def __log_event(self, level, *event):
 		"""

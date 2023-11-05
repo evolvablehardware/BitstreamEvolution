@@ -359,7 +359,8 @@ class CircuitPopulation:
             fitness = circuit.evaluate_sim_hardware()
         else:
             func = self.__config.get_fitness_func()
-            if func == "PULSE_COUNT" or func == "TOLERANT_PULSE_COUNT" or func == "SENSITIVE_PULSE_COUNT":
+            if func == "PULSE_COUNT" or func == "TOLERANT_PULSE_COUNT" or func == "SENSITIVE_PULSE_COUNT" or func == "PULSE_CONSISTENCY":
+                # The PULSE_CONSISTENCY function will call pulse count eval, which will save pulses off for later
                 fitness = circuit.evaluate_pulse_count(record_data = record_data)
             elif func == "VARIANCE":
                 fitness = circuit.evaluate_variance(record_data = record_data)
