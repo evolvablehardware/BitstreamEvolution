@@ -205,7 +205,6 @@ class Circuit:
         """
         fit = min(self.__data)
         self.__fitness = fit
-        print('PASS RESULT', fit, self.__data, 'len', len(self.__data))
         self.__data = []
         self.__update_all_live_data()
         return fit
@@ -908,8 +907,6 @@ class Circuit:
         y_bytes = hardware_file[space_pos:eol_pos]
         x_str = x_bytes.decode("utf-8").strip()
         y_str = y_bytes.decode("utf-8").strip()
-        #print("Trying", self, "'" + x_str + "'", "'" + y_str + "'", "Pos was:", pos, "First bit is: ", "'" + str(hardware_file[pos:(pos+20)], 'utf-8') + "'",
-        #    "prev bit is: " + "'" + str(hardware_file[(pos-20):pos], 'utf-8') + "'")
         x = int(x_str)
         y = int(y_str)
         is_x_valid = x in VALID_TILE_X
