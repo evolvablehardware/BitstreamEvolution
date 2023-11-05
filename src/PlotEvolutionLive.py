@@ -16,7 +16,7 @@ MAX_VIOLIN_PLOTS = 10
 MAX_HEATMAP_GENS = 50
 HEATMAP_BINS = 32 
 
-config = Config("data/config.ini")
+config = Config("workspace/builtconfig.ini")
 
 def is_pulse_func():
     return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
