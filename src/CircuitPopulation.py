@@ -402,11 +402,11 @@ class CircuitPopulation:
             # Evaluate all the Circuits in this CircuitPopulation.
             start = time()
 
-            # for i in self.__config.get_num_passes():
-            #     for circuit in self.__circuits:
-            #         self.__eval_ckt(circuit)
-            # for circuit in self.__circuits:
-            #     circuit.calculate_fitness_from_data()
+            for i in range(self.__config.get_num_passes()):
+                for circuit in self.__circuits:
+                    self.__eval_ckt(circuit)
+            for circuit in self.__circuits:
+                circuit.calculate_fitness_from_data()
 
             for circuit in self.__circuits:
                 # If evaluate returns true, then a circuit has surpassed
@@ -514,7 +514,7 @@ class CircuitPopulation:
                 live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(fits)))
             
             if self.__config.get_simulation_mode() == "FULLY_INTRINSIC":
-                if self.__config.get_fitness_func() != "PULSE_COUNT":
+                if self.__config.get_fitness_func() not in [ "PULSE_COUNT", "TOLERANT_PULSE_COUNT", "SENSITIVE_PULSE_COUNT" ]:
                     with open("workspace/heatmaplivedata.log", "a") as live_file2:
                         best = self.__circuits[0]
                         data = best.get_waveform()

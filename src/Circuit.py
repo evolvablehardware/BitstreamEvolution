@@ -205,6 +205,7 @@ class Circuit:
         """
         fit = min(self.__data)
         self.__fitness = fit
+        print('PASS RESULT', fit, self.__data, 'len', len(self.__data))
         self.__data = []
         self.__update_all_live_data()
         return fit
