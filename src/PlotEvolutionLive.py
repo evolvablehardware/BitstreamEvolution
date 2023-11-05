@@ -4,7 +4,7 @@ from matplotlib import style
 import configparser
 import re
 from Config import Config
-import math
+import math 
 import numpy as np
 
 """
@@ -296,61 +296,23 @@ def anim_heatmap(i):
         data = open('workspace/pulselivedata.log','r').read()
     else:
         data = open('workspace/heatmaplivedata.log','r').read()
+
+
     
     lines = data.split('\n')
     collections = []
     gens = []
 
-    if config.get_fitness_func() == "PULSE_COUNT":
-        max_val = max(32, max_pulses)
-    else:
-        max_val = 1024;
-    
-    bin_size = int(max_val / HEATMAP_BINS)
-    interval = len(lines) / MAX_HEATMAP_GENS
-    if len(lines) < MAX_HEATMAP_GENS:
-        interval = 1
-    index = -interval
-    while int(index + interval) < len(lines):
-        index = int(index + interval)
-        line = lines[index]
+    for line in lines:
         if len(line) > 1:
             vals = line.split(':')
             pts = vals[1].split(',')
-            if config.get_fitness_func() == "PULSE_COUNT":
-                max_pulses = max(max_pulses, max((map(lambda x: int(x), pts))))
-
-            gens.append(index)
-            bins = [0]*HEATMAP_BINS
-            for point in pts:
-                b = int(int(point) / bin_size)
-                if b >= len(bins):
-                    b = len(bins) - 1
-                bins[b] += 1
-            collections.append(list(map(lambda x: float(x), bins)))
-
-
-    ax8.clear()
-    if(len(lines) > 1):
-        ax8.imshow(np.transpose(collections), origin='lower',cmap=plt.colormaps['magma'])
-
-    xlabels = []
-    xlabels.append(str(0))
-    for label in ax8.xaxis.get_ticklabels()[1:]:
-        if "−" in label.get_text():
-            xlabels.append(str(0))
-        else:
-            xlabels.append(str(int(interval*float(label.get_text()))))
-    ax8.set_xticklabels(xlabels)
-
-    ylabels = []
-    ylabels.append(str(0))
-    for label in ax8.yaxis.get_ticklabels()[1:]:
-        if "−" in label.get_text():
-            ylabels.append(str(0))
-        else:
-            ylabels.append(str(int(bin_size*float(label.get_text()))))
-    ax8.set_yticklabels(ylabels)
+            for pt in pts:
+                gens.append(int(vals[0]))
+                collections.append(float(pt))
+            
+    ax8.clear()                         
+    ax8.hist2d(gens,collections,bins=HEATMAP_BINS)
 
     if config.get_fitness_func() == "PULSE_COUNT":
         ax8.set(xlabel='Generation', ylabel='Pulses')
@@ -374,22 +336,37 @@ def animate_sensitivity(i):
             xs.append(float(d[0]))
             ys.append(float(d[1]))
             ts.append(float(t))
+
+    #fitness
     ax2.clear()
-    ax2.plot(ts, xs, color="dodgerblue") # fitness
+    ax2.hist(xs, bins=HEATMAP_BINS)
     ax2.tick_params(axis='y', labelcolor='white')
     ax2.set_ylim(bottom=0)
-    
+
     ax3.clear()
-    ax3.plot(ts, ys, color="gold") # number pulses or mean voltage
-    ax3.tick_params(axis='y', labelcolor='gold') 
+    ax3.hist2d(ts,xs,bins=HEATMAP_BINS)
+    ax3.tick_params(axis='y', labelcolor='white')
     ax3.set_ylim(bottom=0)
     
-    ax2.set(xlabel='Generation', ylabel='Fitness', title='Circuit Fitness per Trial')
+    #pulses/mean voltage
+    ax4.clear()
+    ax4.hist(ys, bins=HEATMAP_BINS)
+    ax4.tick_params(axis='y', labelcolor='white') 
+    ax4.set_ylim(bottom=0)
 
+    ax5.clear()
+    ax5.hist2d(ts, ys, bins=HEATMAP_BINS)
+    ax5.tick_params(axis='y', labelcolor='white') 
+    ax5.set_ylim(bottom=0)
+    
+    ax2.set(xlabel='Trial', ylabel='Fitness', title='Circuit Fitness per Trial')
+    ax3.set(xlabel='Trial', ylabel='Fitness', title='Circuit Fitness per Trial')
     if config.get_fitness_func() != "PULSE_COUNT":
-        ax3.set_ylabel('Mean Voltage (Normalized)', color='gold')
+        ax4.set(xlabel='Trial', ylabel='Mean Voltage (Normalized)', title='Circuit Voltage per Trial')
+        ax5.set(xlabel='Trial', ylabel='Mean Voltage (Normalized)', title='Circuit Voltage per Trial')
     else:
-        ax3.set_ylabel('Pulses', color='yellow')
+        ax4.set(xlabel='Trial', ylabel='Pulses', title='Pulses')
+        ax5.set(xlabel='Trial', ylabel='Pulses', title='Pulses')
 
 
     if(config.get_save_plots()):
@@ -404,8 +381,10 @@ style.use('dark_background')
 
 if (config.get_simulation_mode() == 'INTRINSIC_SENSITIVITY'):
     fig = plt.figure(figsize=(9,7))
-    ax2 = fig.add_subplot(1, 1, 1)
-    ax3 = ax2.twinx()
+    ax2 = fig.add_subplot(2, 2, 1)
+    ax3 = fig.add_subplot(2, 2, 2)
+    ax4 = fig.add_subplot(2, 2, 3)
+    ax5 = fig.add_subplot(2, 2, 4)
     ani = animation.FuncAnimation(fig, animate_sensitivity)
     plt.show()
     while True:

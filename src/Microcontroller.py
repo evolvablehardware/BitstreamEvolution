@@ -54,6 +54,7 @@ class Microcontroller:
                 self.__log_event(3, "Serial read done")
                 if (time() - start) >= self.__config.get_mcu_read_timeout():
                     self.__log_warning(1, "Time Exceeded. Halting MCU Reading")
+                    buf.append(0)
                     break
                 # TODO We should be able to do whatever this line does better
                 # This is currently doing a poor job at REGEXing the MCU serial return - can be done better
@@ -67,7 +68,7 @@ class Microcontroller:
             end = time() - start
 
         buf_dif = 0
-        weighted_count = 0
+        weighted_count = int(buf[0])
 
         for i in range(0, len(buf)):
             if buf[i] == b'':
