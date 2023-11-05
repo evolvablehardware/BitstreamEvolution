@@ -349,7 +349,7 @@ class CircuitPopulation:
                 should_continue = False
         return should_continue
 
-    def __eval_ckt(self, circuit):
+    def __eval_ckt(self, circuit, record_data = False):
         # Biggest difference between Fully Instrinsic and Hardware Sim: The fitness evaluation
         fitness = 0
         if self.__config.get_simulation_mode() == "FULLY_SIM":
@@ -360,12 +360,11 @@ class CircuitPopulation:
         else:
             func = self.__config.get_fitness_func()
             if func == "PULSE_COUNT" or func == "TOLERANT_PULSE_COUNT" or func == "SENSITIVE_PULSE_COUNT":
-                fitness = circuit.evaluate_pulse_count(record_data = True)
+                fitness = circuit.evaluate_pulse_count(record_data = record_data)
             elif func == "VARIANCE":
-                fitness = circuit.evaluate_variance(record_data = True)
+                fitness = circuit.evaluate_variance(record_data = record_data)
             elif func == "COMBINED":
-                fitness = circuit.evaluate_combined(record_data = True)
-            #fitness = circuit.evaluate_variance()
+                fitness = circuit.evaluate_combined(record_data = record_data)
         return fitness
 
     def evolve(self):
@@ -402,21 +401,23 @@ class CircuitPopulation:
             # Evaluate all the Circuits in this CircuitPopulation.
             start = time()
 
-            for i in range(self.__config.get_num_passes()):
-                # Shuffle the circuits each time
-                circuits = np.random.permutation(self.__circuits)
-                for circuit in circuits:
-                    self.__eval_ckt(circuit)
-            # We can keep the circuits in order after this
-            for circuit in self.__circuits:
-                circuit.calculate_fitness_from_data()
+            is_multi_pass = (self.__config.get_num_passes() > 1)
+            if is_multi_pass:
+                for i in range(self.__config.get_num_passes()):
+                    # Shuffle the circuits each time
+                    circuits = np.random.permutation(self.__circuits)
+                    for circuit in circuits:
+                        self.__eval_ckt(circuit, record_data = True)
+                # We can keep the circuits in order after this
+                for circuit in self.__circuits:
+                    circuit.calculate_fitness_from_data()
 
             for circuit in self.__circuits:
                 # If evaluate returns true, then a circuit has surpassed
                 # the threshold and we are done.
 
                 # fitness = circuit.get_fitness()
-                fitness = self.__eval_ckt(circuit)
+                fitness = circuit.get_fitness() if is_multi_pass else self.__eval_ckt(circuit)
 
                 # We've got the fitness we're evaluating the circuit off of, so make sure it gets
                 # added to the circuit's file attributes
