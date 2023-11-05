@@ -58,7 +58,9 @@ class Config:
 	# SECTION Getters for Fitness Parameters.
 	def get_fitness_func(self):
 		input = self.get_fitness_parameters("FITNESS_FUNC")
-		valid_vals = ["VARIANCE", "PULSE_COUNT", "COMBINED"]
+		# We're leaving "PULSE_COUNT" for backwards-compatibility
+		# It will use the sensitive function
+		valid_vals = ["VARIANCE", "PULSE_COUNT", "TOLERANT_PULSE_COUNT", "SENSITIVE_PULSE_COUNT", "COMBINED"]
 		self.check_valid_value("fitness function", input, valid_vals)
 		return input
 	
@@ -80,7 +82,20 @@ class Config:
 
 	def get_var_weight(self):
 		return float(self.get_fitness_parameters("VAR_WEIGHT"))
+	
+	def get_num_samples(self):
+		value = int(self.get_fitness_parameters("NUM_SAMPLES"))
+		if value < 1:
+			self.__log_error(1, "Invalid number of samples " + str(value) + "'. Must be greater than zero.")
+			exit()
+		return value
 
+	def get_num_passes(self):
+		value = int(self.get_fitness_parameters("NUM_PASSES"))
+		if value < 1:
+			self.__log_error(1, "Invalid number of passes " + str(value) + "'. Must be greater than zero.")
+			exit()
+		return value
 
 	# SECTION Getters for GA Parameters.
 	def get_population_size(self):
@@ -270,6 +285,12 @@ class Config:
 		except NoOptionError:
 			return Path("./workspace/analysis")
 
+	def get_generations_directory(self):
+		try:
+			return Path(self.get_logging_parameters("GENERATIONS_DIR"))
+		except NoOptionError:
+			return Path("./workspace/generations")
+
 	def get_log_file(self):
 		try:
 			return Path(self.get_logging_parameters("LOG_FILE"))
@@ -320,7 +341,10 @@ class Config:
 		
 	# SECTION Getters for hardware parameters
 	def get_routing_type(self):
-		return self.get_hardware_parameters("ROUTING")
+		input = self.get_hardware_parameters("ROUTING")
+		valid_vals = ["MOORE", "NEWSE"]
+		self.check_valid_value("routing type", input, valid_vals)
+		return input
 
 	def get_serial_baud(self):
 		return int(self.get_hardware_parameters("SERIAL_BAUD"))
@@ -345,6 +369,8 @@ class Config:
 		self.get_combined_mode()
 		self.get_pulse_weight()
 		self.get_var_weight()
+		self.get_num_samples()
+		self.get_num_passes()
 
 		self.get_population_size()
 		self.get_mutation_probability()
@@ -376,6 +402,7 @@ class Config:
 		self.get_best_file()
 		self.get_src_pops_dir()
 		self.get_datetime_format()
+		self.get_generations_directory()
 
 		self.get_fpga()
 		self.get_usb_path()

@@ -1,3 +1,4 @@
+from __future__ import annotations
 from subprocess import run
 from time import time, sleep
 from shutil import copyfile
@@ -6,9 +7,22 @@ from io import SEEK_CUR
 from statistics import stdev
 import math
 
+import typing
+
+# Ugly way to avoid circular imports
+# Will only import these at type-checking time, not at runtime
+if typing.TYPE_CHECKING:
+    from Microcontroller import Microcontroller
+    from Logger import Logger
+    from Config import Config
+
 # TODO Integrate globals in a more elegant manner.
 RUN_CMD = "iceprog"
 COMPILE_CMD = "icepack"
+
+def is_pulse_func(config):
+    return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
+            or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT')
 
 class Circuit:
     """
@@ -27,7 +41,8 @@ class Circuit:
         """
         return self.__filename
 
-    def __init__(self, index, filename, template, mcu, logger, config, rand, sine_funcs):
+    def __init__(self, index: int, filename: str, template, mcu: Microcontroller, 
+            logger: Logger, config: Config, rand, sine_funcs):
         self.__index = index
         self.__filename = filename
         self.__microcontroller = mcu
@@ -37,6 +52,7 @@ class Circuit:
         self.__fitness = 0
         self.__mean_voltage = 0 #needed for combined fitness func
         self.__pulses = 0 # Used to get pulses counted outside of circuit
+        self.__data = [] # Used when taking multiple samples in a single generation. Stores the fitnesses
 
         # SECTION Build the relevant paths
         asc_dir = config.get_asc_directory()
@@ -128,9 +144,6 @@ class Circuit:
             hardware_file.seek(0)
             hardware_file.writelines(lines)
 
-        #self.__hardware_file = mmap(hardware_file.fileno(), 0)
-        #hardware_file.close()
-
     def get_file_attribute(self, attribute):
         '''
         Gets the value of attribute stored in a comment in the circuit's .asc file
@@ -184,6 +197,17 @@ class Circuit:
         Returns the hardware file path
         """
         return self.__hardware_filepath
+
+    def calculate_fitness_from_data(self):
+        """
+        When multiple samples have been stored in self.__data, 
+        this function will take the lowest fitness and use that as our circuit's fitness
+        """
+        fit = min(self.__data)
+        self.__fitness = fit
+        self.__data = []
+        self.__update_all_live_data()
+        return fit
 
     # TODO Evaluate based on a fitness function defined in the config file
     # while still utilizing the existing or newly added evaluate functions in this class
@@ -245,7 +269,7 @@ class Circuit:
 
         return self.__fitness
 
-    def evaluate_variance(self):
+    def evaluate_variance(self, record_data = False):
         """
         Upload and run this Circuit on the FPGA and analyze its
         performance.
@@ -263,10 +287,16 @@ class Circuit:
 
         waveform = self.__read_variance_data()
         fitness = self.__measure_variance_fitness(waveform)
-        self.__update_all_live_data()
+
+        if record_data:
+            # We will update all live data when all samples have been taken
+            self.__data.append(fitness)
+        else:
+            self.__update_all_live_data()
+
         return fitness
 
-    def evaluate_pulse_count(self):
+    def evaluate_pulse_count(self, record_data = False):
         """
         Upload and run this circuit and count the number of pulses it
         generates.
@@ -274,7 +304,8 @@ class Circuit:
         """
         start = time()
         self.__run()
-        self.__microcontroller.measure_pulses(self)
+        #self.__microcontroller.measure_pulses(self)
+        self.__microcontroller.simple_measure_pulses(self, self.__config.get_num_samples())
 
         elapsed = time() - start
         self.__log_event(1,
@@ -283,10 +314,16 @@ class Circuit:
         )
 
         fitness = self.__measure_pulse_fitness()
-        self.__update_all_live_data()
+
+        if record_data:
+            # We will update all live data when all samples have been taken
+            self.__data.append(fitness)
+        else:
+            self.__update_all_live_data()
+
         return fitness
 
-    def evaluate_combined(self):
+    def evaluate_combined(self, record_data = False):
         """
         Upload and run this circuit and take a combined measure of fitness
         """
@@ -302,7 +339,13 @@ class Circuit:
 
         waveform = self.__read_variance_data()
         fitness = self.__measure_combined_fitness(waveform)
-        self.__update_all_live_data()
+        
+        if record_data:
+            # We will update all live data when all samples have been taken
+            self.__data.append(fitness)
+        else:
+            self.__update_all_live_data()
+
         return fitness
 
     def measure_mean_voltage(self):
@@ -417,6 +460,9 @@ class Circuit:
 
         return self.__fitness
 
+    def __is_tolerant_pulse_count(self):
+        return self.__config.get_fitness_func() == 'TOLERANT_PULSE_COUNT'
+
     # NOTE Using log files instead of a data buffer in the event of premature termination
     def __measure_pulse_fitness(self):
         """
@@ -428,26 +474,50 @@ class Circuit:
 
         # Extract the integer value from the log file indicating the pulses counted from
         # the microcontroller. Pulses are currently measured by Rising or Falling edges
-        # that cross the microcontrollers reference voltage (currently ~2.25 Volts)
-        pulse_count = 0
+        # that cross the microcontrollers reference voltage (currently ~2.25 Volts) [TODO: verify]
+        pulse_counts = []
         for i in range(len(data)):
-            pulse_count += int(data[i])
+            pulse_counts.append(int(data[i]))
+        # Set pulse_count to whichever one is furthest away
+        dist = 0
+        for pc in pulse_counts:
+            this_dist = abs(pc - self.__config.get_desired_frequency())
+            if this_dist >= dist:
+                dist = this_dist
+                pulse_count = pc
+        
         self.__log_event(3, "Pulses counted: {}".format(pulse_count))
         self.__pulses = pulse_count
 
-        if pulse_count == 0:
+        if len(pulse_counts) == 0:
             self.__log_event(2, "NULL DATA FILE. ZEROIZING")
 
-        desired_freq = self.__config.get_desired_frequency()
-        if pulse_count == desired_freq:
-            self.__log_event(1, "Unity achieved: {}".format(self))
-            self.__fitness = 1
-        elif pulse_count == 0:
-            self.__fitness = 0
-        else:
-            self.__fitness = 1.0 / abs(desired_freq - pulse_count)
+        self.__fitness = self.__calc_pulse_fitness(pulse_count)
         
         return self.__fitness
+
+    def __calc_pulse_fitness(self, pulses):
+        """
+        Returns the fitness, based on the config's fitness function, for the specified number of pulses
+        """
+        desired_freq = self.__config.get_desired_frequency()
+        fitness = 0
+        if self.__is_tolerant_pulse_count():
+            # Build a normal-ish distribution function where the "mean" is desired_freq,
+            # and the "standard deviation" is of our choosing (here we select 0.025*freq)
+            deviation = 0.025 * desired_freq # 25 for 1,000 Hz, 250 for 10,000 Hz
+            # No need to check for this because it's included in the function
+            # Note: Fitness is still from 0-1
+            fitness = math.exp(-0.5 * math.pow((pulses - desired_freq) / deviation, 2))
+        else:
+            if pulses == desired_freq:
+                self.__log_event(1, "Unity achieved: {}".format(self))
+                fitness = 1
+            elif pulses == 0:
+                fitness = 0
+            else:
+                fitness = 1.0 / abs(desired_freq - pulses)
+        return fitness
 
     def __measure_combined_fitness(self, waveform):
         """
@@ -498,12 +568,11 @@ class Circuit:
         # Modify the content internally
         index = self.__index - 1
         if len(lines) <= index:
-            print('adding lines', (index - len(lines) + 1), len(lines))
             for i in range(index - len(lines) + 1):
                 lines.append("\n")
 
         # Shows pulse count in this chart if in PULSE_COUNT fitness func, and fitness otherwise
-        if self.__config.get_fitness_func() == 'PULSE_COUNT':
+        if is_pulse_func(self.__config):
             value = self.__pulses
         else:
             value = self.__fitness
@@ -549,72 +618,50 @@ class Circuit:
         Mutate the configuration of this circuit.
         This involves checking the mutation chance per-bit and, if it passes, flipping that bit
         """
+
+        def mutate_bit(bit, row, col, *rest):
+            if self.__config.get_mutation_probability() >= self.__rand.uniform(0,1):
+                # Set this bit to either a 0 or 1 randomly
+                # Keep in mind that these are BYTES that we are modifying, not characters
+                # Therefore, we have to set it to either ASCII 0 (48) or ASCII 1 (49), not actual 0 or 1, which represent different characters
+                # and will corrupt the file if we mutate in this way
+                # 48 = 0, 49 = 1. To flip, just need to do (48+49) - the current value (48+49=97)
+                # This now always flips the bit instead of randomly assigning it every time
+                # Note: If prev != 48 or 49, then we changed the wrong value because it was not a 0 or 1 previously
+                self.__log_event(4, "Mutating:", self, "@(", row, ",", col, ") previous was", bit)
+                return 97 - bit
         
-        # Set tile to the first location of the substring ".logic_tile"
-        # The b prefix makes the string an instance of the "bytes" type
-        # The .logic_tile header indicates that there is a tile, so the "tile" variable stores the starting point of the current tile
-        tile = self.__hardware_file.find(b".logic_tile")
-        
-        while tile > 0:
-            # Set pos to the position of this tile, but with the length of ".logic_tile" added so it is in front of where we have the x/y coords
-            pos = tile + len(".logic_tile")
-            
-            
-            # Check if the position is legal to modify
-            if self.__tile_is_included(self.__hardware_file, pos):
-                # Find the start and end of the line; the positions of the \n newline just before and at the end of this line
-                # The start is the newline position + 1, so the first valid bit character
-                # line_size is self-explanatory
-                # This finds the length of a standard line of bits (so the width of each data-containing line in this tile)
-                line_start = self.__hardware_file.find(b"\n", tile) + 1
-                line_end = self.__hardware_file.find(b"\n", line_start + 1)
-                line_size = line_end - line_start + 1
+        def randomize_bit(*rest):
+            return self.__rand.integers(48, 50)
 
-                # Determine which rows we can modify
-                # TODO ALIFE2021 The routing protocol here is dated and needs to mimic that of the Tone Discriminator
-                if self.__config.get_routing_type() == "MOORE":
-                    rows = [1, 2, 13]
-                elif self.__config.get_routing_type() == "NEWSE":
-                    rows = [1, 2]
-                # Iterate over each row and the columns that we can access within each row
-                for row in rows:
-                    for col in self.__config.get_accessed_columns():
-                        # This will get us to individual bits. If the mutation probability passes
-                        # Our position is now going to be the start of the first line, plus the line size multiplied to get to our desired row,
-                        # and finally added to the column (with the int cast to sanitize user input)
-                        pos = line_start + line_size * (row - 1) + int(col)
-                        if all_random:
-                            self.__hardware_file[pos] = self.__rand.integers(48, 50)
-                        else:
-                            if self.__config.get_mutation_probability() >= self.__rand.uniform(0,1):
-                                # Set this bit to either a 0 or 1 randomly
-                                # Keep in mind that these are BYTES that we are modifying, not characters
-                                # Therefore, we have to set it to either ASCII 0 (48) or ASCII 1 (49), not actual 0 or 1, which represent different characters
-                                # and will corrupt the file if we mutate in this way
-                                prev = self.__hardware_file[pos]
-                                # 48 = 0, 49 = 1. To flip, just need to do (48+49) - the current value (48+49=97)
-                                # This now always flips the bit instead of randomly assigning it every time
-                                self.__hardware_file[pos] = 97 - prev
-                                # Note: If prev != 48 or 49, then we changed the wrong value because it was not a 0 or 1 previously
-                                self.__log_event(4, "Mutating:", self, "@(", row, ",", col, ") previous was", prev)
+        if all_random:
+            self.__run_at_each_modifiable(randomize_bit)
+        else:
+            self.__run_at_each_modifiable(mutate_bit)
 
-            # Find the next logic tile, and start again
-            # Will return -1 if .logic_tile isn't found, and the while loop will exit
-            tile = self.__hardware_file.find(b".logic_tile", tile + 1)
-
-    def get_file_intrinsic_modifiable_bitstream(self, hardware_file):
+    def __run_at_each_modifiable(self, lambda_func, hardware_file = None, accessible_columns = None,
+        routing_type=None):
         """
-        Returns an array of bytes (that correspond to characters, so they will either be 48 or 49)
-        These bytes represent the bits of the circuit's bitstream that can be modified. All other bits are left out
+        Runs the lambda_func at every modifiable position
+        Args passed to lambda_func: value of bit (as a byte), row, col
+        If lambda_func returns a value (byte), then the bit is set to that number
+        If lambda_func returns None, then the bit is left unmodified
+        Keep in mind the bytes are the ASCII codes, so for example 49 = 1
         """
 
-        # TODO: Convert this to be a single function that takes this functionality and the mutate_actual one. Function takes in a callback to call on each modifiable position
+        if hardware_file is None:
+            hardware_file = self.__hardware_file
+
+        if accessible_columns is None:
+            accessible_columns = self.__config.get_accessed_columns()
+
+        if routing_type is None:
+            routing_type = self.__config.get_routing_type()
+
         # Set tile to the first location of the substring ".logic_tile"
         # The b prefix makes the string an instance of the "bytes" type
         # The .logic_tile header indicates that there is a tile, so the "tile" variable stores the starting point of the current tile
         tile = hardware_file.find(b".logic_tile")
-        
-        bitstream = []
         
         while tile > 0:
             # Set pos to the position of this tile, but with the length of ".logic_tile" added so it is in front of where we have the x/y coords
@@ -632,23 +679,39 @@ class Circuit:
 
                 # Determine which rows we can modify
                 # TODO ALIFE2021 The routing protocol here is dated and needs to mimic that of the Tone Discriminator
-                if self.__config.get_routing_type() == "MOORE":
+                if routing_type == "MOORE":
                     rows = [1, 2, 13]
-                elif self.__config.get_routing_type() == "NEWSE":
+                elif routing_type == "NEWSE":
                     rows = [1, 2]
                 # Iterate over each row and the columns that we can access within each row
                 for row in rows:
-                    for col in self.__config.get_accessed_columns():
-                        # This will get us to individual bits. Our position is now going to be the start of the first line, plus the line size multiplied to get to our desired row,
+                    for col in accessible_columns:
+                        # This will get us to individual bits. If the mutation probability passes
+                        # Our position is now going to be the start of the first line, plus the line size multiplied to get to our desired row,
                         # and finally added to the column (with the int cast to sanitize user input)
                         pos = line_start + line_size * (row - 1) + int(col)
-                        byte = hardware_file[pos]
-                        bitstream.append(byte)
+                        bit_value = hardware_file[pos]
+                        lambda_return = lambda_func(bit_value, row, col)
+                        if lambda_return is not None:
+                            # need to re-assign the bit
+                            hardware_file[pos] = lambda_return
 
             # Find the next logic tile, and start again
             # Will return -1 if .logic_tile isn't found, and the while loop will exit
             tile = hardware_file.find(b".logic_tile", tile + 1)
-            
+
+    def get_file_intrinsic_modifiable_bitstream(self, hardware_file):
+        """
+        Returns an array of bytes (that correspond to characters, so they will either be 48 or 49)
+        These bytes represent the bits of the circuit's bitstream that can be modified. All other bits are left out
+        """
+        bitstream = []
+        def handle_bit(bit, *rest):
+            bitstream.append(bit)
+            return None
+        
+        self.__run_at_each_modifiable(handle_bit, hardware_file)
+
         return bitstream
 
     def get_intrinsic_modifiable_bitstream(self):
@@ -658,6 +721,19 @@ class Circuit:
         """
         return self.get_file_intrinsic_modifiable_bitstream(self.__hardware_file)
     
+    def reconstruct_from_bistream(self, bitstream, accessible_columns, routing_type):
+        """
+        Takes this circuit, and replaces all of its modifiable bits with those in
+        the provided bitstream
+        """
+        i = 0
+        def handle_bit(*rest):
+            nonlocal i
+            new_bit = bitstream[i]
+            i += 1
+            return new_bit
+        self.__run_at_each_modifiable(handle_bit, accessible_columns=accessible_columns, routing_type=routing_type)
+
     def copy_genes_from(self, parent, crossover_point):
         """
         Decide which crossover function to used based on configuration

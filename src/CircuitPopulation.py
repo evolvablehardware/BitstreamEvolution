@@ -14,6 +14,8 @@ from subprocess import run
 import random
 import math
 from mmap import mmap
+from Config import Config
+from utilities import wipe_folder
 
 RANDOMIZE_UNTIL_NOT_SET_ERR_MSG = '''\
 RANDOMIZE_UNTIL not set in config.ini, continuing without randomization'''
@@ -44,7 +46,7 @@ ELITE_MAP_SCALE_FACTOR = 50
 
 class CircuitPopulation:
     # SECTION Initialization functions
-    def __init__(self, mcu, config, logger):
+    def __init__(self, mcu, config: Config, logger):
         """ Generates the initial population of circuits with the following arguments
 
                 Args:
@@ -92,11 +94,6 @@ class CircuitPopulation:
         elitism_fraction = config.get_elitism_fraction()
         population_size = config.get_population_size()
         self.__n_elites = int(ceil(elitism_fraction * population_size))
-
-    @staticmethod
-    def __wipe_folder(dir):
-        for f in os.listdir(dir):
-            os.remove(os.path.join(dir, f))
 
     def run_fitness_sensitity(self):
         #create circuit object
@@ -156,9 +153,10 @@ class CircuitPopulation:
 
         # Wipe the current folder, so if we go from 100 circuits in one experiment to 50 in the next,
         # we don't still have 100 (with 50 that we use and 50 residual ones)
-        CircuitPopulation.__wipe_folder(self.__config.get_asc_directory())
-        CircuitPopulation.__wipe_folder(self.__config.get_bin_directory())
-        CircuitPopulation.__wipe_folder(self.__config.get_data_directory())
+        wipe_folder(self.__config.get_asc_directory())
+        wipe_folder(self.__config.get_bin_directory())
+        wipe_folder(self.__config.get_data_directory())
+        wipe_folder(self.__config.get_generations_directory())
 
         self.__multiple_populations = False
         if self.__config.get_init_mode() == "EXISTING_POPULATION":
@@ -361,12 +359,12 @@ class CircuitPopulation:
             fitness = circuit.evaluate_sim_hardware()
         else:
             func = self.__config.get_fitness_func()
-            if func == "PULSE_COUNT":
-                fitness = circuit.evaluate_pulse_count()
+            if func == "PULSE_COUNT" or func == "TOLERANT_PULSE_COUNT" or func == "SENSITIVE_PULSE_COUNT":
+                fitness = circuit.evaluate_pulse_count(record_data = True)
             elif func == "VARIANCE":
-                fitness = circuit.evaluate_variance()
+                fitness = circuit.evaluate_variance(record_data = True)
             elif func == "COMBINED":
-                fitness = circuit.evaluate_combined()
+                fitness = circuit.evaluate_combined(record_data = True)
             #fitness = circuit.evaluate_variance()
         return fitness
 
@@ -403,10 +401,18 @@ class CircuitPopulation:
 
             # Evaluate all the Circuits in this CircuitPopulation.
             start = time()
+
+            # for i in self.__config.get_num_passes():
+            #     for circuit in self.__circuits:
+            #         self.__eval_ckt(circuit)
+            # for circuit in self.__circuits:
+            #     circuit.calculate_fitness_from_data()
+
             for circuit in self.__circuits:
                 # If evaluate returns true, then a circuit has surpassed
                 # the threshold and we are done.
 
+                # fitness = circuit.get_fitness()
                 fitness = self.__eval_ckt(circuit)
 
                 # We've got the fitness we're evaluating the circuit off of, so make sure it gets
@@ -465,9 +471,9 @@ class CircuitPopulation:
 
 
     def __write_to_livedata(self):
-        '''
+        """
         Runs each generation to write data to live data files
-        '''
+        """
         fitness_sum = 0
         for c in self.__circuits:
             fitness_sum = fitness_sum + c.get_fitness()
@@ -520,6 +526,34 @@ class CircuitPopulation:
                             data.append(str(ckt.get_pulses()))
                         live_file3.write(("{}:{}\n").format(self.__current_epoch, ",".join(data)))
 
+            # TODO: Re-enable this. Temporarily disabled in case files get too large
+            #self.__save_generation()
+
+    def __save_generation(self):
+        """
+        Saves the current generation to the generations directory
+        Each generation gets its own file
+        """
+        gen_lines = []
+        # At the top, add the necessary config params such as routing and accessed columns
+        gen_lines.append(self.__config.get_routing_type())
+        gen_lines.append(','.join(self.__config.get_accessed_columns()))
+        # Now, add the bitstream for each circuit on its own line
+        # We want the circuits in number order though
+        sorted_by_index = SortedKeyList(
+            key=lambda ckt: ckt.get_index()
+        )
+        for ckt in self.__circuits:
+            sorted_by_index.add(ckt)
+        # Now add each circuit
+        for ckt in sorted_by_index:
+            bitstream = ckt.get_intrinsic_modifiable_bitstream()
+            bitstring = ''.join(bitstream)
+            gen_lines.add(bitstring)
+        # Now actually write the file
+        path = self.__config.get_generations_directory().joinpath('gen' + str(self.__current_epoch) + '.log')
+        with open(path, 'w') as f:
+            f.writelines(gen_lines)
 
     # SECTION Selection algorithms.
     def __run_classic_tournament(self):
