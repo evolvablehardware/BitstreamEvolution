@@ -363,13 +363,13 @@ def animate_sensitivity(i):
     ax5.tick_params(axis='y', labelcolor='white') 
     ax5.set_ylim(bottom=0)
     
-    ax2.set(xlabel='Trial', ylabel='Fitness', title='Circuit Fitness per Trial')
+    ax2.set(xlabel='Fitness', ylabel='Count', title='Circuit Fitness per Trial')
     ax3.set(xlabel='Trial', ylabel='Fitness', title='Circuit Fitness per Trial')
     if config.get_fitness_func() != "PULSE_COUNT":
-        ax4.set(xlabel='Trial', ylabel='Mean Voltage (Normalized)', title='Circuit Voltage per Trial')
+        ax4.set(xlabel='Mean Voltage (Normalized)', ylabel='Count', title='Circuit Voltage per Trial')
         ax5.set(xlabel='Trial', ylabel='Mean Voltage (Normalized)', title='Circuit Voltage per Trial')
     else:
-        ax4.set(xlabel='Trial', ylabel='Pulses', title='Pulses')
+        ax4.set(xlabel='Pulses', ylabel='Count', title='Pulses')
         ax5.set(xlabel='Trial', ylabel='Pulses', title='Pulses')
 
 
