@@ -6,6 +6,7 @@ from mmap import mmap
 from io import SEEK_CUR
 from statistics import stdev
 import math
+import numpy as np
 
 import typing
 
@@ -218,7 +219,7 @@ class Circuit:
                 fit = 1_000 / (std + 1)
                 print(2, "Consistency std", std, "data", data, "fitness", fit)
         else:
-            fit = min(data)
+            fit = np.prod(data)
         self.__fitness = fit
         self.__data = []
         self.__update_all_live_data()

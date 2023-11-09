@@ -52,13 +52,19 @@ class Microcontroller:
             start = time()
             self.__log_event(3, f"Starting MCU loop... (sample {i+1}/{samples})")
 
+            max_attempts = 5
+            attempts = 0
             while True:
+                attempts = attempts + 1
                 self.__log_event(3, f"Serial reading... (sample {i+1}/{samples})")
                 p = self.__serial.read_until()
                 self.__log_event(3, f"Serial read done (sample {i+1}/{samples})")
                 if (time() - start) >= self.__config.get_mcu_read_timeout():
-                    self.__log_warning(1, f"Time Exceeded. Halting MCU Reading (sample {i+1}/{samples})")
-                    break
+                    self.__log_warning(1, f"Time Exceeded (sample {i+1}/{samples})")
+                    if attempts >= max_attempts:
+                        self.__log_warning(3, f"Exceeded max attempts ({max_attempts}). Halting MCU reading")
+                        buf.append(-1)
+                        break
                 # TODO We should be able to do whatever this line does better
                 # This is currently doing a poor job at REGEXing the MCU serial return - can be done better
                 # It's supposed to handle exceptions from transmission loss (i.e. dropped or additional spaces, shifted colons, etc)
@@ -72,7 +78,7 @@ class Microcontroller:
         # buf now has `samples` entries
         self.__log_event(2, 'Length of buffer:', len(buf))
         if len(buf) == 0:
-            buf.append(0)
+            buf.append(-1000) # This should never happen
         for i in range(len(buf)):
             self.__log_event(2, f'Buffer entry {i}:', buf[i])
             buf[i] = int(buf[i])
