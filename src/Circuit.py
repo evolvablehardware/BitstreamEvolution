@@ -6,6 +6,7 @@ from mmap import mmap
 from io import SEEK_CUR
 from statistics import stdev
 import math
+import numpy as np
 
 import typing
 
@@ -203,7 +204,7 @@ class Circuit:
         When multiple samples have been stored in self.__data, 
         this function will take the lowest fitness and use that as our circuit's fitness
         """
-        fit = min(self.__data)
+        fit = np.prod(self.__data)
         self.__fitness = fit
         self.__data = []
         self.__update_all_live_data()
