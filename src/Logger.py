@@ -5,6 +5,7 @@ from os.path import exists
 from os.path import join
 from os import mkdir
 from shutil import copytree
+from datetime import datetime
 
 # The window dimensions
 LINE_WIDTH = 112
@@ -164,7 +165,8 @@ class Logger:
 
     def log_monitor(self, prefix,  *msg):
         if self.__config.get_save_log():
-            print(prefix, *msg, file=self.__monitor_file)
+            now = datetime.now()
+            print(now, prefix, *msg, file=self.__monitor_file)
 
     def log_event(self, level, *msg):
         if self.__config.get_log_level() >= level:
