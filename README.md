@@ -485,6 +485,7 @@ Below is a list of the options, their description, and their possible values:
 | Analysis Directory | The directory to put the analysis files | Any directory | ./workspace/analysis || Best file | The path to put the asc file of the best performing circuit throughout evolution | Any file path | ./workspace/best.asc |
 | Source Populations Directory | The directory consisting of source populations to use in initialization | Any directory | ./workspace/source_populations |
 | Generations Directory | The directory to put generation files into, when populations are saved each generation. The reconstruct command pulls from this directory | Any directory | ./workspace/generations |
+| Use Overall Best | Whether or not to draw the overall best line in the plots | true or false | true |
 
 #### System parameters
 | Parameter | Description | Possible Values |

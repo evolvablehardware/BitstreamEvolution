@@ -488,6 +488,8 @@ class CircuitPopulation:
             diversity = self.avg_hamming_dist()
         elif self.__config.get_diversity_measure() == "UNIQUE":
             diversity = self.count_unique()
+        elif self.__config.get_diversity_measure() == "NONE":
+            diversity = 0
         # Providing any invalid measure of diversity will make it constantly 0
         # Write the generation data (avg/best/worst fitness, etc) to file
         with open("workspace/bestlivedata.log", "a") as liveFile:

@@ -73,18 +73,20 @@ def animate_epoch(i):
             ds.append(float(d))
     ax2.clear()
     # ax2.set_yscale('symlog')
-    # Plot the overall best before the gen best so the gen best line appears on top
-    ax2.plot(xs, ts, color="#00b87d") # Ovr best Fitness
+    if config.get_use_ovr_best():
+        # Plot the overall best before the gen best so the gen best line appears on top
+        ax2.plot(xs, ts, color="#00b87d") # Ovr best Fitness
     ax2.plot(xs, ys, color="green") # Generation/Epoch Best Fitness
     ax2.plot(xs, zs, color="red") # Generation Worst Fitness
     ax2.plot(xs, ws, color="yellow") # Generation Average Fitness
     ax2.tick_params(axis='y', labelcolor='white')
     
-    ax3.clear()
-    ax3.plot(xs, ds, color="#5a70ed") # Generation diversity measure
-    ax3.tick_params(axis='y', labelcolor='#5a70ed')
-    ax3.set_ylabel('Diversioty', color='#5a70ed')
-    ax3.set_ylim(bottom=0)
+    if config.get_diversity_measure() != "NONE":
+        ax3.clear()
+        ax3.plot(xs, ds, color="#5a70ed") # Generation diversity measure
+        ax3.tick_params(axis='y', labelcolor='#5a70ed')
+        ax3.set_ylabel('Diversioty', color='#5a70ed')
+        ax3.set_ylim(bottom=0)
     
     ax2.set(xlabel='Generation', ylabel='Fitness', title='Best Circuit Fitness per Generation')
 

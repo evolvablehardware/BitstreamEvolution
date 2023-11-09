@@ -153,7 +153,7 @@ class Config:
 	
 	def get_diversity_measure(self):
 		input = self.get_ga_parameters("DIVERSITY_MEASURE")
-		valid_vals = ["HAMMING_DIST", "UNIQUE"]
+		valid_vals = ["HAMMING_DIST", "UNIQUE", "NONE"]
 		self.check_valid_value("diversity measure", input, valid_vals)
 		return input
 	
@@ -332,6 +332,13 @@ class Config:
 		self.check_valid_value("logging level", input, valid_vals)
 		return input
 
+	def get_use_ovr_best(self):
+		try:
+			input = self.get_logging_parameters("show_ovr_best")
+			return input == "true" or input == "True"
+		except NoOptionError:
+			return True	
+
 	# SECTION Getters for system parameters.
 	def get_fpga(self):
 		return self.get_system_parameters("FPGA")
@@ -403,6 +410,7 @@ class Config:
 		self.get_src_pops_dir()
 		self.get_datetime_format()
 		self.get_generations_directory()
+		self.get_use_ovr_best()
 
 		self.get_fpga()
 		self.get_usb_path()
