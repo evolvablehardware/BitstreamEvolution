@@ -18,9 +18,10 @@ HEATMAP_BINS = 32
 
 config = Config("workspace/builtconfig.ini")
 
+# True if the fitness function counts pulses
 def is_pulse_func():
     return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
-            or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT')
+            or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT' or config.get_fitness_func() == 'PULSE_CONSISTENCY')
 
 def animate_generation(i):
     graph_data = open('workspace/alllivedata.log','r').read()
@@ -439,8 +440,8 @@ if has_wf_plot:
 if has_map_plot:
     ani4 = animation.FuncAnimation(fig, animate_map)
 else:
-    pass
-    # ani = animation.FuncAnimation(fig, animate_generation)
+    #pass
+    ani = animation.FuncAnimation(fig, animate_generation)
 
 if has_pop_plot:
     ani6 = animation.FuncAnimation(fig, animate_pops, interval=500)

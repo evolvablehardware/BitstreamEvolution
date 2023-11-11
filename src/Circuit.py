@@ -23,7 +23,7 @@ COMPILE_CMD = "icepack"
 
 def is_pulse_func(config):
     return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
-            or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT')
+            or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT' or config.get_fitness_func() == 'PULSE_CONSISTENCY')
 
 class Circuit:
     """
@@ -213,11 +213,11 @@ class Circuit:
             # Even one would break consistency anyway, we want to force things between the desired range
             if len(invalid_data) > 0:
                 fit = 0
-                print(2, "Data had invalid values, fitness is 0")
+                self.__log_event(2, "Data had invalid values, fitness is 0")
             else:
                 std = stdev(data)
                 fit = 1_000 / (std + 1)
-                print(2, "Consistency std", std, "data", data, "fitness", fit)
+                self.__log_event(2, "Consistency std", std, "data", data, "fitness", fit)
         else:
             fit = np.prod(data)
         self.__fitness = fit
