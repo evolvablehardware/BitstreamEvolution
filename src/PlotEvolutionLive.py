@@ -22,6 +22,10 @@ config = Config("workspace/builtconfig.ini")
 def is_pulse_func():
     return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
             or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT' or config.get_fitness_func() == 'PULSE_CONSISTENCY')
+# Contrary to the above, this only returns true if the target is to count pulses for a target frequency
+def is_pulse_count():
+    return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
+            or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT')
 
 def animate_generation(i):
     graph_data = open('workspace/alllivedata.log','r').read()
@@ -460,7 +464,7 @@ ani8 = animation.FuncAnimation(fig3, anim_heatmap)
 
 ani2 = animation.FuncAnimation(fig, animate_epoch)
 
-if config.get_fitness_func() == "PULSE_COUNT":
+if is_pulse_count():
     fig4 = plt.figure()
     ax9 = fig4.add_subplot(2,1,1)
     anim9 = animation.FuncAnimation(fig4, animate_epoch_pulses)
