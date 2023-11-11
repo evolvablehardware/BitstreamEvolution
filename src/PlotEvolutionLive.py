@@ -29,11 +29,16 @@ def animate_generation(i):
     xs = []
     ys = []
     
+    is_transparent = False
     for line in lines:
         if len(line) > 1:
             x, y, z = line.split(',')
-            xs.append(int(x))
-            ys.append(float(y))
+            all_ys = y.split(';')
+            if len(all_ys) > 1:
+                is_transparent = True
+            for y in all_ys:
+                xs.append(int(x))
+                ys.append(float(y))
     avg = 0.0
     if len(ys) > 0:
         avg = sum(ys)/len(ys)
@@ -41,7 +46,7 @@ def animate_generation(i):
     ax1.clear()
     ax1.set_xlim([0, config.get_population_size()+1])
     ax1.hlines(y=avg, xmin=1, xmax=config.get_population_size(), color="violet", linestyles="dotted")
-    ax1.scatter(xs, ys)
+    ax1.scatter(xs, ys, color=('#f0f8ffdd' if is_transparent else '#f0f8ffff'))
     if is_pulse_func():
         title = 'Circuit Pulses this Generation'
         ylabel = 'Pulses'

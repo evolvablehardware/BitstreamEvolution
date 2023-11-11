@@ -44,6 +44,10 @@ CircuitPathInfo = namedtuple("CircuitPathInfo", ["path", "fitness"])
 
 ELITE_MAP_SCALE_FACTOR = 50
 
+def is_pulse_func(config):
+    return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
+            or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT' or config.get_fitness_func() == 'PULSE_CONSISTENCY')
+
 class CircuitPopulation:
     # SECTION Initialization functions
     def __init__(self, mcu, config: Config, logger):
@@ -470,7 +474,8 @@ class CircuitPopulation:
 
         # We have finished evolution! Lets quickly re-evaluate the top circuit, since it
         # will then output its waveform
-        self.__eval_ckt(self.__circuits[0])
+        if not is_pulse_func(self.__config):
+            self.__eval_ckt(self.__circuits[0])
         # Also, log the name of the top circuit
         self.__log_event(1, "Top Circuit in Final Generation:", self.__circuits[0])
 

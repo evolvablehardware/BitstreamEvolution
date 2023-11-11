@@ -221,8 +221,8 @@ class Circuit:
         else:
             fit = np.prod(data)
         self.__fitness = fit
-        self.__data = []
         self.__update_all_live_data()
+        self.__data = []
         return fit
 
     # TODO Evaluate based on a fitness function defined in the config file
@@ -596,14 +596,21 @@ class Circuit:
                 lines.append("\n")
 
         # Shows pulse count in this chart if in PULSE_COUNT fitness func, and fitness otherwise
-        if is_pulse_func(self.__config):
-            value = self.__pulses
+        # Value is always an array separated by semicolons. If values in __data, then use those. Otherwise, use scalar pulses or fitness
+        if len(self.__data) > 0:
+            # Flatten data
+            print('USEING DATA')
+            value = [str(item) for sublist in self.__data for item in sublist]
         else:
-            value = self.__fitness
+            print('USEING RAW')
+            if is_pulse_func(self.__config):
+                value = [str(self.__pulses)]
+            else:
+                value = [str(self.__fitness)]
 
         lines[index] = "{},{},{}\n".format(
             self.__index, 
-            value,
+            ';'.join(value),
             self.get_file_attribute('src_population')
         )
 
