@@ -599,10 +599,8 @@ class Circuit:
         # Value is always an array separated by semicolons. If values in __data, then use those. Otherwise, use scalar pulses or fitness
         if len(self.__data) > 0:
             # Flatten data
-            print('USEING DATA')
             value = [str(item) for sublist in self.__data for item in sublist]
         else:
-            print('USEING RAW')
             if is_pulse_func(self.__config):
                 value = [str(self.__pulses)]
             else:
