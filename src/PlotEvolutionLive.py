@@ -15,6 +15,7 @@ DO NOT CHANGE THEM HERE
 MAX_VIOLIN_PLOTS = 10
 MAX_HEATMAP_GENS = 50
 HEATMAP_BINS = 32 
+FRAME_INTERVAL = 10000
 
 config = Config("workspace/builtconfig.ini")
 
@@ -401,7 +402,7 @@ if (config.get_simulation_mode() == 'INTRINSIC_SENSITIVITY'):
     ax3 = fig.add_subplot(2, 2, 2)
     ax4 = fig.add_subplot(2, 2, 3)
     ax5 = fig.add_subplot(2, 2, 4)
-    ani = animation.FuncAnimation(fig, animate_sensitivity)
+    ani = animation.FuncAnimation(fig, animate_sensitivity, interval=FRAME_INTERVAL)
     plt.show()
     while True:
         pass
@@ -453,24 +454,24 @@ else:
     ani = animation.FuncAnimation(fig, animate_generation)
 
 if has_pop_plot:
-    ani6 = animation.FuncAnimation(fig, animate_pops, interval=500)
+    ani6 = animation.FuncAnimation(fig, animate_pops, interval=FRAME_INTERVAL)
 
-ani7 = animation.FuncAnimation(fig2, anim_violin_plots)
+ani7 = animation.FuncAnimation(fig2, anim_violin_plots, interval=FRAME_INTERVAL)
 
 fig3 = plt.figure()
 ax8 = fig3.add_subplot(1,1,1)
 max_pulses = 0
-ani8 = animation.FuncAnimation(fig3, anim_heatmap)
+ani8 = animation.FuncAnimation(fig3, anim_heatmap, interval=FRAME_INTERVAL)
 
-ani2 = animation.FuncAnimation(fig, animate_epoch)
+ani2 = animation.FuncAnimation(fig, animate_epoch, interval=FRAME_INTERVAL)
 
 if is_pulse_count():
     fig4 = plt.figure()
     ax9 = fig4.add_subplot(2,1,1)
-    anim9 = animation.FuncAnimation(fig4, animate_epoch_pulses)
+    anim9 = animation.FuncAnimation(fig4, animate_epoch_pulses, interval=FRAME_INTERVAL)
 
     ax10 = fig4.add_subplot(2,1,2)
-    anim10 = animation.FuncAnimation(fig4, anim_violin_plots_pulse)
+    anim10 = animation.FuncAnimation(fig4, anim_violin_plots_pulse, interval=FRAME_INTERVAL)
 
 plt.subplots_adjust(hspace=0.50)
 fig.tight_layout(pad=5.0)

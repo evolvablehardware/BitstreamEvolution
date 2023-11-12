@@ -370,15 +370,44 @@ class Config:
 	
 	def validate_all(self):
 		self.get_simulation_mode()
+		self.validate_fitness_params()
 
+		if self.get_simulation_mode == 'INTRINSIC_SENSITIVITY':
+			self.validate_sensitivity_params()
+		else:
+			self.validate_ga_params()
+			self.validate_init_params()
+			self.validate_stopping_params()
+
+		self.validate_logging_params()
+		
+		if self.get_simulation_mode != 'FULLY_SIM' and self.get_simulation_mode != 'SIM_HARDWARE':
+			self.validate_system_params()
+			self.validate_hardware_params()
+
+		# Make sure user follows our requirements
+		if self.get_fitness_func() == "PULSE_CONSISTENCY" and (self.get_num_passes() * self.get_num_samples()) <= 1:
+			self.__log_error(1, "PULSE_CONSISTENCY function can only be used with multiple samples/passes")
+			exit()
+
+	def is_pulse_func(self):
+		return (self.get_fitness_func() == 'PULSE_COUNT' or self.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
+            	or self.get_fitness_func() == 'SENSITIVE_PULSE_COUNT' or self.get_fitness_func() == 'PULSE_CONSISTENCY')
+
+	def validate_fitness_params(self):
 		self.get_fitness_func()
-		self.get_desired_frequency()
-		self.get_combined_mode()
-		self.get_pulse_weight()
-		self.get_var_weight()
-		self.get_num_samples()
-		self.get_num_passes()
 
+		if self.get_fitness_func() == "COMBINED":
+			self.get_combined_mode()
+			self.get_pulse_weight()
+			self.get_var_weight()
+
+		if self.is_pulse_func():
+			self.get_desired_frequency()
+			self.get_num_samples()
+			self.get_num_passes()
+
+	def validate_ga_params(self):
 		self.get_population_size()
 		self.get_mutation_probability()
 		self.get_crossover_probability()
@@ -387,16 +416,19 @@ class Config:
 		self.get_diversity_measure()
 		self.get_random_injection()
 
+	def validate_init_params(self):
 		self.get_init_mode()
 		self.get_randomization_type()
 		self.get_randomize_threshold()
 		self.get_randomize_mode()
 
+	def validate_stopping_params(self):
 		self.using_n_generations()
 		self.get_n_generations()
 		self.using_target_fitness()
 		self.get_target_fitness()
-	
+
+	def validate_logging_params(self):
 		self.get_log_level()
 		self.get_save_log()
 		self.get_save_plots()
@@ -412,18 +444,19 @@ class Config:
 		self.get_generations_directory()
 		self.get_use_ovr_best()
 
+	def validate_system_params(self):
 		self.get_fpga()
 		self.get_usb_path()
-		
+
+	def validate_hardware_params(self):
 		self.get_routing_type()
 		self.get_serial_baud()
 		self.get_accessed_columns()
 		self.get_mcu_read_timeout()
 
-		# Make sure user follows our requirements
-		if self.get_fitness_func() == "PULSE_CONSISTENCY" and (self.get_num_passes() * self.get_num_samples()) <= 1:
-			self.__log_error(1, "PULSE_CONSISTENCY function can only be used with multiple samples/passes")
-			exit()
+	def validate_sensitivity_params(self):
+		self.get_test_circuit()
+		self.get_sensitivity_trials()
 		
 	def __log_event(self, level, *event):
 		"""
