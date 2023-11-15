@@ -561,10 +561,14 @@ Alternatively, you can run individual tests within a file like so:'
 pytest "test/file.py::function"
 ```
 
+## Tools
 ### Generation Reconstruction
 The code will automatically save each generation to a generation file in the generations directory (which is specified in the config)
 
 You can later reconstruct generations. This will bring the generation back into your ASC directory. This is done by running `python3 src/tools/reconstruct.py [generation #]`
+
+### Pulse Count Histogram
+You can view a histogram of pulse counts for an entire experiment or particular generations using the pulse count histogram tool. Simply run `python3 src/tools/pulse_histogram.py`, and it will show the results for the last-run experiment (pulling from `workspace/pulselivedata.log`). A negative pulse count indicates the the microcontroller timed out five times in a row, and so no reading was recorded.
 
 ## Contributing
 <!--TODO ALIFE2021 define the desired approach -->
