@@ -30,7 +30,7 @@ void setup(){
     //analogReference(EXTERNAL);
     
     pinMode(LED_BUILTIN, OUTPUT);
-    pinMode(interrupt, OUTPUT);
+    pinMode(interrupt, INPUT);
 
     digitalWrite(LED_BUILTIN, LOW);
     Serial.begin(115200);
@@ -39,7 +39,8 @@ void setup(){
     digitalWrite(LED_BUILTIN, HIGH);
 
     // noise suppression on interrupt pin
-    digitalWrite(2, HIGH); 
+    //commented out because it was messing with reading of a0
+    // digitalWrite(2, HIGH); 
 
     // can be changed from RISING to FALLING or CHANGE
     attachInterrupt(digitalPinToInterrupt(interrupt),pulseCounter, RISING); 

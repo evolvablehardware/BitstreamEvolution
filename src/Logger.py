@@ -2,8 +2,10 @@ from sys import stdout
 from datetime import datetime
 from subprocess import CalledProcessError, run
 from os.path import exists
+from os.path import join
 from os import mkdir
-from pathlib import Path
+from shutil import copytree
+from datetime import datetime
 
 # The window dimensions
 LINE_WIDTH = 112
@@ -67,38 +69,48 @@ class Logger:
 
     def __init_monitor(self):
         # Start the monitor
-        self.log_event(1, "Creating the monitor file...")
+        # self.log_event(1, "Creating the monitor file...")
 
         self.log_monitor(1, "{}{}".format(
             "Evolutionary Experiment Monitor".center(LINE_WIDTH),
             "\n"
         ))
-        self.log_monitor(1, "{}\n".format(DOUBLE_HLINE))
-        self.log_monitor(1, "Parameters and updates load during circuit evaluation")
-        self.log_monitor(1, ".\n" * 23)
+        self.log_monitor("", "{}".format(DOUBLE_HLINE))
+        # self.log_monitor(1, "Parameters and updates load during circuit evaluation")
+        # self.log_monitor(1, ".\n" * 23)
+        self.log_monitor("", str(self.__experiment_explanation))
+        self.log_monitor("", "{}".format(DOUBLE_HLINE))
+        self.log_monitor("", self.__config.get_raw_data())
+        self.log_monitor("", "{}".format(DOUBLE_HLINE))
         self.__monitor_file.flush()
 
-        args = TERM_CMD + ["python3", "src/Monitor.py"]
-        try:
-            run(args, check=True, capture_output=True)
-        except OSError as e:
-            self.log_error(1, "An error occured while launching the process")
-        except CalledProcessError as e:
-            self.log_error(1, "An error occured in the launched process")
+        # args = TERM_CMD + ["python3", "src/Monitor.py"]
+        # try:
+        #     run(args, check=True, capture_output=True)
+        # except OSError as e:
+        #     self.log_error(1, "An error occured while launching Monitor.py")
+        # except CalledProcessError as e:
+        #     self.log_error(1, "An error occured in Monitor.py")
+
+        #set up directory for saving files
+        plots_dir = self.__config.get_plots_directory()
+        if not plots_dir.exists():
+            plots_dir.mkdir()
 
         self.log_event(1, "Launching the Live Plot window...")
         args = TERM_CMD + ["python3", "src/PlotEvolutionLive.py"]
         try:
             run(args, check=True, capture_output=True)
         except OSError as e:
-            self.log_error(1, "An error occured while launching the process")
+            self.log_error(1, "An error occured while launching PlotEvolutionLive.py")
         except CalledProcessError as e:
-            self.log_error(1, "An error occured in the launched process")
+            self.log_error(1, "An error occured in PlotEvolutionLive.py")
             self.log_error(1, e)
 
     def __init__(self, config, explanation):
         self.__config = config
-        self.__monitor_file = open(config.get_monitor_file(), "w")
+        self.__config.add_logger(self)
+        self.__monitor_file = open(config.get_log_file(), "w")
         self.__log_file = stdout
         self.__experiment_explanation = explanation
 
@@ -108,19 +120,23 @@ class Logger:
         open("workspace/bestlivedata.log", "w").close()
         open("workspace/waveformlivedata.log", "w").close()
         open("workspace/maplivedata.log", "w").close()
-        open("workspace/poplivedata.log", "w").close()
-        open("workspace/violinlivedata.log", "w").close()
         open("workspace/heatmaplivedata.log", "w").close()
-
+        open("workspace/pulselivedata.log", "w").close()
+        open("workspace/violinlivedata.log", "w").close()
+        open("workspace/poplivedata.log", "w").close()
+        open("workspace/randomizationdata.log", "w").close()
+        open("workspace/fitnesssensitivity.log", "w").close()
         # Determine if we need to the to initialize the analysis and
         # if so, do so.
-        if explanation != "test":
-            self.__init_analysis()
+        # currently removed since we're not currently storing any data, so there's a bunch of empty files and directories
+        # if explanation != "test":
+        #     self.__init_analysis()
 
         # Determine whether we need to launch the monitor and launch it
         # if so.
-        if config.get_launch_monitor():
-            self.__init_monitor()
+        # if config.get_launch_monitor():
+        #     self.__init_monitor()
+        self.__init_monitor()
 
     def log_generation(self, population, epoch_time):
         self.log_event(2, DOUBLE_HLINE)
@@ -147,26 +163,39 @@ class Logger:
         self.log_event(2, DOUBLE_HLINE)
         self.log_event(2, DOUBLE_HLINE)
 
-    def log_monitor(self, level, *msg):
-        if self.__config.get_log_level() >= level:
-            print(*msg, file=self.__monitor_file)
+    def log_monitor(self, prefix,  *msg):
+        if self.__config.get_save_log():
+            now = datetime.now()
+            print(now, prefix, *msg, file=self.__monitor_file)
 
     def log_event(self, level, *msg):
         if self.__config.get_log_level() >= level:
             print(*msg, file=self.__log_file)
+            self.log_monitor("", *msg)
 
     def log_info(self, level, *msg):
         if self.__config.get_log_level() >= level:
             print("INFO: ", OKBLUE, *msg, ENDC, file=self.__log_file)
+            self.log_monitor("INFO: ", *msg)
 
     def log_warning(self, level, *msg):
         if self.__config.get_log_level() >= level:
             print("WARNING: ", WARNING, *msg, ENDC, file=self.__log_file)
+            self.log_monitor("WARNING: ", *msg)
 
     def log_error(self, level, *msg):
         if self.__config.get_log_level() >= level:
             print("ERROR: ", FAIL, *msg, ENDC, file=self.__log_file)
+            self.log_monitor("ERROR: ", *msg)
 
     def log_critical(self, level, *msg):
         if self.__config.get_log_level() >= level:
             print("CRITICAL: ", FAIL, *msg, ENDC, file=self.__log_file)
+            self.log_monitor("CRITICAL: ", *msg)
+
+    def save_workspace(self, directory):
+        self.__monitor_file.close()
+        datetime_format = self.__config.get_datetime_format()
+        current_time = str(datetime.now().strftime(datetime_format))
+        current_time = current_time.replace('/', '-')
+        copytree("./workspace", join(directory, current_time))

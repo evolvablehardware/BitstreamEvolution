@@ -2,6 +2,12 @@ from serial import Serial
 from time import time
 import numpy as np
 
+from Circuit import Circuit
+import typing
+
+from Config import Config
+from Logger import Logger
+
 class Microcontroller:
     def __log_event(self, level, *event):
         self.__logger.log_event(level, *event)
@@ -15,33 +21,76 @@ class Microcontroller:
     def __log_warning(self, level, *warning):
         self.__logger.log_warning(level, *warning)
 
-    def __init__(self, config, logger):
+    def __init__(self, config: Config, logger: Logger):
         self.__logger = logger
         self.__config = config
-        self.__log_event(1, "MCU SETTINGS ================================", config.get_usb_path(), config.get_serial_baud())
-        self.__serial =  Serial(
-            config.get_usb_path(),
-            config.get_serial_baud(),
-        )
-        self.__serial.dtr = False
-        self.__fpga = config.get_fpga()
+        if config.get_simulation_mode() == "FULLY_INTRINSIC" or config.get_simulation_mode() == "INTRINSIC_SENSITIVITY":
+            self.__log_event(1, "MCU SETTINGS ================================", config.get_usb_path(), config.get_serial_baud())
+            self.__serial =  Serial(
+                config.get_usb_path(),
+                config.get_serial_baud(),
+                timeout=config.get_mcu_read_timeout()
+            )
+            self.__serial.dtr = False
 
-    def switch_serial(self):
-        self.__serial.reset_input_buffer()
-        self.__serial.reset_output_buffer()
-        self.__log_event(2, "Switching FPGAs")
-        self.__serial.write(b'4') 
-        if self.__fpga == self.__config.get_fpga():
-            self.__fpga = self.__config.get_fpga2()
-        else :
-            self.__fpga = self.__config.get_fpga()
-        self.__log_event(2, "Done switching FPGAs")
+    def simple_measure_pulses(self, circuit: Circuit, samples: int):
+        """
+        This measure pulses function will poll the MCU a certain number of times,
+        and just put the raw pulse counts recorded into the circuit's data file
+        """
+        data_file = open(circuit.get_data_filepath(), "w")
+        lines = []
+        buf = []
+        for i in range(0, samples):
+            # Poll serial line until START signal
+            self.__log_event(3, f"Starting loop for reading (sample {i+1}/{samples})")
+            
+            self.__serial.reset_input_buffer()
+            self.__serial.reset_output_buffer()
+            # NOTE The MCU is expecting a string '1' if fitness isn't measured this may be why
+            self.__serial.write(b'1') 
+            start = time()
+            self.__log_event(3, f"Starting MCU loop... (sample {i+1}/{samples})")
 
-    def get_fpga(self):
-        return self.__fpga
+            max_attempts = 5
+            attempts = 0
+            while True:
+                attempts = attempts + 1
+                self.__log_event(3, f"Serial reading... (sample {i+1}/{samples})")
+                p = self.__serial.read_until()
+                self.__log_event(3, f"Serial read done (sample {i+1}/{samples})")
+                if (time() - start) >= self.__config.get_mcu_read_timeout():
+                    self.__log_warning(1, f"Time Exceeded (sample {i+1}/{samples})")
+                    if attempts >= max_attempts:
+                        self.__log_warning(3, f"Exceeded max attempts ({max_attempts}). Halting MCU reading")
+                        buf.append(-1)
+                        break
+                # TODO We should be able to do whatever this line does better
+                # This is currently doing a poor job at REGEXing the MCU serial return - can be done better
+                # It's supposed to handle exceptions from transmission loss (i.e. dropped or additional spaces, shifted colons, etc)
+                self.__log_event(3, "Pulled", p, f"from MCU (sample {i+1}/{samples})")
+                if (p != b"" and b":" not in p and b"START" not in p and b"FINISH" not in p and b" " not in p):
+                    p = p.translate(None, b"\r\n")
+                    buf.append(p)
+                    break
 
-    def measure_pulses(self, circuit):
+            end = time() - start
+        # buf now has `samples` entries
+        self.__log_event(2, 'Length of buffer:', len(buf))
+        if len(buf) == 0:
+            buf.append(-1000) # This should never happen
+        for i in range(len(buf)):
+            self.__log_event(2, f'Buffer entry {i}:', buf[i])
+            buf[i] = int(buf[i])
+            lines.append(str(buf[i]) + "\n")
+
+        data_file.writelines(lines)
+        data_file.close()
+
+    def measure_pulses(self, circuit: Circuit):
         samples = 2
+        if self.__config.get_simulation_mode() == "INTRINSIC_SENSITIVITY":
+            samples = 1
 
         # TODO Use pathlib here
         # Begin monitoring on load
@@ -61,10 +110,11 @@ class Microcontroller:
 
             while True:
                 self.__log_event(3, "Serial reading...")
-                p = self.__serial.read()
+                p = self.__serial.read_until()
                 self.__log_event(3, "Serial read done")
                 if (time() - start) >= self.__config.get_mcu_read_timeout():
                     self.__log_warning(1, "Time Exceeded. Halting MCU Reading")
+                    buf.append(0)
                     break
                 # TODO We should be able to do whatever this line does better
                 # This is currently doing a poor job at REGEXing the MCU serial return - can be done better
@@ -78,9 +128,8 @@ class Microcontroller:
             end = time() - start
 
         buf_dif = 0
-        weighted_count = 0
+        weighted_count = int(buf[0])
 
-        print(len(buf))
         for i in range(0, len(buf)):
             if buf[i] == b'':
                 buf[i] = 0
@@ -147,7 +196,6 @@ class Microcontroller:
                 break
 
         self.__log_event(2, "Finished reading microcontroller. Logging data to file.")
-        self.__log_event(5, "Waveform: ", buf)
 
         for i in buf:
             if b"FINISHED" not in i:

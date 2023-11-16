@@ -14,6 +14,8 @@ from subprocess import run
 import random
 import math
 from mmap import mmap
+from Config import Config
+from utilities import wipe_folder
 
 RANDOMIZE_UNTIL_NOT_SET_ERR_MSG = '''\
 RANDOMIZE_UNTIL not set in config.ini, continuing without randomization'''
@@ -42,9 +44,13 @@ CircuitPathInfo = namedtuple("CircuitPathInfo", ["path", "fitness"])
 
 ELITE_MAP_SCALE_FACTOR = 50
 
+def is_pulse_func(config):
+    return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
+            or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT' or config.get_fitness_func() == 'PULSE_CONSISTENCY')
+
 class CircuitPopulation:
     # SECTION Initialization functions
-    def __init__(self, mcu, config, logger):
+    def __init__(self, mcu, config: Config, logger):
         """ Generates the initial population of circuits with the following arguments
 
                 Args:
@@ -93,18 +99,34 @@ class CircuitPopulation:
         population_size = config.get_population_size()
         self.__n_elites = int(ceil(elitism_fraction * population_size))
 
-    @staticmethod
-    def __wipe_folder(dir):
-        for f in os.listdir(dir):
-            os.remove(os.path.join(dir, f))
+    def run_fitness_sensitity(self):
+        #create circuit object
+        self.__log_info(1, "Creating circuit object for fitness sensitivity experiment")
+        ckt = Circuit(
+            1,
+            "hardware1",
+            self.__config.get_test_circuit(),
+            self.__microcontroller,
+            self.__logger,
+            self.__config,
+            self.__rand,
+            self.__generate_sine_funcs()
+        )
+        
+        #loop through trials and log fitness
+        for i in range(self.__config.get_sensitivity_trials()):
+            fitness = self.__eval_ckt(ckt)
+            with open("workspace/fitnesssensitivity.log", "a") as live_file:
+                if self.__config.get_fitness_func() == "PULSE_COUNT":
+                    data2 = ckt.get_pulses()
+                else:
+                    data2 = ckt.get_mean_voltage()
+                live_file.write(("{}:{},{}\n").format(str(i), fitness, data2))
+            self.__log_event(2, "Trial " + str(i) + " done. Fitness recorded and logged to file: " + str(fitness))
 
-    def populate(self):
-        """
-        Creates initial population.
-        """
-        # Always creates a circuit with the seed file, but if we have certain randomization
-        # modes then perform necessary operations
+        self.__log_event(1, "Fitness sensitivity trails done.")
 
+    def __generate_sine_funcs(self):
         sine_funcs = []
         self.__sine_strs = []
         for i in range(100):
@@ -122,12 +144,23 @@ class CircuitPopulation:
             sine_funcs.append((lambda x,a=a,b=b,c=c,d=d: a * math.sin(b * (x + c)) + d))
             sine_str = "Sine function: " + str(i) + " | y = " + str(a) + " * sin(" + str(b) + " * (x + " + str(c) + ")) + " + str(d)
             self.__sine_strs.append(sine_str)
+        return sine_funcs
+
+
+    def populate(self):
+        """
+        Creates initial population.
+        """
+        # Always creates a circuit with the seed file, but if we have certain randomization
+        # modes then perform necessary operations
+        sine_funcs = self.__generate_sine_funcs();
 
         # Wipe the current folder, so if we go from 100 circuits in one experiment to 50 in the next,
         # we don't still have 100 (with 50 that we use and 50 residual ones)
-        CircuitPopulation.__wipe_folder(self.__config.get_asc_directory())
-        CircuitPopulation.__wipe_folder(self.__config.get_bin_directory())
-        CircuitPopulation.__wipe_folder(self.__config.get_data_directory())
+        wipe_folder(self.__config.get_asc_directory())
+        wipe_folder(self.__config.get_bin_directory())
+        wipe_folder(self.__config.get_data_directory())
+        wipe_folder(self.__config.get_generations_directory())
 
         self.__multiple_populations = False
         if self.__config.get_init_mode() == "EXISTING_POPULATION":
@@ -220,7 +253,7 @@ class CircuitPopulation:
             self.__randomize_until_pulses()
         elif self.__config.get_randomization_type() == "VARIANCE":
             self.__log_info(1, "VARIANCE randomization mode selected.")
-            if self.__config.get_variance_threshold() <= 0:
+            if self.__config.get_randomize_threshold() <= 0:
                 self.log_error(INVALID_VARIANCE_ERR_MSG)
             else:
                 self.__randomize_until_variance()
@@ -244,12 +277,17 @@ class CircuitPopulation:
             # not revert to the original seed-hardware until restarting
             self.__log_event(3, "Randomizing to generate pulses")
             for circuit in self.__circuits:
-                circuit.randomize_bits()
-                fitness = circuit.evaluate_pulse_count()
-                var_th = self.__config.get_variance_threshold()
-                if (fitness > var_th):
+                if self.__config.get_randomize_mode() == 'RANDOM':
+                    circuit.randomize_bits()
+                else:
+                    circuit.mutate()
+
+                circuit.evaluate_pulse_count()
+                pulses = circuit.get_pulses()
+                th = self.__config.get_randomize_threshold()
+                if (pulses > th):
                     no_pulses_generated = False
-                    self.__log_info(1, "Pulse generated! Exiting randomization. Fitness:", fitness)
+                    self.__log_info(1, "Pulse generated! Exiting randomization. Pulses recorded:", pulses)
                     break
     
     def __randomize_until_voltage(self):
@@ -259,7 +297,11 @@ class CircuitPopulation:
         while True:
             self.__log_event(3, "Randomizing to get voltage")
             for circuit in self.__circuits:
-                circuit.randomize_bits()
+                if self.__config.get_randomize_mode() == 'RANDOM':
+                    circuit.randomize_bits()
+                else:
+                    circuit.mutate()
+
                 mean_voltage = circuit.measure_mean_voltage()
                 if (abs(mean_voltage - 341) < 10):
                     self.__log_info(1, "Voltage Achieved! Exiting randomization. Voltage:", mean_voltage)
@@ -272,13 +314,24 @@ class CircuitPopulation:
         Randomizes population until minimum variance is found
         """
         # Variance threshold is the desired variance
+        bestVariance = 0
         variance = 0
-        while variance < self.__config.get_variance_threshold():
+        while bestVariance < self.__config.get_randomize_threshold():
             self.__log_event(3, "Randomizing to generate variance")
             for circuit in self.__circuits:
                 circuit.randomize_bits()
                 variance = circuit.evaluate_variance()
                 self.__log_info(3, "Variance generated:", variance)
+
+                with open("workspace/randomizationdata.log", "a") as liveFile:
+                    liveFile.write(str(variance) + "\n")
+
+                if variance > bestVariance:
+                    self.__log_info(3, "New best variance: ", variance)
+                    bestVariance = variance
+                    self.__overall_best_circuit_info = CircuitInfo(str(circuit), variance)
+                    copyfile(circuit.get_hardware_file_path(), self.__config.get_best_file())
+                    break
 
         self.__log_info(3, "Variance generated! Exiting randomization. Fitness:", variance)
 
@@ -300,7 +353,7 @@ class CircuitPopulation:
                 should_continue = False
         return should_continue
 
-    def __eval_ckt(self, circuit):
+    def __eval_ckt(self, circuit, record_data = False):
         # Biggest difference between Fully Instrinsic and Hardware Sim: The fitness evaluation
         fitness = 0
         if self.__config.get_simulation_mode() == "FULLY_SIM":
@@ -310,13 +363,13 @@ class CircuitPopulation:
             fitness = circuit.evaluate_sim_hardware()
         else:
             func = self.__config.get_fitness_func()
-            if func == "PULSE_COUNT":
-                fitness = circuit.evaluate_pulse_count()
+            if func == "PULSE_COUNT" or func == "TOLERANT_PULSE_COUNT" or func == "SENSITIVE_PULSE_COUNT" or func == "PULSE_CONSISTENCY":
+                # The PULSE_CONSISTENCY function will call pulse count eval, which will save pulses off for later
+                fitness = circuit.evaluate_pulse_count(record_data = record_data)
             elif func == "VARIANCE":
-                fitness = circuit.evaluate_variance()
+                fitness = circuit.evaluate_variance(record_data = record_data)
             elif func == "COMBINED":
-                fitness = circuit.evaluate_combined()
-            #fitness = circuit.evaluate_variance()
+                fitness = circuit.evaluate_combined(record_data = record_data)
         return fitness
 
     def evolve(self):
@@ -352,19 +405,34 @@ class CircuitPopulation:
 
             # Evaluate all the Circuits in this CircuitPopulation.
             start = time()
+
+            is_multi_pass = (self.__config.get_num_passes() > 1)
+            if is_multi_pass:
+                for i in range(self.__config.get_num_passes()):
+                    # Shuffle the circuits each time
+                    circuits = np.random.permutation(self.__circuits)
+                    for circuit in circuits:
+                        self.__eval_ckt(circuit, record_data = True)
+                # We can keep the circuits in order after this
+                for circuit in self.__circuits:
+                    circuit.calculate_fitness_from_data()
+
             for circuit in self.__circuits:
                 # If evaluate returns true, then a circuit has surpassed
                 # the threshold and we are done.
 
-                fitness = self.__eval_ckt(circuit)
+                # fitness = circuit.get_fitness()
+                fitness = circuit.get_fitness() if is_multi_pass else self.__eval_ckt(circuit)
 
                 # We've got the fitness we're evaluating the circuit off of, so make sure it gets
                 # added to the circuit's file attributes
-                circuit.set_file_attribute("fitness", str(fitness))
+                # Only if we are in a sim mode with circuit files
+                if self.__config.get_simulation_mode() != 'FULLY_SIM':
+                    circuit.set_file_attribute("fitness", str(fitness))
 
                 # Commented out for now while we test
                 # Pretty sure this was originally for pulse count only, leaving it commented out since things are working right now
-                '''if fitness > self.__config.get_variance_threshold():
+                '''if fitness > self.__config.get_randomize_threshold():
                     self.__log_event(1, "{} fitness: {}".format(circuit, fitness))
                     return'''
                 reevaulated_circuits.add(circuit)
@@ -410,13 +478,16 @@ class CircuitPopulation:
 
         # We have finished evolution! Lets quickly re-evaluate the top circuit, since it
         # will then output its waveform
-        self.__eval_ckt(self.__circuits[0])
+        if not is_pulse_func(self.__config):
+            self.__eval_ckt(self.__circuits[0])
+        # Also, log the name of the top circuit
+        self.__log_event(1, "Top Circuit in Final Generation:", self.__circuits[0])
 
 
     def __write_to_livedata(self):
-        '''
+        """
         Runs each generation to write data to live data files
-        '''
+        """
         fitness_sum = 0
         for c in self.__circuits:
             fitness_sum = fitness_sum + c.get_fitness()
@@ -426,6 +497,8 @@ class CircuitPopulation:
             diversity = self.avg_hamming_dist()
         elif self.__config.get_diversity_measure() == "UNIQUE":
             diversity = self.count_unique()
+        elif self.__config.get_diversity_measure() == "NONE":
+            diversity = 0
         # Providing any invalid measure of diversity will make it constantly 0
         # Write the generation data (avg/best/worst fitness, etc) to file
         with open("workspace/bestlivedata.log", "a") as liveFile:
@@ -455,6 +528,48 @@ class CircuitPopulation:
                 for ckt in self.__circuits:
                     fits.append(str(ckt.get_fitness()))
                 live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(fits)))
+            
+            if self.__config.get_simulation_mode() == "FULLY_INTRINSIC":
+                if self.__config.get_fitness_func() not in [ "PULSE_COUNT", "TOLERANT_PULSE_COUNT", "SENSITIVE_PULSE_COUNT" ]:
+                    with open("workspace/heatmaplivedata.log", "a") as live_file2:
+                        best = self.__circuits[0]
+                        data = best.get_waveform()
+                        live_file2.write(("{}:{}\n").format(self.__current_epoch, ",".join(data)))
+                else:
+                    with open("workspace/pulselivedata.log", "a") as live_file3:
+                        data = []    
+                        for ckt in self.__circuits:
+                            data.append(str(ckt.get_pulses()))
+                        live_file3.write(("{}:{}\n").format(self.__current_epoch, ",".join(data)))
+
+            # TODO: Re-enable this. Temporarily disabled in case files get too large
+            #self.__save_generation()
+
+    def __save_generation(self):
+        """
+        Saves the current generation to the generations directory
+        Each generation gets its own file
+        """
+        gen_lines = []
+        # At the top, add the necessary config params such as routing and accessed columns
+        gen_lines.append(self.__config.get_routing_type())
+        gen_lines.append(','.join(self.__config.get_accessed_columns()))
+        # Now, add the bitstream for each circuit on its own line
+        # We want the circuits in number order though
+        sorted_by_index = SortedKeyList(
+            key=lambda ckt: ckt.get_index()
+        )
+        for ckt in self.__circuits:
+            sorted_by_index.add(ckt)
+        # Now add each circuit
+        for ckt in sorted_by_index:
+            bitstream = ckt.get_intrinsic_modifiable_bitstream()
+            bitstring = ''.join(bitstream)
+            gen_lines.add(bitstring)
+        # Now actually write the file
+        path = self.__config.get_generations_directory().joinpath('gen' + str(self.__current_epoch) + '.log')
+        with open(path, 'w') as f:
+            f.writelines(gen_lines)
 
         if (self.__current_epoch > 0):
             with open("workspace/heatmaplivedata.log", "a") as live_file:
