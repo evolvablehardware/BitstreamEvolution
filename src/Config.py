@@ -345,6 +345,10 @@ class Config:
 
 	def get_usb_path(self):
 		return self.get_system_parameters("USB_PATH")
+	
+	def get_upload_to_arduino(self):
+		input = self.get_system_parameters("auto_upload_to_arduino")
+		return input == "true" or input == "True"
 		
 	# SECTION Getters for hardware parameters
 	def get_routing_type(self):

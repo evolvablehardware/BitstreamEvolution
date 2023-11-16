@@ -41,6 +41,12 @@ class Evolution:
         if experiment_description is None:
             experiment_description = input("Explain this experiment: ")
 
+        # compiling and uploading to the Arduino
+        if config.get_upload_to_arduino():
+            c = run(["./arduino-cli", "compile", "-b", "arduino:avr:nano", "data/ReadSignal/ReadSignal.ino"])
+            usb_port = config.get_usb_path()
+            u = run(["./arduino-cli", "upload", "-b", "arduino:avr:nano", "-p", usb_port, "data/ReadSignal/ReadSignal.ino"])
+
         ## Run Evolution
         logger = Logger(config, experiment_description)
         # logger.log_info(1, args) - Not sure how to log arguments. This was my attempt to do so.
