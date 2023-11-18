@@ -13,8 +13,7 @@ DO NOT CHANGE THEM HERE
 """
 
 MAX_VIOLIN_PLOTS = 10
-MAX_HEATMAP_GENS = 50
-HEATMAP_BINS = 32 
+HEATMAP_BINS = 40 
 FRAME_INTERVAL = 10000
 
 config = Config("workspace/builtconfig.ini")
@@ -84,6 +83,10 @@ def animate_epoch(i):
             ds.append(float(d))
     ax2.clear()
     # ax2.set_yscale('symlog')
+    if config.using_transfer_interval():
+        for i in range(0,len(lines),100):
+            ax2.axvline(x=i, color="white", linestyle="dashed")
+
     if config.get_use_ovr_best():
         # Plot the overall best before the gen best so the gen best line appears on top
         ax2.plot(xs, ts, color="#00b87d") # Ovr best Fitness
@@ -270,6 +273,9 @@ def anim_violin_plots(i):
 
     if len(collections) > 0:
         ax7.clear()
+        if config.using_transfer_interval():
+            for i in range(0,len(lines),100):
+                ax7.axvline(x=i, color="white", linestyle="dashed")
         ax7.violinplot(collections, positions=gens, widths=widths)
 
     if(config.get_save_plots()):
@@ -304,6 +310,9 @@ def anim_violin_plots_pulse(i):
     if len(collections) > 0:
         ax10.clear()
         ax10.violinplot(collections, positions=gens, widths=widths)
+        if config.using_transfer_interval():
+            for i in range(0,len(lines),100):
+                ax10.axvline(x=i, color="white", linestyle="dashed")
         ax10.hlines(y=config.get_desired_frequency(), xmin=1, xmax=len(lines), color="violet", linestyles="dotted")  
         ax10.set(xlabel='Generation', ylabel='Pulses')
 
@@ -335,6 +344,10 @@ def anim_heatmap(i):
         ax8.set(xlabel='Generation', ylabel='Pulses')
     else:
         ax8.set(xlabel='Generation', ylabel='Voltage (Normalized)')
+
+    if config.using_transfer_interval():
+            for i in range(0,len(lines),100):
+                ax8.axvline(x=i, color="white", linestyle="dashed")
 
     if(config.get_save_plots()):
         fig3.savefig(plots_dir.joinpath("heatmap.png"))
