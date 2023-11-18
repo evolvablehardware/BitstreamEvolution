@@ -32,6 +32,22 @@ class Microcontroller:
                 timeout=config.get_mcu_read_timeout()
             )
             self.__serial.dtr = False
+            self.__fpga = config.get_fpga()
+
+    def switch_serial(self):
+        self.__serial.reset_input_buffer()
+        self.__serial.reset_output_buffer()
+        self.__serial.write(b'4') 
+        if self.__fpga == self.__config.get_fpga():
+            self.__log_event(2, "Switching to FPGA 2")
+            self.__fpga = self.__config.get_fpga2()
+        else :
+            self.__log_event(2, "Switching to FPGA 1")
+            self.__fpga = self.__config.get_fpga()
+        self.__log_event(2, "Done switching FPGAs")
+    
+    def get_fpga(self):
+        return self.__fpga
 
     def simple_measure_pulses(self, circuit: Circuit, samples: int):
         """

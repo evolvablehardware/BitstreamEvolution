@@ -114,13 +114,15 @@ void loop(){
 
       else if(x == switchConstant)
       {
+        detachInterrupt(digitalPinToInterrupt(interrupt));
         if(analogPin == A0) {
           analogPin = A6;
-          interrupt = 12;
+          interrupt = 3;
         } else {
           analogPin = A0;
           interrupt = 2;
         }
+        attachInterrupt(digitalPinToInterrupt(interrupt),pulseCounter, RISING);
       }
     }
 }
