@@ -81,7 +81,7 @@ the packages can all be installed at once with the following commands:
 ```bash
 sudo apt update && sudo apt upgrade  # Optional, but recommended 
 sudo apt install build-essential clang bison flex libreadline-dev gawk tcl-dev libffi-dev libftdi-dev mercurial graphviz xdot \ 
-pkg-config python3 python3-pip libboost-all-dev cmake make
+pkg-config python3 python3-pip libboost-all-dev cmake make yosys arachne-pnr
 ```
 The Python libraries can be installed in one command in any Linux
 distribution as follows:

@@ -15,6 +15,7 @@ import random
 import math
 from mmap import mmap
 from Config import Config
+from ascTemplateBuilder import ascTemplateBuilder
 from utilities import wipe_folder
 
 RANDOMIZE_UNTIL_NOT_SET_ERR_MSG = '''\
@@ -192,6 +193,12 @@ class CircuitPopulation:
                 all_subdir_circuits.append(subdir_circuits)
             subdirectory_index = 0
 
+        # if we're using custom i/o pin configurations
+        # need to configure to io tiles of the seed circuit
+        if self.__config.get_using_configurable_io():
+            template_builder = ascTemplateBuilder(self.__config, self.__logger)
+            template_builder.configure_seed_io(SEED_HARDWARE_FILEPATH)
+
         for index in range(1, self.__config.get_population_size() + 1):
             file_name = "hardware" + str(index)
             if self.__config.get_init_mode() == "EXISTING_POPULATION":
@@ -202,6 +209,7 @@ class CircuitPopulation:
                 subdirectory_index = (subdirectory_index + 1) % len(all_subdir_circuits)
             else:
                 seedArg = SEED_HARDWARE_FILEPATH
+
             ckt = Circuit(
                 index,
                 file_name,

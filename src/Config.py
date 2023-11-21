@@ -362,13 +362,31 @@ class Config:
 
 	def get_accessed_columns(self):
 		return self.get_hardware_parameters("ACCESSED_COLUMNS").split(",")
+	
+	def get_using_configurable_io(self):
+		input = self.get_hardware_parameters("configurable_io")
+		return input == "true" or input == "True"
+	
+	def get_input_pins(self):
+		valid_vals = [112, 113, 114, 115, 116, 117, 118, 119, 44, 45, 47, 48, 56, 60, 61, 62]
+		pins = self.get_hardware_parameters("INPUT_PINS").split(",")
+		for pin in pins:
+			self.check_valid_value("input pin", pin, valid_vals)
+		return pins
+	
+	def get_output_pins(self):
+		valid_vals = [112, 113, 114, 115, 116, 117, 118, 119, 44, 45, 47, 48, 56, 60, 61, 62]
+		pins = self.get_hardware_parameters("OUTPUT_PINS").split(",")
+		for pin in pins:
+			self.check_valid_value("output pin", pin, valid_vals)
+		return pin
 
 	def get_mcu_read_timeout(self):
 		return float(self.get_hardware_parameters("MCU_READ_TIMEOUT"))
 
 	def check_valid_value(self, param_name, user_input, allowed_values):
 		if not user_input in allowed_values:
-			self.__log_error(1, "Invalid " + param_name + " '" + str(user_input) + "'. Valid selection types are: " + 
+			self.__log_error(1, "Invalid " + param_name + " '" + str(user_input) + "'. Valid parameters are: " + 
 			", ".join(list(map(lambda x: str(x), allowed_values))))
 			exit()
 	
@@ -457,6 +475,9 @@ class Config:
 		self.get_serial_baud()
 		self.get_accessed_columns()
 		self.get_mcu_read_timeout()
+		if self.get_using_configurable_io():
+			self.get_input_pins()
+			self.get_output_pins()
 
 	def validate_sensitivity_params(self):
 		self.get_test_circuit()
