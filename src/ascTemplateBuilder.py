@@ -42,13 +42,13 @@ class ascTemplateBuilder:
 
         # wire together inputs and outputs
         # not sure if this is necessary
-        if(len(inputs) > 0):
-            for pin in outputs:
-                module += "\t assign p" + str(pin) + " = "
-                for p in inputs:
-                    module += "p" + str(p) + " | "
-                module = module[0:len(module)-3]
-                module += ";\n"
+        # if(len(inputs) > 0):
+        #     for pin in outputs:
+        #         module += "\t assign p" + str(pin) + " = "
+        #         for p in inputs:
+        #             module += "p" + str(p) + " | "
+        #         module = module[0:len(module)-3]
+        #         module += ";\n"
         
         # end module
         module += "endmodule"

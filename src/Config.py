@@ -371,15 +371,15 @@ class Config:
 		valid_vals = [112, 113, 114, 115, 116, 117, 118, 119, 44, 45, 47, 48, 56, 60, 61, 62]
 		pins = self.get_hardware_parameters("INPUT_PINS").split(",")
 		for pin in pins:
-			self.check_valid_value("input pin", pin, valid_vals)
+			self.check_valid_value("input pin", int(pin), valid_vals)
 		return pins
 	
 	def get_output_pins(self):
 		valid_vals = [112, 113, 114, 115, 116, 117, 118, 119, 44, 45, 47, 48, 56, 60, 61, 62]
 		pins = self.get_hardware_parameters("OUTPUT_PINS").split(",")
 		for pin in pins:
-			self.check_valid_value("output pin", pin, valid_vals)
-		return pin
+			self.check_valid_value("output pin", int(pin), valid_vals)
+		return pins
 
 	def get_mcu_read_timeout(self):
 		return float(self.get_hardware_parameters("MCU_READ_TIMEOUT"))

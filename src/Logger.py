@@ -126,6 +126,10 @@ class Logger:
         open("workspace/poplivedata.log", "w").close()
         open("workspace/randomizationdata.log", "w").close()
         open("workspace/fitnesssensitivity.log", "w").close()
+        if not exists("workspace/template"):
+            mkdir("workspace/template")
+        if not exists("workspace/plots"):
+            mkdir("workspace/plots")
         # Determine if we need to the to initialize the analysis and
         # if so, do so.
         # currently removed since we're not currently storing any data, so there's a bunch of empty files and directories
