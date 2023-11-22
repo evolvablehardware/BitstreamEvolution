@@ -474,7 +474,7 @@ class CircuitPopulation:
 
             if self.__config.using_transfer_interval():
                 if self.__current_epoch % self.__config.get_transfer_interval() == 0:
-                    self.__microcontroller.switch_serial()
+                    self.__microcontroller.switch_fpga()
 
         # We have finished evolution! Lets quickly re-evaluate the top circuit, since it
         # will then output its waveform
