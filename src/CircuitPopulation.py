@@ -195,9 +195,11 @@ class CircuitPopulation:
 
         # if we're using custom i/o pin configurations
         # need to configure to io tiles of the seed circuit
+        template = SEED_HARDWARE_FILEPATH
         if self.__config.get_using_configurable_io():
+            template = "workspace/template/seed.asc"
             template_builder = ascTemplateBuilder(self.__config, self.__logger)
-            template_builder.configure_seed_io(SEED_HARDWARE_FILEPATH)
+            template_builder.configure_seed_io(SEED_HARDWARE_FILEPATH, template)
 
         for index in range(1, self.__config.get_population_size() + 1):
             file_name = "hardware" + str(index)
@@ -208,7 +210,7 @@ class CircuitPopulation:
                 seedArg = all_subdir_circuits[subdirectory_index].pop(0).path
                 subdirectory_index = (subdirectory_index + 1) % len(all_subdir_circuits)
             else:
-                seedArg = SEED_HARDWARE_FILEPATH
+                seedArg = template
 
             ckt = Circuit(
                 index,

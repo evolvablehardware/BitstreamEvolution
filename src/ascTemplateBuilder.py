@@ -1,12 +1,13 @@
 import os
 from mmap import mmap
+from shutil import copyfile
 
 class ascTemplateBuilder:
     def __init__(self, config, logger):
         self.__config = config
         self.__logger = logger
 
-    def configure_seed_io(self, seed_hardware):
+    def configure_seed_io(self, seed_hardware, dest):
         self.__log_event(2, "Configuring the io tiles of the seed circuit")
         verilog_file = "workspace/template/template.v"
         pcf_file = "workspace/template/template.pcf"
@@ -24,7 +25,7 @@ class ascTemplateBuilder:
         os.system("arachne-pnr -d 1k -o " + asc_file + " -p " + pcf_file + " " + blif_file)
         self.__log_event(4, "Generated asc file for configurable io")
 
-        self.overwritewrite_io(asc_file, seed_hardware)
+        self.overwritewrite_io(asc_file, seed_hardware, dest)
         self.__log_event(2, "Finished configuring the io tiles of the seed circuit")
 
     def generate_verilog(self, file, inputs, outputs):
@@ -74,36 +75,38 @@ class ascTemplateBuilder:
         self.__log_event(4, "Generated pcf file for configurable io")
 
 
-    def overwritewrite_io(self, src, dest):
+    def overwritewrite_io(self, io_src, logic_src, dest):
         '''
         Overwrite the io tiles of the destination file with the io tiles of the source files
         '''
         # use mmaps to improve perfomance
-        src = open(src, "r+")
-        src_file = mmap(src.fileno(), 0)
-        src.close()
+        io_src = open(io_src, "r+")
+        io_src_file = mmap(io_src.fileno(), 0)
+        io_src.close()
+
+        copyfile(logic_src, dest)
         dest = open(dest, "r+")
-        dest_file = mmap(dest.fileno(), 0)
+        dest_file = mmap(dest.fileno(),0)
         dest.close()
         
         #find first io tile
-        src_tile = src_file.find(b".io_tile")
+        src_tile = io_src_file.find(b".io_tile")
         dest_tile = dest_file.find(b".io_tile")
         while src_tile > 0:
             src_pos = src_tile + len(".io_tile")
             dest_pos = dest_tile + len(".io_tile")
 
             # calculate size until the next tile
-            tile_start = src_file.find(b"\n", src_tile) + 1
-            tile_end = src_file.find(b".", tile_start + 1)
+            tile_start = io_src_file.find(b"\n", src_tile) + 1
+            tile_end = io_src_file.find(b".", tile_start + 1)
             tile_size = tile_end - tile_start + 1
 
             # overwrite the existing io tile
-            data = src_file[src_pos:src_pos + tile_size]
+            data = io_src_file[src_pos:src_pos + tile_size]
             dest_file[dest_pos:dest_pos + tile_size] = data
 
             # find next io tile (will be -1 when we're out of tiles)
-            src_tile = src_file.find(b".io_tile", src_tile + 1)
+            src_tile = io_src_file.find(b".io_tile", src_tile + 1)
             dest_tile = dest_file.find(b".io_tile", dest_tile + 1)
 
     def __log_event(self, level, *event):
