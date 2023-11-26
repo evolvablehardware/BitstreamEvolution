@@ -84,7 +84,7 @@ def animate_epoch(i):
     ax2.clear()
     # ax2.set_yscale('symlog')
     if config.using_transfer_interval():
-        for i in range(0,len(lines),100):
+        for i in range(0,len(lines),config.get_transfer_interval()):
             ax2.axvline(x=i, color="white", linestyle="dashed")
 
     if config.get_use_ovr_best():
@@ -134,6 +134,10 @@ def animate_epoch_pulses(i):
 
     ax9.hlines(y=config.get_desired_frequency(), xmin=1, xmax=len(lines), color="violet", linestyles="dotted")  
     ax9.set(xlabel='Generation', ylabel='Pulses', title='Best Circuit Pulse Count per Generation')
+
+    if config.using_transfer_interval():
+        for i in range(0,len(lines),config.get_transfer_interval()):
+            ax9.axvline(x=i, color="white", linestyle="dashed")
 
     if(config.get_save_plots()):
         fig4.savefig(plots_dir.joinpath("pulses.png"))
@@ -274,7 +278,7 @@ def anim_violin_plots(i):
     if len(collections) > 0:
         ax7.clear()
         if config.using_transfer_interval():
-            for i in range(0,len(lines),100):
+            for i in range(0,len(lines),config.get_transfer_interval()):
                 ax7.axvline(x=i, color="white", linestyle="dashed")
         ax7.violinplot(collections, positions=gens, widths=widths)
 
@@ -311,7 +315,7 @@ def anim_violin_plots_pulse(i):
         ax10.clear()
         ax10.violinplot(collections, positions=gens, widths=widths)
         if config.using_transfer_interval():
-            for i in range(0,len(lines),100):
+            for i in range(0,len(lines),config.get_transfer_interval()):
                 ax10.axvline(x=i, color="white", linestyle="dashed")
         ax10.hlines(y=config.get_desired_frequency(), xmin=1, xmax=len(lines), color="violet", linestyles="dotted")  
         ax10.set(xlabel='Generation', ylabel='Pulses')
@@ -346,7 +350,7 @@ def anim_heatmap(i):
         ax8.set(xlabel='Generation', ylabel='Voltage (Normalized)')
 
     if config.using_transfer_interval():
-            for i in range(0,len(lines),100):
+            for i in range(0,len(lines),config.get_transfer_interval()):
                 ax8.axvline(x=i, color="white", linestyle="dashed")
 
     if(config.get_save_plots()):
