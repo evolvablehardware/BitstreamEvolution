@@ -239,7 +239,10 @@ class Config:
 	
 	#SECTION getts for transferability experiment parameters
 	def using_transfer_interval(self):
-		return self.get_transfer_parameters("TRANSFER_INTERVAl") != "IGNORE"
+		return isinstance(self.get_transfer_parameters("TRANSFER_INTERVAl"), int)
+	
+	def get_transfer_sample(self):
+		return self.get_transfer_parameters("TRANSFER_INTERVAl") == "SAMPLE"
 
 	def get_transfer_interval(self):
 		try:
