@@ -398,6 +398,18 @@ class Circuit:
         run(cmd_str)
         sleep(1)
 
+        # if switching fpgas every sample, need to upload to the second fpga also
+        if self.__config.get_transfer_sample():
+            cmd_str = [
+                RUN_CMD,
+                self.__bitstream_filepath,
+                "-d",
+                self.__config.get_fpga2()
+            ]
+            print(cmd_str)
+            run(cmd_str)
+            sleep(1)
+
     def __read_variance_data(self):
         data_file = open(self.__data_filepath, "rb")
         data = data_file.readlines()
