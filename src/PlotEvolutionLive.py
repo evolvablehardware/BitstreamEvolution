@@ -318,7 +318,7 @@ def anim_violin_plots_pulse(i):
 
 def anim_heatmap(i):
     global max_pulses
-    if config.get_fitness_func() == "PULSE_COUNT":
+    if is_pulse_func():
         data = open('workspace/pulselivedata.log','r').read()
     else:
         data = open('workspace/heatmaplivedata.log','r').read()
