@@ -8,10 +8,11 @@ The delays are used to control for noise on the serial line.
 #define pulseWidthMeasureSelection '3'
 #define pulseCountMeasureSelection '1'
 #define ADCMeasureSelection '2' 
+#define switchConstant '4'
 
 
-const int analogPin = A0;
-const int interrupt = 2;
+int analogPin = A0;
+int interrupt = 2;
 bool led_thingy = false;
 
 int buf[500]; //500 integers at 10 uS intervals = 5 mS
@@ -109,6 +110,19 @@ void loop(){
       Serial.print("FINISHED\nFINISHED\nFINISHED\n");
       delay(10); //3016/1508 Delay to load the FPGA
       
+      }
+
+      else if(x == switchConstant)
+      {
+        detachInterrupt(digitalPinToInterrupt(interrupt));
+        if(analogPin == A0) {
+          analogPin = A6;
+          interrupt = 3;
+        } else {
+          analogPin = A0;
+          interrupt = 2;
+        }
+        attachInterrupt(digitalPinToInterrupt(interrupt),pulseCounter, RISING);
       }
     }
 }

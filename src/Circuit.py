@@ -392,7 +392,7 @@ class Circuit:
             RUN_CMD,
             self.__bitstream_filepath,
             "-d",
-            self.__config.get_fpga()
+            self.__microcontroller.get_fpga()
         ]
         print(cmd_str)
         run(cmd_str)

@@ -482,6 +482,10 @@ class CircuitPopulation:
             self.__write_to_livedata()
             self.__next_epoch()
 
+            if self.__config.using_transfer_interval():
+                if self.__current_epoch % self.__config.get_transfer_interval() == 0:
+                    self.__microcontroller.switch_fpga()
+
         # We have finished evolution! Lets quickly re-evaluate the top circuit, since it
         # will then output its waveform
         if not is_pulse_func(self.__config):
@@ -576,6 +580,12 @@ class CircuitPopulation:
         path = self.__config.get_generations_directory().joinpath('gen' + str(self.__current_epoch) + '.log')
         with open(path, 'w') as f:
             f.writelines(gen_lines)
+
+        if (self.__current_epoch > 0):
+            with open("workspace/heatmaplivedata.log", "a") as live_file:
+                best = self.__circuits[0]
+                live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(best.get_waveform())))
+
 
     # SECTION Selection algorithms.
     def __run_classic_tournament(self):

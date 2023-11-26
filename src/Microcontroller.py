@@ -32,6 +32,22 @@ class Microcontroller:
                 timeout=config.get_mcu_read_timeout()
             )
             self.__serial.dtr = False
+            self.__fpga = config.get_fpga()
+
+    def switch_fpga(self):
+        self.__serial.reset_input_buffer()
+        self.__serial.reset_output_buffer()
+        self.__serial.write(b'4') 
+        if self.__fpga == self.__config.get_fpga():
+            self.__log_event(2, "Switching to FPGA 2")
+            self.__fpga = self.__config.get_fpga2()
+        else :
+            self.__log_event(2, "Switching to FPGA 1")
+            self.__fpga = self.__config.get_fpga()
+        self.__log_event(2, "Done switching FPGAs")
+    
+    def get_fpga(self):
+        return self.__fpga
 
     def simple_measure_pulses(self, circuit: Circuit, samples: int):
         """
@@ -75,6 +91,11 @@ class Microcontroller:
                     break
 
             end = time() - start
+
+            # if the transfer interval is "SAMPLE", switch to the other fpga between samples
+            if self.__config.get_transfer_sample():
+                self.switch_fpga()
+
         # buf now has `samples` entries
         self.__log_event(2, 'Length of buffer:', len(buf))
         if len(buf) == 0:
