@@ -462,33 +462,33 @@ if has_pop_plot:
 ax7 = fig2.add_subplot(1, 1, 1)
 
 if has_wf_plot:
-    ani3 = animation.FuncAnimation(fig, animate_waveform)#, interval=200)
+    ani3 = animation.FuncAnimation(fig, animate_waveform, cache_frame_data=False)#, interval=200)
 
 if has_map_plot:
-    ani4 = animation.FuncAnimation(fig, animate_map)
+    ani4 = animation.FuncAnimation(fig, animate_map, cache_frame_data=False)
 else:
     #pass
-    ani = animation.FuncAnimation(fig, animate_generation)
+    ani = animation.FuncAnimation(fig, animate_generation, cache_frame_data=False)
 
 if has_pop_plot:
-    ani6 = animation.FuncAnimation(fig, animate_pops, interval=FRAME_INTERVAL)
+    ani6 = animation.FuncAnimation(fig, animate_pops, interval=FRAME_INTERVAL, cache_frame_data=False)
 
-ani7 = animation.FuncAnimation(fig2, anim_violin_plots, interval=FRAME_INTERVAL)
+ani7 = animation.FuncAnimation(fig2, anim_violin_plots, interval=FRAME_INTERVAL, cache_frame_data=False)
 
 fig3 = plt.figure()
 ax8 = fig3.add_subplot(1,1,1)
 max_pulses = 0
-ani8 = animation.FuncAnimation(fig3, anim_heatmap, interval=FRAME_INTERVAL)
+ani8 = animation.FuncAnimation(fig3, anim_heatmap, interval=FRAME_INTERVAL, cache_frame_data=False)
 
-ani2 = animation.FuncAnimation(fig, animate_epoch, interval=FRAME_INTERVAL)
+ani2 = animation.FuncAnimation(fig, animate_epoch, interval=FRAME_INTERVAL, cache_frame_data=False)
 
 if is_pulse_count():
     fig4 = plt.figure()
     ax9 = fig4.add_subplot(2,1,1)
-    anim9 = animation.FuncAnimation(fig4, animate_epoch_pulses, interval=FRAME_INTERVAL)
+    anim9 = animation.FuncAnimation(fig4, animate_epoch_pulses, interval=FRAME_INTERVAL, cache_frame_data=False)
 
     ax10 = fig4.add_subplot(2,1,2)
-    anim10 = animation.FuncAnimation(fig4, anim_violin_plots_pulse, interval=FRAME_INTERVAL)
+    anim10 = animation.FuncAnimation(fig4, anim_violin_plots_pulse, interval=FRAME_INTERVAL, cache_frame_data=False)
 
 plt.subplots_adjust(hspace=0.50)
 fig.tight_layout(pad=5.0)
