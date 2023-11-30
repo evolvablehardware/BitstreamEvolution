@@ -94,13 +94,14 @@ def animate_epoch(i):
     ax2.plot(xs, zs, color="red") # Generation Worst Fitness
     ax2.plot(xs, ws, color="yellow") # Generation Average Fitness
     ax2.tick_params(axis='y', labelcolor='white')
-    
+
     if config.get_diversity_measure() != "NONE":
         ax3.clear()
         ax3.plot(xs, ds, color="#5a70ed") # Generation diversity measure
         ax3.tick_params(axis='y', labelcolor='#5a70ed')
         ax3.set_ylabel('Diversity', color='#5a70ed')
         ax3.set_ylim(bottom=0)
+        ax3.yaxis.set_label_position("right")
     
     ax2.set(xlabel='Generation', ylabel='Fitness', title='Best Circuit Fitness per Generation')
 
