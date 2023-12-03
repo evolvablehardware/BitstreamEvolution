@@ -412,7 +412,8 @@ def animate_sensitivity(i):
     if(config.get_save_plots()):
         fig.savefig(plots_dir.joinpath("sensitivity.png"))
 
-
+def animate_1d_map(i):
+    ''''''
 
 
 plots_dir = config.get_plots_directory()
@@ -437,9 +438,13 @@ if (config.get_simulation_mode() == 'FULLY_INTRINSIC' and not config.is_pulse_fu
     rows = rows + 1
     has_wf_plot = True
 
-has_map_plot = False
+has_var_map_plot = False
+has_pulse_map_plot = False
 if config.get_selection_type() == 'MAP_ELITES':
-    has_map_plot = True
+    if config.get_fitness_func() == "PULSE_CONSISTENCY":
+        has_pulse_map_plot = True
+    else:
+        has_var_map_plot = True
 
 has_pop_plot = False
 if config.get_init_mode() == 'EXISTING_POPULATION':
@@ -454,7 +459,7 @@ ax3 = ax2.twinx()
 if has_wf_plot:
     ax4 = fig.add_subplot(rows, cols, 3)
 
-if has_map_plot:
+if has_var_map_plot:
     fig_map = plt.figure()
     ax5 = fig_map.add_subplot(1, 1, 1)
 
@@ -470,7 +475,7 @@ ax7 = fig2.add_subplot(1, 1, 1)
 if has_wf_plot:
     ani3 = animation.FuncAnimation(fig, animate_waveform, cache_frame_data=False)#, interval=200)
 
-if has_map_plot:
+if has_var_map_plot:
     ani4 = animation.FuncAnimation(fig, animate_map, cache_frame_data=False)
 else:
     #pass

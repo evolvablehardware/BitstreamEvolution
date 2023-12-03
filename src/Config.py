@@ -432,9 +432,16 @@ class Config:
 			self.validate_hardware_params()
 
 		# Make sure user follows our requirements
+		# Pulse consistency must have >=1 passes and >=1 samples
 		if self.get_fitness_func() == "PULSE_CONSISTENCY" and (self.get_num_passes() * self.get_num_samples()) <= 1:
 			self.__log_error(1, "PULSE_CONSISTENCY function can only be used with multiple samples/passes")
 			exit()
+		# MAP elites can only be used with VARIANCE, COMBINED, and PULSE CONSISTENCY
+		if self.get_selection_type() == "MAP_ELITES":
+			if self.get_fitness_func() not in ["VARIANCE", "COMBINED", "PULSE_CONSISTENCY"]:
+				self.__log_error(1, "MAP_ELITES selection can only be used with the following fitness functions: " +
+				"VARIANCE, COMBINED, PULSE_CONSISTENCY")
+				exit()
 
 	# True if the fitness function counts pulses
 	def is_pulse_func(self):
