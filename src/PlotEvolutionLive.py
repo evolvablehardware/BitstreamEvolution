@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib import style
+from matplotlib import colormaps
 import configparser
 import re
 from Config import Config
@@ -166,9 +167,8 @@ def animate_map(i):
     lines = graph_data.split('\n')
     xs = []
     ys = []
-    sizes = []
+    ratios = [] # Stores the fitness of each point as a fraction of the max fitness. Used for determining colormap color
     fits = []
-    colors = []
     if len(lines) > 0 and len(lines[0]) > 0:
         scale_factor = int(lines[0])
         lines.pop(0) # Remove scale factor from the lines set
@@ -183,28 +183,20 @@ def animate_map(i):
                 xs.append((col + 0.5) * scale_factor)
                 ys.append((row + 0.5) * scale_factor)
 
-        # We'll make 25 the size of the largest individual, and 1 the size of the smallest
-        min_fit = min(fits)
-        max_fit = max(fits)
-        max_size = 25
-        min_size = 5
-        old_range = max_fit - min_fit
-        new_range = max_size - min_size
-        
-        all_colors = [ 'red', '#ff8000', 'yellow', 'green', 'blue', '#4400ff', 'magenta' ]
-        color_i = 0
-        for f in fits:
-            size = (f - min_fit) * new_range / old_range + min_size
-            sizes.append(size)
-            colors.append(all_colors[color_i])
-            color_i = (color_i + 1) % len(all_colors)
+    ratios = []
+    max_fit = max(fits)
+    for f in fits:
+        ratios.append(f / max_fit)
+
+    cmap = colormaps.get_cmap('inferno')
+    colors = cmap(ratios)
     
     ax5.clear()
 
     # Add a line to the middle that separates possible from impossible cells
     ax5.plot([0, 1024], [0, 1024], color='#444444', linewidth=0.5)
 
-    ax5.scatter(xs, ys, s=sizes, c=colors)
+    ax5.scatter(xs, ys, s=7, c=colors)
 
     ax5.set_xlim(0, 1024)
     ax5.set_ylim(0, 1024)
