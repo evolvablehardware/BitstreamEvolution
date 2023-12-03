@@ -170,7 +170,6 @@ def animate_map(i):
     lines = graph_data.split('\n')
     xs = []
     ys = []
-    ratios = [] # Stores the fitness of each point as a fraction of the max fitness. Used for determining colormap color
     fits = []
     if len(lines) > 0 and len(lines[0]) > 0:
         scale_factor = int(lines[0])
@@ -186,20 +185,31 @@ def animate_map(i):
                 xs.append((col + 0.5) * scale_factor)
                 ys.append((row + 0.5) * scale_factor)
 
-    ratios = []
+    RED_COLOR = [1, 0, 0]
+    YELLOW_COLOR = [1, 1, 0]
+    GREEN_COLOR = [0, 1, 0]
+    colors = []
     max_fit = max(fits)
+    min_fit = min(fits)
     for f in fits:
-        ratios.append(f / max_fit)
-
-    cmap = colormaps.get_cmap('inferno')
-    colors = cmap(ratios)
+        ratio = (f-min_fit) / (max_fit-min_fit)
+        if ratio < 0.5:
+            c1 = RED_COLOR
+            c2 = YELLOW_COLOR
+        else:
+            c1 = YELLOW_COLOR
+            c2 = GREEN_COLOR
+        r = (c2[0] - c1[0]) * ratio + c1[0]
+        g = (c2[1] - c1[1]) * ratio + c1[1]
+        b = (c2[2] - c1[2]) * ratio + c1[2]
+        colors.append([r, g, b, 1])
     
     ax5.clear()
 
     # Add a line to the middle that separates possible from impossible cells
     ax5.plot([0, 1024], [0, 1024], color='#444444', linewidth=0.5)
 
-    ax5.scatter(xs, ys, s=7, c=colors)
+    ax5.scatter(xs, ys, c=colors, s=50)
 
     ax5.set_xlim(0, 1024)
     ax5.set_ylim(0, 1024)
@@ -429,7 +439,6 @@ if (config.get_simulation_mode() == 'FULLY_INTRINSIC' and not config.is_pulse_fu
 
 has_map_plot = False
 if config.get_selection_type() == 'MAP_ELITES':
-    # Replace the fitness plot with the map plot
     has_map_plot = True
 
 has_pop_plot = False
@@ -446,10 +455,11 @@ if has_wf_plot:
     ax4 = fig.add_subplot(rows, cols, 3)
 
 if has_map_plot:
-    ax5 = fig.add_subplot(rows, cols, 2)
-else:
-    ax1 = fig.add_subplot(rows, cols, 2)
-    ax1.set_xticks(range(1, config.get_population_size(), 1))
+    fig_map = plt.figure()
+    ax5 = fig_map.add_subplot(1, 1, 1)
+
+ax1 = fig.add_subplot(rows, cols, 2)
+ax1.set_xticks(range(1, config.get_population_size(), 1))
 
 if has_pop_plot:
     # Put this plot in the last slot
