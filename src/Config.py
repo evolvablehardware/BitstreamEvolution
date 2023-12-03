@@ -1,6 +1,7 @@
 from pathlib import Path
 from configparser import ConfigParser
 from configparser import NoOptionError
+from xml.dom import NotFoundErr
 
 # TODO Add handling for missing values
 # NOTE Fails ungracefully at missing values currently
@@ -452,6 +453,12 @@ class Config:
 	def is_pulse_count(self):
 		return (self.get_fitness_func() == 'PULSE_COUNT' or self.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
 				or self.get_fitness_func() == 'SENSITIVE_PULSE_COUNT')
+	
+	def get_map_elites_dimension(self):
+		if self.get_fitness_func() in ['PULSE_CONSISTENCY']:
+			return 1
+		elif self.get_fitness_func() in ['VARIANCE', 'COMBINED']:
+			return 2
 
 	def validate_fitness_params(self):
 		self.get_fitness_func()

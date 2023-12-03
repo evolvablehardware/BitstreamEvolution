@@ -43,7 +43,9 @@ CircuitInfo = namedtuple("CircuitInfo", ["name", "fitness"])
 # Named tuple for circuit's path and fitness; currently only used for combining populations
 CircuitPathInfo = namedtuple("CircuitPathInfo", ["path", "fitness"])
 
+# Bin sizes for elite maps
 ELITE_MAP_SCALE_FACTOR = 50
+PULSE_ELITE_MAP_SCALE_FACTOR = 5000
 
 def is_pulse_func(config):
     return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
@@ -815,9 +817,12 @@ class CircuitPopulation:
         Group size length of 50 means we'll have 21x21 groups
         """
 
-        elite_map = self.__generate_map()
-        # Clone to all non-elites and mutate
-        elites = list(filter(lambda x: x != 0, [j for sub in elite_map for j in sub]))
+        if self.__config.get_map_elites_dimension() == 1:
+            elite_map = self.__generate_pulse_map()
+            elites = list(filter(lambda x: x != 0, [j for j in elite_map]))
+        else:
+            elite_map = self.__generate_map()
+            elites = list(filter(lambda x: x != 0, [j for sub in elite_map for j in sub]))
 
         self.__protected_elites = elites
 
@@ -835,14 +840,20 @@ class CircuitPopulation:
             # First line describes granularity/scale factor
             liveFile.write("{}\n".format(str(ELITE_MAP_SCALE_FACTOR)))
             # If square is empty, write a "blank" to that line
-            for r in range(len(elite_map)):
-                sl = elite_map[r]
-                for c in range(len(sl)):
-                    ckt = sl[c]
-                    to_write = ""
+            if self.__config.get_map_elites_dimension() == 1:
+                for c in range(len(elite_map)):
+                    ckt = elite_map[c]
                     if ckt != 0:
-                        to_write = str(ckt.get_fitness())
-                    liveFile.write("{} {} {}\n".format(r, c, to_write))
+                        liveFile.write("{} {}\n".format(c, ckt.get_fitness()))
+            else:
+                for r in range(len(elite_map)):
+                    sl = elite_map[r]
+                    for c in range(len(sl)):
+                        ckt = sl[c]
+                        to_write = ""
+                        if ckt != 0:
+                            to_write = str(ckt.get_fitness())
+                        liveFile.write("{} {} {}\n".format(r, c, to_write))
 
     def __generate_map(self):
         """
@@ -861,6 +872,15 @@ class CircuitPopulation:
             col = math.floor(ckt.get_high_value() / ELITE_MAP_SCALE_FACTOR)
             if elite_map[row][col] == 0 or ckt.get_fitness() > elite_map[row][col].get_fitness():
                 elite_map[row][col] = ckt
+        return elite_map
+    def __generate_pulse_map(self):
+        elite_map = []
+        for i in range((150_000 - 1_000) / PULSE_ELITE_MAP_SCALE_FACTOR):
+            elite_map.append(0)
+        for ckt in self.__circuits:
+            col = math.floor(ckt.get_mean_frequency() / PULSE_ELITE_MAP_SCALE_FACTOR)
+            if elite_map[col] == 0 or ckt.get_fitness() > elite_map[col].get_fitness():
+                elite_map[col] = ckt
         return elite_map
 
     # SECTION Getters.

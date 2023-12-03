@@ -216,6 +216,7 @@ class Circuit:
                 self.__log_event(2, "Data had invalid values, fitness is 0")
             else:
                 std = stdev(data)
+                self.__mean_freq = sum(data) / len(data)
                 fit = 1_000 / (std + 1)
                 self.__log_event(2, "Consistency std", std, "data", data, "fitness", fit)
         else:
@@ -877,6 +878,12 @@ class Circuit:
         Returns the last pulse count recorded by the circuit
         """
         return self.__pulses
+
+    def get_mean_frequency(self):
+        """
+        Returns the mean frequency read by the circuit (for pulse consistency only)
+        """
+        return self.__mean_freq
 
     def get_mean_voltage(self):
         """
