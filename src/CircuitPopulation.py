@@ -540,7 +540,7 @@ class CircuitPopulation:
                 live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(fits)))
             
             if self.__config.get_simulation_mode() == "FULLY_INTRINSIC":
-                if self.__config.get_fitness_func() not in [ "PULSE_COUNT", "TOLERANT_PULSE_COUNT", "SENSITIVE_PULSE_COUNT" ]:
+                if not self.__config.is_pulse_func():
                     with open("workspace/heatmaplivedata.log", "a") as live_file2:
                         best = self.__circuits[0]
                         data = best.get_waveform()

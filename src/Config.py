@@ -436,9 +436,15 @@ class Config:
 			self.__log_error(1, "PULSE_CONSISTENCY function can only be used with multiple samples/passes")
 			exit()
 
+	# True if the fitness function counts pulses
 	def is_pulse_func(self):
 		return (self.get_fitness_func() == 'PULSE_COUNT' or self.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
             	or self.get_fitness_func() == 'SENSITIVE_PULSE_COUNT' or self.get_fitness_func() == 'PULSE_CONSISTENCY')
+	
+	# Contrary to the above, this only returns true if the target is to count pulses for a target frequency
+	def is_pulse_count(self):
+		return (self.get_fitness_func() == 'PULSE_COUNT' or self.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
+				or self.get_fitness_func() == 'SENSITIVE_PULSE_COUNT')
 
 	def validate_fitness_params(self):
 		self.get_fitness_func()

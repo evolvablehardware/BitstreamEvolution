@@ -18,14 +18,15 @@ FRAME_INTERVAL = 10000
 
 config = Config("workspace/builtconfig.ini")
 
-# True if the fitness function counts pulses
-def is_pulse_func():
-    return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
-            or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT' or config.get_fitness_func() == 'PULSE_CONSISTENCY')
-# Contrary to the above, this only returns true if the target is to count pulses for a target frequency
-def is_pulse_count():
-    return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
-            or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT')
+#the below were moved to the config class, since they were useful in some other classes
+# # True if the fitness function counts pulses
+# def is_pulse_func():
+#     return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
+#             or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT' or config.get_fitness_func() == 'PULSE_CONSISTENCY')
+# # Contrary to the above, this only returns true if the target is to count pulses for a target frequency
+# def is_pulse_count():
+#     return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
+#             or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT')
 
 def animate_generation(i):
     graph_data = open('workspace/alllivedata.log','r').read()
@@ -51,11 +52,12 @@ def animate_generation(i):
     ax1.set_xlim([0, config.get_population_size()+1])
     ax1.hlines(y=avg, xmin=1, xmax=config.get_population_size(), color="violet", linestyles="dotted")
     ax1.scatter(xs, ys, color=('#f0f8ffdd' if is_transparent else '#f0f8ffff'))
-    if is_pulse_func():
+    if config.is_pulse_func():
         title = 'Circuit Pulses this Generation'
         ylabel = 'Pulses'
         # Add a line for desired frequency
-        ax1.hlines(y=config.get_desired_frequency(), xmin=1, xmax=config.get_population_size(), color="red", linestyles="dotted")
+        if config.is_pulse_count():
+            ax1.hlines(y=config.get_desired_frequency(), xmin=1, xmax=config.get_population_size(), color="red", linestyles="dotted")
         ax1.set_ylim([0, None])
     else:
         title = 'Circuit Fitness this Generation'
@@ -132,7 +134,8 @@ def animate_epoch_pulses(i):
     ax9.plot(ts, xs, color="lime")
     ax9.tick_params(axis='y', labelcolor='white')
 
-    ax9.hlines(y=config.get_desired_frequency(), xmin=1, xmax=len(lines), color="violet", linestyles="dotted")  
+    if config.is_pulse_count():
+        ax9.hlines(y=config.get_desired_frequency(), xmin=1, xmax=len(lines), color="violet", linestyles="dotted")  
     ax9.set(xlabel='Generation', ylabel='Pulses', title='Best Circuit Pulse Count per Generation')
 
     if config.using_transfer_interval():
@@ -317,16 +320,16 @@ def anim_violin_plots_pulse(i):
         if config.using_transfer_interval():
             for i in range(0,len(lines),config.get_transfer_interval()):
                 ax10.axvline(x=i, color="white", linestyle="dashed")
-        ax10.hlines(y=config.get_desired_frequency(), xmin=1, xmax=len(lines), color="violet", linestyles="dotted")  
+        if config.is_pulse_count():
+            ax10.hlines(y=config.get_desired_frequency(), xmin=1, xmax=len(lines), color="violet", linestyles="dotted")  
         ax10.set(xlabel='Generation', ylabel='Pulses')
 
 def anim_heatmap(i):
     global max_pulses
-    if is_pulse_func():
+    if config.is_pulse_func():
         data = open('workspace/pulselivedata.log','r').read()
     else:
         data = open('workspace/heatmaplivedata.log','r').read()
-
 
     
     lines = data.split('\n')
@@ -344,7 +347,7 @@ def anim_heatmap(i):
     ax8.clear()                         
     ax8.hist2d(gens,collections,bins=HEATMAP_BINS)
 
-    if is_pulse_func():
+    if config.is_pulse_func():
         ax8.set(xlabel='Generation', ylabel='Pulses')
     else:
         ax8.set(xlabel='Generation', ylabel='Voltage (Normalized)')
@@ -427,7 +430,7 @@ if (config.get_simulation_mode() == 'INTRINSIC_SENSITIVITY'):
 rows = 2
 cols = 1
 has_wf_plot = False
-if (config.get_simulation_mode() == 'FULLY_INTRINSIC' and not is_pulse_func()) or config.get_simulation_mode() == 'FULLY_SIM':
+if (config.get_simulation_mode() == 'FULLY_INTRINSIC' and not config.is_pulse_func()) or config.get_simulation_mode() == 'FULLY_SIM':
     rows = rows + 1
     has_wf_plot = True
 
@@ -475,14 +478,14 @@ if has_pop_plot:
 
 ani7 = animation.FuncAnimation(fig2, anim_violin_plots, interval=FRAME_INTERVAL)
 
-fig3 = plt.figure()
-ax8 = fig3.add_subplot(1,1,1)
-max_pulses = 0
-ani8 = animation.FuncAnimation(fig3, anim_heatmap, interval=FRAME_INTERVAL)
+if config.get_simulation_mode() == 'FULLY_INTRINSIC':
+    fig3 = plt.figure()
+    ax8 = fig3.add_subplot(1,1,1)
+    ani8 = animation.FuncAnimation(fig3, anim_heatmap, interval=FRAME_INTERVAL)
 
 ani2 = animation.FuncAnimation(fig, animate_epoch, interval=FRAME_INTERVAL)
 
-if is_pulse_count():
+if config.is_pulse_count():
     fig4 = plt.figure()
     ax9 = fig4.add_subplot(2,1,1)
     anim9 = animation.FuncAnimation(fig4, animate_epoch_pulses, interval=FRAME_INTERVAL)
