@@ -412,8 +412,32 @@ def animate_sensitivity(i):
     if(config.get_save_plots()):
         fig.savefig(plots_dir.joinpath("sensitivity.png"))
 
-def animate_1d_map(i):
-    ''''''
+def animate_pulse_map(i):
+    graph_data = open('workspace/maplivedata.log','r').read()
+    lines = graph_data.split('\n')
+    xs = []
+    fits = []
+    if len(lines) > 0 and len(lines[0]) > 0:
+        scale_factor = int(lines[0])
+        lines.pop(0) # Remove scale factor from the lines set
+
+        for line in lines:
+            # Two values; the pulse count (frequency) and the fitness
+            for line in lines:
+                vals = line.split(' ')
+
+                col = int(vals[0])
+                fit = float(vals[1])
+                fits.append(fit)
+                xs.append((col-0.5) * scale_factor)
+
+        ax5.clear()
+
+        ax5.bar(xs, fits, width=scale_factor)
+
+        ax5.set_xlim(1000, 150_000)
+        ax5.set_ylim(0, 1000)
+        ax5.set(xlabel='Frequency (Hz)', ylabel='Fitness', title='Elite Map')
 
 
 plots_dir = config.get_plots_directory()
@@ -463,6 +487,10 @@ if has_var_map_plot:
     fig_map = plt.figure()
     ax5 = fig_map.add_subplot(1, 1, 1)
 
+if has_pulse_map_plot:
+    fig_map = plt.figure()
+    ax5 = fig_map.add_subplot(1, 1, 1)
+
 ax1 = fig.add_subplot(rows, cols, 2)
 ax1.set_xticks(range(1, config.get_population_size(), 1))
 
@@ -477,9 +505,10 @@ if has_wf_plot:
 
 if has_var_map_plot:
     ani4 = animation.FuncAnimation(fig, animate_map, cache_frame_data=False)
-else:
-    #pass
-    ani = animation.FuncAnimation(fig, animate_generation, cache_frame_data=False)
+elif has_pulse_map_plot:
+    ani4 = animation.FuncAnimation(fig, animate_pulse_map, cache_frame_data=False)
+
+ani = animation.FuncAnimation(fig, animate_generation, cache_frame_data=False)
 
 if has_pop_plot:
     ani6 = animation.FuncAnimation(fig, animate_pops, interval=FRAME_INTERVAL, cache_frame_data=False)
