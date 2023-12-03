@@ -96,13 +96,14 @@ def animate_epoch(i):
     ax2.plot(xs, zs, color="red") # Generation Worst Fitness
     ax2.plot(xs, ws, color="yellow") # Generation Average Fitness
     ax2.tick_params(axis='y', labelcolor='white')
-    
+
     if config.get_diversity_measure() != "NONE":
         ax3.clear()
         ax3.plot(xs, ds, color="#5a70ed") # Generation diversity measure
         ax3.tick_params(axis='y', labelcolor='#5a70ed')
-        ax3.set_ylabel('Diversioty', color='#5a70ed')
+        ax3.set_ylabel('Diversity', color='#5a70ed')
         ax3.set_ylim(bottom=0)
+        ax3.yaxis.set_label_position("right")
     
     ax2.set(xlabel='Generation', ylabel='Fitness', title='Best Circuit Fitness per Generation')
 
@@ -465,33 +466,33 @@ if has_pop_plot:
 ax7 = fig2.add_subplot(1, 1, 1)
 
 if has_wf_plot:
-    ani3 = animation.FuncAnimation(fig, animate_waveform)#, interval=200)
+    ani3 = animation.FuncAnimation(fig, animate_waveform, cache_frame_data=False)#, interval=200)
 
 if has_map_plot:
-    ani4 = animation.FuncAnimation(fig, animate_map)
+    ani4 = animation.FuncAnimation(fig, animate_map, cache_frame_data=False)
 else:
     #pass
-    ani = animation.FuncAnimation(fig, animate_generation)
+    ani = animation.FuncAnimation(fig, animate_generation, cache_frame_data=False)
 
 if has_pop_plot:
-    ani6 = animation.FuncAnimation(fig, animate_pops, interval=FRAME_INTERVAL)
+    ani6 = animation.FuncAnimation(fig, animate_pops, interval=FRAME_INTERVAL, cache_frame_data=False)
 
-ani7 = animation.FuncAnimation(fig2, anim_violin_plots, interval=FRAME_INTERVAL)
+ani7 = animation.FuncAnimation(fig2, anim_violin_plots, interval=FRAME_INTERVAL, cache_frame_data=False)
 
 if config.get_simulation_mode() == 'FULLY_INTRINSIC':
     fig3 = plt.figure()
     ax8 = fig3.add_subplot(1,1,1)
-    ani8 = animation.FuncAnimation(fig3, anim_heatmap, interval=FRAME_INTERVAL)
+    ani8 = animation.FuncAnimation(fig3, anim_heatmap, interval=FRAME_INTERVAL, cache_frame_data=False)
 
-ani2 = animation.FuncAnimation(fig, animate_epoch, interval=FRAME_INTERVAL)
+ani2 = animation.FuncAnimation(fig, animate_epoch, interval=FRAME_INTERVAL, cache_frame_data=False)
 
 if config.is_pulse_count():
     fig4 = plt.figure()
     ax9 = fig4.add_subplot(2,1,1)
-    anim9 = animation.FuncAnimation(fig4, animate_epoch_pulses, interval=FRAME_INTERVAL)
+    anim9 = animation.FuncAnimation(fig4, animate_epoch_pulses, interval=FRAME_INTERVAL, cache_frame_data=False)
 
     ax10 = fig4.add_subplot(2,1,2)
-    anim10 = animation.FuncAnimation(fig4, anim_violin_plots_pulse, interval=FRAME_INTERVAL)
+    anim10 = animation.FuncAnimation(fig4, anim_violin_plots_pulse, interval=FRAME_INTERVAL, cache_frame_data=False)
 
 plt.subplots_adjust(hspace=0.50)
 fig.tight_layout(pad=5.0)
