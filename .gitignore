@@ -82,8 +82,10 @@ instance/
 .scrapy
 
 # Sphinx documentation
+# anything in a subfolder of the docs directory, but not in th sphinx subfolder, except in it's build directory
+docs/*/**
+!docs/sphinx/**
 docs/sphinx/build/
-docs/
 
 # PyBuilder
 target/

@@ -10,6 +10,7 @@ Welcome to Evolvable Hardware's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+Small Change
 
 
 Indices and tables
