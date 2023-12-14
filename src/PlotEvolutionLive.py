@@ -186,15 +186,18 @@ def animate_map(i):
                 xs.append((col + 0.5) * scale_factor)
                 ys.append((row + 0.5) * scale_factor)
 
-    heatmap_colors = [[.83, .06, 0], [.83, .4, 0], [.8, .8, .63], [.27, .59, .8], [.31, .31, .8]]
-    colors = []
+    #heatmap_colors = [[.83, .06, 0], [.83, .4, 0], [.8, .8, .63], [.27, .59, .8], [.31, .31, .8]]
     max_fit = max(fits)
     min_fit = min(fits)
+    ratios = []
     for f in fits:
         ratio = (f-min_fit) / (max_fit-min_fit)
-        color = determine_color(ratio, heatmap_colors)
-        colors.append(color)
-    
+        ratios.append(ratio)
+        #color = determine_color(ratio, heatmap_colors)
+        #colors.append(color)
+    cmap = colormaps['winter']
+    colors = cmap(ratios)
+
     ax5.clear()
 
     # Add a line to the middle that separates possible from impossible cells
@@ -433,7 +436,7 @@ def animate_pulse_map(i):
 
 plots_dir = config.get_plots_directory()
 
-style.use('dark_background')
+#style.use('dark_background')
 
 if (config.get_simulation_mode() == 'INTRINSIC_SENSITIVITY'):
     fig = plt.figure(figsize=(9,7))
@@ -491,6 +494,8 @@ if has_pop_plot:
 
 ax7 = fig2.add_subplot(1, 1, 1)
 
+animate_map(0)
+'''
 if has_wf_plot:
     ani3 = animation.FuncAnimation(fig, animate_waveform, cache_frame_data=False)#, interval=200)
 
@@ -520,7 +525,7 @@ if config.is_pulse_count():
 
     ax10 = fig4.add_subplot(2,1,2)
     anim10 = animation.FuncAnimation(fig4, anim_violin_plots_pulse, interval=FRAME_INTERVAL, cache_frame_data=False)
-
+'''
 plt.subplots_adjust(hspace=0.50)
 fig.tight_layout(pad=5.0)
 plt.show()
