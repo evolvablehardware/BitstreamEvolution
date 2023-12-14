@@ -186,24 +186,13 @@ def animate_map(i):
                 xs.append((col + 0.5) * scale_factor)
                 ys.append((row + 0.5) * scale_factor)
 
-    #heatmap_colors = [[.83, .06, 0], [.83, .4, 0], [.8, .8, .63], [.27, .59, .8], [.31, .31, .8]]
-    max_fit = max(fits)
-    min_fit = min(fits)
-    ratios = []
-    for f in fits:
-        ratio = (f-min_fit) / (max_fit-min_fit)
-        ratios.append(ratio)
-        #color = determine_color(ratio, heatmap_colors)
-        #colors.append(color)
-    cmap = colormaps['winter']
-    colors = cmap(ratios)
-
     ax5.clear()
 
     # Add a line to the middle that separates possible from impossible cells
     ax5.plot([0, 1024], [0, 1024], color='#444444', linewidth=0.5)
 
-    ax5.scatter(xs, ys, c=colors, s=50)
+    scatterplot = ax5.scatter(xs, ys, c=fits, s=50, cmap='winter')
+    plt.colorbar(scatterplot)
 
     ax5.set_xlim(0, 1024)
     ax5.set_ylim(0, 1024)
@@ -494,8 +483,6 @@ if has_pop_plot:
 
 ax7 = fig2.add_subplot(1, 1, 1)
 
-animate_map(0)
-'''
 if has_wf_plot:
     ani3 = animation.FuncAnimation(fig, animate_waveform, cache_frame_data=False)#, interval=200)
 
@@ -525,7 +512,7 @@ if config.is_pulse_count():
 
     ax10 = fig4.add_subplot(2,1,2)
     anim10 = animation.FuncAnimation(fig4, anim_violin_plots_pulse, interval=FRAME_INTERVAL, cache_frame_data=False)
-'''
+
 plt.subplots_adjust(hspace=0.50)
 fig.tight_layout(pad=5.0)
 plt.show()
