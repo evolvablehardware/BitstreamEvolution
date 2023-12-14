@@ -150,7 +150,7 @@ class ConfigBuilder:
                 for comment in config_value.comment:
                     file.write(';' + comment + '\n')
                 # Now write the actual parameter itself
-                file.write(config_value.param + ' = ' + config_value.value + '\n')
+                file.write(config_value.param + ' = ' + self.__escape_config_value(config_value.value) + '\n')
             
         file.close()
 
@@ -168,3 +168,6 @@ class ConfigBuilder:
             else:
                 sections[value.section] = [ value ]
         return sections
+    
+    def __escape_config_value(self, value: str) -> str:
+        return value.replace('%', '%%')

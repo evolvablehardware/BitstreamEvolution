@@ -1,6 +1,7 @@
 from pathlib import Path
 from configparser import ConfigParser
 from configparser import NoOptionError
+from xml.dom import NotFoundErr
 
 # TODO Add handling for missing values
 # NOTE Fails ungracefully at missing values currently
@@ -40,6 +41,12 @@ class Config:
 
 	def get_hardware_parameters(self, param):
 		return self.__config_parser.get("HARDWARE PARAMETERS", param)
+
+	def get_sensitivity_parameters(self, param):
+		return self.__config_parser.get("FITNESS SENSITIVITY PARAMETERS", param)
+	
+	def get_transfer_parameters(self, param):
+		return self.__config_parser.get("TRANSFERABILITY PARAMETERS", param)
 	
 	# SECTION Getters for Top-Level Parameters.
 	# We have 3 types of mode. There's FULLY_INTRINSIC, SIM_HARDWARE, and FULLY_SIM
@@ -48,14 +55,16 @@ class Config:
 	# FULLY_SIM: Simulation mode, but operating on a small array of arbitrary bit values
 	def get_simulation_mode(self):
 		input = self.get_top_parameters("SIMULATION_MODE")
-		valid_vals = ["FULLY_INTRINSIC", "FULLY_SIM", "SIM_HARDWARE"]
+		valid_vals = ["FULLY_INTRINSIC", "FULLY_SIM", "SIM_HARDWARE", "INTRINSIC_SENSITIVITY"]
 		self.check_valid_value("simulation mode", input, valid_vals)
 		return input
 	
 	# SECTION Getters for Fitness Parameters.
 	def get_fitness_func(self):
 		input = self.get_fitness_parameters("FITNESS_FUNC")
-		valid_vals = ["VARIANCE", "PULSE_COUNT", "COMBINED"]
+		# We're leaving "PULSE_COUNT" for backwards-compatibility
+		# It will use the sensitive function
+		valid_vals = ["VARIANCE", "PULSE_COUNT", "TOLERANT_PULSE_COUNT", "SENSITIVE_PULSE_COUNT", "COMBINED", "PULSE_CONSISTENCY"]
 		self.check_valid_value("fitness function", input, valid_vals)
 		return input
 	
@@ -77,7 +86,20 @@ class Config:
 
 	def get_var_weight(self):
 		return float(self.get_fitness_parameters("VAR_WEIGHT"))
+	
+	def get_num_samples(self):
+		value = int(self.get_fitness_parameters("NUM_SAMPLES"))
+		if value < 1:
+			self.__log_error(1, "Invalid number of samples " + str(value) + "'. Must be greater than zero.")
+			exit()
+		return value
 
+	def get_num_passes(self):
+		value = int(self.get_fitness_parameters("NUM_PASSES"))
+		if value < 1:
+			self.__log_error(1, "Invalid number of passes " + str(value) + "'. Must be greater than zero.")
+			exit()
+		return value
 
 	# SECTION Getters for GA Parameters.
 	def get_population_size(self):
@@ -135,7 +157,7 @@ class Config:
 	
 	def get_diversity_measure(self):
 		input = self.get_ga_parameters("DIVERSITY_MEASURE")
-		valid_vals = ["HAMMING_DIST", "UNIQUE"]
+		valid_vals = ["HAMMING_DIST", "UNIQUE", "NONE"]
 		self.check_valid_value("diversity measure", input, valid_vals)
 		return input
 	
@@ -198,6 +220,45 @@ class Config:
 			exit()
 		return targetFitness
 
+	# SECTION Getters for fitness sensitivity parameters.
+	def get_test_circuit(self):
+		try:
+			return Path(self.get_sensitivity_parameters("TEST_CIRCUIT"))
+		except NoOptionError:
+			self.__log_error(1, "Invalid file path " + self.get_sensitivity_parameters("TEST_CIRCUIT") + " for test circuit.")
+
+	def get_sensitivity_trials(self):
+		try:
+			trials = int(self.get_sensitivity_parameters("SENSITIVITY_TRIALS"))
+		except:
+			self.__log_error(1, "Non-int user input for the number of sensitivity trials to do.")
+			exit()
+		if trials < 1:
+			self.__log_error(1, "Invalid number of sensitivity trials" + str(trials) + "'. Must be greater than zero.")
+			exit()
+		return trials
+	
+	#SECTION getts for transferability experiment parameters
+	def using_transfer_interval(self):
+		return isinstance(self.get_transfer_interval(), int)
+	
+	def get_transfer_sample(self):
+		return self.get_transfer_parameters("TRANSFER_INTERVAl") == "SAMPLE"
+
+	def get_transfer_interval(self):
+		try:
+			interval = int(self.get_transfer_parameters("TRANSFER_INTERVAl"))
+		except:
+			# self.__log_info(2, "Non-int user input for transfer interval. Evolution will occur on only one FPGA")
+			return "IGNORE"
+		if interval < 1:
+			self.__log_error(1, "Invalid transfer interval size " + str(interval) + "'. Must be greater than zero.")
+			exit()
+		return interval
+	
+	def get_fpga2(self):
+		return self.get_transfer_parameters("FPGA2")
+
 	# SECTION Getters for logging parameters.
 	def get_plots_directory(self):
 		try:
@@ -249,6 +310,12 @@ class Config:
 		except NoOptionError:
 			return Path("./workspace/analysis")
 
+	def get_generations_directory(self):
+		try:
+			return Path(self.get_logging_parameters("GENERATIONS_DIR"))
+		except NoOptionError:
+			return Path("./workspace/generations")
+
 	def get_log_file(self):
 		try:
 			return Path(self.get_logging_parameters("LOG_FILE"))
@@ -290,41 +357,123 @@ class Config:
 		self.check_valid_value("logging level", input, valid_vals)
 		return input
 
+	def get_use_ovr_best(self):
+		try:
+			input = self.get_logging_parameters("show_ovr_best")
+			return input == "true" or input == "True"
+		except NoOptionError:
+			return True	
+
 	# SECTION Getters for system parameters.
 	def get_fpga(self):
 		return self.get_system_parameters("FPGA")
 
 	def get_usb_path(self):
 		return self.get_system_parameters("USB_PATH")
-		self.get_monitor_file()
+	
+	def get_upload_to_arduino(self):
+		input = self.get_system_parameters("auto_upload_to_arduino")
+		return input == "true" or input == "True"
+		
 	# SECTION Getters for hardware parameters
 	def get_routing_type(self):
-		return self.get_hardware_parameters("ROUTING")
+		input = self.get_hardware_parameters("ROUTING")
+		valid_vals = ["MOORE", "NEWSE"]
+		self.check_valid_value("routing type", input, valid_vals)
+		return input
 
 	def get_serial_baud(self):
 		return int(self.get_hardware_parameters("SERIAL_BAUD"))
 
 	def get_accessed_columns(self):
 		return self.get_hardware_parameters("ACCESSED_COLUMNS").split(",")
+	
+	def get_using_configurable_io(self):
+		input = self.get_hardware_parameters("configurable_io")
+		return input == "true" or input == "True"
+	
+	def get_input_pins(self):
+		valid_vals = [112, 113, 114, 115, 116, 117, 118, 119, 44, 45, 47, 48, 56, 60, 61, 62]
+		pins = self.get_hardware_parameters("INPUT_PINS").split(",")
+		for pin in pins:
+			self.check_valid_value("input pin", int(pin), valid_vals)
+		return pins
+	
+	def get_output_pins(self):
+		valid_vals = [112, 113, 114, 115, 116, 117, 118, 119, 44, 45, 47, 48, 56, 60, 61, 62]
+		pins = self.get_hardware_parameters("OUTPUT_PINS").split(",")
+		for pin in pins:
+			self.check_valid_value("output pin", int(pin), valid_vals)
+		return pins
 
 	def get_mcu_read_timeout(self):
 		return float(self.get_hardware_parameters("MCU_READ_TIMEOUT"))
 
 	def check_valid_value(self, param_name, user_input, allowed_values):
 		if not user_input in allowed_values:
-			self.__log_error(1, "Invalid " + param_name + " '" + str(user_input) + "'. Valid selection types are: " + 
+			self.__log_error(1, "Invalid " + param_name + " '" + str(user_input) + "'. Valid parameters are: " + 
 			", ".join(list(map(lambda x: str(x), allowed_values))))
 			exit()
 	
 	def validate_all(self):
 		self.get_simulation_mode()
+		self.validate_fitness_params()
 
+		if self.get_simulation_mode == 'INTRINSIC_SENSITIVITY':
+			self.validate_sensitivity_params()
+		else:
+			self.validate_ga_params()
+			self.validate_init_params()
+			self.validate_stopping_params()
+
+		self.validate_logging_params()
+		
+		if self.get_simulation_mode != 'FULLY_SIM' and self.get_simulation_mode != 'SIM_HARDWARE':
+			self.validate_system_params()
+			self.validate_hardware_params()
+
+		# Make sure user follows our requirements
+		# Pulse consistency must have >=1 passes and >=1 samples
+		if self.get_fitness_func() == "PULSE_CONSISTENCY" and (self.get_num_passes() * self.get_num_samples()) <= 1:
+			self.__log_error(1, "PULSE_CONSISTENCY function can only be used with multiple samples/passes")
+			exit()
+		# MAP elites can only be used with VARIANCE, COMBINED, and PULSE CONSISTENCY
+		if self.get_selection_type() == "MAP_ELITES":
+			if self.get_fitness_func() not in ["VARIANCE", "COMBINED", "PULSE_CONSISTENCY"]:
+				self.__log_error(1, "MAP_ELITES selection can only be used with the following fitness functions: " +
+				"VARIANCE, COMBINED, PULSE_CONSISTENCY")
+				exit()
+
+	# True if the fitness function counts pulses
+	def is_pulse_func(self):
+		return (self.get_fitness_func() == 'PULSE_COUNT' or self.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
+            	or self.get_fitness_func() == 'SENSITIVE_PULSE_COUNT' or self.get_fitness_func() == 'PULSE_CONSISTENCY')
+	
+	# Contrary to the above, this only returns true if the target is to count pulses for a target frequency
+	def is_pulse_count(self):
+		return (self.get_fitness_func() == 'PULSE_COUNT' or self.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
+				or self.get_fitness_func() == 'SENSITIVE_PULSE_COUNT')
+	
+	def get_map_elites_dimension(self):
+		if self.get_fitness_func() in ['PULSE_CONSISTENCY']:
+			return 1
+		elif self.get_fitness_func() in ['VARIANCE', 'COMBINED']:
+			return 2
+
+	def validate_fitness_params(self):
 		self.get_fitness_func()
-		self.get_desired_frequency()
-		self.get_combined_mode()
-		self.get_pulse_weight()
-		self.get_var_weight()
 
+		if self.get_fitness_func() == "COMBINED":
+			self.get_combined_mode()
+			self.get_pulse_weight()
+			self.get_var_weight()
+
+		if self.is_pulse_func():
+			self.get_desired_frequency()
+			self.get_num_samples()
+			self.get_num_passes()
+
+	def validate_ga_params(self):
 		self.get_population_size()
 		self.get_mutation_probability()
 		self.get_crossover_probability()
@@ -333,16 +482,19 @@ class Config:
 		self.get_diversity_measure()
 		self.get_random_injection()
 
+	def validate_init_params(self):
 		self.get_init_mode()
 		self.get_randomization_type()
 		self.get_randomize_threshold()
 		self.get_randomize_mode()
 
+	def validate_stopping_params(self):
 		self.using_n_generations()
 		self.get_n_generations()
 		self.using_target_fitness()
 		self.get_target_fitness()
-	
+
+	def validate_logging_params(self):
 		self.get_log_level()
 		self.get_save_log()
 		self.get_save_plots()
@@ -355,14 +507,25 @@ class Config:
 		self.get_best_file()
 		self.get_src_pops_dir()
 		self.get_datetime_format()
+		self.get_generations_directory()
+		self.get_use_ovr_best()
 
+	def validate_system_params(self):
 		self.get_fpga()
 		self.get_usb_path()
-		
+
+	def validate_hardware_params(self):
 		self.get_routing_type()
 		self.get_serial_baud()
 		self.get_accessed_columns()
 		self.get_mcu_read_timeout()
+		if self.get_using_configurable_io():
+			self.get_input_pins()
+			self.get_output_pins()
+
+	def validate_sensitivity_params(self):
+		self.get_test_circuit()
+		self.get_sensitivity_trials()
 		
 	def __log_event(self, level, *event):
 		"""

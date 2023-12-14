@@ -5,6 +5,7 @@ from os.path import exists
 from os.path import join
 from os import mkdir
 from shutil import copytree
+from datetime import datetime
 
 # The window dimensions
 LINE_WIDTH = 112
@@ -120,9 +121,15 @@ class Logger:
         open("workspace/waveformlivedata.log", "w").close()
         open("workspace/maplivedata.log", "w").close()
         open("workspace/heatmaplivedata.log", "w").close()
+        open("workspace/pulselivedata.log", "w").close()
         open("workspace/violinlivedata.log", "w").close()
         open("workspace/poplivedata.log", "w").close()
         open("workspace/randomizationdata.log", "w").close()
+        open("workspace/fitnesssensitivity.log", "w").close()
+        if not exists("workspace/template"):
+            mkdir("workspace/template")
+        if not exists("workspace/plots"):
+            mkdir("workspace/plots")
         # Determine if we need to the to initialize the analysis and
         # if so, do so.
         # currently removed since we're not currently storing any data, so there's a bunch of empty files and directories
@@ -162,7 +169,8 @@ class Logger:
 
     def log_monitor(self, prefix,  *msg):
         if self.__config.get_save_log():
-            print(prefix, *msg, file=self.__monitor_file)
+            now = datetime.now()
+            print(now, prefix, *msg, file=self.__monitor_file)
 
     def log_event(self, level, *msg):
         if self.__config.get_log_level() >= level:

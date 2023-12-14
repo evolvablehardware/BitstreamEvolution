@@ -41,6 +41,12 @@ class Evolution:
         if experiment_description is None:
             experiment_description = input("Explain this experiment: ")
 
+        # compiling and uploading to the Arduino
+        if config.get_upload_to_arduino():
+            c = run(["./arduino-cli", "compile", "-b", "arduino:avr:nano", "data/ReadSignal/ReadSignal.ino"])
+            usb_port = config.get_usb_path()
+            u = run(["./arduino-cli", "upload", "-b", "arduino:avr:nano", "-p", usb_port, "data/ReadSignal/ReadSignal.ino"])
+
         ## Run Evolution
         logger = Logger(config, experiment_description)
         # logger.log_info(1, args) - Not sure how to log arguments. This was my attempt to do so.
@@ -50,8 +56,17 @@ class Evolution:
         mcu = Microcontroller(config, logger)
         population = CircuitPopulation(mcu, config, logger)
 
-        population.populate()
-        population.evolve()
+        self.output_directory = output_directory
+        self.config = config
+        self.logger = logger
+        self.population = population
+
+        if config.get_simulation_mode() != "INTRINSIC_SENSITIVITY":
+            population.populate()
+            population.evolve()
+        else:
+            population.run_fitness_sensitity()
+
 
         logger.log_event(0, "Evolution has completed successfully")
 
@@ -65,13 +80,16 @@ class Evolution:
                 "i:0x0403:0x6010:0",
                 "data/hardware_blink.bin"
             ])
+        
+        self.clean_up()
 
+    def clean_up(self):
         # TODO: make sure config file specified above ends up in output.
-        if output_directory is not None:
+        if self.output_directory is not None:
             #copy simulation information to this output directory
-            logger.save_workspace(output_directory)
-        elif config.get_backup_workspace():
-            logger.save_workspace(config.get_output_directory())
+            self.logger.save_workspace(self.utput_directory)
+        elif self.config.get_backup_workspace():
+            self.logger.save_workspace(self.config.get_output_directory())
 
     ## Don't know if this is needed, but it might be useful to validate all inputs 
     ## especially if this is going to take a while to run.

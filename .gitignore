@@ -9,6 +9,7 @@ test/out/*
 # no need to include temp files
 workspace/
 tools/
+!src/tools
 prev_workspaces/
 
 # Byte-compiled / optimized / DLL files
