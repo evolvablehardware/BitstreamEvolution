@@ -7,6 +7,7 @@ import re
 from Config import Config
 import math 
 import numpy as np
+from utilities import determine_color
 
 """
 Static parameters can be found and changed in the config.ini file in the root project folder
@@ -185,24 +186,14 @@ def animate_map(i):
                 xs.append((col + 0.5) * scale_factor)
                 ys.append((row + 0.5) * scale_factor)
 
-    RED_COLOR = [1, 0, 0]
-    YELLOW_COLOR = [1, 1, 0]
-    GREEN_COLOR = [0, 1, 0]
+    heatmap_colors = [[.83, .06, 0], [.83, .4, 0], [.8, .8, .63], [.27, .59, .8], [.31, .31, .8]]
     colors = []
     max_fit = max(fits)
     min_fit = min(fits)
     for f in fits:
         ratio = (f-min_fit) / (max_fit-min_fit)
-        if ratio < 0.5:
-            c1 = RED_COLOR
-            c2 = YELLOW_COLOR
-        else:
-            c1 = YELLOW_COLOR
-            c2 = GREEN_COLOR
-        r = (c2[0] - c1[0]) * ratio + c1[0]
-        g = (c2[1] - c1[1]) * ratio + c1[1]
-        b = (c2[2] - c1[2]) * ratio + c1[2]
-        colors.append([r, g, b, 1])
+        color = determine_color(ratio, heatmap_colors)
+        colors.append(color)
     
     ax5.clear()
 
@@ -504,9 +495,9 @@ if has_wf_plot:
     ani3 = animation.FuncAnimation(fig, animate_waveform, cache_frame_data=False)#, interval=200)
 
 if has_var_map_plot:
-    ani4 = animation.FuncAnimation(fig, animate_map, cache_frame_data=False)
+    ani4 = animation.FuncAnimation(fig_map, animate_map, cache_frame_data=False)
 elif has_pulse_map_plot:
-    ani4 = animation.FuncAnimation(fig, animate_pulse_map, cache_frame_data=False)
+    ani4 = animation.FuncAnimation(fig_map, animate_pulse_map, cache_frame_data=False)
 
 ani = animation.FuncAnimation(fig, animate_generation, cache_frame_data=False)
 
