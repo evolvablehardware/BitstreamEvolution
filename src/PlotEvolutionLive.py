@@ -7,7 +7,10 @@ import re
 from Config import Config
 import math 
 import numpy as np
+import sys
 from utilities import determine_color
+from os.path import exists
+from os import mkdir
 
 """
 Static parameters can be found and changed in the config.ini file in the root project folder
@@ -19,16 +22,6 @@ HEATMAP_BINS = 40
 FRAME_INTERVAL = 10000
 
 config = Config("workspace/builtconfig.ini")
-
-#the below were moved to the config class, since they were useful in some other classes
-# # True if the fitness function counts pulses
-# def is_pulse_func():
-#     return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
-#             or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT' or config.get_fitness_func() == 'PULSE_CONSISTENCY')
-# # Contrary to the above, this only returns true if the target is to count pulses for a target frequency
-# def is_pulse_count():
-#     return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
-#             or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT')
 
 def animate_generation(i):
     graph_data = open('workspace/alllivedata.log','r').read()
@@ -52,6 +45,7 @@ def animate_generation(i):
 
     ax1.clear()
     ax1.set_xlim([0, config.get_population_size()+1])
+    # ax1.set_xticks(range(1, config.get_population_size(), 1))
     ax1.hlines(y=avg, xmin=1, xmax=config.get_population_size(), color="violet", linestyles="dotted")
     ax1.scatter(xs, ys, color=('#f0f8ffdd' if is_transparent else '#f0f8ffff'))
     if config.is_pulse_func():
@@ -66,7 +60,10 @@ def animate_generation(i):
         ylabel = 'Fitness'
     ax1.set(xlabel='Circuit Number', ylabel=ylabel, title=title)
 
-# fig2 = plt.figure()
+    if formal:
+        ax1.legend(['Average Fitness', 'Individual Fitness', 'Target Fitness'],\
+                bbox_to_anchor=(1.05, 0.5), loc="center left", borderaxespad=0)
+
 def animate_epoch(i):
     graph_data = open('workspace/bestlivedata.log','r').read()
     lines = graph_data.split('\n')
@@ -89,28 +86,37 @@ def animate_epoch(i):
     # ax2.set_yscale('symlog')
     if config.using_transfer_interval():
         for i in range(0,len(lines),config.get_transfer_interval()):
-            ax2.axvline(x=i, color="white", linestyle="dashed")
+            ax2.axvline(x=i, color=accent_color, linestyle="dashed")
 
+    plots = []
+    labels = []
     if config.get_use_ovr_best():
         # Plot the overall best before the gen best so the gen best line appears on top
-        ax2.plot(xs, ts, color="#00b87d") # Ovr best Fitness
-    ax2.plot(xs, ys, color="green") # Generation/Epoch Best Fitness
-    ax2.plot(xs, zs, color="red") # Generation Worst Fitness
-    ax2.plot(xs, ws, color="yellow") # Generation Average Fitness
-    ax2.tick_params(axis='y', labelcolor='white')
+        plots += ax2.plot(xs, ts, color="#00b87d") # Ovr best Fitness
+        labels.append("Overall Best")
+    plots += ax2.plot(xs, ys, color="green") # Generation/Epoch Best Fitness
+    plots += ax2.plot(xs, zs, color="red") # Generation Worst Fitness
+    plots += ax2.plot(xs, ws, color="yellow") # Generation Average Fitness
+    labels.append("Best")
+    labels.append("Worst")
+    labels.append("Average")
+    ax2.tick_params(axis='y', labelcolor=accent_color)
 
     if config.get_diversity_measure() != "NONE":
         ax3.clear()
-        ax3.plot(xs, ds, color="#5a70ed") # Generation diversity measure
+        plots += ax3.plot(xs, ds, color="#5a70ed") # Generation diversity measure
         ax3.tick_params(axis='y', labelcolor='#5a70ed')
         ax3.set_ylabel('Diversity', color='#5a70ed')
         ax3.set_ylim(bottom=0)
         ax3.yaxis.set_label_position("right")
     
-    ax2.set(xlabel='Generation', ylabel='Fitness', title='Best Circuit Fitness per Generation')
+    ax2.set(xlabel='Generation', ylabel='Fitness', title='Circuit Fitness per Generation')
+
+    if formal:
+        ax2.legend(plots, labels, bbox_to_anchor=(1.15, 0.5), loc="center left", borderaxespad=0)
 
     if(config.get_save_plots()):
-        fig.savefig(plots_dir.joinpath("main.png"))
+        fig.savefig(plots_dir.joinpath("main.png"), bbox_inches="tight")
 
 def animate_epoch_pulses(i):
     graph_data = open('workspace/pulselivedata.log','r').read()
@@ -131,22 +137,28 @@ def animate_epoch_pulses(i):
             ts.append(int(t))
     ax9.clear()
 
-    ax9.plot(ts, zs, color="cornflowerblue", linewidth=0.75)
-    ax9.plot(ts, ws, color="coral", linewidth=0.75)
-    ax9.plot(ts, ys, color="yellow", linewidth=0.75)
-    ax9.plot(ts, xs, color="lime")
-    ax9.tick_params(axis='y', labelcolor='white')
+    plots = []
+    labels = ['Minimum', 'Maximum', 'Average', 'Best', 'Desired Frequency']
+    plots += ax9.plot(ts, zs, color="cornflowerblue", linewidth=0.75)
+    plots += ax9.plot(ts, ws, color="coral", linewidth=0.75)
+    plots += ax9.plot(ts, ys, color="yellow", linewidth=0.75)
+    plots += ax9.plot(ts, xs, color="lime")
+    ax9.tick_params(axis='y', labelcolor=accent_color)
 
     if config.is_pulse_count():
-        ax9.hlines(y=config.get_desired_frequency(), xmin=1, xmax=len(lines), color="violet", linestyles="dotted")  
-    ax9.set(xlabel='Generation', ylabel='Pulses', title='Best Circuit Pulse Count per Generation')
+        ax9.hlines(y=config.get_desired_frequency(), xmin=1, xmax=len(lines), color="violet", linestyles="dotted")
+        # labels.append("Desired Frequency")
+    ax9.set(xlabel='Generation', ylabel='Pulses', title='Circuit Pulse Count per Generation')
 
     if config.using_transfer_interval():
         for i in range(0,len(lines),config.get_transfer_interval()):
-            ax9.axvline(x=i, color="white", linestyle="dashed")
+            ax9.axvline(x=i, color=accent_color, linestyle="dashed")
+
+    if formal:
+        ax9.legend(plots, labels, bbox_to_anchor=(1.15, 0.5), loc="center left", borderaxespad=0)
 
     if(config.get_save_plots()):
-        fig4.savefig(plots_dir.joinpath("pulses.png"))
+        fig4.savefig(plots_dir.joinpath("pulses.png"), bbox_inches="tight")
 
 
 def animate_waveform(i):    
@@ -159,12 +171,16 @@ def animate_waveform(i):
         if len(line) > 1:
             x, y = line.split(',')
             xs.append(int(x))
-            ys.append(float(y))
+            ys.append(float(y) * 3.3/715)
     ax4.clear()
-    ax4.set_ylim([0, 1000])
+    ax4.set_ylim([0, 750])
     ax4.plot(pulse_trigger, "r--")
     ax4.plot(xs, ys, color="blue")
-    ax4.set(xlabel='Time (50 mS Total)', ylabel='Voltage (normalized)', title='Current Hardware Waveform')
+
+    if formal:
+        ax4.legend(['Circuit Voltage', 'Trigger Voltage'], bbox_to_anchor=(1.15, 0.5), loc="center left", borderaxespad=0)
+
+    ax4.set(xlabel='Time (50 mS Total)', ylabel='Voltage', title='Current Hardware Waveform')
 
 def animate_map(i):
     graph_data = open('workspace/maplivedata.log','r').read()
@@ -189,18 +205,21 @@ def animate_map(i):
     ax5.clear()
 
     # Add a line to the middle that separates possible from impossible cells
-    ax5.plot([0, 1024], [0, 1024], color='#444444', linewidth=0.5)
+    ax5.plot([0, 750], [0, 750], color='#444444', linewidth=0.5)
 
     scatterplot = ax5.scatter(xs, ys, c=fits, s=50, cmap='winter')
     plt.colorbar(scatterplot)
 
-    ax5.set_xlim(0, 1024)
-    ax5.set_ylim(0, 1024)
+    ax5.set_xlim(0, 750)
+    ax5.set_ylim(0, 750)
     ax5.set_aspect('equal')
     #ax5.set_xticks(np.arange(0, 1024, 50), minor=True)
     #ax5.set_yticks(np.arange(0, 1024, 50), minor=True)
     #ax5.grid(color = '#363636', which = 'minor')
     ax5.set(xlabel='Max Voltage (norm)', ylabel='Min Voltage (norm)', title='Elite Map')
+
+    if(config.get_save_plots()):
+        fig_map.savefig(plots_dir.joinpath("map.png"), bbox_inches="tight")
 
 def animate_pops(i):
     graph_data = open('workspace/poplivedata.log','r').read()
@@ -235,7 +254,7 @@ def animate_pops(i):
     if len(ys) > 0:
         ax6.clear()
         ax6.stackplot(xs, ys, labels=ylabels)
-        ax6.legend(loc='upper right')
+        ax6.legend( bbox_to_anchor=(1.15, 0.5), loc="center left", borderaxespad=0)
         ax6.set(xlabel='Generation', ylabel='Number from Population', title='Circuits from Each Source Population')
 
 def anim_violin_plots(i):
@@ -268,8 +287,9 @@ def anim_violin_plots(i):
         ax7.clear()
         if config.using_transfer_interval():
             for i in range(0,len(lines),config.get_transfer_interval()):
-                ax7.axvline(x=i, color="white", linestyle="dashed")
+                ax7.axvline(x=i, color=accent_color, linestyle="dashed")
         ax7.violinplot(collections, positions=gens, widths=widths)
+        ax7.set(xlabel='Generation', ylabel='Fitness', title='Fitness Violin Plots')
 
     if(config.get_save_plots()):
         fig2.savefig(plots_dir.joinpath("violin_plots.png"))
@@ -305,9 +325,10 @@ def anim_violin_plots_pulse(i):
         ax10.violinplot(collections, positions=gens, widths=widths)
         if config.using_transfer_interval():
             for i in range(0,len(lines),config.get_transfer_interval()):
-                ax10.axvline(x=i, color="white", linestyle="dashed")
+                ax10.axvline(x=i, color=accent_color, linestyle="dashed")
         if config.is_pulse_count():
             ax10.hlines(y=config.get_desired_frequency(), xmin=1, xmax=len(lines), color="violet", linestyles="dotted")  
+        ax10.set(xlabel='Generation', ylabel='Pulses', title='Pulse Violin Plots')
         ax10.set(xlabel='Generation', ylabel='Pulses')
 
 def anim_heatmap(i):
@@ -334,13 +355,13 @@ def anim_heatmap(i):
     ax8.hist2d(gens,collections,bins=HEATMAP_BINS)
 
     if config.is_pulse_func():
-        ax8.set(xlabel='Generation', ylabel='Pulses')
+        ax8.set(xlabel='Generation', ylabel='Pulses', title='Pulse Count Histogram')
     else:
-        ax8.set(xlabel='Generation', ylabel='Voltage (Normalized)')
+        ax8.set(xlabel='Generation', ylabel='Voltage (Normalized)', title='Voltage (Normalized) Heatmap')
 
     if config.using_transfer_interval():
             for i in range(0,len(lines),config.get_transfer_interval()):
-                ax8.axvline(x=i, color="white", linestyle="dashed")
+                ax8.axvline(x=i, color=accent_color, linestyle="dashed")
 
     if(config.get_save_plots()):
         fig3.savefig(plots_dir.joinpath("heatmap.png"))
@@ -363,23 +384,23 @@ def animate_sensitivity(i):
     #fitness
     ax2.clear()
     ax2.hist(xs, bins=HEATMAP_BINS)
-    ax2.tick_params(axis='y', labelcolor='white')
+    ax2.tick_params(axis='y', labelcolor=accent_color)
     ax2.set_ylim(bottom=0)
 
     ax3.clear()
     ax3.hist2d(ts,xs,bins=HEATMAP_BINS)
-    ax3.tick_params(axis='y', labelcolor='white')
+    ax3.tick_params(axis='y', labelcolor=accent_color)
     ax3.set_ylim(bottom=0)
     
     #pulses/mean voltage
     ax4.clear()
     ax4.hist(ys, bins=HEATMAP_BINS)
-    ax4.tick_params(axis='y', labelcolor='white') 
+    ax4.tick_params(axis='y', labelcolor=accent_color) 
     ax4.set_ylim(bottom=0)
 
     ax5.clear()
     ax5.hist2d(ts, ys, bins=HEATMAP_BINS)
-    ax5.tick_params(axis='y', labelcolor='white') 
+    ax5.tick_params(axis='y', labelcolor=accent_color) 
     ax5.set_ylim(bottom=0)
     
     ax2.set(xlabel='Fitness', ylabel='Count', title='Circuit Fitness per Trial')
@@ -422,10 +443,25 @@ def animate_pulse_map(i):
         ax5.set_ylim(0, 1000)
         ax5.set(xlabel='Frequency (Hz)', ylabel='Fitness', title='Elite Map')
 
+def plot(fig, function):
+    if formal:
+        return function(0)
+    else:
+        return animation.FuncAnimation(fig, function, interval=FRAME_INTERVAL, cache_frame_data=False)
 
 plots_dir = config.get_plots_directory()
 
-#style.use('dark_background')
+formal = False
+if len(sys.argv) > 1 and sys.argv[1] == 'formal':
+    formal = True 
+    plots_dir = plots_dir.joinpath("Formal")
+    accent_color = "black"
+else:
+    style.use('dark_background')
+    accent_color = "white"
+
+if not exists(plots_dir):
+    mkdir(plots_dir)
 
 if (config.get_simulation_mode() == 'INTRINSIC_SENSITIVITY'):
     fig = plt.figure(figsize=(9,7))
@@ -438,6 +474,7 @@ if (config.get_simulation_mode() == 'INTRINSIC_SENSITIVITY'):
     while True:
         pass
 
+fig = plt.figure(figsize=(9,7))
 rows = 2
 cols = 1
 has_wf_plot = False
@@ -445,74 +482,49 @@ if (config.get_simulation_mode() == 'FULLY_INTRINSIC' and not config.is_pulse_fu
     rows = rows + 1
     has_wf_plot = True
 
-has_var_map_plot = False
-has_pulse_map_plot = False
-if config.get_selection_type() == 'MAP_ELITES':
-    if config.get_fitness_func() == "PULSE_CONSISTENCY":
-        has_pulse_map_plot = True
-    else:
-        has_var_map_plot = True
-
 has_pop_plot = False
 if config.get_init_mode() == 'EXISTING_POPULATION':
     rows = rows + 1
     has_pop_plot = True
 
-fig = plt.figure(figsize=(9,7))
-fig2 = plt.figure()
-
+ax1 = fig.add_subplot(rows, cols, 2)
+ani = plot(fig, animate_generation)
 ax2 = fig.add_subplot(rows, cols, 1)
 ax3 = ax2.twinx()
+ani2 = plot(fig, animate_epoch)
+
 if has_wf_plot:
     ax4 = fig.add_subplot(rows, cols, 3)
-
-if has_var_map_plot:
-    fig_map = plt.figure()
-    ax5 = fig_map.add_subplot(1, 1, 1)
-
-if has_pulse_map_plot:
-    fig_map = plt.figure()
-    ax5 = fig_map.add_subplot(1, 1, 1)
-
-ax1 = fig.add_subplot(rows, cols, 2)
-ax1.set_xticks(range(1, config.get_population_size(), 1))
+    ani3 = plot(fig, animate_waveform)
 
 if has_pop_plot:
-    # Put this plot in the last slot
     ax6 = fig.add_subplot(rows, cols, rows * cols)
+    ani6 = plot(fig, animate_pops)
 
+fig2 = plt.figure()
 ax7 = fig2.add_subplot(1, 1, 1)
-
-if has_wf_plot:
-    ani3 = animation.FuncAnimation(fig, animate_waveform, cache_frame_data=False)#, interval=200)
-
-if has_var_map_plot:
-    ani4 = animation.FuncAnimation(fig_map, animate_map, cache_frame_data=False)
-elif has_pulse_map_plot:
-    ani4 = animation.FuncAnimation(fig_map, animate_pulse_map, cache_frame_data=False)
-
-ani = animation.FuncAnimation(fig, animate_generation, cache_frame_data=False)
-
-if has_pop_plot:
-    ani6 = animation.FuncAnimation(fig, animate_pops, interval=FRAME_INTERVAL, cache_frame_data=False)
-
-ani7 = animation.FuncAnimation(fig2, anim_violin_plots, interval=FRAME_INTERVAL, cache_frame_data=False)
+ani7 = plot(fig2, anim_violin_plots)
 
 if config.get_simulation_mode() == 'FULLY_INTRINSIC':
     fig3 = plt.figure()
     ax8 = fig3.add_subplot(1,1,1)
-    ani8 = animation.FuncAnimation(fig3, anim_heatmap, interval=FRAME_INTERVAL, cache_frame_data=False)
-
-ani2 = animation.FuncAnimation(fig, animate_epoch, interval=FRAME_INTERVAL, cache_frame_data=False)
+    ani8 = plot(fig3, anim_heatmap)
 
 if config.is_pulse_count():
     fig4 = plt.figure()
     ax9 = fig4.add_subplot(2,1,1)
-    anim9 = animation.FuncAnimation(fig4, animate_epoch_pulses, interval=FRAME_INTERVAL, cache_frame_data=False)
-
+    ani9 = plot(fig4, animate_epoch_pulses)
     ax10 = fig4.add_subplot(2,1,2)
-    anim10 = animation.FuncAnimation(fig4, anim_violin_plots_pulse, interval=FRAME_INTERVAL, cache_frame_data=False)
+    ani10 = plot(fig4, anim_violin_plots_pulse)
+
+if config.get_selection_type() == 'MAP_ELITES':
+    fig_map = plt.figure()
+    ax5 = fig_map.add_subplot(1, 1, 1)
+    if config.get_fitness_func() == "PULSE_CONSISTENCY":
+        ani4 = plot(fig_map, animate_pulse_map)
+    else:
+        ani4 = plot(fig_map, animate_map)   
 
 plt.subplots_adjust(hspace=0.50)
 fig.tight_layout(pad=5.0)
-plt.show()
+plt.show(block=(not formal))
