@@ -46,8 +46,8 @@ def animate_generation(i):
     ax1.clear()
     ax1.set_xlim([0, config.get_population_size()+1])
     # ax1.set_xticks(range(1, config.get_population_size(), 1))
-    ax1.hlines(y=avg, xmin=1, xmax=config.get_population_size(), color="violet", linestyles="dotted")
-    ax1.scatter(xs, ys, color=('#f0f8ffdd' if is_transparent else '#f0f8ffff'))
+    ax1.hlines(y=avg, xmin=0, xmax=config.get_population_size()+1, color="violet", linestyles="dotted")
+    ax1.scatter(xs, ys, color=((accent_color2 + "dd") if is_transparent else (accent_color2 + "ff") ))
     if config.is_pulse_func():
         title = 'Circuit Pulses this Generation'
         ylabel = 'Pulses'
@@ -96,7 +96,7 @@ def animate_epoch(i):
         labels.append("Overall Best")
     plots += ax2.plot(xs, ys, color="green") # Generation/Epoch Best Fitness
     plots += ax2.plot(xs, zs, color="red") # Generation Worst Fitness
-    plots += ax2.plot(xs, ws, color="yellow") # Generation Average Fitness
+    plots += ax2.plot(xs, ws, color=yellow) # Generation Average Fitness
     labels.append("Best")
     labels.append("Worst")
     labels.append("Average")
@@ -141,7 +141,7 @@ def animate_epoch_pulses(i):
     labels = ['Minimum', 'Maximum', 'Average', 'Best', 'Desired Frequency']
     plots += ax9.plot(ts, zs, color="cornflowerblue", linewidth=0.75)
     plots += ax9.plot(ts, ws, color="coral", linewidth=0.75)
-    plots += ax9.plot(ts, ys, color="yellow", linewidth=0.75)
+    plots += ax9.plot(ts, ys, color=yellow, linewidth=0.75)
     plots += ax9.plot(ts, xs, color="lime")
     ax9.tick_params(axis='y', labelcolor=accent_color)
 
@@ -173,6 +173,7 @@ def animate_waveform(i):
             xs.append(int(x))
             ys.append(float(y) * 3.3/715)
     ax4.clear()
+    ax4.set_xlim([0, 500])
     ax4.set_ylim([0, 750])
     ax4.plot(pulse_trigger, "r--")
     ax4.plot(xs, ys, color="blue")
@@ -443,11 +444,11 @@ def animate_pulse_map(i):
         ax5.set_ylim(0, 1000)
         ax5.set(xlabel='Frequency (Hz)', ylabel='Fitness', title='Elite Map')
 
-def plot(fig, function):
-    if formal:
-        return function(0)
-    else:
-        return animation.FuncAnimation(fig, function, interval=FRAME_INTERVAL, cache_frame_data=False)
+# def plot(fig, function):
+#     if formal:
+#         return function(0)
+#     else:
+#         return animation.FuncAnimation(fig, function, interval=FRAME_INTERVAL, cache_frame_data=False)
 
 plots_dir = config.get_plots_directory()
 
@@ -456,9 +457,15 @@ if len(sys.argv) > 1 and sys.argv[1] == 'formal':
     formal = True 
     plots_dir = plots_dir.joinpath("Formal")
     accent_color = "black"
+    accent_color2 = "#65187A"
+    yellow = "goldenrod"
+    plot = lambda fig, function : function(0)
 else:
     style.use('dark_background')
     accent_color = "white"
+    accent_color2 = "#f0f8ff"
+    yellow = "yellow"
+    plot = lambda fig, function : animation.FuncAnimation(fig, function, interval=FRAME_INTERVAL, cache_frame_data=False)
 
 if not exists(plots_dir):
     mkdir(plots_dir)
