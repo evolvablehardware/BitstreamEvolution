@@ -120,7 +120,7 @@ class CircuitPopulation:
         for i in range(self.__config.get_sensitivity_trials()):
             fitness = self.__eval_ckt(ckt)
             with open("workspace/fitnesssensitivity.log", "a") as live_file:
-                if self.__config.get_fitness_func() == "PULSE_COUNT":
+                if self.__config.is_pulse_func():
                     data2 = ckt.get_pulses()
                 else:
                     data2 = ckt.get_mean_voltage()

@@ -3,7 +3,7 @@ from CircuitPopulation import CircuitPopulation
 from ConfigBuilder import ConfigBuilder
 from Config import Config
 from Logger import Logger
-from subprocess import run
+from subprocess import CalledProcessError, run
 import os
 
 class Evolution:
@@ -69,6 +69,16 @@ class Evolution:
 
 
         logger.log_event(0, "Evolution has completed successfully")
+
+        logger.log_event(1, "Launching the Live Plot window...")
+        args = ["python3", "src/PlotEvolutionLive.py", "formal"]
+        try:
+            run(args, check=True, capture_output=True)
+        except OSError as e:
+            self.log_error(1, "An error occured while launching PlotEvolutionLive.py")
+        except CalledProcessError as e:
+            self.log_error(1, "An error occured in PlotEvolutionLive.py")
+            self.log_error(1, e)
 
         # SECTION Clean up resources
 
