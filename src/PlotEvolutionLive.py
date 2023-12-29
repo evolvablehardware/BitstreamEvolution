@@ -17,7 +17,7 @@ Static parameters can be found and changed in the config.ini file in the root pr
 DO NOT CHANGE THEM HERE
 """
 
-MAX_VIOLIN_PLOTS = 10
+MAX_VIOLIN_PLOTS = 11
 HEATMAP_BINS = 40 
 FRAME_INTERVAL = 10000
 
@@ -164,7 +164,7 @@ def animate_epoch_pulses(i):
 def animate_waveform(i):    
     graph_data = open('workspace/waveformlivedata.log','r').read()
     lines = graph_data.split('\n')
-    pulse_trigger = [341]*500
+    pulse_trigger = [341*3.3/715]*500
     xs = []
     ys = []
     for line in lines:
@@ -174,14 +174,15 @@ def animate_waveform(i):
             ys.append(float(y) * 3.3/715)
     ax4.clear()
     ax4.set_xlim([0, 500])
-    ax4.set_ylim([0, 750])
+    #ax4.set_ylim([0, 750])
+    ax4.set_ylim([0, 3.3])
     ax4.plot(pulse_trigger, "r--")
     ax4.plot(xs, ys, color="blue")
 
     if formal:
-        ax4.legend(['Circuit Voltage', 'Trigger Voltage'], bbox_to_anchor=(1.15, 0.5), loc="center left", borderaxespad=0)
+        ax4.legend(['Trigger Voltage', 'Circuit Voltage'], bbox_to_anchor=(1.15, 0.5), loc="lower center", borderaxespad=0)
 
-    ax4.set(xlabel='Time (50 mS Total)', ylabel='Voltage', title='Current Hardware Waveform')
+    ax4.set(xlabel='Time (μs)', ylabel='Voltage (V)', title='Current Hardware Waveform')
 
 def animate_map(i):
     graph_data = open('workspace/maplivedata.log','r').read()
@@ -265,7 +266,7 @@ def anim_violin_plots(i):
     widths = []
     lines = data.split('\n')
     # Decide which generations to include based on the number to have and the number available
-    interval = len(lines) / MAX_VIOLIN_PLOTS
+    interval = len(lines) / (MAX_VIOLIN_PLOTS - 1)
     if len(lines) < MAX_VIOLIN_PLOTS:
         interval = 1
     # Makes sure the first generation displayed will always be generation 2 (the first where we have interesting data)
@@ -280,6 +281,16 @@ def anim_violin_plots(i):
             gens.append(gen)
             pts = vals[1].split(',')
             collections.append(list(map(lambda x: float(x), pts)))
+
+    # Make sure that we always include the final generation
+    # File always ends with a blank line, so go 2 lines back
+    line = lines[len(lines)-2]
+    if len(line) > 1:
+        vals = line.split(':')
+        gen = int(vals[0])
+        gens.append(gen)
+        pts = vals[1].split(',')
+        collections.append(list(map(lambda x: float(x), pts)))
 
     for i in range(0, len(collections)):
         widths.append(interval * 0.5)
@@ -350,7 +361,7 @@ def anim_heatmap(i):
             pts = vals[1].split(',')
             for pt in pts:
                 gens.append(int(vals[0]))
-                collections.append(float(pt))
+                collections.append(float(pt)*3.3/715)
             
     ax8.clear()                         
     ax8.hist2d(gens,collections,bins=HEATMAP_BINS)
@@ -358,7 +369,7 @@ def anim_heatmap(i):
     if config.is_pulse_func():
         ax8.set(xlabel='Generation', ylabel='Pulses', title='Pulse Count Histogram')
     else:
-        ax8.set(xlabel='Generation', ylabel='Voltage (Normalized)', title='Voltage (Normalized) Heatmap')
+        ax8.set(xlabel='Generation', ylabel='Voltage (V)', title='Voltage Heatmap')
 
     if config.using_transfer_interval():
             for i in range(0,len(lines),config.get_transfer_interval()):
@@ -530,8 +541,9 @@ if config.get_selection_type() == 'MAP_ELITES':
     if config.get_fitness_func() == "PULSE_CONSISTENCY":
         ani4 = plot(fig_map, animate_pulse_map)
     else:
-        ani4 = plot(fig_map, animate_map)   
+        ani4 = plot(fig_map, animate_map)
 
 plt.subplots_adjust(hspace=0.50)
 fig.tight_layout(pad=5.0)
 plt.show(block=(not formal))
+#plt.show(block=True)
