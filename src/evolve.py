@@ -57,6 +57,7 @@ add_bool_argument(parser,"print_only",flag_names=print_flags,default=False)
 # --help is added by default
 
 def run():
+    """Perform evolution according to the provided config."""
     ## Parsing Args and configuring Variables
     __args=parser.parse_args()
 
