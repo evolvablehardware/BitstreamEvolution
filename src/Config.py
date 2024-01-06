@@ -2,6 +2,7 @@ from pathlib import Path
 from configparser import ConfigParser
 from configparser import NoOptionError
 from xml.dom import NotFoundErr
+from datetime import strptime, timedelta
 
 # TODO Add handling for missing values
 # NOTE Fails ungracefully at missing values currently
@@ -227,16 +228,34 @@ class Config:
 		except NoOptionError:
 			self.__log_error(1, "Invalid file path " + self.get_sensitivity_parameters("TEST_CIRCUIT") + " for test circuit.")
 
+	def using_sensitivity_trials(self):
+		return self.get_sensitivity_parameters("SENSITIVITY_TRIALS") != "IGNORE"
+
 	def get_sensitivity_trials(self):
 		try:
 			trials = int(self.get_sensitivity_parameters("SENSITIVITY_TRIALS"))
 		except:
-			self.__log_error(1, "Non-int user input for the number of sensitivity trials to do.")
-			exit()
+			self.__log_error(1, "Non-int user input for the number of sensitivity trials. Program will not terminate based on the number of generations")
+			return "IGNORE"
 		if trials < 1:
 			self.__log_error(1, "Invalid number of sensitivity trials" + str(trials) + "'. Must be greater than zero.")
 			exit()
 		return trials
+	
+	def using_sensitivity_time(self):
+		return self.get_sensitivity_parameters("SENSITIVITY_TIME") != "IGNORE"
+
+	def get_sensitivity_time(self):
+		try:
+			date_time = strptime(self.get_sensitivity_parameters("SENSITIVITY_TIME"), '%H:%M:%S')
+			delta = timedelta(hours=date_time.hours, minutes=date_time.minutes, seconds=date_time.seconds)
+		except ValueError:
+			self.__log_error(1, "Non-int user input for the amount of time to sensitivity trials. Program will not terminate based on the number of generations")
+			return "IGNORE"
+		if delta < timedelta():
+			self.__log_error(1, "Invalid amount of time to do sensitivity trials: " + str(delta) + "'. Must be greater than zero.")
+			exit()
+		return delta
 	
 	#SECTION getts for transferability experiment parameters
 	def using_transfer_interval(self):
