@@ -116,11 +116,11 @@ class CircuitPopulation:
             self.__generate_sine_funcs()
         )
 
-        using_time = self.__config.using_sensitvity_time()
+        using_time = self.__config.using_sensitivity_time()
         start_time = time()
-        stop_time = self.__config.get_sensitvity_time()
+        stop_time = self.__config.get_sensitivity_time()
 
-        using_trials = self.__config.using_sensitvity_trials()
+        using_trials = self.__config.using_sensitivity_trials()
         cur_trial = 0
         num_trials = self.__config.get_sensitivity_trials()
         

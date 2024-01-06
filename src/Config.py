@@ -2,7 +2,7 @@ from pathlib import Path
 from configparser import ConfigParser
 from configparser import NoOptionError
 from xml.dom import NotFoundErr
-from datetime import strptime, timedelta
+from datetime import datetime
 
 # TODO Add handling for missing values
 # NOTE Fails ungracefully at missing values currently
@@ -235,7 +235,7 @@ class Config:
 		try:
 			trials = int(self.get_sensitivity_parameters("SENSITIVITY_TRIALS"))
 		except:
-			self.__log_error(1, "Non-int user input for the number of sensitivity trials. Program will not terminate based on the number of generations")
+			self.__log_warning(1, "Non-int user input for the number of sensitivity trials. Program will not terminate based on the number of generations")
 			return "IGNORE"
 		if trials < 1:
 			self.__log_error(1, "Invalid number of sensitivity trials" + str(trials) + "'. Must be greater than zero.")
@@ -247,15 +247,16 @@ class Config:
 
 	def get_sensitivity_time(self):
 		try:
-			date_time = strptime(self.get_sensitivity_parameters("SENSITIVITY_TIME"), '%H:%M:%S')
-			delta = timedelta(hours=date_time.hours, minutes=date_time.minutes, seconds=date_time.seconds)
+			date_time = datetime.strptime(self.get_sensitivity_parameters("SENSITIVITY_TIME"), '%H:%M:%S')
+			seconds = 3600*date_time.hour + 60*date_time.minute + date_time.second
+			print(seconds)
 		except ValueError:
-			self.__log_error(1, "Non-int user input for the amount of time to sensitivity trials. Program will not terminate based on the number of generations")
+			self.__log_warning(1, "Non-int user input for the amount of time to sensitivity trials. Program will not terminate based on the number of generations")
 			return "IGNORE"
-		if delta < timedelta():
-			self.__log_error(1, "Invalid amount of time to do sensitivity trials: " + str(delta) + "'. Must be greater than zero.")
+		if seconds < 0:
+			self.__log_error(1, "Invalid amount of time to do sensitivity trials: " + str(seconds) + "'. Must be greater than zero.")
 			exit()
-		return delta
+		return seconds
 	
 	#SECTION getts for transferability experiment parameters
 	def using_transfer_interval(self):

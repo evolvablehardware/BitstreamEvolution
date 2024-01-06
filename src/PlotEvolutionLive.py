@@ -488,9 +488,13 @@ if (config.get_simulation_mode() == 'INTRINSIC_SENSITIVITY'):
     ax4 = fig.add_subplot(2, 2, 3)
     ax5 = fig.add_subplot(2, 2, 4)
     ani = animation.FuncAnimation(fig, animate_sensitivity, interval=FRAME_INTERVAL)
-    plt.show()
-    while True:
-        pass
+    plt.subplots_adjust(hspace=0.50)
+    fig.tight_layout(pad=5.0)
+    plt.show(block=(not formal))
+    if formal:
+        exit()
+    # while not formal:
+    #     pass
 
 fig = plt.figure(figsize=(9,7))
 rows = 2
