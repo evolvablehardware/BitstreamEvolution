@@ -1,5 +1,5 @@
 ==============
 reconstruct.py
 ==============
-.. automodule:: tools/reconstruct
+.. automodule:: tools.reconstruct
     :members:
