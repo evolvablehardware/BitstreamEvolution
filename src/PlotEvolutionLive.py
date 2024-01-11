@@ -370,7 +370,10 @@ def run():
                 pts = vals[1].split(',')
                 for pt in pts:
                     gens.append(int(vals[0]))
-                    collections.append(float(pt)*3.3/715)
+                    if config.is_pulse_func():
+                        collections.append(float(pt))
+                    else:
+                        collections.append(float(pt)*3.3/715)
                 
         ax8.clear()                         
         ax8.hist2d(gens,collections,bins=HEATMAP_BINS)
