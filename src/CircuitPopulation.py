@@ -115,17 +115,30 @@ class CircuitPopulation:
             self.__rand,
             self.__generate_sine_funcs()
         )
+
+        using_time = self.__config.using_sensitivity_time()
+        start_time = time()
+        stop_time = self.__config.get_sensitivity_time()
+
+        using_trials = self.__config.using_sensitivity_trials()
+        cur_trial = 0
+        num_trials = self.__config.get_sensitivity_trials()
         
         #loop through trials and log fitness
-        for i in range(self.__config.get_sensitivity_trials()):
+        should_continue = True
+        while should_continue:
             fitness = self.__eval_ckt(ckt)
             with open("workspace/fitnesssensitivity.log", "a") as live_file:
-                if self.__config.get_fitness_func() == "PULSE_COUNT":
+                if self.__config.is_pulse_func():
                     data2 = ckt.get_pulses()
                 else:
                     data2 = ckt.get_mean_voltage()
-                live_file.write(("{}:{},{}\n").format(str(i), fitness, data2))
-            self.__log_event(2, "Trial " + str(i) + " done. Fitness recorded and logged to file: " + str(fitness))
+                live_file.write(("{}:{},{}\n").format(str(cur_trial), fitness, data2))
+            self.__log_event(2, "Trial " + str(cur_trial) + " done. Fitness recorded and logged to file: " + str(fitness))
+
+            cur_trial += 1
+            should_continue = ((not using_time) or (time() - start_time < stop_time)) and \
+                              ((not using_trials) or (cur_trial < num_trials))
 
         self.__log_event(1, "Fitness sensitivity trails done.")
 
