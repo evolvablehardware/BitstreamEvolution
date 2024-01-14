@@ -235,7 +235,7 @@ class Config:
 		try:
 			trials = int(self.get_sensitivity_parameters("SENSITIVITY_TRIALS"))
 		except:
-			self.__log_warning(1, "Non-int user input for the number of sensitivity trials. Program will not terminate based on the number of generations")
+			self.__log_warning(1, "Non-int user input for the number of sensitivity trials. Program will not terminate based on the number of of trials")
 			return "IGNORE"
 		if trials < 1:
 			self.__log_error(1, "Invalid number of sensitivity trials" + str(trials) + "'. Must be greater than zero.")
@@ -251,7 +251,7 @@ class Config:
 			seconds = 3600*date_time.hour + 60*date_time.minute + date_time.second
 			print(seconds)
 		except ValueError:
-			self.__log_warning(1, "Non-int user input for the amount of time to sensitivity trials. Program will not terminate based on the number of generations")
+			self.__log_warning(1, "Invalid value for the amount of time to sensitivity trials. Program will not terminate based on the amount of time passed")
 			return "IGNORE"
 		if seconds < 0:
 			self.__log_error(1, "Invalid amount of time to do sensitivity trials: " + str(seconds) + "'. Must be greater than zero.")

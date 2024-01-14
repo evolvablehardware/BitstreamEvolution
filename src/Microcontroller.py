@@ -102,7 +102,10 @@ class Microcontroller:
             buf.append(-1000) # This should never happen
         for i in range(len(buf)):
             self.__log_event(2, f'Buffer entry {i}:', buf[i])
-            buf[i] = int(buf[i])
+            try:
+                buf[i] = int(buf[i])
+            except ValueError:
+                buf[i] = -1
             lines.append(str(buf[i]) + "\n")
 
         data_file.writelines(lines)
