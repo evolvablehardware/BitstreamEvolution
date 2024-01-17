@@ -48,21 +48,39 @@ ELITE_MAP_SCALE_FACTOR = 50
 PULSE_ELITE_MAP_SCALE_FACTOR = 5000
 
 def is_pulse_func(config):
+    """
+    Used in multiple places, will be removed soon.
+
+    Parameters
+    ----------
+    config : Config
+        Configuration Class to interact with config
+
+    Returns
+    -------
+    bool
+        True if it is any type of oscilator (uses count pulses), False otherwise.
+    """
     return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
             or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT' or config.get_fitness_func() == 'PULSE_CONSISTENCY')
 
 class CircuitPopulation:
+    """Manages the initializing the population of circuits,
+    updating and recording information about the population throughout evolution,
+    and deciding when to stop evolution"""
     # SECTION Initialization functions
     def __init__(self, mcu, config: Config, logger):
-        """ Generates the initial population of circuits with the following arguments
+        """ 
+        Generates the initial population of circuits with the following arguments
 
-                Args:
-                    mcu::[Class Object] containing an instance of Microcontroller class
-
-                    config::[Class Object] containing an instance of Config class
-
-                    logger::[Class Object] containing an instance of Logger class
-
+        Parameters
+        ----------
+        mcu : Microcontroller
+            Object containing an instance of Microcontroller class
+        config : Configuration
+            Object containing an instance of Config class
+        logger : Logger
+            Object containing an instance of Logger class
         """
         self.__config = config
         self.__microcontroller = mcu
@@ -103,6 +121,10 @@ class CircuitPopulation:
         self.__n_elites = int(ceil(elitism_fraction * population_size))
 
     def run_fitness_sensitity(self):
+        """
+        Gets the same circuit, runs it repeatedly and reports each fitness.
+        Internally has a while loop to determine how many times to run.
+        """
         #create circuit object
         self.__log_info(1, "Creating circuit object for fitness sensitivity experiment")
         ckt = Circuit(
@@ -143,6 +165,14 @@ class CircuitPopulation:
         self.__log_event(1, "Fitness sensitivity trails done.")
 
     def __generate_sine_funcs(self):
+        """
+        Builds a list of randomly generated sine functions used in the simulation mode.
+
+        Returns
+        -------
+        list[functions]
+            List of randomly generated sine functions
+        """
         sine_funcs = []
         self.__sine_strs = []
         for i in range(100):
@@ -162,10 +192,12 @@ class CircuitPopulation:
             self.__sine_strs.append(sine_str)
         return sine_funcs
 
-
     def populate(self):
         """
-        Creates initial population.
+        Creates initial population based on the config.
+        1. Clears the files used to keep track of circuit
+        2. Uses appropriate initialization method specified by config.
+        3. Handles randomization until condition in config is met.
         """
         # Always creates a circuit with the seed file, but if we have certain randomization
         # modes then perform necessary operations
@@ -294,7 +326,8 @@ class CircuitPopulation:
 
     def __randomize_until_pulses(self):
         """
-        Randomizes population until minimum variance is found
+        Randomizes population until minimum number of pulses is found.
+        Called by populate(self)
         """
         no_pulses_generated = True
         while no_pulses_generated:
@@ -318,6 +351,7 @@ class CircuitPopulation:
     def __randomize_until_voltage(self):
         """
         Randomizes population until a mean voltage is found near the desired value
+        called by populate(self)
         """
         while True:
             self.__log_event(3, "Randomizing to get voltage")
@@ -336,7 +370,8 @@ class CircuitPopulation:
     # https://github.com/evolvablehardware/BitstreamEvolution/issues/3
     def __randomize_until_variance(self):
         """
-        Randomizes population until minimum variance is found
+        Randomizes population until minimum variance fitness is found.
+        called by populate(self)
         """
         # Variance threshold is the desired variance
         bestVariance = 0
@@ -369,6 +404,14 @@ class CircuitPopulation:
         self.__current_epoch += 1
 
     def __should_continue_evo(self):
+        """
+        Checks with config whether we have reached any of the end conditions for the simulation run.
+
+        Returns
+        -------
+        bool
+            True if evolution should continue, False otherwise.
+        """
         should_continue = True
         if self.__config.using_n_generations():
             if self.get_current_epoch() >= self.__config.get_n_generations():
@@ -379,6 +422,21 @@ class CircuitPopulation:
         return should_continue
 
     def __eval_ckt(self, circuit, record_data = False):
+        """
+        Selects the evaluation method for the circuit based on the simulation mode.
+
+        Parameters
+        ----------
+        circuit : Circuit
+            Circuit to be evaluated
+        record_data : bool
+            True if we want data recorded into circuit's data file (passed to circuit.evaluate method)
+
+        Returns
+        -------
+        float
+            Returns the fitness of the circuit
+        """
         # Biggest difference between Fully Instrinsic and Hardware Sim: The fitness evaluation
         fitness = 0
         if self.__config.get_simulation_mode() == "FULLY_SIM":
@@ -400,7 +458,7 @@ class CircuitPopulation:
     def evolve(self):
         """
         Runs an evolutionary loop and records the circuit with the highest fitness throughout the loop,
-        while also storing statistics in a file for the plot to access
+        while also storing statistics in a file for the plot to access.
         """
         if len(self.__circuits) == 0:
             self.__log_error(
@@ -508,10 +566,9 @@ class CircuitPopulation:
         # Also, log the name of the top circuit
         self.__log_event(1, "Top Circuit in Final Generation:", self.__circuits[0])
 
-
     def __write_to_livedata(self):
         """
-        Runs each generation to write data to live data files
+        Runs each generation to write data to files used to store data needed for Live plots (PlotEvolutionLive.py)
         """
         fitness_sum = 0
         for c in self.__circuits:
@@ -574,6 +631,10 @@ class CircuitPopulation:
         """
         Saves the current generation to the generations directory
         Each generation gets its own file
+
+        Saves all modifiable parts of a generation so it can be reconstructed.
+
+        called by __write_to_livedata(self)
         """
         gen_lines = []
         # At the top, add the necessary config params such as routing and accessed columns
@@ -601,11 +662,10 @@ class CircuitPopulation:
                 best = self.__circuits[0]
                 live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(best.get_waveform())))
 
-
     # SECTION Selection algorithms.
     def __run_classic_tournament(self):
         """
-        Randomly pairs together circuits, compares their fitness, and preforms crossover on and mutates the "loser"
+        Selection Algorithm that randomly pairs together circuits, compares their fitness, and preforms crossover on and mutates the "loser"
         """
         population = self.__rand.permutation(self.__circuits)
 
@@ -638,10 +698,9 @@ class CircuitPopulation:
 
             loser.mutate()
 
-
     def __run_single_elite_tournament(self):
         """
-        Mutates the hardware of every circuit that is not the current best circuit
+        Selection Algorithm that mutates the hardware of every circuit that is not the current best circuit
         """
         self.__log_event(3, "Tournament Number: {}".format(
             str(self.get_current_epoch())))
@@ -659,7 +718,7 @@ class CircuitPopulation:
 
     def __run_fitness_proportional_selection(self):
         """
-        Compares every circuit in the population to a random elite (chosen proportionally based on each elite's fitness).
+        Selection algorithm that compares every circuit in the population to a random elite (chosen proportionally based on each elite's fitness).
         If circuit has a lower fitness, crossover or mutate the circuit
         """
         self.__log_event(2, "Number of Elites:", self.__n_elites)
@@ -726,7 +785,7 @@ class CircuitPopulation:
 
     def __run_rank_proportional_selection(self):
         '''
-        Compares every circuit in the population to a random elite (chosen proportionally based on each elite's rank).
+        Selection algorithm that compares every circuit in the population to a random elite (chosen proportionally based on each elite's rank).
         If circuit has a lower fitness, crossover or mutate the circuit
         '''
         self.__log_event(2, "Number of Elites:", self.__n_elites)
@@ -788,7 +847,7 @@ class CircuitPopulation:
 
     def __run_fractional_elite_tournament(self):
         """
-        Compares every circuit in the population to a random elite. If circuit has a lower fitness, crossover or mutate the circuit
+        Selection algorithm that compares every circuit in the population to a random elite. If circuit has a lower fitness, crossover or mutate the circuit
         """
         self.__log_info(2, "Number of Elites: ", str(self.__n_elites))
         self.__log_info(2, "Ranked Fitness: ", self.__circuits)
@@ -824,6 +883,7 @@ class CircuitPopulation:
 
     def __run_map_elites_selection(self):
         """
+        Selection Algorithm that is an alternate version of the map elites algorithm from another paper.
         This version of map elites will protect the highest-fitness individual in each "square"
         We're going to have slightly granular squares to make sure that circuits have room to spread out early
         to hopefully promote diversity
@@ -849,6 +909,14 @@ class CircuitPopulation:
         self.__output_map_file(elite_map)
 
     def __output_map_file(self, elite_map):
+        """
+        Writes the map to a file (workspace/maplivedata.log)
+
+        Parameters
+        ----------
+        elite_map : Circuit[][]
+            2D array of circuits that fell into these groupings depending on their characteristics.
+        """
         with open("workspace/maplivedata.log", "w+") as liveFile:
             # First line describes granularity/scale factor
             liveFile.write("{}\n".format(str(ELITE_MAP_SCALE_FACTOR)))
@@ -870,7 +938,12 @@ class CircuitPopulation:
 
     def __generate_map(self):
         """
-        Generates the elite map for this generation
+        Generates the elite map for this generation based on variance.
+        
+        Returns
+        -------
+        Circuit[][]
+            A 2D array of circuits catagorized based off of shared characteristics
         """
         # If the value is not a circuit (i.e. it is 0) then we know the spot is open to be filled in
         # Go up to 21 since upper bound is 1024
@@ -886,7 +959,17 @@ class CircuitPopulation:
             if elite_map[row][col] == 0 or ckt.get_fitness() > elite_map[row][col].get_fitness():
                 elite_map[row][col] = ckt
         return elite_map
+   
     def __generate_pulse_map(self):
+        """
+        Generates the elite map for this generation based on pulse count.
+
+        Returns
+        -------
+        Circuit[][]
+            A 2D array of circuits catagorized based off of shared characteristics
+        """
+
         elite_map = []
         for i in range((150_000 - 1_000) / PULSE_ELITE_MAP_SCALE_FACTOR):
             elite_map.append(0)
@@ -925,6 +1008,13 @@ class CircuitPopulation:
     def __single_point_crossover(self, source, dest):
         """
         Copy some series of chiasmas (points of genetic exchange) from fitter circuit into children
+
+        Parameters
+        ----------
+        source : Circuit
+            The circuit you are copying data from.
+        dest : Circuit
+            The circuit you are overwriting data from source to.
         """
         crossover_point = 0
 
@@ -945,6 +1035,11 @@ class CircuitPopulation:
     def avg_hamming_dist(self):
         """
         Calculates and returns the average Hamming distance for the population
+
+        Returns
+        -------
+        float
+            Returns Hamming distance.
         """
         running_total = 0
         n = len(self.__circuits)
@@ -985,6 +1080,11 @@ class CircuitPopulation:
     def count_unique(self):
         """
         Returns the number of unique files in the population
+
+        Returns
+        -------
+        int
+            Number of unique circuits in the population
         """
         if self.__config.get_simulation_mode() == "FULLY_SIM":
             bitstreams = []

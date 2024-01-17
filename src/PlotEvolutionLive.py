@@ -32,6 +32,7 @@ FRAME_INTERVAL = 10000
 config = Config("workspace/builtconfig.ini")
 
 def run():
+    """Temporary function to run all of Plot Evolution Live."""
     def animate_generation(i):
         graph_data = open('workspace/alllivedata.log','r').read()
         lines = graph_data.split('\n')
