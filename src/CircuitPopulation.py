@@ -1039,7 +1039,7 @@ class CircuitPopulation:
         Returns
         -------
         float
-            Returns Hamming distance.
+            Returns Hamming distance in the population.
         """
         running_total = 0
         n = len(self.__circuits)
