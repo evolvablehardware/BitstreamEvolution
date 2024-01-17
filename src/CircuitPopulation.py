@@ -77,7 +77,7 @@ class CircuitPopulation:
         ----------
         mcu : Microcontroller
             Object containing an instance of Microcontroller class
-        config : Configuration
+        config : Config
             Object containing an instance of Config class
         logger : Logger
             Object containing an instance of Logger class
