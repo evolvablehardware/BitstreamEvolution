@@ -942,7 +942,7 @@ class CircuitPopulation:
         
         Returns
         -------
-        Circuit[][]
+        list(list(Circuit))
             A 2D array of circuits catagorized based off of shared characteristics
         """
         # If the value is not a circuit (i.e. it is 0) then we know the spot is open to be filled in
@@ -982,25 +982,45 @@ class CircuitPopulation:
     # SECTION Getters.
     def get_current_best_circuit(self):
         """
-        Returns the circuit in the current generation with the highest fitness
+        Gets the circuit in the current generation with the highest fitness
+
+        Returns
+        -------
+        Circuit
+            Returns the best circuit in population.
         """
         return self.__circuits[0]
 
     def get_overall_best_circuit_info(self):
         """
         Returns the information of the circuit with the highest fitness throughout the run 
+
+        Returns
+        -------
+        CircuitInfo
+            Returns the info object for the overall best circuit throughout the run.
         """
         return self.__overall_best_circuit_info
 
     def get_current_epoch(self):
         """
         Returns the generation number
+
+        Returns
+        -------
+        int
+            Returns the generation number of the current evolution.
         """
         return self.__current_epoch
 
     def get_best_epoch(self):
         """
         Returns the generation number that contained the circuit with the highest fitness
+
+        Returns
+        -------
+        int
+            Generation number that hat the circuit with the highest fitness
         """
         return self.__best_epoch
 
@@ -1085,6 +1105,7 @@ class CircuitPopulation:
         -------
         int
             Number of unique circuits in the population
+        
         """
         if self.__config.get_simulation_mode() == "FULLY_SIM":
             bitstreams = []
@@ -1117,7 +1138,20 @@ class CircuitPopulation:
 
     def __unique(self, arrays):
         """
+        .. todo::
+            Confirm what this does and whether arrays is soposed to be a specific data type.
+
         Returns an array of unique arrays from the input
+
+        Parameters
+        ----------
+        arrays : list[list]
+            An array containing arrays
+
+        Returns
+        -------
+        list[]
+            Returns a list of all of the unique lists containedin the arrays variables
         """
         soln = []
         for a in arrays:
@@ -1134,6 +1168,18 @@ class CircuitPopulation:
     def __arr_eq(self, ar1, ar2):
         """
         Returns True if the arrays or equal or False otherwise
+
+        Parameters
+        ----------
+        ar1 : list
+            an array
+        ar2 : list
+            an array
+
+        Returns
+        -------
+        bool
+            True if the arrays are equivalent in content and order, False otherwise.
         """
         if len(ar1) != len(ar2):
             return False
@@ -1145,6 +1191,18 @@ class CircuitPopulation:
     def __files_eq(self, fp1, fp2):
         """
         Returns true if the files are equal (have the same content)
+
+        Parameters
+        ----------
+        fp1 : str
+            Path to file 1
+        fp2 : str
+            Path to file 2
+
+        Returns
+        -------
+        bool
+            True if both files contain the same content, False otherwise.
         """
         content1 = []
         content2 = []
@@ -1158,6 +1216,10 @@ class CircuitPopulation:
     @staticmethod
     def __group(iterable, n, fillvalue=None):
         """
+        .. todo::
+            Take a closer look at this function. Not sure why, but a comment here told me to.
+            Also, further document what this function is I couldn't tell.
+        
         Collect data into fixed-length chunks or blocks
         #grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
         Taken from python recipes.
@@ -1168,8 +1230,18 @@ class CircuitPopulation:
 
     def __log_event(self, level, *event):
         """
+        .. todo::
+            Make sure I interpreted what was being passed to these logging functions correctly
+
         Emit an event-level log. This function is fulfilled through
         the logger.
+
+        Parameters
+        ----------
+        level : int
+            The level of importance of the logged information
+        event : tuple
+            The event being logged (Not sure exactly what the data type is)
         """
         self.__logger.log_event(level, *event)
 
@@ -1177,6 +1249,13 @@ class CircuitPopulation:
         """
         Emit an info-level log. This function is fulfilled through
         the logger.
+
+        Parameters
+        ----------
+        level : int
+            The level of importance of the logged information
+        info : tuple
+            The info being logged (Not sure exactly what the data type is)
         """
         self.__logger.log_info(level, *info)
 
@@ -1184,6 +1263,13 @@ class CircuitPopulation:
         """
         Emit an error-level log. This function is fulfilled through
         the logger.
+
+        Parameters
+        ----------
+        level : int
+            The level of importance of the logged information
+        error : tuple
+            The error being logged (Not sure exactly what the data type is)
         """
         self.__logger.log_error(level, *error)
 
@@ -1191,5 +1277,12 @@ class CircuitPopulation:
         """
         Emit a warning-level log. This function is fulfilled through
         the logger.
+
+        Parameters
+        ----------
+        level : int
+            The level of importance of the logged information
+        warning : tuple
+            The warning being logged (Not sure exactly what the data type is)
         """
         self.__logger.log_warning(level, *warning)
