@@ -143,7 +143,8 @@ class Circuit:
         Static get file attribute method; allows using without creating a full circuit object
 
         .. todo::
-            not clear on what exactly this is doing. Please revise 
+            not clear on what exactly this is doing. Please revise. 
+            Also see the 3 other file manipulation methods nearby.
 
         Parameters
         ----------
@@ -225,12 +226,29 @@ class Circuit:
     def get_file_attribute(self, attribute):
         '''
         Gets the value of attribute stored in a comment in the circuit's .asc file
+
+        Parameters
+        ----------
+        attrbute : str
+            The name of the attribute of this circuit you want
+
+        Returns
+        -------
+        str
+            The value of the attribute as a string 
         '''
         return Circuit.get_file_attribute_st(self.__hardware_file, attribute)
     
     def set_file_attribute(self, attribute, value):
         '''
         Sets the value of the attribute stored in a comment in the circuit's .asc file
+
+        Parameters
+        ----------
+        attribute : str
+            The name of the attribute you want to set
+        value : str
+            The value of the attribute you want to set
         '''
         hardware_file = open(self.__hardware_filepath, "r+")
         Circuit.set_file_attribute_st(hardware_file, attribute, value)
@@ -239,7 +257,14 @@ class Circuit:
         hardware_file.close()
 
     def randomize_bits(self):
-        # Simply set mutation chance to 100%
+        """
+        Randomize the bits of the circuit.
+
+        .. todo::
+            There is a strange comment here. Don't know what it is saying. Should be better specified.
+            Also should be better description of what this is doing if that is needed.
+        """
+        # Simply set mutation chance to 100%  <<---What is this saying?
         if self.__config.get_simulation_mode() == "FULLY_SIM":
             self.__mutate_simulation(True)
         else:
@@ -267,19 +292,48 @@ class Circuit:
     def get_sim_bitstream(self):
         """
         Returns the simulation bitstream array
+
+        Returns
+        -------
+        list[int]
+            The bitstream of this circuit
         """
         return self.__simulation_bitstream
 
     def get_hardware_file_path(self):
         """
         Returns the hardware file path
+
+        Returns
+        -------
+        Path
+            returns the path of the circuit
         """
         return self.__hardware_filepath
 
     def calculate_fitness_from_data(self):
         """
+        Calculates the fitness of this circuit from stored data in the file.
         When multiple samples have been stored in self.__data, 
         this function will take the lowest fitness and use that as our circuit's fitness
+
+        .. todo::
+            This function should probably be better documented. I was having trouble seeing where our different fitness calues are calculated. 
+            The Pulse Consistancy is reasonably clear, but I don't see anything else here, and don't know where else they should be.
+
+        .. todo::
+            There was the following TODO statement at the bottom of the code:
+            TODO Evaluate based on a fitness function defined in the config file
+            while still utilizing the existing or newly added evaluate functions in this class::
+            
+                def evaluate(self):
+                    return
+             
+        
+        Returns
+        -------
+        float
+            The fitness found from analyzing data
         """
         # Flatten the data list
         data = [item for sublist in self.__data for item in sublist]
@@ -311,6 +365,16 @@ class Circuit:
     def evaluate_sim(self, is_combined):
         """
         Just evaluate the simulation bitstream (use sine function combinations, with variance formula)
+        
+        Parameters
+        ----------
+        is_combined : bool
+            True if evaluating combined fitness, False if evaluating varience fitness
+
+        Returns
+        -------
+        float
+            True if it is any type of oscilator (uses count pulses), False otherwise.
         """
         
         # Need to sum up the waveforms of every 1 that appears in our bitstream
@@ -346,6 +410,11 @@ class Circuit:
     def evaluate_sim_hardware(self):
         """
         Sum up all the bytes in the compiled binary file
+
+        Returns
+        -------
+        int
+            The fitness of the sim hardware. (sum of all bytes in compiled binary file)
         """
         
         self.__compile()
