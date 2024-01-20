@@ -47,5 +47,5 @@ todo_emit_warnings=False            # True if want warnings created for each tod
 napoleon_google_docstring = False           # False to turn off support for google Docstrings
 napoleon_numpy_docstring = True             # True to turn on support for numpy Docstrings
 napoleon_include_init_with_doc = True       # True to include __init__ as it's own function if it has an a related docstring. If false, just append to class documentation.
-napoleon_include_private_with_doc = False   # True to include private members with docstrings, false resorts to Sphinx's defaults
+napoleon_include_private_with_doc = True    # True to include private members with docstrings, false resorts to Sphinx's defaults
 napoleon_include_special_with_doc = True    # True to include special members like __membername__ with docstrings in documentation. If false, Sphinx defaults, defalts to true.

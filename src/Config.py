@@ -1,3 +1,10 @@
+"""
+Config.py
+---------
+
+This class is instantiated to aquire values from the config file.
+"""
+
 from pathlib import Path
 from configparser import ConfigParser
 from configparser import NoOptionError
@@ -10,7 +17,20 @@ from datetime import datetime
 FAIL = '\033[91m'
 ENDC = '\033[0m'
 class Config:
+	"""
+	This class is instantiated to aquire values from the config file for the evolutionary run. 
+	This object is given to other objects so they can access value sin the config.
+	"""
+
 	def __init__(self, filename):
+		"""
+		Provide the file to be interpreted by the config file.
+
+		Parameters
+    	----------
+    	filename : str
+    	    A path to the config file.
+		"""
 		self.__config_parser = ConfigParser()
 		self.__config_parser.read(filename)
 		self.__filename = filename

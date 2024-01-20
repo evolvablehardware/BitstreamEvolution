@@ -6,6 +6,17 @@
 #
 # Author: Derek Whitley
 
+"""
+evolve.py
+---------
+
+This file is run to initiate a round of evolution. There are command line arguments to help initiate an evolution run.
+
+This file has been reviewed, and should be at a satisfacroty level.
+
+"""
+
+
 from Evolution import Evolution
 from arg_parse_utils import add_bool_argument
 import argparse

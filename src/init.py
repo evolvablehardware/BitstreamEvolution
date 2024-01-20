@@ -2,11 +2,13 @@
 
 """
 init.py
-=======
+-------
 
 This program is run to initialize the workspace directory.
 
 This program is not used over the course of a standard evolution run.
+
+This program has been reviewed, and should be adequately documented.
 """
 
 from configparser import ConfigParser

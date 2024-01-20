@@ -1,3 +1,10 @@
+""" 
+Circuit Population
+------------------
+
+This class was reviewed, and should be fully documented at a basic level.
+
+"""
 import os
 import numpy as np
 from typing import NamedTuple
