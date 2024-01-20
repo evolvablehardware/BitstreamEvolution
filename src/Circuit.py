@@ -175,6 +175,15 @@ class Circuit:
     def set_file_attribute_st(hardware_file, attribute, value):
         '''
         Static version of set file attribute; allows using without creating a full circuit object
+
+        Parameters
+        ----------
+        hardware_file : str
+            The path to the hardware file of interest
+        attribute : str
+            The name of the attribute in the file you want to set 
+        value : Any
+            The value of that attribute you want to set.
         '''
         # Check if the comment exists
         #hardware_file = open(file_path, "r+")
