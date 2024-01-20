@@ -1,7 +1,6 @@
 """
 Config.py
 ---------
-
 This class is instantiated to aquire values from the config file.
 """
 
@@ -27,9 +26,9 @@ class Config:
 		Provide the file to be interpreted by the config file.
 
 		Parameters
-    	----------
-    	filename : str
-    	    A path to the config file.
+		----------
+		filename : str
+			The file path of the configuration file.
 		"""
 		self.__config_parser = ConfigParser()
 		self.__config_parser.read(filename)
