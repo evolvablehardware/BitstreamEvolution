@@ -58,6 +58,9 @@ def is_pulse_func(config):
     """
     Used in multiple places, will be removed soon.
 
+    .. todo::
+        unite the is_pulse_func() functions for ease of change.
+
     Parameters
     ----------
     config : Config
