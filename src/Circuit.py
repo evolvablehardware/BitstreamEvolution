@@ -982,6 +982,9 @@ class Circuit:
         If lambda_func returns None, then the bit is left unmodified
         Keep in mind the bytes are the ASCII codes, so for example 49 = 1
 
+        .. todo::
+            Go over this with someone who can clarify what all of the data types are. 
+
         Parameters
         ----------
         lambda_func : Callable
