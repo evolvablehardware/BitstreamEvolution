@@ -345,7 +345,19 @@ class Circuit:
                 fit = 1_000 / (std + 1)
                 self.__log_event(2, "Consistency std", std, "data", data, "fitness", fit)
         else:
-            fit = np.prod(data)
+            # Pulse fitness will be > 1 if there were more than 0 pulses detected
+            # Therefore to combine pulse fitnesses, subtract 1 from each, multiply them together,
+            # then add 1 to the resultant
+            any_pulses = False
+            product = 1
+            for value in data:
+                if value > 1:
+                    value = value - 1
+                    any_pulses = True
+                product = product * value
+            fit = product
+            if any_pulses:
+                fit = fit + 1
         self.__fitness = fit
         self.__update_all_live_data()
         self.__data = []
@@ -796,6 +808,10 @@ class Circuit:
                 fitness = 0
             else:
                 fitness = 1.0 / abs(desired_freq - pulses)
+
+        if pulses > 0:
+            # Give fitness bonus for getting above 0 pulses
+            fitness = fitness + 1
         return fitness
 
     def __measure_combined_fitness(self, waveform):
