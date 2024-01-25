@@ -1,3 +1,20 @@
+"""
+Microcontroller.py
+------------------
+
+This file has a class that is used to interact with a microcontroller to extract information about the running circuit.
+This interacts with serial. 
+
+.. todo::
+    Make a Mock of the Microcontroller to test standard operation without connection to the microcontroller.
+
+.. todo::
+    Make a Testing program that would allow you to directly get values from the micrcocontroller class. Maybe a terminal input or something would be good.
+
+.. todo::
+    Figure out how to mock Serial connection to allow this class to be tested.
+
+"""
 from serial import Serial
 from time import time
 import numpy as np
@@ -9,6 +26,11 @@ from Config import Config
 from Logger import Logger
 
 class Microcontroller:
+    """
+    This is a class that represents the microcontroller connected to the FPGA. 
+    It is primarily used to interpret the serial output into values that are useful for the rest of the program. 
+    It mostly deals with  values for fitness functions.
+    """
     def __log_event(self, level, *event):
         self.__logger.log_event(level, *event)
 
