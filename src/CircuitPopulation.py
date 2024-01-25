@@ -1148,20 +1148,17 @@ class CircuitPopulation:
 
     def __unique(self, arrays):
         """
-        .. todo::
-            Confirm what this does and whether arrays is soposed to be a specific data type.
-
         Returns an array of unique arrays from the input
 
         Parameters
         ----------
-        arrays : list[list]
+        arrays : list[list[T]]
             An array containing arrays
 
         Returns
         -------
-        list[]
-            Returns a list of all of the unique lists containedin the arrays variables
+        list[T]
+            Returns a list of all of the unique lists contained in the arrays variable
         """
         soln = []
         for a in arrays:
@@ -1178,6 +1175,7 @@ class CircuitPopulation:
     def __arr_eq(self, ar1, ar2):
         """
         Returns True if the arrays or equal or False otherwise
+        Compares each element of ar1 and ar2
 
         Parameters
         ----------
@@ -1240,18 +1238,15 @@ class CircuitPopulation:
 
     def __log_event(self, level, *event):
         """
-        .. todo::
-            Make sure I interpreted what was being passed to these logging functions correctly
-
         Emit an event-level log. This function is fulfilled through
         the logger.
 
         Parameters
         ----------
         level : int
-            The level of importance of the logged information
-        event : tuple
-            The event being logged (Not sure exactly what the data type is)
+            The level of importance of the logged information (lower level = higher importance)
+        event : tuple[string]
+            The message being logged
         """
         self.__logger.log_event(level, *event)
 
@@ -1263,9 +1258,9 @@ class CircuitPopulation:
         Parameters
         ----------
         level : int
-            The level of importance of the logged information
-        info : tuple
-            The info being logged (Not sure exactly what the data type is)
+            The level of importance of the logged information (lower level = higher importance)
+        info : tuple[string]
+            The message being logged
         """
         self.__logger.log_info(level, *info)
 
@@ -1277,9 +1272,9 @@ class CircuitPopulation:
         Parameters
         ----------
         level : int
-            The level of importance of the logged information
-        error : tuple
-            The error being logged (Not sure exactly what the data type is)
+            The level of importance of the logged information (lower level = higher importance)
+        error : tuple[string]
+            The message being logged
         """
         self.__logger.log_error(level, *error)
 
@@ -1291,8 +1286,8 @@ class CircuitPopulation:
         Parameters
         ----------
         level : int
-            The level of importance of the logged information
-        warning : tuple
-            The warning being logged (Not sure exactly what the data type is)
+            The level of importance of the logged information (lower level = higher importance)
+        warning : tuple[string]
+            The message being logged
         """
         self.__logger.log_warning(level, *warning)
