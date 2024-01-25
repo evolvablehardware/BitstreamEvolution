@@ -74,17 +74,14 @@ class Circuit:
         """
         Creates a circuit object.
 
-        .. todo::
-            Verify that these descriptions of the parameters are correct.
-
         Parameters
         ----------
         index : int
-            ...
+            The unique (within this experiment) 0-based index of the circuit.
         filename : str
             The path of the file we will use to store this Circuit.
         template : str
-            A file path of a circuit we will base this circuit off of in some way.
+            A file path of the Circuit, which will be cloned into this Circuit's hardware file.
         mcu : Microcontroller
             The Microcontroller object that we will use to interface with the FPGA and measure its fitness
         logger : Logger
@@ -598,10 +595,7 @@ class Circuit:
 
     def __read_variance_data(self):
         """
-        Reads variance data from the Circuit file.
-
-        .. todo::
-            This function was un-commented. Someone should look over this to make sure I interpreted it properly and to add more detail.
+        Reads variance data from the Circuit data file, which contains readings from the Microcontroller
 
         Returns
         -------
@@ -647,11 +641,8 @@ class Circuit:
     # NOTE Using log files instead of a data buffer in the event of premature termination
     def __measure_variance_fitness(self, waveform):
         """
-        Measure the fitness of this circuit using the ??? fitness
+        Measure the fitness of this circuit using the variance-maximization fitness
         function
-
-        .. todo::
-            This comment was already here, and I believe it speaks for itself: ``TODO: Clarify``
         
         Parameters
         ----------
@@ -661,7 +652,7 @@ class Circuit:
         Returns
         -------
         float
-            The Fitness. (Variance Maximization Fitness)
+            The fitness. (Variance Maximization Fitness)
         """
 
         variance_sum = 0
@@ -733,9 +724,6 @@ class Circuit:
             Preexisting comment: ``TODO: Refactor``
         
         .. todo::
-            Review this and make sure I interpreted this correctly. 
-        
-        .. todo::
             Preexisting comments in this area suggest we use log files instead of data buffer in the event of a premature termination.
 
         Parameters
@@ -785,13 +773,10 @@ class Circuit:
         """
         Returns the fitness, based on the config's fitness function, for the specified number of pulses
 
-        .. todo:: 
-            Not sure what type pulses is as well as what exactly it is conceptually. Want it to be reviewed.
-
         Parameters
         ----------
         pulses : int
-            ???
+            The number of pulses counted.
 
         Returns
         -------
@@ -824,7 +809,7 @@ class Circuit:
         Parameters
         ----------
         waveform : list[int]
-            Waveform of the run.
+            Waveform of the run. Each entry is a normalized voltage reading
 
         Returns
         -------
@@ -941,16 +926,15 @@ class Circuit:
 
     def __mutate_actual(self, all_random):
         """
-        Mutate the configuration of this circuit.
-        This involves checking the mutation chance per-bit and, if it passes, flipping that bit
-
-        .. todo::
-            Look back through this function. I am not sure I understood what it is doing, need to look back through.
+        Mutate this circuit.
+        Can either completely randomize all modifiable bits, or evalute mutation 
+        chance per-bit and flip bits if mutation succeeds.
 
         Parameters
         ----------
         all_random : bool
-            True for random mutation ?????
+            If true, will set all modifiable bits to random values, completely randomizing the circuit
+            If false, will flip modifiable bits based on the mutation probability
         """
 
         def mutate_bit(bit, row, col, *rest):
@@ -988,7 +972,9 @@ class Circuit:
         Parameters
         ----------
         lambda_func : Callable
-            The function called to determine whether to mutate each bit.
+            This function is called for each modifiable bit. The bit value is passed into lambda_func.
+            If lambda_func returns None, the bit is left unmodified. If lambda_func returns another value,
+            then the bit at that position is replaced with the return value of lambda_func.
         hardware_file : str | None
             The path to the hardware file being mutated. None mutates this Circuit's file. Defaults to None.
         accessible_columns : list[str] | None
