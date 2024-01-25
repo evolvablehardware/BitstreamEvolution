@@ -1248,42 +1248,54 @@ class Circuit:
         """
         Returns the fitness of this circuit.
 
-        
-        Parameters
-        ----------
-        mmapped_file : mmap
-            ???
-        attribute : str
-            Attribute in the mmaped file you want information about?
-
         Returns
         -------
-        str
-            file attributes?
+        float | int
+            the fitness of this circuit
         """
         return self.__fitness
 
     def get_pulses(self):
         """
         Returns the last pulse count recorded by the circuit
+
+        Returns
+        -------
+        int
+            The nummber of pulses recorded
         """
         return self.__pulses
 
     def get_mean_frequency(self):
         """
         Returns the mean frequency read by the circuit (for pulse consistency only)
+
+        Returns
+        -------
+        float
+            mean frequency of the circuit
         """
         return self.__mean_freq
 
     def get_mean_voltage(self):
         """
         Returns the last mean voltage recorded by the circuit
+
+        Returns
+        -------
+        float
+            The mean voltage of the circuit
         """
         return self.__mean_voltage
 
     def get_hardware_file(self):
         """
         Returns the hardware file of this circuit
+        
+        Returns
+        -------
+        mmap
+            Memory Mapped hardware file of this circuit
         """
         return self.__hardware_file
 
@@ -1292,6 +1304,11 @@ class Circuit:
         """
         Returns the path to the hardware file associated with this
         Circuit (the raw .asc)
+
+        Returns
+        -------
+        Path
+            The file path to the .asc file of this circuit
         """
         return self.__hardware_filepath
 
@@ -1300,6 +1317,11 @@ class Circuit:
         """
         Returns the path to the bitstream file associated with this
         Circuit (the compiled .bin)
+
+        Returns
+        -------
+        Path
+            The file path to the compiled circuit .bin
         """
         return self.__bitstream_filepath
 
@@ -1307,12 +1329,22 @@ class Circuit:
         """
         Returns the path to the data log file associated with this
         Circuit.
+
+        Returns
+        -------
+        Path
+            Path to the log file for data for this circuit
         """
         return self.__data_filepath
 
     def get_index(self):
         """
         Returns the index of this Circuit, as provided upon initialization.
+
+        Returns
+        -------
+        int
+            index of circuit provided upon initialization
         """
         return self.__index
 
@@ -1321,6 +1353,22 @@ class Circuit:
         """
         Determines whether a given tile is available for modificiation.
         NOTE: Tile = the .logic_tile in the asc file.
+
+        .. todo::
+            Preexisting todo: Replace magic values with a more generalized solution. 
+            These magic values are indicative of the underlying hardware (ice40kh1k)
+
+        Parameters
+        ----------
+        hardware_file : mmap
+            Memory Mapped hardware file
+        pos : int
+            Index of the first byte in the .asc file for the hardware
+
+        Returns
+        -------
+        bool
+            True if the tile at that position is valid (The Tiles we can modigy)
         """
         # Replace these magic values with a more generalized solution
         # Magic values are indicative of the underlying hardware (ice40hx1k)
@@ -1354,8 +1402,20 @@ class Circuit:
 
     # Values for MAP elites
     def get_low_value(self):
+        """
+        Returns
+        -------
+        int
+            Low Value for MAP elites
+        """
         return self.__low_val
     def get_high_value(self):
+        """
+        Returns
+        -------
+        int
+            High Value for MAP elites
+        """
         return self.__high_val
 
     def __log_event(self, level, *event):
