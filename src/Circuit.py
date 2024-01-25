@@ -351,7 +351,7 @@ class Circuit:
             any_pulses = False
             product = 1
             for value in data:
-                if value > 0:
+                if value > 1:
                     value = value - 1
                     any_pulses = True
                 product = product * value
