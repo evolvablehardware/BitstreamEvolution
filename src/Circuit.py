@@ -1037,7 +1037,18 @@ class Circuit:
     def get_file_intrinsic_modifiable_bitstream(self, hardware_file):
         """
         Returns an array of bytes (that correspond to characters, so they will either be 48 or 49)
-        These bytes represent the bits of the circuit's bitstream that can be modified. All other bits are left out
+        These bytes represent the bits of the circuit's bitstream that can be modified. All other bits are left out.
+        This is the general form of get_intrensic_modifiable_bitstream(self)
+
+        Parameters
+        ----------
+        hardware file : str
+            The hardware file of the circuit you want the bitstream of.
+
+        Returns
+        -------
+        list[int]
+            Returns the bits of the modifiable bitstream in the project.
         """
         bitstream = []
         def handle_bit(bit, *rest):
@@ -1052,6 +1063,11 @@ class Circuit:
         """
         Returns an array of bytes (that correspond to characters, so they will either be 48 or 49)
         These bytes represent the bits of the circuit's bitstream that can be modified. All other bits are left out
+
+        Returns
+        -------
+        list[int]
+            List of all modifyable bits in bitstream.
         """
         return self.get_file_intrinsic_modifiable_bitstream(self.__hardware_file)
     
@@ -1059,6 +1075,18 @@ class Circuit:
         """
         Takes this circuit, and replaces all of its modifiable bits with those in
         the provided bitstream
+
+        .. todo::
+            Someone should review this after looking at __run_at_each_modifiable()
+
+        Parameters
+        ----------
+        bitstream : list[int]
+            The bitstream we want to merge with the file ?????
+        accessible_columns : ??
+            ???
+        routing_type : ??
+            ??
         """
         i = 0
         def handle_bit(*rest):
