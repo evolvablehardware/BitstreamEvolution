@@ -137,23 +137,22 @@ class Circuit:
     @staticmethod
     def get_file_attribute_st(mmapped_file, attribute):
         '''
-        Static get file attribute method; allows using without creating a full circuit object
-
-        .. todo::
-            not clear on what exactly this is doing. Please revise. 
-            Also see the 3 other file manipulation methods nearby.
+        Returns the value of the stored attribute from the hardware file.
+        Circuits are capable of storing string name-value pairs in their hardware file, for purposes such as
+        tracking most recently-evaluated fitness of a Circuit
+        Static version of get_file_attribute that requires the memory-mapped file to be provided
 
         Parameters
         ----------
         mmapped_file : mmap
-            ???
+            The memory-mapped hardware file of the circuit
         attribute : str
-            Attribute in the mmaped file you want information about?
+            Attribute name to lookup
 
         Returns
         -------
         str
-            file attributes?
+            File attribute value
         '''
         index = mmapped_file.find(b".comment FILE_ATTRIBUTES")
         if index < 0:
@@ -172,16 +171,19 @@ class Circuit:
     @staticmethod
     def set_file_attribute_st(hardware_file, attribute, value):
         '''
-        Static version of set file attribute; allows using without creating a full circuit object
+        Sets a Circuit's file attribute to the specified value
+        Circuits are capable of storing string name-value pairs in their hardware file, for purposes such as
+        tracking most recently-evaluated fitness of a Circuit
+        Static version of set_file_attribute that requires the memory-mapped file to be provided
 
         Parameters
         ----------
-        hardware_file : str
-            The path to the hardware file of interest
+        hardware_file : mmap
+            The memory-mapped hardware file of the Circuit
         attribute : str
-            The name of the attribute in the file you want to set 
-        value : Any
-            The value of that attribute you want to set.
+            The name of the attribute to modify
+        value : str
+            The value to assign to the attribute
         '''
         # Check if the comment exists
         #hardware_file = open(file_path, "r+")
@@ -222,7 +224,9 @@ class Circuit:
 
     def get_file_attribute(self, attribute):
         '''
-        Gets the value of attribute stored in a comment in the circuit's .asc file
+        Returns the value of the stored attribute for this Circuit
+        Circuits are capable of storing string name-value pairs in their hardware file, for purposes such as
+        tracking most recently-evaluated fitness of a Circuit
 
         Parameters
         ----------
@@ -232,20 +236,22 @@ class Circuit:
         Returns
         -------
         str
-            The value of the attribute as a string 
+            The value of the attribute
         '''
         return Circuit.get_file_attribute_st(self.__hardware_file, attribute)
     
     def set_file_attribute(self, attribute, value):
         '''
-        Sets the value of the attribute stored in a comment in the circuit's .asc file
+        Sets this Circuit's file attribute to the specified value
+        Circuits are capable of storing string name-value pairs in their hardware file, for purposes such as
+        tracking most recently-evaluated fitness of a Circuit
 
         Parameters
         ----------
         attribute : str
-            The name of the attribute you want to set
+            The name of the attribute to modify
         value : str
-            The value of the attribute you want to set
+            The value to assign to the attribute
         '''
         hardware_file = open(self.__hardware_filepath, "r+")
         Circuit.set_file_attribute_st(hardware_file, attribute, value)
@@ -255,13 +261,8 @@ class Circuit:
 
     def randomize_bits(self):
         """
-        Randomize the bits of the circuit.
-
-        .. todo::
-            There is a strange comment here. Don't know what it is saying. Should be better specified.
-            Also should be better description of what this is doing if that is needed.
+        Completely randomize all of the modifiable bits of the circuit.
         """
-        # Simply set mutation chance to 100%  <<---What is this saying?
         if self.__config.get_simulation_mode() == "FULLY_SIM":
             self.__mutate_simulation(True)
         else:
@@ -310,13 +311,9 @@ class Circuit:
 
     def calculate_fitness_from_data(self):
         """
-        Calculates the fitness of this circuit from stored data in the file.
-        When multiple samples have been stored in self.__data, 
-        this function will take the lowest fitness and use that as our circuit's fitness
-
-        .. todo::
-            This function should probably be better documented. I was having trouble seeing where our different fitness calues are calculated. 
-            The Pulse Consistancy is reasonably clear, but I don't see anything else here, and don't know where else they should be.
+        Calculates the fitness of this circuit from stored samples in self.__data
+        If performing multi-sample/pass pulse function, then takes the product of fitnesses.
+        If performing pulse consistency, then calculates the pulse consistency fitness using the sample data.
 
         .. todo::
             There was the following TODO statement at the bottom of the code:
@@ -434,14 +431,13 @@ class Circuit:
         Upload and run this Circuit on the FPGA and analyze its
         performance.
 
-        .. todo::
-            Verify I am properly understanding what record_data does. Also address this on the evaluate_pulse_count() below.
-
         Parameters
         ----------
         record_data : bool
-            Whether or not we want to log the data. 
+            Whether or not we want to save the data to this Circuit's sample data collection.
+            Used when performing multiple samples/passes.
             Defaults to False.
+            If set to False, all live data is updated upon the running of this function
 
         Returns
         -------
@@ -479,7 +475,10 @@ class Circuit:
         Parameters
         ----------
         record_data : bool
-            Whether or not we should record the data. Default to False
+            Whether or not we want to save the data to this Circuit's sample data collection.
+            Used when performing multiple samples/passes.
+            Defaults to False.
+            If set to False, all live data is updated upon the running of this function
 
         Returns
         -------
@@ -622,10 +621,7 @@ class Circuit:
 
     def get_waveform(self):
         """
-        Gets the Waveform from the previous run.
-
-        .. todo::
-            This function was uncommented. Review this to verify it's accuracy and add detail.
+        Returns the stored waveform from the most-recent run, as an array of strings.
 
         Returns
         -------
@@ -976,11 +972,11 @@ class Circuit:
             If lambda_func returns None, the bit is left unmodified. If lambda_func returns another value,
             then the bit at that position is replaced with the return value of lambda_func.
         hardware_file : str | None
-            The path to the hardware file being mutated. None mutates this Circuit's file. Defaults to None.
+            The path to the hardware file to read from/write to. If no value provided, uses this Circuit's hardware file.
         accessible_columns : list[str] | None
-            Don't know what this is. ?????????????????????????????????????????????
+            The accessible columns. If no value provided, uses the current configuration value.
         routing_type: str | None
-            Don't know what this id. ???????????????????????????????????????????
+            The routing type (MOORE or NEWSE). If no value provided, uses the current configuration value.
         """
 
         if hardware_file is None:
