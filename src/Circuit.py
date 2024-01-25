@@ -1114,6 +1114,15 @@ class Circuit:
         """
         Decide which crossover function to used based on configuration
         Only the full simulation mode uses a special crossover function, otherwise we use the default to operate on the hardware files
+        Note: Chooses between simulated and actual based on if config says it's in 'FULLY_SIM'
+        We are not sure whether parent puts information before or after the crossover point, but we believe it puts the parent's information first.
+
+        Parameters
+        ----------
+        parent : Circuit
+            The other circuit the crossover is being performed with
+        corssover_point : int
+            The point in the modifiable bitstream to perform the point crossover.
         """
         if self.__config.get_simulation_mode() == "FULLY_SIM":
             self.__crossover_sim(parent, crossover_point)
@@ -1123,6 +1132,13 @@ class Circuit:
     def __crossover_sim(self, parent, crossover_point):
         """
         Simulated crossover, pulls first n bits from parent and remaining from self
+        
+        Parameters
+        ----------
+        parent : Circuit
+            The other circuit the crossover is performed with
+        crossover_point : int
+            The index in the editable bitstream the crossover occours at
         """
         for i in range(0, crossover_point):
             self.__simulation_bitstream[i] = parent.__simulation_bitstream[i]
@@ -1132,6 +1148,13 @@ class Circuit:
         """
         Copy part of the hardware file from parent into this circuit's hardware file.
         Additionally, need to copy the parent's info line
+
+        Parameters
+        ----------
+        parent : Circuit
+            The circuit file this circuit is being crossed with
+        crossover_point : int
+            The index in the editable bitstream this crossover is occouring at
         """
         parent_hw_file = parent.get_hardware_file()
         # Need to keep track separately since we can have different-length comments
@@ -1160,6 +1183,21 @@ class Circuit:
             self.set_file_attribute("src_population", src_pop)
 
     def copy_sim(self, src):
+        """
+        Copies src's simulation bitstream into itself.
+
+        Parameters
+        ----------
+        src : Circuit
+            Source circuit to be copied
+        attribute : str
+            Attribute in the mmaped file you want information about?
+
+        Returns
+        -------
+        str
+            file attributes?
+        """
         self.__simulation_bitstream = []
         for val in src.get_sim_bitstream():
             self.__simulation_bitstream.append(val)
@@ -1171,6 +1209,19 @@ class Circuit:
         """
         Make changes to the hardware file associated with this circuit, updating it
         with the value in "data"
+
+        .. todo::
+            Pre-existing TODO: Add error checking here
+        
+        
+        Parameters
+        ----------
+        pos : int
+            The position in the hardware file to write data at
+        length : int
+            The length of the data to write
+        data : ReadableBuffer
+            The data to write into the hardware file
         """
         self.__hardware_file[pos:pos + length] = data
 
@@ -1185,6 +1236,11 @@ class Circuit:
         """
         Replaces the hardware file associated with this Circuit with
         the given file.
+
+        Parameters
+        ----------
+        new_file_path : str
+            The file path to move this hardware's file to
         """
         self.__hardware_file.close()
         hardware_filepath = self.get_hardware_filepath()
@@ -1196,6 +1252,11 @@ class Circuit:
     def copy_hardware_from(self, source):
         """
         Copy the hardware from a source circuit to this circuit.
+        
+        Parameters
+        ----------
+        source : Circuit
+            Source circuit to copy information from
         """
         source.write_hardware_changes()
         self.replace_hardware_file(source.get_hardware_filepath())
@@ -1204,6 +1265,19 @@ class Circuit:
     def get_fitness(self):
         """
         Returns the fitness of this circuit.
+
+        
+        Parameters
+        ----------
+        mmapped_file : mmap
+            ???
+        attribute : str
+            Attribute in the mmaped file you want information about?
+
+        Returns
+        -------
+        str
+            file attributes?
         """
         return self.__fitness
 
