@@ -44,6 +44,16 @@ class Microcontroller:
         self.__logger.log_warning(level, *warning)
 
     def __init__(self, config: Config, logger: Logger):
+        """
+        Initializes Microcontroller Object
+
+        Parameters
+        ----------
+        config : Config
+            Configuration object that determines what Microcontroller does.
+        logger : Logger
+            Logger object where this object stores its logging information.
+        """
         self.__logger = logger
         self.__config = config
         if config.get_simulation_mode() == "FULLY_INTRINSIC" or config.get_simulation_mode() == "INTRINSIC_SENSITIVITY":
@@ -57,6 +67,13 @@ class Microcontroller:
             self.__fpga = config.get_fpga()
 
     def switch_fpga(self):
+        """
+        If there are multiple FPGAs, switch which FPGA the microcontroller is acting on and reading from.
+
+        .. todo::
+            Allyn, Is this the correct interpretation of what this does? Do you want to add additional detail?
+            Please also check that the other multi-fpga logic is properly represented as well.
+        """
         self.__serial.reset_input_buffer()
         self.__serial.reset_output_buffer()
         self.__serial.write(b'4') 
@@ -69,6 +86,17 @@ class Microcontroller:
         self.__log_event(2, "Done switching FPGAs")
     
     def get_fpga(self):
+        """
+        Get __fpga string
+
+        .. todo::
+            Allyn, another one for you. What is this?
+
+        Returns
+        -------
+        str
+           FPGA Identifier
+        """
         return self.__fpga
 
     def simple_measure_pulses(self, circuit: Circuit, samples: int):
