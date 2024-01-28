@@ -19,6 +19,9 @@ class Config:
 	"""
 	This class is instantiated to aquire values from the config file for the evolutionary run. 
 	This object is given to other objects so they can access value sin the config.
+
+	.. todo:: 
+		Preexisting todo: Add handling for missing values. This does fail gracefully at missing values currently.
 	"""
 
 	def __init__(self, filename):
@@ -35,6 +38,14 @@ class Config:
 		self.__filename = filename
 
 	def add_logger(self, logger):
+		"""
+		Adds logger to the Configuration actions
+
+		Parameters
+		----------
+		logger : Logger
+			The logger object to log Configuration actions.
+		"""
 		self.__logger = logger
 
 	# SECTION Generic getters for options in the various sections.
