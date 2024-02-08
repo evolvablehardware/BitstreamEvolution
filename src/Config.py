@@ -50,41 +50,197 @@ class Config:
 
 	# SECTION Generic getters for options in the various sections.
 	def get_top_parameters(self, param):
+		"""
+		Returns the value of a parameter from the "TOP-LEVEL PARAMETERS"
+		section of the config file.
+
+		Parameters
+		----------
+		param : str
+			The name of the parameter to return
+
+		Returns
+		-------
+		str
+			The value of the parameter
+		"""
 		return self.__config_parser.get("TOP-LEVEL PARAMETERS", param)
 	
 	def get_fitness_parameters(self, param):
+		"""
+		Returns the value of a parameter from the "FITNESS PARAMETERS"
+		section of the config file.
+
+		Parameters
+		----------
+		param : str
+			The name of the parameter to return
+
+		Returns
+		-------
+		str
+			The value of the parameter
+		"""
 		return self.__config_parser.get("FITNESS PARAMETERS", param)
 	
 	def get_ga_parameters(self, param):
+		"""
+		Returns the value of a parameter from the "GA PARAMETERS"
+		section of the config file.
+
+		Parameters
+		----------
+		param : str
+			The name of the parameter to return
+
+		Returns
+		-------
+		str
+			The value of the parameter
+		"""
 		return self.__config_parser.get("GA PARAMETERS", param)
 	
 	def get_init_parameters(self, param):
+		"""
+		Returns the value of a parameter from the "INITIALIZATION PARAMETERS"
+		section of the config file.
+
+		Parameters
+		----------
+		param : str
+			The name of the parameter to return
+
+		Returns
+		-------
+		str
+			The value of the parameter
+		"""
 		return self.__config_parser.get("INITIALIZATION PARAMETERS", param)
 	
 	def get_stop_parameters(self, param):
+		"""
+		Returns the value of a parameter from the "STOPPING CONDITION PARAMETERS"
+		section of the config file.
+
+		Parameters
+		----------
+		param : str
+			The name of the parameter to return
+
+		Returns
+		-------
+		str
+			The value of the parameter
+		"""
 		return self.__config_parser.get("STOPPING CONDITION PARAMETERS", param)
 
 	def get_logging_parameters(self, param):
+		"""
+		Returns the value of a parameter from the "LOGGING PARAMETERS"
+		section of the config file.
+
+		Parameters
+		----------
+		param : str
+			The name of the parameter to return
+
+		Returns
+		-------
+		str
+			The value of the parameter
+		"""
 		return self.__config_parser.get("LOGGING PARAMETERS", param)
 
 	def get_system_parameters(self, param):
+		"""
+		Returns the value of a parameter from the "SYSTEM PARAMETERS"
+		section of the config file.
+
+		Parameters
+		----------
+		param : str
+			The name of the parameter to return
+
+		Returns
+		-------
+		str
+			The value of the parameter
+		"""
 		return self.__config_parser.get("SYSTEM PARAMETERS", param)
 
 	def get_hardware_parameters(self, param):
+		"""
+		Returns the value of a parameter from the "HARDWARE PARAMETERS"
+		section of the config file.
+
+		Parameters
+		----------
+		param : str
+			The name of the parameter to return
+
+		Returns
+		-------
+		str
+			The value of the parameter
+		"""
 		return self.__config_parser.get("HARDWARE PARAMETERS", param)
 
 	def get_sensitivity_parameters(self, param):
+		"""
+		Returns the value of a parameter from the "FITNESS SENSITIVITY PARAMETERS"
+		section of the config file.
+
+		Parameters
+		----------
+		param : str
+			The name of the parameter to return
+
+		Returns
+		-------
+		str
+			The value of the parameter
+		"""
 		return self.__config_parser.get("FITNESS SENSITIVITY PARAMETERS", param)
 	
 	def get_transfer_parameters(self, param):
+		"""
+		Returns the value of a parameter from the "TRANSFERABILITY PARAMETERS"
+		section of the config file.
+
+		Parameters
+		----------
+		param : str
+			The name of the parameter to return
+
+		Returns
+		-------
+		str
+			The value of the parameter
+		"""
 		return self.__config_parser.get("TRANSFERABILITY PARAMETERS", param)
 	
 	# SECTION Getters for Top-Level Parameters.
-	# We have 3 types of mode. There's FULLY_INTRINSIC, SIM_HARDWARE, and FULLY_SIM
-	# FULLY_INTRINSIC: Runs the experiments on the actual hardware. Full normal experiment setup
-	# SIM_HARDWARE: Simulation mode, but using an arbitrary function operating on compiled binary files
-	# FULLY_SIM: Simulation mode, but operating on a small array of arbitrary bit values
 	def get_simulation_mode(self):
+		"""
+		Selects the current mode the simulation will run in. These modes are listed below.
+		We verify that only one of the following modes can be returned.
+
+		**FULLY_INTRINSIC**
+			Runs the experiment on the actual hardware. Full normal experiment setup required.
+		**INTRINSIC_SENSITIVITY**
+			Performs Sensitivity analysis. This is done intrensically, but it runs one circuit
+			many times instead of performing evolution on it.
+		**SIM_HARDWARE**
+			Simulation mode. This uses an arbitrary function operating on the compiled binary files
+			that are used to specify the hardware configuration.
+		**FULLY_SIM**
+			Simulation mode. Operates on a small array of arbitrary bit values.
+
+        Returns
+        -------
+        str
+           The config's selected simulation mode from the list of possible modes.
+		"""
 		input = self.get_top_parameters("SIMULATION_MODE")
 		valid_vals = ["FULLY_INTRINSIC", "FULLY_SIM", "SIM_HARDWARE", "INTRINSIC_SENSITIVITY"]
 		self.check_valid_value("simulation mode", input, valid_vals)
@@ -92,6 +248,31 @@ class Config:
 	
 	# SECTION Getters for Fitness Parameters.
 	def get_fitness_func(self):
+		"""
+		Selects the current Fitness Function Evolution will be using. These modes are listed below
+		We verify that only one of the following modes can be returned.
+
+		**VARIANCE**
+			Variance maximization fitness function. The fitness is the absolute difference
+			of voltage readings from consecutive time steps. Selects for Noise.
+		**PULSE_COUNT**
+			Left in for backwards-compatability. Refers to SENSITIVE_PULSE_COUNT.
+		**TOLERANT_PULSE_COUNT**
+			This uses the number of pulses to generate a fitness. To do this, it compares
+			the calculated frequency from the number of pulses in a second to the target frequency.
+			The closer to the target, the higher the fitness. This fitness function is more 'tolerant'
+			of errors, meaning it assigns greater fitness values to circuits that only have slight errors.
+		**SENSITIVE_PULSE_COUNT**
+			This uses the number of pulses to generate a fitness. To do this, it compares
+			the calculated frequency from the number of pulses in a second to the target frequency.
+			The closer to the target, the higher the fitness. This fitness function is more 'sensitive'
+			of errors, meaning it has an abrupt drop-off in fitness scores even for slight errors.
+
+        Returns
+        -------
+        str
+           The config's selected fitness function from the list of possible modes.
+		"""
 		input = self.get_fitness_parameters("FITNESS_FUNC")
 		# We're leaving "PULSE_COUNT" for backwards-compatibility
 		# It will use the sensitive function
@@ -100,6 +281,16 @@ class Config:
 		return input
 	
 	def get_desired_frequency(self):
+		"""
+		This returns the desired frequency from the config file. It is
+		automatically converted into an integer.
+		If the desired frequency is negitive, this will exit the running program.
+
+		Returns
+		-------
+		int
+			The desired frequency. Garunteed non-negitive.
+		"""
 		desiredFreq = int(self.get_fitness_parameters("DESIRED_FREQ"))
 		if desiredFreq < 0:
 			self.__log_error(1, "Invalid desired frequency " + str(desiredFreq) + "'. Must be greater than zero.")
@@ -107,12 +298,38 @@ class Config:
 		return desiredFreq
 	
 	def get_combined_mode(self):
+		"""
+		Selects the current Combined Mode Evolution will be using. 
+		These modes are listed below.
+		We verify that only one of the following modes can be returned.
+
+		**ADD**
+			Multiplies weights by fitnesses, then adds the resulting terms to get 
+			overall fitness
+		**MULT**
+			Raises fitnesses to the power of their weights, then multiplies the
+			resulting terms to get overall fitness
+		
+        Returns
+        -------
+        str
+           The config's selected combined mode from the list of possible modes.
+		"""
 		input = self.get_fitness_parameters("COMBINED_MODE")
 		valid_vals = ["ADD", "MULT"]
 		self.check_valid_value("combined mode", input, valid_vals)
 		return input
 	
 	def get_pulse_weight(self):
+		"""
+		This returns the pulse weight from the config file. 
+		This is the pulse weight used in the combined_mode operation specified previously.
+
+		Returns
+		-------
+		float
+			The pulse weight.
+		"""
 		return float(self.get_fitness_parameters("PULSE_WEIGHT"))
 
 	def get_var_weight(self):
