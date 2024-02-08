@@ -333,6 +333,15 @@ class Config:
 		return float(self.get_fitness_parameters("PULSE_WEIGHT"))
 
 	def get_var_weight(self):
+		"""
+		This returns the variability weight from the config file. 
+		This is the variability weight used in the combined_mode operation specified previously.
+
+		Returns
+		-------
+		float
+			The variability weight.
+		"""
 		return float(self.get_fitness_parameters("VAR_WEIGHT"))
 	
 	def get_num_samples(self):
