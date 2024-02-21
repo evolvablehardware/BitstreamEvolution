@@ -1,0 +1,10 @@
+{
+    "autoDocstring.docstringFormat": "numpy",
+    "autoDocstring.includeExtendedSummary": true,
+    "autoDocstring.startOnNewLine": true,
+    "autoDocstring.generateDocstringOnEnter": true,
+    "autoDocstring.guessTypes": true,
+    "autoDocstring.includeName": false,
+    "autoDocstring.logLevel": "Info",
+    "autoDocstring.quoteStyle": "\"\"\""
+}
