@@ -33,7 +33,28 @@ sys.path.append(directory_of_source_code)
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 #html_theme = 'alabaster' # default
-html_theme = 'furo'
+
+
+html_theme = 'sphinx_book_theme'
+#html_theme = 'sphinx_wagtail_theme'
+#html_theme = 'sphinx_nefertiti'
+#html_theme = 'pydata_sphinx_theme'
+
+if (html_theme == 'sphinx_book_theme'):
+    print("Selected Theme: {book}theme")
+    pass # pip install sphinx-book-theme
+elif (html_theme == 'sphinx_wagtail_theme'):
+    print("Selected Theme: Wagtail")
+    pass # pip install sphinx-wagtail-theme
+    extensions.append("sphinx_wagtail_theme")
+elif (html_theme == 'sphinx_nefertiti'):
+    print("Selected Theme: Nefertiti")
+    pass # pip install sphinx-nefertiti
+elif (html_theme == 'pydata_sphinx_theme'):
+    print("Selected Theme: PyData")
+    pass # pip install pydata-sphinx-theme
+else:
+    print("HTML theme not recognized.")
 
 html_static_path = ['_static']
 
