@@ -306,5 +306,57 @@ class Microcontroller:
         data_file.close()
         self.__log_event(2, "Completed writing to data file")
 
+    def measure_temp(self):
+        """
+        Measures the temperature using a DHT22 sensor conected to the Arduino.
+        """
+        self.__log_event(3, "Measuring temperature")
+            
+        self.__serial.reset_input_buffer()
+        self.__serial.reset_output_buffer()
+        self.__serial.write(b'5') 
+        start = time()
+
+        self.__log_event(3, "Serial reading...")
+        p = self.__serial.read_until()
+        self.__log_event(3, "Serial read done")
+        if (time() - start) >= self.__config.get_mcu_read_timeout():
+            self.__log_warning(1, "Time Exceeded. Halting MCU Reading of temperature")
+            return -1;
+        # TODO We should be able to do whatever this line does better
+        # This is currently doing a poor job at REGEXing the MCU serial return - can be done better
+        # It's supposed to handle exceptions from transmission loss (i.e. dropped or additional spaces, shifted colons, etc)
+        self.__log_event(3, "Pulled", p, "from MCU")
+        if (p != b"" and b":" not in p and b"START" not in p and b"FINISH" not in p and b" " not in p):
+            p = p.translate(None, b"\r\n")
+            return(float(p))
+        
+    def measure_humidity(self):
+        """
+        Measures the humidity using a DHT22 sensor conected to the Arduino.
+        """
+        self.__log_event(3, "Measuring humidity")
+            
+        self.__serial.reset_input_buffer()
+        self.__serial.reset_output_buffer()
+        self.__serial.write(b'6') 
+        start = time()
+
+        self.__log_event(3, "Serial reading...")
+        p = self.__serial.read_until()
+        self.__log_event(3, "Serial read done")
+        if (time() - start) >= self.__config.get_mcu_read_timeout():
+            self.__log_warning(1, "Time Exceeded. Halting MCU Reading of humidity")
+            return -1;
+        # TODO We should be able to do whatever this line does better
+        # This is currently doing a poor job at REGEXing the MCU serial return - can be done better
+        # It's supposed to handle exceptions from transmission loss (i.e. dropped or additional spaces, shifted colons, etc)
+        self.__log_event(3, "Pulled", p, "from MCU")
+        if (p != b"" and b":" not in p and b"START" not in p and b"FINISH" not in p and b" " not in p):
+            p = p.translate(None, b"\r\n")
+            return(float(p))
+
+
+
 
 

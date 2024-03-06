@@ -522,6 +522,13 @@ class Config:
 			exit()
 		return seconds
 	
+	def reading_temp_humidity(self):
+		try:
+			input = self.get_sensitivity_parameters("reading_temp_humidity")
+			return input == "true" or input == "True"
+		except NoOptionError:
+			return False
+	
 	#SECTION getts for transferability experiment parameters
 	def using_transfer_interval(self):
 		return isinstance(self.get_transfer_interval(), int)
