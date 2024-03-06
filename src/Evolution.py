@@ -97,7 +97,7 @@ class Evolution:
         # TODO: make sure config file specified above ends up in output.
         if self.output_directory is not None:
             #copy simulation information to this output directory
-            self.logger.save_workspace(self.utput_directory)
+            self.logger.save_workspace(self.output_directory)
         elif self.config.get_backup_workspace():
             self.logger.save_workspace(self.config.get_output_directory())
 
