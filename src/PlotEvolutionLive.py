@@ -413,7 +413,7 @@ def run():
         ax2.set_ylim(bottom=0)
 
         ax3.clear()
-        ax3.hist2d(ts,xs,bins=HEATMAP_BINS)
+        ax3.hist2d(ts,xs,bins=HEATMAP_BINS, cmap=heatmap_color)
         ax3.tick_params(axis='y', labelcolor=accent_color)
         ax3.set_ylim(bottom=0)
         
@@ -421,12 +421,10 @@ def run():
         ax4.clear()
         ax4.hist(ys, bins=HEATMAP_BINS)
         ax4.tick_params(axis='y', labelcolor=accent_color) 
-        ax4.set_ylim(bottom=0)
 
         ax5.clear()
-        ax5.hist2d(ts, ys, bins=HEATMAP_BINS)
+        ax5.hist2d(ts, ys, bins=HEATMAP_BINS, cmap=heatmap_color)
         ax5.tick_params(axis='y', labelcolor=accent_color) 
-        ax5.set_ylim(bottom=0)
         
         ax2.set(xlabel='Fitness', ylabel='Count', title='Circuit Fitness per Trial')
         ax3.set(xlabel='Trial', ylabel='Fitness', title='Circuit Fitness per Trial')
@@ -437,9 +435,153 @@ def run():
             ax4.set(xlabel='Pulses', ylabel='Count', title='Pulses')
             ax5.set(xlabel='Trial', ylabel='Pulses', title='Pulses')
 
-
         if(config.get_save_plots()):
             fig.savefig(plots_dir.joinpath("sensitivity.png"))
+
+    def animate_temp_humidity(i):
+        graph_data = open('workspace/fitnesssensitivity.log','r').read()
+        lines = graph_data.split('\n')
+        xs = []
+        ys = []
+        ts = []
+        hs = []
+        for line in lines:
+            if len(line) > 1:
+                x,d = line.split(':')
+                d = d.split(",")
+                xs.append(float(d[0]))
+                ys.append(float(d[1]))
+                ts.append(float(d[2]))
+                hs.append(float(d[3]))
+
+        temp_bins = min(int(HEATMAP_BINS/2), int(10*(max(ts)-min(ts))))
+        humidity_bins = min(int(HEATMAP_BINS/2), int(10*(max(hs)-min(hs))))
+
+        #fitness
+        ax6.clear()
+        ax6.hist2d(ts,xs, bins=temp_bins, cmap=heatmap_color)
+        ax6.tick_params(axis='y', labelcolor=accent_color)
+        ax6.set(xlabel='Temperature', ylabel='Fitness', title='Temperature vs Circuit Fitness')
+
+        ax7.clear()
+        ax7.hist2d(hs,xs,bins=humidity_bins,cmap=heatmap_color)
+        ax7.tick_params(axis='y', labelcolor=accent_color)
+        ax7.set(xlabel='Humidity', ylabel='Fitness', title='Humidity vs Circuit Fitness')
+        
+        #pulses/mean voltage
+        ax8.clear()
+        ax8.hist2d(ts, ys, bins=temp_bins,cmap=heatmap_color)
+        ax8.tick_params(axis='y', labelcolor=accent_color) 
+
+        ax9.clear()
+        ax9.hist2d(hs, ys, bins=humidity_bins, cmap=heatmap_color)
+        ax9.tick_params(axis='y', labelcolor=accent_color) 
+        
+        if config.is_pulse_func():
+            ax8.set(xlabel='Temperature', ylabel='Pulses', title='Temperature vs Pulses')
+            ax9.set(xlabel='Humidity', ylabel='Pulses', title='Humidity vs Pulses')
+        else:
+            ax8.set(xlabel='Temperature', ylabel='Mean Voltage (Normalized)', title='Temperature vs Circuit Voltage per Trial')
+            ax9.set(xlabel='Humidity', ylabel='Mean Voltage (Normalized)', title='Humidity vs Circuit Voltage per Trial')
+
+        if(config.get_save_plots()):
+            fig2.savefig(plots_dir.joinpath("sensitivity_temp_humidity.png"))
+
+    def animate_avg_temp_humidity(i):
+        graph_data = open('workspace/fitnesssensitivity.log','r').read()
+        lines = graph_data.split('\n')
+        xs = []
+        ys = []
+        ts = []
+        hs = []
+        for line in lines:
+            if len(line) > 1:
+                x,d = line.split(':')
+                d = d.split(",")
+                xs.append(float(d[0]))
+                ys.append(float(d[1]))
+                ts.append(float(d[2]))
+                hs.append(float(d[3]))
+
+        min_t = min(ts)
+        max_t = max(ts)
+        temp_fitness = []
+        temp_data2= []
+        temp_xs = []
+        # set up bins
+        for i in range(int(10*(max_t-min_t)) + 1):
+            temp_fitness.append([])
+            temp_data2.append([])
+            temp_xs.append(i/10 + min_t)
+        #sort temp data into bins
+        for i in range(len(ts)):
+           index = int(10*(ts[i] - min_t))
+           temp_fitness[index].append(xs[i])
+           temp_data2[index].append(ys[i])
+        #find empty slices
+        i = 0
+        while i < len(temp_xs):
+            if(len(temp_fitness[i]) == 0):
+                temp_xs.pop(i)
+                temp_fitness.pop(i)
+                temp_data2.pop(i)
+                i -= 1
+            i += 1
+        #calc averages
+        avg_temp_fitness = []
+        avg_temp_data2 = []
+        for i in range(len(temp_xs)):
+            avg_temp_fitness.append(np.average(temp_fitness[i]))
+            avg_temp_data2.append(np.average(temp_data2[i]))
+
+        ax10.plot(temp_xs, avg_temp_fitness, color=accent_color)
+        ax10.set(xlabel='Temperature', ylabel='Average Fitness', title='Temperature vs Average Circuit Fitness')
+        ax12.plot(temp_xs, avg_temp_data2, color=accent_color)
+
+        min_h = min(hs)
+        max_h = max(hs)
+        humidity_fitness = []
+        humidity_data2= []
+        humidity_xs = []
+        #set up bins
+        for i in range(int(10*(max_h-min_h)) + 1):
+            humidity_fitness.append([])
+            humidity_data2.append([])
+            humidity_xs.append(i/10 + min_h)
+        #sort humidity data into bins
+        for i in range(len(hs)):
+           index = int(10*(hs[i] - min_h))
+           humidity_fitness[index].append(xs[i])
+           humidity_data2[index].append(ys[i])
+        #find empty slices
+        i = 0
+        while i < len(humidity_xs):
+            if(len(humidity_fitness[i]) == 0):
+                humidity_xs.pop(i)
+                humidity_fitness.pop(i)
+                humidity_data2.pop(i)
+                i -= 1
+            i += 1
+        #calc averages
+        avg_humidity_fitness = []
+        avg_humidity_data2 = []
+        for i in range(len(humidity_xs)):
+            avg_humidity_fitness.append(np.average(humidity_fitness[i]))
+            avg_humidity_data2.append(np.average(humidity_data2[i]))
+
+        ax11.plot(humidity_xs, avg_humidity_fitness, color=accent_color)
+        ax11.set(xlabel='Humidity', ylabel='Average Fitness', title='Humidity vs Average Circuit Fitness')
+        ax13.plot(humidity_xs, avg_humidity_data2, color=accent_color)
+
+        if config.is_pulse_func():
+            ax12.set(xlabel='Temperature', ylabel='Average Pulses', title='Temperature vs Average Pulses')
+            ax13.set(xlabel='Humidity', ylabel='Average Pulses', title='Humidity vs Average Pulses')
+        else:
+            ax12.set(xlabel='Temperature', ylabel='Average of Mean Voltages (Normalized)', title='Temperature vs Average Circuit Voltage per Trial')
+            ax13.set(xlabel='Humidity', ylabel='Average of Mean Voltages (Normalized)', title='Humidity vs AVerage Circuit Voltage per Trial')
+
+        if(config.get_save_plots()):
+            fig3.savefig(plots_dir.joinpath("sensitivity_avg_temp_humidity.png"))
 
     def animate_pulse_map(i):
         graph_data = open('workspace/maplivedata.log','r').read()
@@ -483,12 +625,14 @@ def run():
         plots_dir = plots_dir.joinpath("Formal")
         accent_color = "black"
         accent_color2 = "#65187A"
+        heatmap_color = 'Blues'
         yellow = "goldenrod"
         plot = lambda fig, function : function(0)
     else:
         style.use('dark_background')
         accent_color = "white"
         accent_color2 = "#f0f8ff"
+        heatmap_color = 'viridis'
         yellow = "yellow"
         plot = lambda fig, function : animation.FuncAnimation(fig, function, interval=FRAME_INTERVAL, cache_frame_data=False)
 
@@ -502,8 +646,26 @@ def run():
         ax4 = fig.add_subplot(2, 2, 3)
         ax5 = fig.add_subplot(2, 2, 4)
         ani = animation.FuncAnimation(fig, animate_sensitivity, interval=FRAME_INTERVAL)
-        plt.subplots_adjust(hspace=0.50)
         fig.tight_layout(pad=5.0)
+
+        if(config.reading_temp_humidity()):
+            fig2 = plt.figure(figsize=(9,7))
+            ax6 = fig2.add_subplot(2, 2, 1)
+            ax7 = fig2.add_subplot(2, 2, 2)
+            ax8 = fig2.add_subplot(2, 2, 3)
+            ax9 = fig2.add_subplot(2, 2, 4)
+            ani3 = animation.FuncAnimation(fig2, animate_temp_humidity, interval=FRAME_INTERVAL)
+            fig2.tight_layout(pad=5.0)
+
+            fig3 = plt.figure(figsize=(9,7))
+            ax10 = fig3.add_subplot(2, 2, 1)
+            ax11 = fig3.add_subplot(2, 2, 2)
+            ax12 = fig3.add_subplot(2, 2, 3)
+            ax13 = fig3.add_subplot(2, 2, 4)
+            ani4= animation.FuncAnimation(fig3, animate_avg_temp_humidity, interval=FRAME_INTERVAL)
+            fig3.tight_layout(pad=5.0)
+
+        plt.subplots_adjust(hspace=0.50)
         plt.show(block=(not formal))
         if formal:
             exit()

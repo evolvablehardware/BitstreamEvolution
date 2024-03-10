@@ -13,7 +13,7 @@ The delays are used to control for noise on the serial line.
 #define tempSelection '5'
 #define humiditySelection '6'
 
-#define DHTPIN 3
+#define DHTPIN 10
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
 
