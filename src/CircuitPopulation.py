@@ -35,7 +35,7 @@ VARIANCE_THRESHOLD <= 0 as set in config.ini, continuing without randomization''
 # NOTE The Seed file is provided as a way to kickstart the evolutionary process
 # without having to perform a time-consuming random search for a seedable circuit.
 # Contact repository authors if you're interested in a new seed file.
-SEED_HARDWARE_FILEPATH = Path("data/seed-hardware.asc")
+SEED_HARDWARE_FILEPATH = Path("data/best957tonedisc.asc")
 
 # The basename (filename without path or extensions) of the Circuit
 # hardware, bitstream, and data files.
@@ -463,6 +463,8 @@ class CircuitPopulation:
                 fitness = circuit.evaluate_variance(record_data = record_data)
             elif func == "COMBINED":
                 fitness = circuit.evaluate_combined(record_data = record_data)
+            elif func == "TONE_DISCRIMINATOR":
+                fitness = circuit.evaluate_tonedisc(record_data = record_data)
         return fitness
 
     def evolve(self):
@@ -546,6 +548,18 @@ class CircuitPopulation:
                 self.__best_epoch = self.get_current_epoch()
                 # Copy this circuit to the best file
                 copyfile(self.__circuits[0].get_hardware_file_path(), self.__config.get_best_file())
+                with open("workspace/bestwaveformlivedata.log", "w+") as waveLive:
+                    waveLive.write("NEW BEST BELOW: " + str(self.__circuits[0]) + " in gen " + str(self.get_current_epoch()) + "\n")
+                    i = 1
+                    for points in self.__circuits[0].get_waveform_td():
+                        waveLive.write(str(i) + ", " + str(points) + "\n")
+                        i += 1
+                with open("workspace/beststatelivedata.log", "w+") as stateLive:
+                    stateLive.write("NEW BEST BELOW: " + str(self.__circuits[0]) + " in gen " + str(self.get_current_epoch()) + "\n")
+                    i = 1
+                    for points in self.__circuits[0].get_state_td():
+                        stateLive.write(str(i) + ", " + str(points) + "\n")
+                        i += 1
                 self.__log_event(2, "New best found")
 
             self.__logger.log_generation(self, epoch_time)

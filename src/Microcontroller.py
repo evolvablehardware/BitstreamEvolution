@@ -306,5 +306,68 @@ class Microcontroller:
         data_file.close()
         self.__log_event(2, "Completed writing to data file")
 
+    def measure_signal_td(self, circuit):
+        """
+        Measures the signal 
+
+        .. todo::
+            Not really sure what this does. Is this the one that gets the waveform?
+        
+        .. todo::
+            Preexisting todo: This whole section can probably be optimized.
+
+        Parameters
+        ----------
+        circuit : Circuit
+            The circuit we are measuring the signal of
+        """
+        # TODO This whole section can probably be optimized
+        
+        buf = []
+
+        # Begin monitoring on load
+        data_file = open(circuit.get_data_filepath(), "wb")
+
+        self.__serial.reset_input_buffer()
+        self.__serial.reset_output_buffer()
+        self.__log_event(1, "Reading microcontroller.")
+        # The MCU is expecting a string '5' to initiate the ADC capture from the FPGA (waveform as opposed to pulses)
+        self.__serial.write(b'5')
+        line = self.__serial.read()
+
+        start = time()
+
+        # The MCU returns a START line followed by many lines of data (500 currently) followed by a FINISHED line
+        while b"START\n" not in line:
+            self.__serial.write(b'5')
+            line = self.__serial.read_until()
+
+            if (time() - start) >= self.__config.get_mcu_read_timeout():
+                self.__log_warning(1, "Did not read START from MCU")
+                self.__log_warning(1, "Time Exceeded. Halting MCU Reading.")
+                break
+
+        # TODO  This whole section can probably be optimized
+        # Reads in 500 samples from MCU, with each being 2 ms apart
+        # Then, dumps into a file
+        while (b"FINISHED\n" not in line):
+            line = self.__serial.read_until()
+            if line != b"\n" and line != b"START\n" and line != b"FINISHED\n" and line != b"FINISHED\n":
+                buf.append(line)
+            if (time() - start) >= self.__config.get_mcu_read_timeout():
+                self.__log_warning(1, "Time Exceeded. Halting MCU Reading.")
+                break
+
+        self.__log_event(2, "Finished reading microcontroller. Logging data to file.")
+
+        for i in buf:
+            if b"FINISHED" not in i:
+                data_file.write(bytes(i))
+
+        data_file.close()
+        self.__log_event(2, "Completed writing to data file")
+
+
+
 
 

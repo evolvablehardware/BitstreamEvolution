@@ -185,7 +185,7 @@ def run():
         ax4.clear()
         ax4.set_xlim([0, 500])
         #ax4.set_ylim([0, 750])
-        ax4.set_ylim([0, 3.3])
+        ax4.set_ylim([-0.5, 3.7])
         ax4.plot(pulse_trigger, "r--")
         ax4.plot(xs, ys, color="blue")
 
@@ -193,6 +193,29 @@ def run():
             ax4.legend(['Trigger Voltage', 'Circuit Voltage'], bbox_to_anchor=(1.15, 0.5), loc="lower center", borderaxespad=0)
 
         ax4.set(xlabel='Time (μs)', ylabel='Voltage (V)', title='Current Hardware Waveform')
+
+    def animate_state(i):    
+        graph_data = open('workspace/statelivedata.log','r').read()
+        lines = graph_data.split('\n')
+        pulse_trigger = [341*3.3/715]*500
+        xs = []
+        ys = []
+        for line in lines:
+            if len(line) > 1:
+                x, y = line.split(',')
+                xs.append(int(x))
+                ys.append(float(y))
+        ax5.clear()
+        ax5.set_xlim([0, 500])
+        #ax4.set_ylim([0, 750])
+        ax5.set_ylim([-0.1, 1.1])
+        ax5.plot(pulse_trigger, "r--")
+        ax5.plot(xs, ys, color="blue")
+
+        if formal:
+            ax5.legend(['Trigger Voltage', 'Circuit Voltage'], bbox_to_anchor=(1.15, 0.5), loc="lower center", borderaxespad=0)
+
+        ax5.set(xlabel='Time (μs)', ylabel='Voltage (V)', title='Current State')
 
     def animate_map(i):
         graph_data = open('workspace/maplivedata.log','r').read()
@@ -514,9 +537,14 @@ def run():
     rows = 2
     cols = 1
     has_wf_plot = False
+    has_st_plot = False
     if (config.get_simulation_mode() == 'FULLY_INTRINSIC' and not config.is_pulse_func()) or config.get_simulation_mode() == 'FULLY_SIM':
         rows = rows + 1
         has_wf_plot = True
+
+    if (config.get_fitness_func() == "TONE_DISCRIMINATOR"):
+        rows = rows + 1
+        has_st_plot = True
 
     has_pop_plot = False
     if config.get_init_mode() == 'EXISTING_POPULATION':
@@ -532,6 +560,10 @@ def run():
     if has_wf_plot:
         ax4 = fig.add_subplot(rows, cols, 3)
         ani3 = plot(fig, animate_waveform)
+    
+    if has_st_plot:
+        ax5 = fig.add_subplot(rows, cols, 4)
+        ani4 = plot(fig, animate_state)
 
     if has_pop_plot:
         ax6 = fig.add_subplot(rows, cols, rows * cols)

@@ -9,9 +9,11 @@ The delays are used to control for noise on the serial line.
 #define pulseCountMeasureSelection '1'
 #define ADCMeasureSelection '2' 
 #define switchConstant '4'
+#define ADCMeasuretdSelection '5'
 
 
 int analogPin = A0;
+int digitalPin = 3;
 int interrupt = 2;
 bool led_thingy = false;
 
@@ -30,7 +32,8 @@ void setup(){
     //analogReference(EXTERNAL);
     
     pinMode(LED_BUILTIN, OUTPUT);
-    pinMode(interrupt, INPUT);
+    pinMode(analogPin, INPUT);
+    pinMode(digitalPin, INPUT);
 
     digitalWrite(LED_BUILTIN, LOW);
     Serial.begin(115200);
@@ -68,6 +71,24 @@ void loop(){
             // This determines the sampling frequency 
             //(500 samples delayed by 10us each results in a sampled time interval of 5ms)
             delayMicroseconds(10); 
+        }
+    
+        Serial.print("FINISHED\nFINISHED\nFINISHED\n");
+        delay(10); //3016/1508 Delay to load the FPGA
+      }
+      else if (x == ADCMeasuretdSelection){
+        Serial.print("START\nSTART\nSTART\n");
+
+        for(int i=0; i<=499; i++){
+            Serial.print(i+1);
+            Serial.print(": ");
+            Serial.print(analogRead(analogPin)); //buf[i]); //Write the buffer to Serial
+            Serial.print(" ");
+            Serial.print(digitalRead(digitalPin)); //buf[i]); //Write the buffer to Serial
+            Serial.print("\n");
+            // This determines the sampling frequency 
+            //(500 samples delayed by 2 ms each results in a sampled time interval of 1 second)
+            delay(2); 
         }
     
         Serial.print("FINISHED\nFINISHED\nFINISHED\n");
