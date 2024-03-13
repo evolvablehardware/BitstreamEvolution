@@ -32,6 +32,7 @@ void setup(){
     //analogReference(EXTERNAL);
     
     pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(interrupt, INPUT);
     pinMode(analogPin, INPUT);
     pinMode(digitalPin, INPUT);
 
