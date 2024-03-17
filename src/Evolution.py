@@ -100,6 +100,7 @@ class Evolution:
             self.logger.save_workspace(self.output_directory)
         elif self.config.get_backup_workspace():
             self.logger.save_workspace(self.config.get_output_directory())
+        run(["python3", "src/workspace_formatter.py"])
 
     ## Don't know if this is needed, but it might be useful to validate all inputs 
     ## especially if this is going to take a while to run.

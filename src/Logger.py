@@ -5,6 +5,7 @@ from os.path import exists
 from os.path import join
 from os import mkdir
 from shutil import copytree
+from shutil import rmtree
 from datetime import datetime
 
 # The window dimensions
@@ -128,6 +129,8 @@ class Logger:
         open("workspace/fitnesssensitivity.log", "w").close()
         if not exists("workspace/template"):
             mkdir("workspace/template")
+
+        rmtree("workspace/plots")
         if not exists("workspace/plots"):
             mkdir("workspace/plots")
         # Determine if we need to the to initialize the analysis and

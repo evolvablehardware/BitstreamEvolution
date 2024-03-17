@@ -515,6 +515,7 @@ def run():
         yellow = "yellow"
         plot = lambda fig, function : animation.FuncAnimation(fig, function, interval=FRAME_INTERVAL, cache_frame_data=False)
 
+    
     if not exists(plots_dir):
         mkdir(plots_dir)
 
