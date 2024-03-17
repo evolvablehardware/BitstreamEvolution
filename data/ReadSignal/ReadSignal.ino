@@ -4,23 +4,15 @@ Convert it to digital value and transmit over serial
 
 The delays are used to control for noise on the serial line.
 */
-#include "DHT.h"
 
 #define pulseWidthMeasureSelection '3'
 #define pulseCountMeasureSelection '1'
 #define ADCMeasureSelection '2' 
 #define switchConstant '4'
-#define tempSelection '5'
-#define humiditySelection '6'
-
-#define DHTPIN 10
-#define DHTTYPE DHT22
-DHT dht(DHTPIN, DHTTYPE);
 
 int analogPin = A0;
 int interrupt = 2;
 bool led_thingy = false;
-const int sensorPin = 10;
 
 int buf[500]; //500 integers at 10 uS intervals = 5 mS
 volatile long pulseCount = 0;
@@ -51,8 +43,6 @@ void setup(){
 
     // can be changed from RISING to FALLING or CHANGE
     attachInterrupt(digitalPinToInterrupt(interrupt),pulseCounter, RISING); 
-
-    dht.begin();
 }
 
 
@@ -132,25 +122,6 @@ void loop(){
           interrupt = 2;
         }
         attachInterrupt(digitalPinToInterrupt(interrupt),pulseCounter, RISING);
-      }
-      else if (x == tempSelection){
-        float t = dht.readTemperature();
-
-        if(isnan(t)) {
-          Serial.println("-1");
-        } else {
-          Serial.println(t);
-        }
-      }
-
-      else if (x == humiditySelection){
-        float h = dht.readHumidity();
-
-        if(isnan(h)) {
-          Serial.println("-1");
-        } else {
-          Serial.println(h);
-        }
       }
     }
 }

@@ -64,6 +64,13 @@ class Microcontroller:
                 timeout=config.get_mcu_read_timeout()
             )
             self.__serial.dtr = False
+            if(config.reading_temp_humidity()):
+                self.__env_serial =  Serial(
+                    config.get_env_usb_path(),
+                    config.get_serial_baud(),
+                    timeout=config.get_mcu_read_timeout()
+                )
+                self.__env_serial.dtr = False
             self.__fpga = config.get_fpga()
 
     def switch_fpga(self):
@@ -312,13 +319,13 @@ class Microcontroller:
         """
         self.__log_event(3, "Measuring temperature")
             
-        self.__serial.reset_input_buffer()
-        self.__serial.reset_output_buffer()
-        self.__serial.write(b'5') 
+        self.__env_serial.reset_input_buffer()
+        self.__env_serial.reset_output_buffer()
+        self.__env_serial.write(b'5') 
         start = time()
 
         self.__log_event(3, "Serial reading...")
-        p = self.__serial.read_until()
+        p = self.__env_serial.read_until()
         self.__log_event(3, "Serial read done")
         if (time() - start) >= self.__config.get_mcu_read_timeout():
             self.__log_warning(1, "Time Exceeded. Halting MCU Reading of temperature")
@@ -337,13 +344,13 @@ class Microcontroller:
         """
         self.__log_event(3, "Measuring humidity")
             
-        self.__serial.reset_input_buffer()
-        self.__serial.reset_output_buffer()
-        self.__serial.write(b'6') 
+        self.__env_serial.reset_input_buffer()
+        self.__env_serial.reset_output_buffer()
+        self.__env_serial.write(b'6') 
         start = time()
 
         self.__log_event(3, "Serial reading...")
-        p = self.__serial.read_until()
+        p = self.__env_serial.read_until()
         self.__log_event(3, "Serial read done")
         if (time() - start) >= self.__config.get_mcu_read_timeout():
             self.__log_warning(1, "Time Exceeded. Halting MCU Reading of humidity")
