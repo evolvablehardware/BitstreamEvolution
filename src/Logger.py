@@ -95,6 +95,11 @@ class Logger:
 
         #set up directory for saving files
         plots_dir = self.__config.get_plots_directory()
+        try:
+            rmtree(plots_dir)
+        except OSError as error:
+            print(error)
+
         if not plots_dir.exists():
             plots_dir.mkdir()
 

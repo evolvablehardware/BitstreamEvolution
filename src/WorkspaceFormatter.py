@@ -58,6 +58,13 @@ class WorkspaceFormatter:
         readme.write("  \n");
         readme.write("-----\n");
 
+        #add plots to the readme
+        for filename in sorted(os.listdir(folder_name+"/plots")):
+            path = folder_name + "/plots/" + filename
+            if path.endswith(".png") and os.stat(path).st_size != 0:
+                readme.write("![" + filename + "](plots/" + filename + ")\n")
+        readme.write("-----\n");
+
         #add config
         source = open(folder_name + "/builtconfig.ini", "r").read()
         lines = source.split('\n')
@@ -75,14 +82,6 @@ class WorkspaceFormatter:
                 readme.write(parts[1])
                 readme.write("  \n")
 
-
-        readme.write("-----\n");
-
-        #add plots to the readme
-        for filename in os.listdir(folder_name+"/plots"):
-            path = folder_name + "/plots/" + filename
-            if path.endswith(".png") and os.stat(path).st_size != 0:
-                readme.write("![" + filename + "](plots/" + filename + ")\n")
         readme.close()
 
     def format_workspace(self):

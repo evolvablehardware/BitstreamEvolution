@@ -88,7 +88,7 @@ def run():
             ax5.set(xlabel='Trial', ylabel='Pulses', title='Pulses')
 
         if(config.get_save_plots()):
-            fig.savefig(plots_dir.joinpath("sensitivity.png"))
+            fig.savefig(plots_dir.joinpath("1_sensitivity.png"))
 
     def animate_temp_humidity(i):
         xs = []
@@ -133,7 +133,7 @@ def run():
             ax9.set(xlabel='Humidity', ylabel='Mean Voltage (Normalized)', title='Humidity vs Circuit Voltage per Trial')
 
         if(config.get_save_plots()):
-            fig2.savefig(plots_dir.joinpath("sensitivity_temp_humidity.png"))
+            fig2.savefig(plots_dir.joinpath("2_sensitivity_temp_humidity.png"))
 
     def animate_avg_temp_humidity(i):
         xs = []
@@ -228,7 +228,7 @@ def run():
             ax13.set(xlabel='Humidity', ylabel='Average of Mean Voltages (Normalized)', title='Humidity vs AVerage Circuit Voltage per Trial')
 
         if(config.get_save_plots()):
-            fig3.savefig(plots_dir.joinpath("sensitivity_avg_temp_humidity.png"))
+            fig3.savefig(plots_dir.joinpath("3_sensitivity_avg_temp_humidity.png"))
 
     plots_dir = config.get_plots_directory()
 

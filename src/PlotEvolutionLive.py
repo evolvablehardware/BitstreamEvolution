@@ -126,7 +126,7 @@ def run():
             ax2.legend(plots, labels, bbox_to_anchor=(1.15, 0.5), loc="center left", borderaxespad=0)
 
         if(config.get_save_plots()):
-            fig.savefig(plots_dir.joinpath("main.png"), bbox_inches="tight")
+            fig.savefig(plots_dir.joinpath("1_main.png"), bbox_inches="tight")
 
     def animate_epoch_pulses(i):
         graph_data = open('workspace/pulselivedata.log','r').read()
@@ -168,7 +168,7 @@ def run():
             ax9.legend(plots, labels, bbox_to_anchor=(1.15, 0.5), loc="center left", borderaxespad=0)
 
         if(config.get_save_plots()):
-            fig4.savefig(plots_dir.joinpath("pulses.png"), bbox_inches="tight")
+            fig4.savefig(plots_dir.joinpath("2_pulses.png"), bbox_inches="tight")
 
 
     def animate_waveform(i):    
@@ -254,7 +254,7 @@ def run():
         ax5.set(xlabel='Max Voltage (norm)', ylabel='Min Voltage (norm)', title='Elite Map')
 
         if(config.get_save_plots()):
-            fig_map.savefig(plots_dir.joinpath("map.png"), bbox_inches="tight")
+            fig_map.savefig(plots_dir.joinpath("5_map.png"), bbox_inches="tight")
 
     def animate_pops(i):
         graph_data = open('workspace/poplivedata.log','r').read()
@@ -337,7 +337,7 @@ def run():
             ax7.set(xlabel='Generation', ylabel='Fitness', title='Fitness Violin Plots')
 
         if(config.get_save_plots()):
-            fig2.savefig(plots_dir.joinpath("violin_plots.png"))
+            fig2.savefig(plots_dir.joinpath("3_violin_plots.png"))
 
     def anim_violin_plots_pulse(i):
         data = open('workspace/pulselivedata.log','r').read()
@@ -412,7 +412,7 @@ def run():
                     ax8.axvline(x=i, color=accent_color, linestyle="dashed")
 
         if(config.get_save_plots()):
-            fig3.savefig(plots_dir.joinpath("heatmap.png"))
+            fig3.savefig(plots_dir.joinpath("4_heatmap.png"))
 
     def animate_pulse_map(i):
         graph_data = open('workspace/maplivedata.log','r').read()
