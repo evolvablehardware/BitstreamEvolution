@@ -413,56 +413,6 @@ def run():
 
         if(config.get_save_plots()):
             fig3.savefig(plots_dir.joinpath("heatmap.png"))
-            
-
-    def animate_sensitivity(i):
-        graph_data = open('workspace/fitnesssensitivity.log','r').read()
-        lines = graph_data.split('\n')
-        xs = []
-        ys = []
-        ts = []
-        for line in lines:
-            if len(line) > 1:
-                t,d = line.split(':')
-                d = d.split(",")
-                xs.append(float(d[0]))
-                ys.append(float(d[1]))
-                ts.append(float(t))
-
-        #fitness
-        ax2.clear()
-        ax2.hist(xs, bins=HEATMAP_BINS)
-        ax2.tick_params(axis='y', labelcolor=accent_color)
-        ax2.set_ylim(bottom=0)
-
-        ax3.clear()
-        ax3.hist2d(ts,xs,bins=HEATMAP_BINS)
-        ax3.tick_params(axis='y', labelcolor=accent_color)
-        ax3.set_ylim(bottom=0)
-        
-        #pulses/mean voltage
-        ax4.clear()
-        ax4.hist(ys, bins=HEATMAP_BINS)
-        ax4.tick_params(axis='y', labelcolor=accent_color) 
-        ax4.set_ylim(bottom=0)
-
-        ax5.clear()
-        ax5.hist2d(ts, ys, bins=HEATMAP_BINS)
-        ax5.tick_params(axis='y', labelcolor=accent_color) 
-        ax5.set_ylim(bottom=0)
-        
-        ax2.set(xlabel='Fitness', ylabel='Count', title='Circuit Fitness per Trial')
-        ax3.set(xlabel='Trial', ylabel='Fitness', title='Circuit Fitness per Trial')
-        if config.get_fitness_func() != "PULSE_COUNT":
-            ax4.set(xlabel='Mean Voltage (Normalized)', ylabel='Count', title='Circuit Voltage per Trial')
-            ax5.set(xlabel='Trial', ylabel='Mean Voltage (Normalized)', title='Circuit Voltage per Trial')
-        else:
-            ax4.set(xlabel='Pulses', ylabel='Count', title='Pulses')
-            ax5.set(xlabel='Trial', ylabel='Pulses', title='Pulses')
-
-
-        if(config.get_save_plots()):
-            fig.savefig(plots_dir.joinpath("sensitivity.png"))
 
     def animate_pulse_map(i):
         graph_data = open('workspace/maplivedata.log','r').read()
@@ -506,33 +456,20 @@ def run():
         plots_dir = plots_dir.joinpath("Formal")
         accent_color = "black"
         accent_color2 = "#65187A"
+        heatmap_color = 'Blues'
         yellow = "goldenrod"
         plot = lambda fig, function : function(0)
     else:
         style.use('dark_background')
         accent_color = "white"
         accent_color2 = "#f0f8ff"
+        heatmap_color = 'viridis'
         yellow = "yellow"
         plot = lambda fig, function : animation.FuncAnimation(fig, function, interval=FRAME_INTERVAL, cache_frame_data=False)
 
     
     if not exists(plots_dir):
         mkdir(plots_dir)
-
-    if (config.get_simulation_mode() == 'INTRINSIC_SENSITIVITY'):
-        fig = plt.figure(figsize=(9,7))
-        ax2 = fig.add_subplot(2, 2, 1)
-        ax3 = fig.add_subplot(2, 2, 2)
-        ax4 = fig.add_subplot(2, 2, 3)
-        ax5 = fig.add_subplot(2, 2, 4)
-        ani = animation.FuncAnimation(fig, animate_sensitivity, interval=FRAME_INTERVAL)
-        plt.subplots_adjust(hspace=0.50)
-        fig.tight_layout(pad=5.0)
-        plt.show(block=(not formal))
-        if formal:
-            exit()
-        # while not formal:
-        #     pass
 
     fig = plt.figure(figsize=(9,7))
     rows = 2

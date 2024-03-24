@@ -522,6 +522,16 @@ class Config:
 			exit()
 		return seconds
 	
+	def reading_temp_humidity(self):
+		try:
+			input = self.get_sensitivity_parameters("reading_temp_humidity")
+			return input == "true" or input == "True"
+		except NoOptionError:
+			return False
+		
+	def get_env_usb_path(self):
+		return self.get_sensitivity_parameters("ENVIRONMENT_USB_PATH")
+	
 	#SECTION getts for transferability experiment parameters
 	def using_transfer_interval(self):
 		return isinstance(self.get_transfer_interval(), int)
@@ -656,8 +666,8 @@ class Config:
 		return self.get_system_parameters("USB_PATH")
 	
 	def get_upload_to_arduino(self):
-		input = self.get_system_parameters("auto_upload_to_arduino")
-		return input == "true" or input == "True"
+		value = self.get_system_parameters("auto_upload_to_arduino")
+		return value== "true" or value == "True"
 		
 	# SECTION Getters for hardware parameters
 	def get_routing_type(self):

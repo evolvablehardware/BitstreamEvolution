@@ -98,8 +98,11 @@ class Logger:
         if not plots_dir.exists():
             plots_dir.mkdir()
 
-        self.log_event(1, "Launching the Live Plot window...")
-        args = TERM_CMD + ["python3", "src/PlotEvolutionLive.py"]
+        if (self.__config.get_simulation_mode() == 'INTRINSIC_SENSITIVITY'):
+            args = TERM_CMD + ["python3", "src/PlotSensitivityLive.py"]
+        else: 
+            args = TERM_CMD + ["python3", "src/PlotEvolutionLive.py"]
+        
         try:
             run(args, check=True, capture_output=True)
         except OSError as e:

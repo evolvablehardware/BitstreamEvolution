@@ -165,7 +165,16 @@ class CircuitPopulation:
                     data2 = ckt.get_pulses()
                 else:
                     data2 = ckt.get_mean_voltage()
-                live_file.write(("{}:{},{}\n").format(str(cur_trial), fitness, data2))
+
+                #get temp and humidity reading
+                t = 0
+                h = 0
+                if(self.__config.reading_temp_humidity()):
+                    t = self.__microcontroller.measure_temp()
+                    h = self.__microcontroller.measure_humidity()
+                    self.__log_event(4, "Recorded temperature: " + str(t) + ". Recorded humidity: " + str(h))
+
+                live_file.write(("{}:{},{},{},{}\n").format(str(cur_trial), fitness, data2, t, h))
             self.__log_event(2, "Trial " + str(cur_trial) + " done. Fitness recorded and logged to file: " + str(fitness))
 
             cur_trial += 1

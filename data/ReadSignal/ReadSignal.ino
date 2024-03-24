@@ -11,7 +11,6 @@ The delays are used to control for noise on the serial line.
 #define switchConstant '4'
 #define ADCMeasuretdSelection '5'
 
-
 int analogPin = A0;
 int digitalPin = 3;
 int interrupt = 2;
