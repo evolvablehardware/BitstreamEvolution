@@ -6,6 +6,8 @@ from Logger import Logger
 from subprocess import CalledProcessError, run
 import os
 
+from WorkspaceFormatter import WorkspaceFormatter
+
 class Evolution:
 
     def __init__(self):
@@ -81,6 +83,7 @@ class Evolution:
             self.log_error(1, e)
 
         # SECTION Clean up resources
+        self.__WorkspaceFormatter = WorkspaceFormatter(config, experiment_description)
 
         if config.get_simulation_mode() == "FULLY_INTRINSIC":
             # Upload a sample bitstream to the FPGA.
@@ -100,7 +103,7 @@ class Evolution:
             self.logger.save_workspace(self.output_directory)
         elif self.config.get_backup_workspace():
             self.logger.save_workspace(self.config.get_output_directory())
-        run(["python3", "src/workspace_formatter.py"])
+        self.__WorkspaceFormatter.format_workspace()
 
     ## Don't know if this is needed, but it might be useful to validate all inputs 
     ## especially if this is going to take a while to run.
