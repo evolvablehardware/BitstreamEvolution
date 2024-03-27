@@ -54,7 +54,7 @@ class TestEvolution(Evolution):
     def get_evolve_call_count(self)->int:
         return self.evolve_call_count
     
-    def assert_evolve_call_contains(self,callIndex,args:[(str,any)]):
+    def assert_evolve_call_contains(self,callIndex,args:list[(str,any)]):
         """Loops through every arg name and checks if it matches the value passed in with it in the tupple."""
         call_argument_dict:dict = self.previous_evolve_argument_list[callIndex]
 
@@ -64,14 +64,14 @@ class TestEvolution(Evolution):
 
             assert argument[1] == call_argument_dict[argument[0]], f"Argument '{argument[0]}' did not match on evolve call index {callIndex}. {args[argument]} != {call_argument_dict[argument]}."
 
-    def assert_last_evolve_call_contains(self,args:[(str,any)]):
+    def assert_last_evolve_call_contains(self,args:list[(str,any)]):
         self.assert_evolve_call_contains(len(self.previous_evolve_argument_list)-1,args)
 
-    def assert_all_calls_contain(self,args:[(str,any)]):
+    def assert_all_calls_contain(self,args:list[(str,any)]):
         for call_dict_index in range(len(self.previous_evolve_argument_list)):
             self.assert_evolve_call_contains(call_dict_index,args)
 
-    def all_evolve_call_arguments(self)->[dict]:
+    def all_evolve_call_arguments(self)->list[dict]:
         return self.previous_evolve_argument_list
 
 TestEvolution.__test__ = False
@@ -141,7 +141,7 @@ def test_multiple_config_recieved(configs_name:[str],test_evolution_object:TestE
                                                     (TestEvolution.PRINT_ACTION_ONLY,False)])
     
     # verify the configs are in the same order and are the same values
-    configs_evolved:[str] = list(map(lambda call: call[TestEvolution.PRIMARY_CONFIG_PATH], test_evolution_object.all_evolve_call_arguments()))
+    configs_evolved:list[str] = list(map(lambda call: call[TestEvolution.PRIMARY_CONFIG_PATH], test_evolution_object.all_evolve_call_arguments()))
 
     assert test_evolution_object.get_evolve_call_count() == len(configs_name), "Incorrect number of calls ("+str(test_evolution_object.get_evolve_call_count())+")"
     for i in range(len(configs_name)):

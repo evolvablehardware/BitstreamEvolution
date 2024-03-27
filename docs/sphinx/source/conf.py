@@ -34,10 +34,11 @@ sys.path.append(directory_of_source_code)
 
 #html_theme = 'alabaster' # default
 
+# Make Negertiti default for now.
 
-html_theme = 'sphinx_book_theme'
+#html_theme = 'sphinx_book_theme'
 #html_theme = 'sphinx_wagtail_theme'
-#html_theme = 'sphinx_nefertiti'
+html_theme = 'sphinx_nefertiti'
 #html_theme = 'pydata_sphinx_theme'
 
 if (html_theme == 'sphinx_book_theme'):
