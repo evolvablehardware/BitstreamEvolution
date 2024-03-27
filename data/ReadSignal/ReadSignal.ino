@@ -14,6 +14,7 @@ The delays are used to control for noise on the serial line.
 int analogPin = A0;
 int digitalPin = 3;
 int interrupt = 2;
+int synchPin = 4;
 bool led_thingy = false;
 
 int buf[500]; //500 integers at 10 uS intervals = 5 mS
@@ -31,6 +32,7 @@ void setup(){
     //analogReference(EXTERNAL);
     
     pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(synchPin, OUTPUT);
     pinMode(interrupt, INPUT);
     pinMode(analogPin, INPUT);
     pinMode(digitalPin, INPUT);
@@ -78,6 +80,7 @@ void loop(){
       }
       else if (x == ADCMeasuretdSelection){
         Serial.print("START\nSTART\nSTART\n");
+        digitalWrite(synchPin, HIGH);
 
         for(int i=0; i<=499; i++){
             Serial.print(i+1);
@@ -90,6 +93,8 @@ void loop(){
             //(500 samples delayed by 2 ms each results in a sampled time interval of 1 second)
             delay(2); 
         }
+
+        digitalWrite(synchPin, LOW);
     
         Serial.print("FINISHED\nFINISHED\nFINISHED\n");
         delay(10); //3016/1508 Delay to load the FPGA

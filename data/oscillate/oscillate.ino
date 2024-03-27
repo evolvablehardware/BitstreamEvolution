@@ -1,43 +1,81 @@
-int statePin = 2;
-int oscillatorPin = 3;
-int is10K = 0;
-int counter = 0;
-int isHigh = 0;
+#define STATE_PIN 2
+#define OSC_PIN   3
+#define SYNCH_PIN 4
 
-void setup() {
-  // put your setup code here, to run once:
-  pinMode(oscillatorPin, OUTPUT);
-  pinMode(statePin, OUTPUT);
+#define NUM_INTERVALS     10
+#define LOW_FREQ          1000
+#define HIGH_FREQ         10000
+#define TONE_LEN          100
+
+int stateOrder[NUM_INTERVALS] = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
+
+int generating = 0;
+int state;
+
+void setup() 
+{
+  pinMode(OSC_PIN, OUTPUT);
+  pinMode(STATE_PIN, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(statePin, is10K);
-  digitalWrite(oscillatorPin, isHigh);
+  pinMode(SYNCH_PIN, INPUT);
+
+  digitalWrite(LED_BUILTIN, 0);
+  digitalWrite(STATE_PIN, 0);
+  digitalWrite(OSC_PIN, 0);
+  attachInterrupt(digitalPinToInterrupt(SYNCH_PIN), startGenerate, RISING);
+
+  shuffleStates();
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  digitalWrite(oscillatorPin, isHigh);
-  counter++;
-  if ((is10K == 0 && counter == 1000) || (is10K == 1 && counter == 10000))
+void loop() 
+{
+  if (generating)
   {
-    is10K = 1 - is10K;
-    digitalWrite(statePin, is10K);
-    digitalWrite(LED_BUILTIN, is10K);
-    counter = 0;
+    for (int i = 0; i < NUM_INTERVALS; i++)
+    {
+      state = stateOrder[i];
+      digitalWrite(LED_BUILTIN, state);
+      digitalWrite(STATE_PIN, state);
+      if (!state)
+      {
+        tone(OSC_PIN, LOW_FREQ, TONE_LEN);
+        delay(TONE_LEN);
+      }
+      else
+      {
+        tone(OSC_PIN, HIGH_FREQ, TONE_LEN);
+        delay(TONE_LEN);
+      }
+    }
+    generating = 0;
+    shuffleStates();
+
+    digitalWrite(STATE_PIN, 0);
+    digitalWrite(OSC_PIN, 0);
+    digitalWrite(LED_BUILTIN, 0);
   }
-  isHigh = 1 - isHigh;
-  if (is10K == 0)
+}
+
+void startGenerate()
+{
+  generating = 1;
+}
+
+void shuffleStates()
+{
+  int temp;
+  int n;
+  int i;
+  for (i = 0; i < NUM_INTERVALS; i++) 
   {
-    isHigh = 0;
-    digitalWrite(oscillatorPin, LOW);
-    counter = 0;
-    delay(500);
-    is10K = 1 - is10K;
-    digitalWrite(statePin, is10K);
-    digitalWrite(LED_BUILTIN, is10K);
-    // delayMicroseconds(500);
+    n = random(0, NUM_INTERVALS);
+    temp = stateOrder[n];
+    stateOrder[n] =  stateOrder[i];
+    stateOrder[i] = temp;
   }
-  else
+  for (i = 0; i < NUM_INTERVALS; i++)
   {
-    delayMicroseconds(43);
+    Serial.print(stateOrder[i]);
   }
+  Serial.println("");
 }
