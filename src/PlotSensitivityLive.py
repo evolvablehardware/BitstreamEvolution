@@ -9,14 +9,9 @@ Plots of the active experiment are created and updated in this script using matp
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib import style
-from matplotlib import colormaps
-import configparser
-import re
 from Config import Config
-import math 
 import numpy as np
 import sys
-from utilities import determine_color
 from os.path import exists
 from os import mkdir
 
@@ -80,7 +75,7 @@ def run():
         
         ax2.set(xlabel='Fitness', ylabel='Count', title='Circuit Fitness per Trial')
         ax3.set(xlabel='Trial', ylabel='Fitness', title='Circuit Fitness per Trial')
-        if config.get_fitness_func() != "PULSE_COUNT":
+        if not config.is_pulse_func():
             ax4.set(xlabel='Mean Voltage (Normalized)', ylabel='Count', title='Circuit Voltage per Trial')
             ax5.set(xlabel='Trial', ylabel='Mean Voltage (Normalized)', title='Circuit Voltage per Trial')
         else:
@@ -170,18 +165,28 @@ def run():
                 temp_data2.pop(i)
                 i -= 1
             i += 1
-        #calc averages
+        #calc averages and variance
         avg_temp_fitness = []
         avg_temp_data2 = []
+        std_temp_fitness = []
+        std_temp_data2 = []
         for i in range(len(temp_xs)):
             avg_temp_fitness.append(np.average(temp_fitness[i]))
             avg_temp_data2.append(np.average(temp_data2[i]))
+            std_temp_fitness.append(np.std(temp_fitness[i]))
+            std_temp_data2.append(np.std(temp_data2[i]))
 
         ax10.clear() 
         ax10.plot(temp_xs, avg_temp_fitness, color=accent_color)
         ax10.set(xlabel='Temperature', ylabel='Average Fitness', title='Temperature vs Average Circuit Fitness')
         ax12.clear() 
         ax12.plot(temp_xs, avg_temp_data2, color=accent_color)
+
+        ax14.clear() 
+        ax14.plot(temp_xs, std_temp_fitness, color=accent_color)
+        ax14.set(xlabel='Temperature', ylabel='Standard Deviation of Fitness', title='Temperature vs Standard Deviation of Circuit Fitness')
+        ax16.clear() 
+        ax16.plot(temp_xs, std_temp_data2, color=accent_color)
 
         min_h = min(hs)
         max_h = max(hs)
@@ -207,12 +212,16 @@ def run():
                 humidity_data2.pop(i)
                 i -= 1
             i += 1
-        #calc averages
+        #calc averages and variance
         avg_humidity_fitness = []
         avg_humidity_data2 = []
+        std_humidity_fitness = []
+        std_humidity_data2 = []
         for i in range(len(humidity_xs)):
             avg_humidity_fitness.append(np.average(humidity_fitness[i]))
             avg_humidity_data2.append(np.average(humidity_data2[i]))
+            std_humidity_fitness.append(np.std(humidity_fitness[i]))
+            std_humidity_data2.append(np.std(humidity_data2[i]))
 
         ax11.clear() 
         ax11.plot(humidity_xs, avg_humidity_fitness, color=accent_color)
@@ -220,15 +229,87 @@ def run():
         ax13.clear() 
         ax13.plot(humidity_xs, avg_humidity_data2, color=accent_color)
 
+        ax15.clear() 
+        ax15.plot(humidity_xs, std_humidity_fitness, color=accent_color)
+        ax15.set(xlabel='Humidity', ylabel='Standard Deviation of Fitness', title='Humidity vs Standard Deviation of Circuit Fitness')
+        ax17.clear() 
+        ax17.plot(humidity_xs, std_humidity_data2, color=accent_color)
+
         if config.is_pulse_func():
             ax12.set(xlabel='Temperature', ylabel='Average Pulses', title='Temperature vs Average Pulses')
             ax13.set(xlabel='Humidity', ylabel='Average Pulses', title='Humidity vs Average Pulses')
+            ax16.set(xlabel='Temperature', ylabel='Standard Deviation of Pulses', title='Temperature vs Standard Deviation of Pulses')
+            ax17.set(xlabel='Humidity', ylabel='Standard Deviation of Pulses', title='Humidity vs Standard Deviation of Pulses')
         else:
             ax12.set(xlabel='Temperature', ylabel='Average of Mean Voltages (Normalized)', title='Temperature vs Average Circuit Voltage per Trial')
             ax13.set(xlabel='Humidity', ylabel='Average of Mean Voltages (Normalized)', title='Humidity vs AVerage Circuit Voltage per Trial')
+            ax16.set(xlabel='Temperature', ylabel='Standard Deviation of of Mean Voltages (Normalized)', title='Temperature vs Standard Deviation of Average Circuit Voltage per Trial')
+            ax17.set(xlabel='Humidity', ylabel='Standard Deviation of of Mean Voltages (Normalized)', title='Humidity vs Standard Deviation of Average Circuit Voltage per Trial')
 
         if(config.get_save_plots()):
             fig3.savefig(plots_dir.joinpath("3_sensitivity_avg_temp_humidity.png"))
+            fig4.savefig(plots_dir.joinpath("4_sensitivity_std_temp_humidity.png"))
+
+    def animate_change_over_time(i):
+        xs = []
+        ys = []
+        ts = []
+        cs = []
+        hs = []
+        ts, xs, ys, cs, hs = get_data()
+        if len(ts) == 0:
+            return
+        
+        data = []
+        for i in range(8):
+            data.append([])
+
+        bufs = []
+        for i in range(4):
+            bufs.append([])
+
+        buf_length = min(len(ts), int(len(ts)/100))
+        time_points = []
+        j = 0
+        for i in range(len(ts)):
+            bufs[0].append(xs[i])
+            bufs[1].append(ys[i])
+            bufs[2].append(cs[i])
+            bufs[3].append(hs[i])
+
+            j = (j+1) % buf_length
+            if j == 0:
+                for k in range(4):
+                    data[k].append(np.average(bufs[k]))
+                    data[k+4].append(np.std(bufs[k]))
+
+                bufs = []
+                for k in range(4):
+                    bufs.append([])
+                time_points.append(ts[i])
+
+
+        for i in range(12):
+            time_axes[i].clear()
+
+        time_axes[0].plot(time_points, data[0], color=accent_color)
+        time_axes[0].set(xlabel="Trial", ylabel="Fitness")
+        time_axes[3].plot(time_points, data[1], color=accent_color)
+        time_axes[3].set(xlabel="Trial", ylabel="Data 2")
+        time_axes[6].plot(time_points, data[4], color=accent_color)
+        time_axes[6].set(xlabel="Trial", ylabel="Standard Deviation of Fitness")
+        time_axes[9].plot(time_points, data[5], color=accent_color)
+        time_axes[9].set(xlabel="Trial", ylabel="Standard Deviation of Data 2")
+
+        for i in range(4):
+            time_axes[3*i + 1].plot(time_points, data[2], color='tab:red')
+            time_axes[3*i + 1].set(ylabel="Temperature")
+            time_axes[3*i + 2].plot(time_points, data[3], color='tab:cyan')
+            time_axes[3*i + 2].set(ylabel="Humidity")
+
+
+        if(config.get_save_plots()):
+            fig5.savefig(plots_dir.joinpath("5_change_over_time.png"))
 
     plots_dir = config.get_plots_directory()
 
@@ -270,8 +351,29 @@ def run():
         ax11 = fig3.add_subplot(2, 2, 2)
         ax12 = fig3.add_subplot(2, 2, 3)
         ax13 = fig3.add_subplot(2, 2, 4)
+
+        fig4 = plt.figure(figsize=(9,7))
+        ax14 = fig4.add_subplot(2, 2, 1)
+        ax15 = fig4.add_subplot(2, 2, 2)
+        ax16 = fig4.add_subplot(2, 2, 3)
+        ax17 = fig4.add_subplot(2, 2, 4)
+
         ani4= animation.FuncAnimation(fig3, animate_avg_temp_humidity, interval=FRAME_INTERVAL)
         fig3.tight_layout(pad=5.0)
+        fig4.tight_layout(pad=5.0)
+
+        fig5 = plt.figure(figsize=(9,7))
+        time_axes = []
+        for i in range(4):
+            ax_a = fig5.add_subplot(2, 2, i+1)
+            time_axes.append(ax_a)
+            for j in range(2):
+                time_axes.append(ax_a.twinx())
+        
+        ani5= animation.FuncAnimation(fig5, animate_change_over_time, interval=FRAME_INTERVAL)
+        fig5.tight_layout(pad=5.0)
+
+
 
     plt.subplots_adjust(hspace=0.50)
     plt.show(block=(not formal))
