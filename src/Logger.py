@@ -5,6 +5,7 @@ from os.path import exists
 from os.path import join
 from os import mkdir
 from shutil import copytree
+from shutil import rmtree
 from datetime import datetime
 
 # The window dimensions
@@ -94,11 +95,19 @@ class Logger:
 
         #set up directory for saving files
         plots_dir = self.__config.get_plots_directory()
+        try:
+            rmtree(plots_dir)
+        except OSError as error:
+            print(error)
+
         if not plots_dir.exists():
             plots_dir.mkdir()
 
-        self.log_event(1, "Launching the Live Plot window...")
-        args = TERM_CMD + ["python3", "src/PlotEvolutionLive.py"]
+        if (self.__config.get_simulation_mode() == 'INTRINSIC_SENSITIVITY'):
+            args = TERM_CMD + ["python3", "src/PlotSensitivityLive.py"]
+        else: 
+            args = TERM_CMD + ["python3", "src/PlotEvolutionLive.py"]
+        
         try:
             run(args, check=True, capture_output=True)
         except OSError as e:
@@ -128,6 +137,8 @@ class Logger:
         open("workspace/fitnesssensitivity.log", "w").close()
         if not exists("workspace/template"):
             mkdir("workspace/template")
+
+        rmtree("workspace/plots")
         if not exists("workspace/plots"):
             mkdir("workspace/plots")
         # Determine if we need to the to initialize the analysis and

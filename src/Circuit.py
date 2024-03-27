@@ -13,6 +13,7 @@ from io import SEEK_CUR
 from statistics import stdev
 import math
 import numpy as np
+import re
 
 import typing
 
@@ -478,6 +479,47 @@ class Circuit:
 
         return fitness
 
+    def evaluate_tonedisc(self, record_data = False):
+        """
+        Upload and run this Circuit on the FPGA and analyze its
+        performance.
+
+        Parameters
+        ----------
+        record_data : bool
+            Whether or not we want to save the data to this Circuit's sample data collection.
+            Used when performing multiple samples/passes.
+            Defaults to False.
+            If set to False, all live data is updated upon the running of this function
+
+        Returns
+        -------
+        float
+            The resulting fitness of the fitness calculation.
+        """
+        start = time()
+
+        self.__run()
+        self.__microcontroller.measure_signal_td(self)
+
+        elapsed = time() - start
+        self.__log_event(1,
+            "TIME TAKEN RUNNING AND LOGGING ---------------------- ",
+            elapsed
+        )
+
+        waveform = self.__read_variance_data_td()[0]
+        state = self.__read_variance_data_td()[1]
+        fitness = self.__measure_tonedisc_fitness(waveform, state)
+
+        if record_data:
+            # We will update all live data when all samples have been taken
+            self.__data.append(fitness)
+        else:
+            self.__update_all_live_data()
+
+        return fitness
+
     def evaluate_pulse_count(self, record_data = False):
         """
         Upload and run this circuit and count the number of pulses it
@@ -631,6 +673,41 @@ class Circuit:
         self.__log_event(5, "Waveform: ", waveform) 
         return waveform
 
+    def __read_variance_data_td(self):
+        """
+        Reads variance data from the Circuit data file, which contains readings from the Microcontroller
+
+        Returns
+        -------
+        list[int]
+            waveform
+        """
+        data_file = open(self.__data_filepath, "rb")
+        data = data_file.readlines()
+        total_samples = 500
+        waveform = []
+        state = []
+        for i in range(total_samples-1):
+            try:
+                dataPoint = data[i].decode("utf-8")
+                
+                x = int(re.split(" ", dataPoint)[1])
+                y = int(re.split(" ", dataPoint)[2])
+
+                waveform.append(x)
+                state.append(y)
+            except:
+                self.__log_error(1, "RIP FAILED TO READ {} AT LINE {} -> ZEROIZING LINE".format(
+                    self,
+                    i
+                ))
+                waveform.append(0)
+                state.append(0)
+
+        self.__log_event(5, "Waveform: ", waveform)
+        self.__log_event(5, "State: ", state) 
+        return [waveform, state]
+
     def get_waveform(self):
         """
         Returns the stored waveform from the most-recent run, as an array of strings.
@@ -643,6 +720,36 @@ class Circuit:
 
         wf = []
         for pt in self.__read_variance_data():
+            wf.append(str(pt))
+        return wf
+
+    def get_waveform_td(self):
+        """
+        Returns the stored waveform from the most-recent run, as an array of strings.
+
+        Returns
+        -------
+        list[str]
+            waveform
+        """
+
+        wf = []
+        for pt in self.__read_variance_data_td()[0]:
+            wf.append(str(pt))
+        return wf
+
+    def get_state_td(self):
+        """
+        Returns the stored waveform from the most-recent run, as an array of strings.
+
+        Returns
+        -------
+        list[str]
+            waveform
+        """
+
+        wf = []
+        for pt in self.__read_variance_data_td()[1]:
             wf.append(str(pt))
         return wf
 
@@ -705,6 +812,74 @@ class Circuit:
 
         var_max_fitness = variance_sum / total_samples
         self.__fitness = var_max_fitness
+        self.__mean_voltage = sum(waveform) / len(waveform) #used by combined fitness func
+
+        return self.__fitness
+    
+    def __measure_tonedisc_fitness(self, waveform, state):
+        """
+        Measure the fitness of this circuit using the variance-maximization fitness
+        function
+        
+        Parameters
+        ----------
+        waveform : list[int]
+            Waveform of the run
+
+        Returns
+        -------
+        float
+            The fitness. (Variance Maximization Fitness)
+        """
+
+        difference_sum = 0
+        waveform_sums = [0, 0]
+        waveform_sum = 0
+        total_samples = 500
+        stateZeroCount = 0
+        stateOneCount = 0
+        # Reset high/low vals to min/max respectively
+        self.__low_val = 1024
+        self.__high_val = 0
+        for i in range(len(waveform)):
+            waveformPoint = waveform[i]
+            waveform_sum += waveformPoint
+
+            if waveformPoint < self.__low_val:
+                self.__low_val = waveformPoint
+            if waveformPoint > self.__high_val:
+                self.__high_val = waveformPoint
+
+            if waveformPoint != None and waveformPoint < 1000:
+                if state[i] == 0:
+                    stateZeroCount += 1
+                    waveform_sums[0] += waveformPoint
+                else:
+                    stateOneCount += 1
+                    waveform_sums[1] += waveformPoint
+
+        with open("workspace/waveformlivedata.log", "w+") as waveLive:
+            i = 1
+            for points in waveform:
+                waveLive.write(str(i) + ", " + str(points) + "\n")
+                i += 1
+
+        with open("workspace/statelivedata.log", "w+") as stateLive:
+            i = 1
+            for points in state:
+                stateLive.write(str(i) + ", " + str(points) + "\n")
+                i += 1
+
+        if waveform_sum == 0:
+            self.__fitness = 0
+        else:
+            stateZeroAve = (waveform_sums[0] / stateZeroCount)
+            stateOneAve = (waveform_sums[1] / stateOneCount)
+            self.__fitness = 0.00001 * abs(stateZeroAve - stateOneAve)
+            self.__log_event(1,
+            "State 0 Average = ",
+            stateZeroAve, " --- State 0 Count = ", stateZeroCount, " ----- State 1 Average = ", stateOneAve)
+        
         self.__mean_voltage = sum(waveform) / len(waveform) #used by combined fitness func
 
         return self.__fitness

@@ -165,7 +165,16 @@ class CircuitPopulation:
                     data2 = ckt.get_pulses()
                 else:
                     data2 = ckt.get_mean_voltage()
-                live_file.write(("{}:{},{}\n").format(str(cur_trial), fitness, data2))
+
+                #get temp and humidity reading
+                t = 0
+                h = 0
+                if(self.__config.reading_temp_humidity()):
+                    t = self.__microcontroller.measure_temp()
+                    h = self.__microcontroller.measure_humidity()
+                    self.__log_event(4, "Recorded temperature: " + str(t) + ". Recorded humidity: " + str(h))
+
+                live_file.write(("{}:{},{},{},{}\n").format(str(cur_trial), fitness, data2, t, h))
             self.__log_event(2, "Trial " + str(cur_trial) + " done. Fitness recorded and logged to file: " + str(fitness))
 
             cur_trial += 1
@@ -463,6 +472,8 @@ class CircuitPopulation:
                 fitness = circuit.evaluate_variance(record_data = record_data)
             elif func == "COMBINED":
                 fitness = circuit.evaluate_combined(record_data = record_data)
+            elif func == "TONE_DISCRIMINATOR":
+                fitness = circuit.evaluate_tonedisc(record_data = record_data)
         return fitness
 
     def evolve(self):
@@ -546,6 +557,18 @@ class CircuitPopulation:
                 self.__best_epoch = self.get_current_epoch()
                 # Copy this circuit to the best file
                 copyfile(self.__circuits[0].get_hardware_file_path(), self.__config.get_best_file())
+                with open("workspace/bestwaveformlivedata.log", "w+") as waveLive:
+                    waveLive.write("NEW BEST BELOW: " + str(self.__circuits[0]) + " in gen " + str(self.get_current_epoch()) + "\n")
+                    i = 1
+                    for points in self.__circuits[0].get_waveform_td():
+                        waveLive.write(str(i) + ", " + str(points) + "\n")
+                        i += 1
+                with open("workspace/beststatelivedata.log", "w+") as stateLive:
+                    stateLive.write("NEW BEST BELOW: " + str(self.__circuits[0]) + " in gen " + str(self.get_current_epoch()) + "\n")
+                    i = 1
+                    for points in self.__circuits[0].get_state_td():
+                        stateLive.write(str(i) + ", " + str(points) + "\n")
+                        i += 1
                 self.__log_event(2, "New best found")
 
             self.__logger.log_generation(self, epoch_time)

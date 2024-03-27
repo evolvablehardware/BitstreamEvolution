@@ -64,6 +64,13 @@ class Microcontroller:
                 timeout=config.get_mcu_read_timeout()
             )
             self.__serial.dtr = False
+            if(config.reading_temp_humidity()):
+                self.__env_serial =  Serial(
+                    config.get_env_usb_path(),
+                    config.get_serial_baud(),
+                    timeout=config.get_mcu_read_timeout()
+                )
+                self.__env_serial.dtr = False
             self.__fpga = config.get_fpga()
 
     def switch_fpga(self):
@@ -305,6 +312,120 @@ class Microcontroller:
 
         data_file.close()
         self.__log_event(2, "Completed writing to data file")
+
+    def measure_signal_td(self, circuit):
+        """
+        Measures the signal 
+
+        .. todo::
+            Not really sure what this does. Is this the one that gets the waveform?
+        
+        .. todo::
+            Preexisting todo: This whole section can probably be optimized.
+
+        Parameters
+        ----------
+        circuit : Circuit
+            The circuit we are measuring the signal of
+        """
+        # TODO This whole section can probably be optimized
+        
+        buf = []
+
+        # Begin monitoring on load
+        data_file = open(circuit.get_data_filepath(), "wb")
+
+        self.__serial.reset_input_buffer()
+        self.__serial.reset_output_buffer()
+        self.__log_event(1, "Reading microcontroller.")
+        # The MCU is expecting a string '5' to initiate the ADC capture from the FPGA (waveform as opposed to pulses)
+        self.__serial.write(b'5')
+        line = self.__serial.read()
+
+        start = time()
+
+        # The MCU returns a START line followed by many lines of data (500 currently) followed by a FINISHED line
+        while b"START\n" not in line:
+            self.__serial.write(b'5')
+            line = self.__serial.read_until()
+
+            if (time() - start) >= self.__config.get_mcu_read_timeout():
+                self.__log_warning(1, "Did not read START from MCU")
+                self.__log_warning(1, "Time Exceeded. Halting MCU Reading.")
+                break
+
+        # TODO  This whole section can probably be optimized
+        # Reads in 500 samples from MCU, with each being 2 ms apart
+        # Then, dumps into a file
+        while (b"FINISHED\n" not in line):
+            line = self.__serial.read_until()
+            if line != b"\n" and line != b"START\n" and line != b"FINISHED\n" and line != b"FINISHED\n":
+                buf.append(line)
+            if (time() - start) >= self.__config.get_mcu_read_timeout():
+                self.__log_warning(1, "Time Exceeded. Halting MCU Reading.")
+                break
+
+        self.__log_event(2, "Finished reading microcontroller. Logging data to file.")
+
+        for i in buf:
+            if b"FINISHED" not in i:
+                data_file.write(bytes(i))
+
+        data_file.close()
+        self.__log_event(2, "Completed writing to data file")
+
+        
+    def measure_temp(self):
+        """
+        Measures the temperature using a DHT22 sensor conected to the Arduino.
+        """
+        self.__log_event(3, "Measuring temperature")
+            
+        self.__env_serial.reset_input_buffer()
+        self.__env_serial.reset_output_buffer()
+        self.__env_serial.write(b'5') 
+        start = time()
+
+        self.__log_event(3, "Serial reading...")
+        p = self.__env_serial.read_until()
+        self.__log_event(3, "Serial read done")
+        if (time() - start) >= self.__config.get_mcu_read_timeout():
+            self.__log_warning(1, "Time Exceeded. Halting MCU Reading of temperature")
+            return -1;
+        # TODO We should be able to do whatever this line does better
+        # This is currently doing a poor job at REGEXing the MCU serial return - can be done better
+        # It's supposed to handle exceptions from transmission loss (i.e. dropped or additional spaces, shifted colons, etc)
+        self.__log_event(3, "Pulled", p, "from MCU")
+        if (p != b"" and b":" not in p and b"START" not in p and b"FINISH" not in p and b" " not in p):
+            p = p.translate(None, b"\r\n")
+            return(float(p))
+        
+    def measure_humidity(self):
+        """
+        Measures the humidity using a DHT22 sensor conected to the Arduino.
+        """
+        self.__log_event(3, "Measuring humidity")
+            
+        self.__env_serial.reset_input_buffer()
+        self.__env_serial.reset_output_buffer()
+        self.__env_serial.write(b'6') 
+        start = time()
+
+        self.__log_event(3, "Serial reading...")
+        p = self.__env_serial.read_until()
+        self.__log_event(3, "Serial read done")
+        if (time() - start) >= self.__config.get_mcu_read_timeout():
+            self.__log_warning(1, "Time Exceeded. Halting MCU Reading of humidity")
+            return -1;
+        # TODO We should be able to do whatever this line does better
+        # This is currently doing a poor job at REGEXing the MCU serial return - can be done better
+        # It's supposed to handle exceptions from transmission loss (i.e. dropped or additional spaces, shifted colons, etc)
+        self.__log_event(3, "Pulled", p, "from MCU")
+        if (p != b"" and b":" not in p and b"START" not in p and b"FINISH" not in p and b" " not in p):
+            p = p.translate(None, b"\r\n")
+            return(float(p))
+
+
 
 
 
