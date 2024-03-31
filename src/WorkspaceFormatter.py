@@ -12,7 +12,10 @@ class WorkspaceFormatter:
     def __create_folder(self):
         #get folder name
         today = date.today()
-        folder_name = "FPGA_" + str(today.strftime("%m_%d_%Y"))
+        fitness_func = self.__config.get_fitness_func().split("_")[0].lower()
+        folder_name = str(today.strftime("%Y_%m_%d")) + "_" + fitness_func
+        if(self.__config.is_pulse_count()):
+            folder_name+= str(int(self.__config.get_desired_frequency()/1000)) + "k"
 
         # copy the contents of workspace to the new folder
         try:

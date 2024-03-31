@@ -42,6 +42,7 @@ class Evolution:
         ## get the experiment description if not previously given
         if experiment_description is None:
             experiment_description = input("Explain this experiment: ")
+        self.experiment_description = experiment_description
 
         # compiling and uploading to the Arduino
         if config.get_upload_to_arduino():
@@ -83,7 +84,6 @@ class Evolution:
             self.log_error(1, e)
 
         # SECTION Clean up resources
-        self.__WorkspaceFormatter = WorkspaceFormatter(config, experiment_description)
 
         if config.get_simulation_mode() == "FULLY_INTRINSIC":
             # Upload a sample bitstream to the FPGA.
@@ -103,6 +103,8 @@ class Evolution:
             self.logger.save_workspace(self.output_directory)
         elif self.config.get_backup_workspace():
             self.logger.save_workspace(self.config.get_output_directory())
+
+        self.__WorkspaceFormatter = WorkspaceFormatter(self.config, self.experiment_description)
         self.__WorkspaceFormatter.format_workspace()
 
     ## Don't know if this is needed, but it might be useful to validate all inputs 

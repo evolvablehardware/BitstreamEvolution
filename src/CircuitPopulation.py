@@ -24,6 +24,7 @@ from mmap import mmap
 from Config import Config
 from ascTemplateBuilder import ascTemplateBuilder
 from utilities import wipe_folder
+from datetime import datetime
 
 RANDOMIZE_UNTIL_NOT_SET_ERR_MSG = '''\
 RANDOMIZE_UNTIL not set in config.ini, continuing without randomization'''
@@ -174,7 +175,11 @@ class CircuitPopulation:
                     h = self.__microcontroller.measure_humidity()
                     self.__log_event(4, "Recorded temperature: " + str(t) + ". Recorded humidity: " + str(h))
 
-                live_file.write(("{}:{},{},{},{}\n").format(str(cur_trial), fitness, data2, t, h))
+                
+                now = datetime.now()
+                timestamp = now.strftime("%H.%M.%S")
+
+                live_file.write(("{}:{},{},{},{},{}\n").format(str(cur_trial), fitness, data2, t, h, timestamp))
             self.__log_event(2, "Trial " + str(cur_trial) + " done. Fitness recorded and logged to file: " + str(fitness))
 
             cur_trial += 1
