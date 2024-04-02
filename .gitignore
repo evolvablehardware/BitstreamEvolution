@@ -1,6 +1,7 @@
 # config
 data/config.ini
 data/monitor
+data/seed_hardware.asc
 
 # test outputs
 test/out/*
