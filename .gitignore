@@ -2,6 +2,11 @@
 data/config.ini
 data/monitor
 
+#automatically generated configs script
+data/GeneratedConfigs
+data/GeneratedConfigsResults
+data/runGeneratedConfigs.sh
+
 # test outputs
 test/out/*
 !test/out/.gitkeep
