@@ -5,14 +5,14 @@ Origionally written by Allyn, improved and extended by Isaac.
 
 """
 
-import os 
+import os, stat
 from typing import Generator, Any
 from functools import partial
 
 # mkdir("data/SensitivityConfigs")
 
 # Set some defaults
-base_config_path =              "data/sensitivity.ini"
+base_config_path =              "data/config.ini"
 generated_configs_dir =         "data/GeneratedConfigs"
 generated_bash_script_path =    "data/runGeneratedConfigs.sh"
 results_output_directory =      "data/GeneratedConfigsResults"
@@ -153,4 +153,27 @@ with open(generated_bash_script_path, 'w') as bash_file:
         ))
 
 #ensure bash script is executable.
-os.chmod(generated_bash_script_path,"+x")
+os.chmod(generated_bash_script_path,stat.S_IREAD
+         |stat.S_IWRITE
+         |stat.S_IRWXU
+         |stat.S_IRWXG
+         |stat.S_IRWXO)
+
+completion_message=\
+f"""
+--------------------------------------------------------------------------
+Finished completing the bash file, and related folders.
+
+Folder containing generated partial configs: {generated_configs_dir}
+Reference base config: {base_config_path}
+Results are output to the following directory: {results_output_directory}
+
+Created the bash file at: {bash_file}
+---------------------------------------------------------------------------
+
+Begin the experiment by running ./{bash_file}
+
+---------------------------------------------------------------------------
+"""
+
+print(completion_message)
