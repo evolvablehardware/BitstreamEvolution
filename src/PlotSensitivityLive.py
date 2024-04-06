@@ -14,6 +14,7 @@ import numpy as np
 import sys
 from os.path import exists
 from os import mkdir
+from mpl_toolkits.axisartist.parasite_axes import HostAxes
 
 """
 Static parameters can be found and changed in the config.ini file in the root project folder
@@ -268,7 +269,7 @@ def run():
         for i in range(4):
             bufs.append([])
 
-        buf_length = min(len(ts), int(len(ts)/100))
+        buf_length = max(min(len(ts), int(len(ts)/100)), 1)
         time_points = []
         j = 0
         for i in range(len(ts)):
@@ -289,23 +290,30 @@ def run():
                 time_points.append(ts[i])
 
 
-        for i in range(12):
+        for i in range(6):
             time_axes[i].clear()
 
         time_axes[0].plot(time_points, data[0], color=accent_color)
-        time_axes[0].set(xlabel="Trial", ylabel="Fitness")
+        time_axes[0].set(xlabel="Trial", ylabel="Fitness", title="Fitness vs Temperature and Humidity over Time")
         time_axes[3].plot(time_points, data[1], color=accent_color)
-        time_axes[3].set(xlabel="Trial", ylabel="Data 2")
-        time_axes[6].plot(time_points, data[4], color=accent_color)
-        time_axes[6].set(xlabel="Trial", ylabel="Standard Deviation of Fitness")
-        time_axes[9].plot(time_points, data[5], color=accent_color)
-        time_axes[9].set(xlabel="Trial", ylabel="Standard Deviation of Data 2")
+        time_axes[3].set(xlabel="Trial", ylabel="Data 2", title="Data 2 vs Temperature and Humidity over Time")
+        # time_axes[6].plot(time_points, data[4], color=accent_color)
+        # time_axes[6].set(xlabel="Trial", ylabel="Standard Deviation of Fitness")
+        # time_axes[9].plot(time_points, data[5], color=accent_color)
+        # time_axes[9].set(xlabel="Trial", ylabel="Standard Deviation of Data 2")
 
-        for i in range(4):
-            time_axes[3*i + 1].plot(time_points, data[2], color='tab:red')
+        for i in range(2):
+            time_axes[3*i + 1].plot(time_points, data[2], color='tab:orange')
             time_axes[3*i + 1].set(ylabel="Temperature")
-            time_axes[3*i + 2].plot(time_points, data[3], color='tab:cyan')
+            time_axes[3*i + 1].axis["right"].set_visible(True)
+            time_axes[3*i + 1].axis["right"].major_ticklabels.set_visible(True)
+            time_axes[3*i + 1].axis["right"].label.set_visible(True)
+            time_axes[3*i + 1].axis["right"].label.set_color('tab:orange')
+
+            time_axes[3*i + 2].plot(time_points, data[3], color='lightseagreen')
             time_axes[3*i + 2].set(ylabel="Humidity")
+            time_axes[3*i + 2].axis["right2"] = time_axes[3*i + 2].new_fixed_axis(loc="right", offset=(60, 0))
+            time_axes[3*i + 2].axis["right2"].label.set_color('tab:cyan')
 
 
         if(config.get_save_plots()):
@@ -319,11 +327,13 @@ def run():
         plots_dir = plots_dir.joinpath("Formal")
         accent_color = "black"
         heatmap_color = 'Blues'
+        yellow = "goldenrod"
         plot = lambda fig, function : function(0)
     else:
         style.use('dark_background')
         accent_color = "white"
         heatmap_color = 'viridis'
+        yellow = "yellow"
         plot = lambda fig, function : animation.FuncAnimation(fig, function, interval=FRAME_INTERVAL, cache_frame_data=False)
 
     if not exists(plots_dir):
@@ -362,20 +372,21 @@ def run():
         fig3.tight_layout(pad=5.0)
         fig4.tight_layout(pad=5.0)
 
-        fig5 = plt.figure(figsize=(9,7))
+        fig5 = plt.figure(figsize=(8,10))
         time_axes = []
-        for i in range(4):
-            ax_a = fig5.add_subplot(2, 2, i+1)
-            time_axes.append(ax_a)
+        for i in range(2):
+            host = fig5.add_subplot(2, 1, i+1, axes_class=HostAxes)
+            host.axis["right"].set_visible(False)
+            time_axes.append(host)
             for j in range(2):
-                time_axes.append(ax_a.twinx())
+                par = host.get_aux_axes(viewlim_mode=None, sharex=host)
+                time_axes.append(par)
         
         ani5= animation.FuncAnimation(fig5, animate_change_over_time, interval=FRAME_INTERVAL)
-        fig5.tight_layout(pad=5.0)
 
 
 
-    plt.subplots_adjust(hspace=0.50)
+    plt.subplots_adjust(hspace=0.50, right=0.8)
     plt.show(block=(not formal))
     if formal:
         exit()

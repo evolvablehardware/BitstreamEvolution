@@ -1,6 +1,7 @@
 # config
 data/config.ini
 data/monitor
+data/seed-hardware.asc
 
 #automatically generated configs script
 data/GeneratedConfigs
