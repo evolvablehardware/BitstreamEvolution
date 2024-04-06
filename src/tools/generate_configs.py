@@ -152,4 +152,5 @@ with open(generated_bash_script_path, 'w') as bash_file:
             output_directory = results_output_directory
         ))
 
-
+#ensure bash script is executable.
+os.chmod(generated_bash_script_path,"+x")
