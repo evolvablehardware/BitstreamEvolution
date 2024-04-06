@@ -1,7 +1,7 @@
 """
 Generate a bash script to run multiple experiments.
 
-Origionally written by Allyn, added by Isaac.
+Origionally written by Allyn, improved and extended by Isaac.
 
 """
 
