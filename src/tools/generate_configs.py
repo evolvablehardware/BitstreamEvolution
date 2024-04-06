@@ -6,7 +6,7 @@ Origionally written by Allyn, added by Isaac.
 """
 
 import os 
-from typing import Generator
+from typing import Generator, Any
 from functools import partial
 
 # mkdir("data/SensitivityConfigs")
@@ -109,11 +109,33 @@ def pulse_count_config_generator(target_pulses:list[int],
             yield create_config(target_pulse,"TOLERANT_PULSE_COUNT")
 
 
+def repeat(repeat_count:int, generator:Generator[Any,None,None])->Generator[Any,None,None]:
+    """
+    Repeats the outputs of the instantiated generator it is passed.
+
+    Parameters
+    ----------
+    repeat_count : int
+        number of times to duplicate the sequence
+    generator : Generator[Any,None,None]
+        Instantiated generator it duplicates
+
+    Yields
+    ------
+    Generator[Any,None,None]
+        The repeated output of the input generator
+    """
+    generator_results = list(generator)
+    for i in range(repeat_count):
+        for result in generator_results:
+            yield result
+        
+
 ## Select the config_generator you want to use and pass arguments
 ## OPTIONS:
 # sensitivity_config_generator()
 # pulse_count_config_generator(target_pulses = [1000,10000], use_tolerant_ff = True, use_sensitive_ff = True)
-config_generator = pulse_count_config_generator(target_pulses = [1000, 10000], use_tolerant_ff = True, use_sensitive_ff = True)
+config_generator = repeat(2,pulse_count_config_generator(target_pulses = [1000, 10000], use_tolerant_ff = True, use_sensitive_ff = True))
 
 evolve_command_base = "python3 src/evolve.py -c {config_path} -d {description} -o {output_directory}\n"
 
