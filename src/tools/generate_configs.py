@@ -148,7 +148,7 @@ with open(generated_bash_script_path, 'w') as bash_file:
         # Add a call to this 
         bash_file.write(evolve_command_base.format(
             config_path = config_path,
-            description = f"running config at: {config_path}",
+            description = f"'running config at: {config_path}'",
             output_directory = results_output_directory
         ))
 
