@@ -67,7 +67,7 @@ desired_freq = {desired_frequency}
 
 """
 
-def pulse_count(target_pulses:list[int],
+def pulse_count_config_generator(target_pulses:list[int],
                 use_tolerant_ff:bool=True,
                 use_sensitive_ff:bool=True)->Generator[str,None,None]:
     """
@@ -92,12 +92,12 @@ def pulse_count(target_pulses:list[int],
     """
     def create_config(target_pulse_count:int,fitness_funciton:str)->str:
         # Generate the path for each pulse count
-        config_path=os.path.join(generated_configs_dir,f"{target_pulse_count}_target__{fitness_funciton}.ini")
+        config_path=os.path.join(generated_configs_dir,f"{target_pulse_count}_with__{fitness_funciton}.ini")
 
         with open(config_path, "w") as config_file:
             config_file.write(pulse_count_config_base.format(
                 base_config_path = base_config_path,
-                fitness_funciton = fitness_funciton,
+                fitness_function = fitness_funciton,
                 desired_frequency = target_pulse_count
             ))
         return config_path
@@ -109,11 +109,11 @@ def pulse_count(target_pulses:list[int],
             yield create_config(target_pulse,"TOLERANT_PULSE_COUNT")
 
 
-
-
-config_generator = sensitivity_config_generator
-#fill in any arguments the generator has
-config_generator = partial(config_generator)
+## Select the config_generator you want to use and pass arguments
+## OPTIONS:
+# sensitivity_config_generator()
+# pulse_count_config_generator(target_pulses = [1000,10000], use_tolerant_ff = True, use_sensitive_ff = True)
+config_generator = pulse_count_config_generator(target_pulses = [1000, 10000], use_tolerant_ff = True, use_sensitive_ff = True)
 
 evolve_command_base = "python3 src/evolve.py -c {config_path} -d {description} -o {output_directory}\n"
 
@@ -121,7 +121,7 @@ with open(generated_bash_script_path, 'w') as bash_file:
     # Invoke the bash shell for bash script
     bash_file.write("#!/bin/bash\n")
 
-    for config_path in config_generator():
+    for config_path in config_generator:
 
         # Add a call to this 
         bash_file.write(evolve_command_base.format(
