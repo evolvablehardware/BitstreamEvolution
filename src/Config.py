@@ -511,11 +511,11 @@ class Config:
 
 	def get_sensitivity_time(self):
 		try:
-			date_time = datetime.strptime(self.get_sensitivity_parameters("SENSITIVITY_TIME"), '%H:%M:%S')
-			seconds = 3600*date_time.hour + 60*date_time.minute + date_time.second
+			date_time = datetime.strptime(self.get_sensitivity_parameters("SENSITIVITY_TIME"), '%j:%H:%M:%S')
+			seconds = 86400*date_time.day + 3600*date_time.hour + 60*date_time.minute + date_time.second
 			print(seconds)
 		except ValueError:
-			self.__log_warning(1, "Invalid value for the amount of time to sensitivity trials. Program will not terminate based on the amount of time passed")
+			self.__log_warning(1, "Invalid value for the amount of time to sensitivity trials. Should be in the format %-j:%H:%M:%S. Program will not terminate based on the amount of time passed")
 			return "IGNORE"
 		if seconds < 0:
 			self.__log_error(1, "Invalid amount of time to do sensitivity trials: " + str(seconds) + "'. Must be greater than zero.")
