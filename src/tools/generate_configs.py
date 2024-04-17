@@ -136,7 +136,7 @@ def repeat(repeat_count:int, generator:Generator[Any,None,None])->Generator[Any,
 # sensitivity_config_generator()
 # pulse_count_config_generator(target_pulses = [1000,10000], use_tolerant_ff = True, use_sensitive_ff = True)
 # repeat(2,pulse_count_config_generator(target_pulses = [1000, 10000], use_tolerant_ff = True, use_sensitive_ff = True))
-config_generator = pulse_count_config_generator(target_pulses = [400000,20000,20000],use_tolerant_ff=False,use_sensitive_ff=True)
+config_generator = pulse_count_config_generator(target_pulses = [40000,20000,20000],use_tolerant_ff=False,use_sensitive_ff=True)
 
 ## Bash File Configuration
 
