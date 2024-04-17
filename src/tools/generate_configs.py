@@ -149,13 +149,9 @@ bash_head = \
 # This variables stores the number or errors that occour
 ErrorCounter=0
 SuccessCounter=0
+UserInterruptTriggered=0
 FailedCommands=''
 
-# This is a janky way to add a goto to skip forwards in this script only.
-# It works by only reading and not executing lines until the label.
-# It enables aliases so we can use "goto" for clarity
-shopt -s expand_aliases
-alias goto="cat >/dev/null <<"
 
 
 #Run Commands, log if they fail.
@@ -166,37 +162,24 @@ evolve_command_base = "python3 src/evolve.py -c {config_path} -d {description} -
 # The || only runs 2nd if left fails, && only if left succeeds
 # parenthesis is to extend command over multiple lines
 # The not means it enters the then statement if there is an error
-# the ((exitCode==130)) && goto ... was an if statement without needing to terminate the if after goto completed.
+# the UserInterruptTriggered=$((exitCode==130)) allows us to stop other code if user interrupt occoured
 bash_command_wrapper_logic = \
 """
 {command}
 exitCode=$?
-Current_Command=$'{command}'
-((exitCode == 130)) && goto INTERRUPT_END_SCRIPT_PRINTOUT
 if [ $exitCode -ne 0 ]; then 
-((ErrorCounter=ErrorCounter+1)) && FailedCommands+=$'$Current_Command \\n' 
+    Current_Command=$'{command}'
+    UserInterruptTriggered=$((exitCode == 130))
+    ((ErrorCounter=ErrorCounter+1)) && FailedCommands+="$Current_Command"+$'\\n' 
 else
-((SuccessCounter=SuccessCounter+1))
+    ((SuccessCounter=SuccessCounter+1))
 fi
 
 """
 
 bash_tail = \
 """
-
-# Print out the results of the Tests
-echo ""
-echo "=================================== RESULTS ===================================="
-echo ""
-echo "Commands That Failed:"
-echo "$FailedCommands"
-
-echo "$ErrorCounter of {num_commands} commands Failed"
-echo "The commands that failed are listed above."
-
-exit 0
-
-INTERRUPT_END_SCRIPT_PRINTOUT
+if ((UserInterruptTriggered -ne 0)); then
 #print these results if the script had a user interrupt
 echo "=================================== USER INTERRUPT RESULTS ===================================="
 echo "Canceled Commands Due to Keyboard Interrupt while running:"
@@ -205,11 +188,27 @@ echo ""
 echo "Commands That Failed:"
 echo "$FailedCommands"
 
-echo "$ErrorCounter of $((ErrorCounter+SuccessCounter)) commands Failed"
-echo "$(({num_commands}-(ErrorCounter+SuccessCounter))) of {num_commands} were not run to completion."
+echo "==============================================================================================="
+echo "$ErrorCounter of $((ErrorCounter+SuccessCounter)) commands Failed, including the one not completed."
+echo "$(({num_commands}-(ErrorCounter+SuccessCounter))) of {num_commands} were not run at all."
 echo "The commands that failed are listed above."
 
 exit 1
+fi
+
+# Print out the results of the Tests
+echo ""
+echo "=================================== RESULTS ===================================="
+echo ""
+echo "Commands That Failed:"
+echo "$FailedCommands"
+
+echo "================================================================================"
+echo "$ErrorCounter of {num_commands} commands Failed"
+echo "The commands that failed are listed above."
+
+exit 0
+
 """
 
 with open(generated_bash_script_path, 'w') as bash_file:
