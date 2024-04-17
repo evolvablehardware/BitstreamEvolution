@@ -162,9 +162,10 @@ evolve_command_base = "python3 src/evolve.py -c {config_path} -d {description} -
 # The || only runs 2nd if left fails, && only if left succeeds
 # parenthesis is to extend command over multiple lines
 # The not means it enters the then statement if there is an error
-# the UserInterruptTriggered=$((exitCode==130)) allows us to stop other code if user interrupt occoured
+# the UserInterruptTriggered=$((exitCode==130)) allows us to stop other code if user interrupt occoured (set to 1 if called)
 bash_command_wrapper_logic = \
 """
+if [ $UserInterruptTriggered -eq 0 ]; then
 {command}
 exitCode=$?
 if [ $exitCode -ne 0 ]; then 
@@ -174,7 +175,7 @@ if [ $exitCode -ne 0 ]; then
 else
     ((SuccessCounter=SuccessCounter+1))
 fi
-
+fi
 """
 
 bash_tail = \
