@@ -161,7 +161,7 @@ evolve_command_base = "python3 src/evolve.py -c {config_path} -d {description} -
 bash_command_wrapper_logic = \
 """(
 {command}
-) || ((ErrorCounter+=1)) && FailedCommands+=$'{command} \\n'
+) || ((ErrorCounter=ErrorCounter+1)) && FailedCommands+=$'{command} \\n'
 
 """
 
