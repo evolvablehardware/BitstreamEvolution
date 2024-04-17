@@ -199,11 +199,23 @@ with open(generated_bash_script_path, 'w') as bash_file:
     bash_file.write(bash_tail.format(num_commands = command_count))
 
 #ensure bash script is executable.
-os.chmod(generated_bash_script_path,stat.S_IREAD
-         |stat.S_IWRITE
-         |stat.S_IRWXU
-         |stat.S_IRWXG
-         |stat.S_IRWXO)
+try:
+    os.chmod(generated_bash_script_path,stat.S_IREAD
+            |stat.S_IWRITE
+            |stat.S_IRWXU
+            |stat.S_IRWXG
+            |stat.S_IRWXO)
+except PermissionError:
+    print(
+    f"""
+    You will need to make the bash file executable.
+    Alternatively, you could run this command with sudo privilages. (sudo python3 ...)
+    To do so run the following command:
+    
+    chmod +x {bash_file.name}
+
+    """
+    )
 
 completion_message=\
 f"""
