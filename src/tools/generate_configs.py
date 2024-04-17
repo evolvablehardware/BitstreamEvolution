@@ -166,12 +166,13 @@ evolve_command_base = "python3 src/evolve.py -c {config_path} -d {description} -
 # The || only runs 2nd if left fails, && only if left succeeds
 # parenthesis is to extend command over multiple lines
 # The not means it enters the then statement if there is an error
+# the ((exitCode==130)) && goto ... was an if statement without needing to terminate the if after goto completed.
 bash_command_wrapper_logic = \
 """
 {command}
 exitCode=$?
-Current_Command = $'{command}'
-(($exitCode == 130)) && goto INTERRUPT_END_SCRIPT_PRINTOUT
+Current_Command=$'{command}'
+((exitCode == 130)) && goto INTERRUPT_END_SCRIPT_PRINTOUT
 if [ $exitCode -ne 0 ]; then 
 ((ErrorCounter=ErrorCounter+1)) && FailedCommands+=$'$Current_Command \\n' 
 else
@@ -205,7 +206,7 @@ echo "Commands That Failed:"
 echo "$FailedCommands"
 
 echo "$ErrorCounter of $((ErrorCounter+SuccessCounter)) commands Failed"
-echo "$(({num_commands}-(ErrorCounter+SuccessCounter))) of {num_commands} were not run."
+echo "$(({num_commands}-(ErrorCounter+SuccessCounter))) of {num_commands} were not run to completion."
 echo "The commands that failed are listed above."
 
 exit 1
