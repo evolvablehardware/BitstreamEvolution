@@ -82,7 +82,8 @@ def run():
         print('User Interrupt')
         evolution.clean_up()
         # Still exit, but make sure we can save everything first
-        sys.exit(0)
+        # Denote with exit that a user interrupt occoured
+        sys.exit(130)
 
     signal.signal(signal.SIGINT, sig_int_handler)
 

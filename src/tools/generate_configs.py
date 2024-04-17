@@ -148,7 +148,14 @@ bash_head = \
 
 # This variables stores the number or errors that occour
 ErrorCounter=0
+SuccessCounter=0
 FailedCommands=''
+
+# This is a janky way to add a goto to skip forwards in this script only.
+# It works by only reading and not executing lines until the label.
+# It enables aliases so we can use "goto" for clarity
+shopt -s expand_aliases
+alias goto="cat >/dev/null <<"
 
 
 #Run Commands, log if they fail.
@@ -158,15 +165,24 @@ evolve_command_base = "python3 src/evolve.py -c {config_path} -d {description} -
 
 # The || only runs 2nd if left fails, && only if left succeeds
 # parenthesis is to extend command over multiple lines
+# The not means it enters the then statement if there is an error
 bash_command_wrapper_logic = \
-"""(
+"""
 {command}
-) || ((ErrorCounter=ErrorCounter+1)) && FailedCommands+=$'{command} \\n'
+exitCode=$?
+Current_Command = $'{command}'
+(($exitCode == 130)) && goto INTERRUPT_END_SCRIPT_PRINTOUT
+if [ $exitCode -ne 0 ]; then 
+((ErrorCounter=ErrorCounter+1)) && FailedCommands+=$'$Current_Command \\n' 
+else
+((SuccessCounter=SuccessCounter+1))
+fi
 
 """
 
 bash_tail = \
 """
+
 # Print out the results of the Tests
 echo ""
 echo "=================================== RESULTS ===================================="
@@ -176,6 +192,23 @@ echo "$FailedCommands"
 
 echo "$ErrorCounter of {num_commands} commands Failed"
 echo "The commands that failed are listed above."
+
+exit 0
+
+INTERRUPT_END_SCRIPT_PRINTOUT
+#print these results if the script had a user interrupt
+echo "=================================== USER INTERRUPT RESULTS ===================================="
+echo "Canceled Commands Due to Keyboard Interrupt while running:"
+echo $"$Current_Command"
+echo ""
+echo "Commands That Failed:"
+echo "$FailedCommands"
+
+echo "$ErrorCounter of $((ErrorCounter+SuccessCounter)) commands Failed"
+echo "$(({num_commands}-(ErrorCounter+SuccessCounter))) of {num_commands} were not run."
+echo "The commands that failed are listed above."
+
+exit 1
 """
 
 with open(generated_bash_script_path, 'w') as bash_file:
