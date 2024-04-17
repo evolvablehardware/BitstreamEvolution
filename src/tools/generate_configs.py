@@ -180,7 +180,7 @@ fi
 
 bash_tail = \
 """
-if ((UserInterruptTriggered -ne 0)); then
+if [ $UserInterruptTriggered -ne 0 ]; then
 #print these results if the script had a user interrupt
 echo "=================================== USER INTERRUPT RESULTS ===================================="
 echo "Canceled Commands Due to Keyboard Interrupt while running:"
