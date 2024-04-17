@@ -140,13 +140,15 @@ config_generator = pulse_count_config_generator(target_pulses = [40000,20000,200
 
 ## Bash File Configuration
 
+# Note that there are no spaces between variables, =, and value assigned. This is needed. 
+#Bash will not recognize them as variables if there is a space in them.
 bash_head = \
 """#!/bin/bash
 # make sure this was generated from the BitstreamEvolution folder at the base of this directory.
 
 # This variables stores the number or errors that occour
-ErrorCounter = 0
-FailedCommands = ''
+ErrorCounter=0
+FailedCommands=''
 
 
 #Run Commands, log if they fail.
