@@ -208,13 +208,13 @@ try:
 except PermissionError:
     print(
     f"""
-    You will need to make the bash file executable.
-    Alternatively, you could run this command with sudo privilages. (sudo python3 ...)
-    To do so run the following command:
+You may need to make the bash file executable.
+Alternatively, you could run this command with sudo privilages. (sudo python3 ...)
+To do so run the following command:
     
-    chmod +x {bash_file.name}
+chmod +x {bash_file.name}
 
-    """
+"""
     )
 
 completion_message=\
