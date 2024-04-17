@@ -155,9 +155,11 @@ FailedCommands = ''
 evolve_command_base = "python3 src/evolve.py -c {config_path} -d {description} -o {output_directory}"
 
 # The || only runs 2nd if left fails, && only if left succeeds
+# parenthesis is to extend command over multiple lines
 bash_command_wrapper_logic = \
-"""{command}
-   || ((ErrorCounter+=1)) && FailedCommands+=$'{command} \\n'
+"""(
+{command}
+) || ((ErrorCounter+=1)) && FailedCommands+=$'{command} \\n'
 
 """
 
