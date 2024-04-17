@@ -8,6 +8,12 @@ data/GeneratedConfigs
 data/GeneratedConfigsResults
 data/runGeneratedConfigs.sh
 
+src/tools/data/GeneratedConfigs
+src/tools/data/GeneratedConfigsResults
+src/tools/data/runGeneratedConfigs.sh
+src/tools/data
+
+
 # test outputs
 test/out/*
 !test/out/.gitkeep
@@ -155,3 +161,4 @@ dmypy.json
 LICENSE.txt
 arduino-cli
 arduino-cli_latest_Linux_64bit.tar.gz
+src/tools/data/runGeneratedConfigs.sh

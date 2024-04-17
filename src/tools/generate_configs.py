@@ -1,5 +1,6 @@
 """
 Generate a bash script to run multiple experiments.
+Make sure you generate configs from base BitstreamEvolution Directory.
 
 Origionally written by Allyn, improved and extended by Isaac.
 
@@ -7,7 +8,6 @@ Origionally written by Allyn, improved and extended by Isaac.
 
 import os, stat
 from typing import Generator, Any
-from functools import partial
 
 # mkdir("data/SensitivityConfigs")
 
@@ -135,22 +135,68 @@ def repeat(repeat_count:int, generator:Generator[Any,None,None])->Generator[Any,
 ## OPTIONS:
 # sensitivity_config_generator()
 # pulse_count_config_generator(target_pulses = [1000,10000], use_tolerant_ff = True, use_sensitive_ff = True)
-config_generator = repeat(2,pulse_count_config_generator(target_pulses = [1000, 10000], use_tolerant_ff = True, use_sensitive_ff = True))
+# repeat(2,pulse_count_config_generator(target_pulses = [1000, 10000], use_tolerant_ff = True, use_sensitive_ff = True))
+config_generator = pulse_count_config_generator(target_pulses = [400000,20000,20000],use_tolerant_ff=False,use_sensitive_ff=True)
 
-evolve_command_base = "python3 src/evolve.py -c {config_path} -d {description} -o {output_directory}\n"
+## Bash File Configuration
+
+bash_head = \
+"""#!/bin/bash
+# make sure this was generated from the BitstreamEvolution folder at the base of this directory.
+
+# This variables stores the number or errors that occour
+ErrorCounter = 0
+FailedCommands = ''
+
+
+#Run Commands, log if they fail.
+"""
+
+evolve_command_base = "python3 src/evolve.py -c {config_path} -d {description} -o {output_directory}"
+
+# The || only runs 2nd if left fails, && only if left succeeds
+bash_command_wrapper_logic = \
+"""{command}
+   || ((ErrorCounter+=1)) && FailedCommands+=$'{command} \\n'
+
+"""
+
+bash_tail = \
+"""
+# Print out the results of the Tests
+echo ""
+echo "=================================== RESULTS ===================================="
+echo ""
+echo "Commands That Failed:"
+echo "$FailedCommands"
+
+echo "$ErrorCounter of {num_commands} commands Failed"
+echo "The commands that failed are listed above."
+"""
 
 with open(generated_bash_script_path, 'w') as bash_file:
     # Invoke the bash shell for bash script
-    bash_file.write("#!/bin/bash\n")
+    bash_file.write(bash_head)
 
+    command_count = 0
     for config_path in config_generator:
 
         # Add a call to this 
-        bash_file.write(evolve_command_base.format(
-            config_path = config_path,
-            description = f"'running config at: {config_path}'",
-            output_directory = results_output_directory
-        ))
+        bash_file.write(
+            bash_command_wrapper_logic.format(
+                command = evolve_command_base.format(
+                    config_path = config_path,
+                    description = f'"running config at: {config_path}"', 
+                    # Note that it is important that outer string uses double quotes or this messes up wrapper logic
+                    output_directory = results_output_directory
+                )
+            )
+        )
+
+        #count the number of commands we add
+        command_count += 1
+    
+    bash_file.write(bash_tail.format(num_commands = command_count))
 
 #ensure bash script is executable.
 os.chmod(generated_bash_script_path,stat.S_IREAD
@@ -168,12 +214,17 @@ Folder containing generated partial configs: {generated_configs_dir}
 Reference base config: {base_config_path}
 Results are output to the following directory: {results_output_directory}
 
-Created the bash file at: {bash_file}
+Created the bash file at: {bash_file.name}
 ---------------------------------------------------------------------------
 
-Begin the experiment by running ./{bash_file}
+Begin the experiment by running ./{bash_file.name}
 
 ---------------------------------------------------------------------------
+If you didn't run this script from the base of the BitstreamEvolution project,
+it is best you regenerate the file after you cd there and run the file from that folder, too.
+
+i.e.   .../BitstreamEvolution$ python3 src/tools/generate_configs.py
+       .../BitstreamEvolution$ ./{bash_file.name}
 """
 
 print(completion_message)
