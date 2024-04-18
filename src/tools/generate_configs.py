@@ -30,6 +30,7 @@ if not os.path.isdir(generated_configs_dir):
 if not os.path.isdir(results_output_directory):
     os.makedirs(results_output_directory)
 
+## Some Protocalls and Dataclasses to streamline operation & Provide good defaults
 
 class CommandInfo(Protocol):
     """A protocol specifying all data needed to invoke and run evolve on the command line."""
@@ -182,7 +183,7 @@ def pulse_count_then_sensitivity_config_generator(target_pulses:list[int],
         If each pulse get a run using the tolerant fitness function, by default True
     use_sensitive_ff: bool, optional
         If each pulse get a run using the sinsitive fitness function, by default True"""
-    def create_config_pair(target_pulse_count:int,fitness_funciton:str)->str:
+    def create_config_pair(target_pulse_count:int,fitness_funciton:str)->Generator[CommandInfo,None,None]:
         # Generate a pulse_count_config_generator to get first config
         use_sensitive = False
         use_tolerant = False
@@ -202,9 +203,9 @@ def pulse_count_then_sensitivity_config_generator(target_pulses:list[int],
                                               skip_next_if_fail=True,
                                               skip_next_if_skipped=True)
         pulse_count_experiment = list(pc_gen)[0] # yield the first element only (there should only be 1)
-        print(list(pc_gen))
         yield pulse_count_experiment
 
+        # make sure we have a best.asc to act on.
         if pulse_count_experiment.copy_best_asc_target_path is None:
             raise ValueError("The pulse count must output to a target path for Sensitivity to test it.")
 
@@ -228,9 +229,13 @@ def pulse_count_then_sensitivity_config_generator(target_pulses:list[int],
     
     for target_pulse in target_pulses:
         if use_sensitive_ff:
-            create_config_pair(target_pulse,"SENSITIVE_PULSE_COUNT")
+            configs = create_config_pair(target_pulse,"SENSITIVE_PULSE_COUNT")
+            for config in configs:
+                yield config
         if use_tolerant_ff:
-            create_config_pair(target_pulse,"TOLERANT_PULSE_COUNT")
+            configs = create_config_pair(target_pulse,"TOLERANT_PULSE_COUNT")
+            for config in configs:
+                yield config
     
 
 ############################ USEFUL UTILITIES ##############################################
@@ -262,7 +267,8 @@ def repeat(repeat_count:int, generator:Generator[Any,None,None])->Generator[Any,
 # pulse_count_config_generator(target_pulses = [1000,10000], use_tolerant_ff = True, use_sensitive_ff = True)
 # repeat(2,pulse_count_config_generator(target_pulses = [1000, 10000], use_tolerant_ff = True, use_sensitive_ff = True))
 # pulse_count_config_generator(target_pulses = [40000,20000,20000],use_tolerant_ff=False,use_sensitive_ff=True)
-config_generator = pulse_count_then_sensitivity_config_generator(target_pulses= [1000,2000,4000],use_tolerant_ff=True, use_sensitive_ff=True)
+config_generator: Generator[CommandInfo,None,None] = \
+    pulse_count_then_sensitivity_config_generator(target_pulses= [1000,2000,4000],use_tolerant_ff=True, use_sensitive_ff=True)
 ## Bash File Configuration
 
 # Note that there are no spaces between variables, =, and value assigned. This is needed. 
@@ -298,18 +304,18 @@ if [ $UserInterruptTriggered -eq 0 ]; then
 if [ $SkipNextCommand -eq 0 ]; then
 {command}
 exitCode=$?
-if [ $exitCode -ne 0 ]; then 
+if [ $exitCode -ne 0 ]; then  #Error
     UserInterruptTriggered=$((exitCode == 130))
     ((ErrorCounter=ErrorCounter+1)) && FailedCommands+="$Current_Command"+$'\\n' 
     {action_if_failure}
-else
+else # Success
     ((SuccessCounter=SuccessCounter+1))
     {action_if_success}
 fi 
-else
+else # Skipped
     ((SkippedCounter=SkippedCounter+1)) && SkippedCommands+="$Current_Command"+$'\\n'
     {action_if_skipped}
-fi
+fi #ctrl+c
 fi
 """
 
@@ -371,9 +377,9 @@ with open(generated_bash_script_path, 'w') as bash_file:
                     output_directory = results_output_directory
                 ),
                 action_if_failure = "SkipNextCommand=1" if command_data.skip_next_command_if_error else "SkipNextCommand=0",
-                action_if_success = "SkipNextCommand=1" if command_data.skip_next_command_if_success else "SkipNextCommand=0"  +\
-                                    f"\n\tcp {path_best_asc_in_workspace} {command_data.copy_best_asc_target_path}" if command_data.copy_best_asc_target_path is not None else "",
-                action_if_skipped = "SkipNextCommand=1" if command_data.skip_next_command_if_success else "SkipNextCommand=0"
+                action_if_success = ("SkipNextCommand=1" if command_data.skip_next_command_if_success else "SkipNextCommand=0")  +\
+                                    (f"\n\tcp {path_best_asc_in_workspace} {command_data.copy_best_asc_target_path}" if command_data.copy_best_asc_target_path is not None else ""),
+                action_if_skipped = "SkipNextCommand=1" if command_data.skip_next_command_if_skipped else "SkipNextCommand=0"
             )
         )
 
