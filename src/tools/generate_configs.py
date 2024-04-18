@@ -7,7 +7,8 @@ Origionally written by Allyn, improved and extended by Isaac.
 """
 
 import os, stat
-from typing import Generator, Any
+from typing import Generator, Any, Protocol
+from dataclasses import dataclass
 
 # mkdir("data/SensitivityConfigs")
 
@@ -16,6 +17,9 @@ base_config_path =              "data/config.ini"
 generated_configs_dir =         "data/GeneratedConfigs"
 generated_bash_script_path =    "data/runGeneratedConfigs.sh"
 results_output_directory =      "data/GeneratedConfigsResults"
+path_best_asc_in_workspace =    "./workspace/best.asc"
+path_store_best_asc =           "data/previous_best.asc"
+"""This variable is where the best.asc is copied to is set command to copy_best_target_path by default"""
 
 
 # This will create the directory to put the generated configs in if it doesn't exist
@@ -27,13 +31,35 @@ if not os.path.isdir(results_output_directory):
     os.makedirs(results_output_directory)
 
 
+class CommandInfo(Protocol):
+    """A protocol specifying all data needed to invoke and run evolve on the command line."""
+    config_path:str
+    description:str
+    copy_best_asc_target_path:str|None
+    """This is the path we want to copy best.asc to once it has run successfully, None if don't want to copy it to a different location."""
+    best_asc_workspace_path:str
+    skip_next_command_if_success:bool
+    skip_next_command_if_error:bool
+    skip_next_command_if_skipped:bool
+
+@dataclass
+class CommandData:
+    """A class that stores all data needed to invoke and run  evolve on the command line."""
+    config_path:str
+    description:str
+    copy_best_asc_target_path:str|None = None
+    best_asc_workspace_path:str = path_best_asc_in_workspace
+    skip_next_command_if_success:bool = False
+    skip_next_command_if_error:bool = False
+    skip_next_command_if_skipped:bool = False
+
 
 # All {variables_in_brackets} need to be specified and formatted later as .format(variables_in_brackets="value")
 # It is fine to specify unused variables in .format(), but will error out if a value isn't included
 # You only need to include the values here that you don't want to inherit from your base config.
 
-######################### USEFUL CONFIG BASES ############################
-sensitivity_config_base = \
+######################### OLD SENSITIVITY SCRIPT ############################
+old_sensitivity_config_base = \
 """[TOP-LEVEL PARAMETERS]
 base_config = {base_config_path}
 
@@ -42,20 +68,21 @@ test_circuit = data/saved_bests/{circuit_id}.asc
 """
 
 # return the path to the new config
-def sensitivity_config_generator()->Generator[str,None,None]:
+def old_sensitivity_config_generator()->Generator[CommandInfo,None,None]:
 
     for circuit_id in range(10,510,10):
-
         config_path = os.path.join(generated_configs_dir, f"{circuit_id}.ini")
         # Create the config file using the config_base file
         with open(config_path, "w") as config_file:
-            config_file.write(sensitivity_config_base.format(
+            config_file.write(old_sensitivity_config_base.format(
                 base_config_path = base_config_path,
                 circuit_id = circuit_id
             ))
 
-        yield config_path
+        yield CommandData(config_path=config_path,description=f"Runing sensitivity experiment on {circuit_id}.ini")
 
+
+################################## PULSE COUNT SCRIPTS ################################
 
 pulse_count_config_base = \
 """[TOP-LEVEL PARAMETERS]
@@ -65,11 +92,16 @@ base_config = {base_config_path}
 fitness_func = {fitness_function}
 desired_freq = {desired_frequency}
 
+[LOGGING PARAMETERS]
+best_file = {best_asc_path}
 """
 
 def pulse_count_config_generator(target_pulses:list[int],
                 use_tolerant_ff:bool=True,
-                use_sensitive_ff:bool=True)->Generator[str,None,None]:
+                use_sensitive_ff:bool=True,
+                store_best_circuit:bool=False,
+                skip_next_if_fail:bool=False,
+                skip_next_if_skipped:bool=False)->Generator[CommandInfo,None,None]:
     """
     Generates configs for pulse_count experiments
 
@@ -84,10 +116,16 @@ def pulse_count_config_generator(target_pulses:list[int],
         If each pulse get a run using the tolerant fitness function, by default True
     use_sensitive_ff: bool, optional
         If each pulse get a run using the sinsitive fitness function, by default True
+    store_best_circuit: bool, optional
+        If this is set the best.asc file will be copied to the data directory specified in path_store_best_asc, by default False
+    skip_next_if_fail: bool, optional
+        This will set the bash script to skip the next command it would run if this script fails, by default False
+    skip_next_if_skipped: bool, optional
+        Sets the bash script to skip the next command if this command is skipped, by default False
 
     Yields
     ------
-    Generator[str,None,None]
+    Generator[CommandInfo,None,None]
         The path to the output file generated.
     """
     def create_config(target_pulse_count:int,fitness_funciton:str)->str:
@@ -98,9 +136,15 @@ def pulse_count_config_generator(target_pulses:list[int],
             config_file.write(pulse_count_config_base.format(
                 base_config_path = base_config_path,
                 fitness_function = fitness_funciton,
-                desired_frequency = target_pulse_count
+                desired_frequency = target_pulse_count,
+                best_asc_path = path_best_asc_in_workspace
             ))
-        return config_path
+        return CommandData(config_path=config_path, 
+                           description=f"Pulse Count experiment targeting {target_pulse_count}Hz using fitness function {fitness_funciton}.",
+                           copy_best_asc_target_path= path_store_best_asc if store_best_circuit else None,
+                           skip_next_command_if_error=skip_next_if_fail,
+                           skip_next_command_if_skipped=skip_next_if_skipped,
+                           skip_next_command_if_success=False)
 
     for target_pulse in target_pulses:
         if use_sensitive_ff:
@@ -108,7 +152,88 @@ def pulse_count_config_generator(target_pulses:list[int],
         if use_tolerant_ff:
             yield create_config(target_pulse,"TOLERANT_PULSE_COUNT")
 
+pulse_count_sensitivity_config_base = \
+"""[TOP-LEVEL PARAMETERS]
+base_config = {base_config_path}
 
+[FITNESS PARAMETERS]
+fitness_func = {fitness_function}
+desired_freq = {desired_frequency}
+
+[FITNESS SENSITIVITY PARAMETERS]
+test_circuit = {test_circuit_path}
+"""
+
+def pulse_count_then_sensitivity_config_generator(target_pulses:list[int],
+                use_tolerant_ff:bool=True,
+                use_sensitive_ff:bool=True)->Generator[CommandInfo,None,None]:
+    """
+    Generates configs for pulse_count experiments,
+    then follows them with the config for a sensitivity config.
+
+    The order experiments will run if all fitness functions are selected is:
+    tolerant -> sensitive
+
+    Parameters
+    ----------
+    target_pulses : list[int]
+        A list of all of the target pulse counts you want to train for
+    use_tolerant_ff : bool, optional
+        If each pulse get a run using the tolerant fitness function, by default True
+    use_sensitive_ff: bool, optional
+        If each pulse get a run using the sinsitive fitness function, by default True"""
+    def create_config_pair(target_pulse_count:int,fitness_funciton:str)->str:
+        # Generate a pulse_count_config_generator to get first config
+        use_sensitive = False
+        use_tolerant = False
+        match fitness_funciton:
+            case "SENSITIVE_PULSE_COUNT":
+                use_sensitive = True
+            case "TOLERANT_PULSE_COUNT":
+                use_tolerant = True
+            case bad_name:
+                raise ValueError(f"Fitness funciton name '{bad_name}' not recognised")
+
+        # This would be easier if we just pulled out the function the generator used, but I couldn't be bothered.
+        pc_gen = pulse_count_config_generator(target_pulses=[target_pulse_count],
+                                              use_sensitive_ff=use_sensitive,
+                                              use_tolerant_ff=use_tolerant,
+                                              store_best_circuit=True,
+                                              skip_next_if_fail=True,
+                                              skip_next_if_skipped=True)
+        pulse_count_experiment = list(pc_gen)[0] # yield the first element only (there should only be 1)
+        print(list(pc_gen))
+        yield pulse_count_experiment
+
+        if pulse_count_experiment.copy_best_asc_target_path is None:
+            raise ValueError("The pulse count must output to a target path for Sensitivity to test it.")
+
+        ## Generate the config for the Sensitivity run.
+        config_path=os.path.join(generated_configs_dir,f"Sensitivity_For_Pulse_Count_of_{target_pulse_count}_with_{fitness_funciton}.ini")
+
+        ## UPDATE SO TO GENERATE SENSITIVITY CONFIG 120 mins
+        with open(config_path, "w") as config_file:
+            config_file.write(pulse_count_sensitivity_config_base.format(
+                base_config_path = base_config_path,
+                fitness_function = fitness_funciton,
+                desired_frequency = target_pulse_count,
+                test_circuit_path = pulse_count_experiment.copy_best_asc_target_path # get the asc file stored by p_c_experiment
+            ))
+        yield CommandData(config_path=config_path, 
+                           description=f"Sensitivity Evaluation for Pulse Count experiment targeting {target_pulse_count}Hz with {fitness_funciton}.",
+                           copy_best_asc_target_path= None, # No best_asc to copy out
+                           skip_next_command_if_error=False,
+                           skip_next_command_if_skipped=False,
+                           skip_next_command_if_success=False)
+    
+    for target_pulse in target_pulses:
+        if use_sensitive_ff:
+            create_config_pair(target_pulse,"SENSITIVE_PULSE_COUNT")
+        if use_tolerant_ff:
+            create_config_pair(target_pulse,"TOLERANT_PULSE_COUNT")
+    
+
+############################ USEFUL UTILITIES ##############################################
 def repeat(repeat_count:int, generator:Generator[Any,None,None])->Generator[Any,None,None]:
     """
     Repeats the outputs of the instantiated generator it is passed.
@@ -136,8 +261,8 @@ def repeat(repeat_count:int, generator:Generator[Any,None,None])->Generator[Any,
 # sensitivity_config_generator()
 # pulse_count_config_generator(target_pulses = [1000,10000], use_tolerant_ff = True, use_sensitive_ff = True)
 # repeat(2,pulse_count_config_generator(target_pulses = [1000, 10000], use_tolerant_ff = True, use_sensitive_ff = True))
-config_generator = pulse_count_config_generator(target_pulses = [40000,20000,20000],use_tolerant_ff=False,use_sensitive_ff=True)
-
+# pulse_count_config_generator(target_pulses = [40000,20000,20000],use_tolerant_ff=False,use_sensitive_ff=True)
+config_generator = pulse_count_then_sensitivity_config_generator(target_pulses= [1000,2000,4000],use_tolerant_ff=True, use_sensitive_ff=True)
 ## Bash File Configuration
 
 # Note that there are no spaces between variables, =, and value assigned. This is needed. 
@@ -149,8 +274,11 @@ bash_head = \
 # This variables stores the number or errors that occour
 ErrorCounter=0
 SuccessCounter=0
+SkippedCounter=0
 UserInterruptTriggered=0
+SkipNextCommand=0
 FailedCommands=''
+SkippedCommands=''
 
 
 
@@ -165,15 +293,22 @@ evolve_command_base = "python3 src/evolve.py -c {config_path} -d {description} -
 # the UserInterruptTriggered=$((exitCode==130)) allows us to stop other code if user interrupt occoured (set to 1 if called)
 bash_command_wrapper_logic = \
 """
+Current_Command=$'{command}'
 if [ $UserInterruptTriggered -eq 0 ]; then
+if [ $SkipNextCommand -eq 0 ]; then
 {command}
 exitCode=$?
 if [ $exitCode -ne 0 ]; then 
-    Current_Command=$'{command}'
     UserInterruptTriggered=$((exitCode == 130))
     ((ErrorCounter=ErrorCounter+1)) && FailedCommands+="$Current_Command"+$'\\n' 
+    {action_if_failure}
 else
     ((SuccessCounter=SuccessCounter+1))
+    {action_if_success}
+fi 
+else
+    ((SkippedCounter=SkippedCounter+1)) && SkippedCommands+="$Current_Command"+$'\\n'
+    {action_if_skipped}
 fi
 fi
 """
@@ -188,11 +323,15 @@ echo $"$Current_Command"
 echo ""
 echo "Commands That Failed:"
 echo "$FailedCommands"
+echo ""
+echo "Commands Skipped:"
+echo "$SkippedCommands"
 
 echo "==============================================================================================="
-echo "$ErrorCounter of $((ErrorCounter+SuccessCounter)) commands Failed, including the one not completed."
-echo "$(({num_commands}-(ErrorCounter+SuccessCounter))) of {num_commands} were not run at all."
-echo "The commands that failed are listed above."
+echo "$ErrorCounter of $((ErrorCounter+SuccessCounter+SkippedCounter)) commands Failed, including the one not completed."
+echo "$SkippedCounter of $((ErrorCounter+SuccessCounter+SkippedCounter)) commands were Skipped"
+echo "$(({num_commands}-(ErrorCounter+SuccessCounter+SkippedCounter))) of {num_commands} were not run at all."
+
 
 exit 1
 fi
@@ -203,10 +342,13 @@ echo "=================================== RESULTS ==============================
 echo ""
 echo "Commands That Failed:"
 echo "$FailedCommands"
+echo ""
+echo "Commands Skipped:"
+echo "$SkippedCommands"
 
 echo "================================================================================"
 echo "$ErrorCounter of {num_commands} commands Failed"
-echo "The commands that failed are listed above."
+echo "$ of {num_commands} commands were Skipped"
 
 exit 0
 
@@ -217,17 +359,21 @@ with open(generated_bash_script_path, 'w') as bash_file:
     bash_file.write(bash_head)
 
     command_count = 0
-    for config_path in config_generator:
+    for command_data in config_generator:
 
         # Add a call to this 
         bash_file.write(
             bash_command_wrapper_logic.format(
                 command = evolve_command_base.format(
-                    config_path = config_path,
-                    description = f'"running config at: {config_path}"', 
+                    config_path = command_data.config_path,
+                    description = f'"{command_data.description}"', 
                     # Note that it is important that outer string uses double quotes or this messes up wrapper logic
                     output_directory = results_output_directory
-                )
+                ),
+                action_if_failure = "SkipNextCommand=1" if command_data.skip_next_command_if_error else "SkipNextCommand=0",
+                action_if_success = "SkipNextCommand=1" if command_data.skip_next_command_if_success else "SkipNextCommand=0"  +\
+                                    f"\n\tcp {path_best_asc_in_workspace} {command_data.copy_best_asc_target_path}" if command_data.copy_best_asc_target_path is not None else "",
+                action_if_skipped = "SkipNextCommand=1" if command_data.skip_next_command_if_success else "SkipNextCommand=0"
             )
         )
 
@@ -236,7 +382,7 @@ with open(generated_bash_script_path, 'w') as bash_file:
     
     bash_file.write(bash_tail.format(num_commands = command_count))
 
-#ensure bash script is executable.
+#ensure bash script is executable if possible, but don't require permisions to do so.
 try:
     os.chmod(generated_bash_script_path,stat.S_IREAD
             |stat.S_IWRITE
