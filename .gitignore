@@ -3,16 +3,16 @@ data/config.ini
 data/monitor
 data/seed-hardware.asc
 
-#automatically generated configs script
+#automatically generated configs script by default
 data/GeneratedConfigs
 data/GeneratedConfigsResults
 data/runGeneratedConfigs.sh
+data/previous_best.asc
 
 src/tools/data/GeneratedConfigs
 src/tools/data/GeneratedConfigsResults
 src/tools/data/runGeneratedConfigs.sh
 src/tools/data
-
 
 # test outputs
 test/out/*
@@ -161,4 +161,4 @@ dmypy.json
 LICENSE.txt
 arduino-cli
 arduino-cli_latest_Linux_64bit.tar.gz
-src/tools/data/runGeneratedConfigs.sh
+

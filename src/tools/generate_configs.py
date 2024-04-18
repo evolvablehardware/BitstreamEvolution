@@ -182,7 +182,8 @@ def pulse_count_then_sensitivity_config_generator(target_pulses:list[int],
     use_tolerant_ff : bool, optional
         If each pulse get a run using the tolerant fitness function, by default True
     use_sensitive_ff: bool, optional
-        If each pulse get a run using the sinsitive fitness function, by default True"""
+        If each pulse get a run using the sinsitive fitness function, by default True
+    """
     def create_config_pair(target_pulse_count:int,fitness_funciton:str)->Generator[CommandInfo,None,None]:
         # Generate a pulse_count_config_generator to get first config
         use_sensitive = False
@@ -354,7 +355,7 @@ echo "$SkippedCommands"
 
 echo "================================================================================"
 echo "$ErrorCounter of {num_commands} commands Failed"
-echo "$ of {num_commands} commands were Skipped"
+echo "$SkippedCounter of {num_commands} commands were Skipped"
 
 exit 0
 
