@@ -106,6 +106,11 @@ class CircuitPopulation:
         self.__rand = default_rng()
         self.__current_epoch = 0
         self.__best_epoch = 0
+        num_rows = 3
+        if(config.get_routing_type == "NEWSE"):
+            num_rows = 2
+        num_cols = len(config.get_accessed_columns())
+        self.__population_bistream_sum = np.zeros(16*6*num_rows*num_cols)
 
         # Set the selection type here since the selection type should
         # not change during a run. This way we don't have to branch each
@@ -545,6 +550,10 @@ class CircuitPopulation:
                     self.__log_event(1, "{} fitness: {}".format(circuit, fitness))
                     return'''
                 reevaulated_circuits.add(circuit)
+
+                #add the circuit's bistream to our population sum - for diversity calculation and visualization
+                self.__population_bistream_sum += circuit.get_intrinsic_modifiable_bitstream_array()
+
             epoch_time = time() - start
             self.__circuits = reevaulated_circuits
 
