@@ -422,7 +422,7 @@ class Config:
 	
 	def get_diversity_measure(self):
 		input = self.get_ga_parameters("DIVERSITY_MEASURE")
-		valid_vals = ["HAMMING_DIST", "UNIQUE", "NONE", "DISAGREEING_BITS"]
+		valid_vals = ["HAMMING_DIST", "UNIQUE", "NONE", "DIFFERING_BITS"]
 		self.check_valid_value("diversity measure", input, valid_vals)
 		return input
 	

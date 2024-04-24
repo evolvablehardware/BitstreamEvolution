@@ -626,6 +626,8 @@ class CircuitPopulation:
             diversity = self.avg_hamming_dist()
         elif self.__config.get_diversity_measure() == "UNIQUE":
             diversity = self.count_unique()
+        elif self.__config.get_diversity_measure() == "DIFFERING_BITS":
+            diversity = self.count_dffering_bits()
         elif self.__config.get_diversity_measure() == "NONE":
             diversity = 0
         # Providing any invalid measure of diversity will make it constantly 0
@@ -1208,6 +1210,31 @@ class CircuitPopulation:
             if shouldAdd:
                 soln.append(a)
         return soln
+    
+    def count_differing_bits(self):
+        """
+        Returns the number of bits in the bistream where 2 circuits have different values
+
+        Returns
+        -------
+        int
+            Number of bits in the bistream where 2 circuits have different values
+        
+        """
+        if self.__config.get_simulation_mode() == "FULLY_SIM":
+            bitstream_sums = np.zeros[len(self.__circuits[0].get_sim_bitstream())]
+            for ckt in self.__circuits:
+                bitstream_sums += np.array(ckt.get_sim_bitstream())
+        else:
+            bitstream_sums = self.__population_bistream_sum
+
+        count = 0
+        for bit_sum in bitstream_sums:
+            if bit_sum != 0 and bit_sum != len(self.__circuits):
+                count += 1
+        self.__log_event(
+                2, "Number of differing bits:", count)
+        return count
 
     def __arr_eq(self, ar1, ar2):
         """
