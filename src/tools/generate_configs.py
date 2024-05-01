@@ -88,10 +88,17 @@ def old_sensitivity_config_generator()->Generator[CommandInfo,None,None]:
 pulse_count_config_base = \
 """[TOP-LEVEL PARAMETERS]
 base_config = {base_config_path}
+simulation_mode = FULLY_INTRINSIC
 
 [FITNESS PARAMETERS]
 fitness_func = {fitness_function}
 desired_freq = {desired_frequency}
+
+[GA PARAMETERS]
+population_size = {population_size}
+
+[STOPPING CONDITION PARAMETERS]
+generations = {generations}
 
 [LOGGING PARAMETERS]
 best_file = {best_asc_path}
@@ -100,6 +107,8 @@ best_file = {best_asc_path}
 def pulse_count_config_generator(target_pulses:list[int],
                 use_tolerant_ff:bool=True,
                 use_sensitive_ff:bool=True,
+                population_size:int=50,
+                max_generations:int=500,
                 store_best_circuit:bool=False,
                 skip_next_if_fail:bool=False,
                 skip_next_if_skipped:bool=False)->Generator[CommandInfo,None,None]:
@@ -117,6 +126,10 @@ def pulse_count_config_generator(target_pulses:list[int],
         If each pulse get a run using the tolerant fitness function, by default True
     use_sensitive_ff: bool, optional
         If each pulse get a run using the sinsitive fitness function, by default True
+    population_size: int, optional
+        This sets how many circuits are in each population, by default 50
+    max_generations: int, optional
+        Sets how many generations are allowed to run before the experiment ends, by default 500
     store_best_circuit: bool, optional
         If this is set the best.asc file will be copied to the data directory specified in path_store_best_asc, by default False
     skip_next_if_fail: bool, optional
@@ -129,7 +142,7 @@ def pulse_count_config_generator(target_pulses:list[int],
     Generator[CommandInfo,None,None]
         The path to the output file generated.
     """
-    def create_config(target_pulse_count:int,fitness_funciton:str)->str:
+    def create_config(target_pulse_count:int,fitness_funciton:str,population_size:int,max_generations:int)->str:
         # Generate the path for each pulse count
         config_path=os.path.join(generated_configs_dir,f"{target_pulse_count}_with__{fitness_funciton}.ini")
 
@@ -138,7 +151,9 @@ def pulse_count_config_generator(target_pulses:list[int],
                 base_config_path = base_config_path,
                 fitness_function = fitness_funciton,
                 desired_frequency = target_pulse_count,
-                best_asc_path = path_best_asc_in_workspace
+                best_asc_path = path_best_asc_in_workspace,
+                population_size = population_size,
+                generations = max_generations
             ))
         return CommandData(config_path=config_path, 
                            description=f"Pulse Count experiment targeting {target_pulse_count}Hz using fitness function {fitness_funciton}.",
@@ -149,13 +164,14 @@ def pulse_count_config_generator(target_pulses:list[int],
 
     for target_pulse in target_pulses:
         if use_sensitive_ff:
-            yield create_config(target_pulse,"SENSITIVE_PULSE_COUNT")
+            yield create_config(target_pulse,"SENSITIVE_PULSE_COUNT",population_size=population_size,max_generations=max_generations)
         if use_tolerant_ff:
-            yield create_config(target_pulse,"TOLERANT_PULSE_COUNT")
+            yield create_config(target_pulse,"TOLERANT_PULSE_COUNT",population_size=population_size,max_generations=max_generations)
 
 pulse_count_sensitivity_config_base = \
 """[TOP-LEVEL PARAMETERS]
 base_config = {base_config_path}
+simulation_mode = INTRINSIC_SENSITIVITY
 
 [FITNESS PARAMETERS]
 fitness_func = {fitness_function}
@@ -163,11 +179,16 @@ desired_freq = {desired_frequency}
 
 [FITNESS SENSITIVITY PARAMETERS]
 test_circuit = {test_circuit_path}
+sensitivity_trials = IGNORE
+sensitivity_time = 001:00:00:00
+reading_temp_humidity = false
 """
 
 def pulse_count_then_sensitivity_config_generator(target_pulses:list[int],
                 use_tolerant_ff:bool=True,
-                use_sensitive_ff:bool=True)->Generator[CommandInfo,None,None]:
+                use_sensitive_ff:bool=True,
+                population_size:int=50,
+                max_generations:int=500)->Generator[CommandInfo,None,None]:
     """
     Generates configs for pulse_count experiments,
     then follows them with the config for a sensitivity config.
@@ -183,8 +204,12 @@ def pulse_count_then_sensitivity_config_generator(target_pulses:list[int],
         If each pulse get a run using the tolerant fitness function, by default True
     use_sensitive_ff: bool, optional
         If each pulse get a run using the sinsitive fitness function, by default True
+    population_size: int, optional
+        The number of circuits in each generation for pulse count, by default 50
+    max_generations: int, optional
+        The number of generations run before ending the simulation for pulse count, by default 500
     """
-    def create_config_pair(target_pulse_count:int,fitness_funciton:str)->Generator[CommandInfo,None,None]:
+    def create_config_pair(target_pulse_count:int,fitness_funciton:str,pop_size:int,max_gens:int)->Generator[CommandInfo,None,None]:
         # Generate a pulse_count_config_generator to get first config
         use_sensitive = False
         use_tolerant = False
@@ -200,6 +225,8 @@ def pulse_count_then_sensitivity_config_generator(target_pulses:list[int],
         pc_gen = pulse_count_config_generator(target_pulses=[target_pulse_count],
                                               use_sensitive_ff=use_sensitive,
                                               use_tolerant_ff=use_tolerant,
+                                              population_size=pop_size,
+                                              max_generations=max_gens,
                                               store_best_circuit=True,
                                               skip_next_if_fail=True,
                                               skip_next_if_skipped=True)
@@ -230,11 +257,11 @@ def pulse_count_then_sensitivity_config_generator(target_pulses:list[int],
     
     for target_pulse in target_pulses:
         if use_sensitive_ff:
-            configs = create_config_pair(target_pulse,"SENSITIVE_PULSE_COUNT")
+            configs = create_config_pair(target_pulse,"SENSITIVE_PULSE_COUNT",pop_size=population_size,max_gens=max_generations)
             for config in configs:
                 yield config
         if use_tolerant_ff:
-            configs = create_config_pair(target_pulse,"TOLERANT_PULSE_COUNT")
+            configs = create_config_pair(target_pulse,"TOLERANT_PULSE_COUNT",pop_size=population_size,max_gens=max_generations)
             for config in configs:
                 yield config
     
@@ -269,7 +296,7 @@ def repeat(repeat_count:int, generator:Generator[Any,None,None])->Generator[Any,
 # repeat(2,pulse_count_config_generator(target_pulses = [1000, 10000], use_tolerant_ff = True, use_sensitive_ff = True))
 # pulse_count_config_generator(target_pulses = [40000,20000,20000],use_tolerant_ff=False,use_sensitive_ff=True)
 config_generator: Generator[CommandInfo,None,None] = \
-    pulse_count_then_sensitivity_config_generator(target_pulses= [1000,2000,4000],use_tolerant_ff=True, use_sensitive_ff=True)
+    pulse_count_then_sensitivity_config_generator(target_pulses= [1000,2000,4000],use_tolerant_ff=True, use_sensitive_ff=True,max_generations=12,population_size=53)
 ## Bash File Configuration
 
 # Note that there are no spaces between variables, =, and value assigned. This is needed. 
