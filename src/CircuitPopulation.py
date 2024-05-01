@@ -531,6 +531,7 @@ class CircuitPopulation:
                 for circuit in self.__circuits:
                     circuit.calculate_fitness_from_data()
 
+            self.__population_bistream_sum = np.zeros(self.__population_bistream_sum.size)
             for circuit in self.__circuits:
                 # If evaluate returns true, then a circuit has surpassed
                 # the threshold and we are done.
@@ -627,7 +628,7 @@ class CircuitPopulation:
         elif self.__config.get_diversity_measure() == "UNIQUE":
             diversity = self.count_unique()
         elif self.__config.get_diversity_measure() == "DIFFERING_BITS":
-            diversity = self.count_dffering_bits()
+            diversity = self.count_differing_bits()
         elif self.__config.get_diversity_measure() == "NONE":
             diversity = 0
         # Providing any invalid measure of diversity will make it constantly 0
@@ -675,7 +676,7 @@ class CircuitPopulation:
             
             if self.__config.saving_population_bistream():
                 if(self.__current_epoch %
-                    self.__config.get_population_bistream_save_interval == 0):
+                    self.__config.get_population_bistream_save_interval() == 0):
                     with open("workspace/bitstream_avg.log", "a") as live_file4:
                         data = self.get_differing_bits_str()
                         live_file4.write(("{}:{}\n").format(self.__current_epoch, data))
@@ -1255,7 +1256,7 @@ class CircuitPopulation:
         """
         s = ""
         for bit in self.__population_bistream_sum:
-            s += chr(bit+32)
+            s += chr(int(bit)+32)
         return s
 
     def __arr_eq(self, ar1, ar2):
