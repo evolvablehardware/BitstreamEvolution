@@ -672,6 +672,13 @@ class CircuitPopulation:
                         for ckt in self.__circuits:
                             data.append(str(ckt.get_pulses()))
                         live_file3.write(("{}:{}\n").format(self.__current_epoch, ",".join(data)))
+            
+            if self.__config.saving_population_bistream():
+                if(self.__current_epoch %
+                    self.__config.get_population_bistream_save_interval == 0):
+                    with open("workspace/bitstream_avg.log", "a") as live_file4:
+                        data = self.get_differing_bits_str()
+                        live_file4.write(("{}:{}\n").format(self.__current_epoch, data))
 
             # TODO: Re-enable this. Temporarily disabled in case files get too large
             #self.__save_generation()
@@ -1235,6 +1242,21 @@ class CircuitPopulation:
         self.__log_event(
                 2, "Number of differing bits:", count)
         return count
+
+    def get_differing_bits_str(self):
+        """
+        Returns an ASCII string that represents the number of circuits with a 1 at each bit in the bitstream
+
+        Returns
+        -------
+        str
+            The number of circuits with a 1 at each bit in the bitstream
+        
+        """
+        s = ""
+        for bit in self.__population_bistream_sum:
+            s += chr(bit+32)
+        return s
 
     def __arr_eq(self, ar1, ar2):
         """

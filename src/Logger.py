@@ -135,6 +135,7 @@ class Logger:
         open("workspace/poplivedata.log", "w").close()
         open("workspace/randomizationdata.log", "w").close()
         open("workspace/fitnesssensitivity.log", "w").close()
+        open("workspace/bitstream_avg.log", "w").close()
         if not exists("workspace/template"):
             mkdir("workspace/template")
 
