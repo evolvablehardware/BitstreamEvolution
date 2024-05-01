@@ -422,7 +422,7 @@ class Config:
 	
 	def get_diversity_measure(self):
 		input = self.get_ga_parameters("DIVERSITY_MEASURE")
-		valid_vals = ["HAMMING_DIST", "UNIQUE", "NONE"]
+		valid_vals = ["HAMMING_DIST", "UNIQUE", "NONE", "DIFFERING_BITS"]
 		self.check_valid_value("diversity measure", input, valid_vals)
 		return input
 	
@@ -566,6 +566,21 @@ class Config:
 			return input == "true" or input == "True"
 		except NoOptionError:
 			return True	
+
+	def saving_population_bistream(self):
+		return isinstance(self.get_population_bistream_save_interval(), int)	
+	
+		
+	def get_population_bistream_save_interval(self):
+		try:
+			interval = int(self.get_logging_parameters("population_bitstream_save_interval"))
+		except:
+			return "IGNORE"
+		if interval < 1:
+			self.__log_error(1, "Invalid population bistream save interval " + str(interval) + "'. Must be greater than zero.")
+			exit()
+		return interval
+			
 	
 	def get_output_directory(self):
 		try:

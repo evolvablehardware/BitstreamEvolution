@@ -106,6 +106,11 @@ class CircuitPopulation:
         self.__rand = default_rng()
         self.__current_epoch = 0
         self.__best_epoch = 0
+        num_rows = 3
+        if(config.get_routing_type == "NEWSE"):
+            num_rows = 2
+        num_cols = len(config.get_accessed_columns())
+        self.__population_bistream_sum = np.zeros(16*6*num_rows*num_cols)
 
         # Set the selection type here since the selection type should
         # not change during a run. This way we don't have to branch each
@@ -526,6 +531,7 @@ class CircuitPopulation:
                 for circuit in self.__circuits:
                     circuit.calculate_fitness_from_data()
 
+            self.__population_bistream_sum = np.zeros(self.__population_bistream_sum.size)
             for circuit in self.__circuits:
                 # If evaluate returns true, then a circuit has surpassed
                 # the threshold and we are done.
@@ -533,11 +539,11 @@ class CircuitPopulation:
                 # fitness = circuit.get_fitness()
                 fitness = circuit.get_fitness() if is_multi_pass else self.__eval_ckt(circuit)
 
-                # We've got the fitness we're evaluating the circuit off of, so make sure it gets
-                # added to the circuit's file attributes
-                # Only if we are in a sim mode with circuit files
+                # Save off various circuit metrics
                 if self.__config.get_simulation_mode() != 'FULLY_SIM':
                     circuit.set_file_attribute("fitness", str(fitness))
+                    if self.__config.is_pulse_count():
+                        circuit.set_file_attribute("pulse_count", str(circuit.get_pulses()))
 
                 # Commented out for now while we test
                 # Pretty sure this was originally for pulse count only, leaving it commented out since things are working right now
@@ -545,6 +551,10 @@ class CircuitPopulation:
                     self.__log_event(1, "{} fitness: {}".format(circuit, fitness))
                     return'''
                 reevaulated_circuits.add(circuit)
+
+                #add the circuit's bistream to our population sum - for diversity calculation and visualization
+                self.__population_bistream_sum += circuit.get_intrinsic_modifiable_bitstream_array()
+
             epoch_time = time() - start
             self.__circuits = reevaulated_circuits
 
@@ -617,6 +627,8 @@ class CircuitPopulation:
             diversity = self.avg_hamming_dist()
         elif self.__config.get_diversity_measure() == "UNIQUE":
             diversity = self.count_unique()
+        elif self.__config.get_diversity_measure() == "DIFFERING_BITS":
+            diversity = self.count_differing_bits()
         elif self.__config.get_diversity_measure() == "NONE":
             diversity = 0
         # Providing any invalid measure of diversity will make it constantly 0
@@ -661,6 +673,13 @@ class CircuitPopulation:
                         for ckt in self.__circuits:
                             data.append(str(ckt.get_pulses()))
                         live_file3.write(("{}:{}\n").format(self.__current_epoch, ",".join(data)))
+            
+            if self.__config.saving_population_bistream():
+                if(self.__current_epoch %
+                    self.__config.get_population_bistream_save_interval() == 0):
+                    with open("workspace/bitstream_avg.log", "a") as live_file4:
+                        data = self.get_differing_bits_str()
+                        live_file4.write(("{}:{}\n").format(self.__current_epoch, data))
 
             # TODO: Re-enable this. Temporarily disabled in case files get too large
             #self.__save_generation()
@@ -1199,6 +1218,46 @@ class CircuitPopulation:
             if shouldAdd:
                 soln.append(a)
         return soln
+    
+    def count_differing_bits(self):
+        """
+        Returns the number of bits in the bistream where 2 circuits have different values
+
+        Returns
+        -------
+        int
+            Number of bits in the bistream where 2 circuits have different values
+        
+        """
+        if self.__config.get_simulation_mode() == "FULLY_SIM":
+            bitstream_sums = np.zeros[len(self.__circuits[0].get_sim_bitstream())]
+            for ckt in self.__circuits:
+                bitstream_sums += np.array(ckt.get_sim_bitstream())
+        else:
+            bitstream_sums = self.__population_bistream_sum
+
+        count = 0
+        for bit_sum in bitstream_sums:
+            if bit_sum != 0 and bit_sum != len(self.__circuits):
+                count += 1
+        self.__log_event(
+                2, "Number of differing bits:", count)
+        return count
+
+    def get_differing_bits_str(self):
+        """
+        Returns an ASCII string that represents the number of circuits with a 1 at each bit in the bitstream
+
+        Returns
+        -------
+        str
+            The number of circuits with a 1 at each bit in the bitstream
+        
+        """
+        s = ""
+        for bit in self.__population_bistream_sum:
+            s += chr(int(bit)+32)
+        return s
 
     def __arr_eq(self, ar1, ar2):
         """

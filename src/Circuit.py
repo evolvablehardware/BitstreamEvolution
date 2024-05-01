@@ -1258,6 +1258,19 @@ class Circuit:
         """
         return self.get_file_intrinsic_modifiable_bitstream(self.__hardware_file)
     
+    def get_intrinsic_modifiable_bitstream_array(self):
+        """
+        Returns an array of ints (0 or 1)
+        These bytes represent the bits of the circuit's bitstream that can be modified. All other bits are left out
+
+        Returns
+        -------
+        list[int]
+            List of all modifyable bits in bitstream.
+        """
+        old_list = self.get_file_intrinsic_modifiable_bitstream(self.__hardware_file)
+        return np.array([x - 48 for x in old_list])
+    
     def reconstruct_from_bistream(self, bitstream, accessible_columns, routing_type):
         """
         Takes this circuit, and replaces all of its modifiable bits with those in
