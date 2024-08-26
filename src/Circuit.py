@@ -684,7 +684,7 @@ class Circuit:
         """
         data_file = open(self.__data_filepath, "rb")
         data = data_file.readlines()
-        total_samples = 500
+        total_samples = 1000
         waveform = []
         state = []
         for i in range(total_samples-1):
@@ -697,7 +697,7 @@ class Circuit:
                 waveform.append(x)
                 state.append(y)
             except:
-                self.__log_error(1, "RIP FAILED TO READ {} AT LINE {} -> ZEROIZING LINE".format(
+                self.__log_error(1, "TONE_DISC FAILED TO READ {} AT LINE {} -> ZEROIZING LINE".format(
                     self,
                     i
                 ))
@@ -833,9 +833,9 @@ class Circuit:
         """
 
         difference_sum = 0
+        waveform_diffs = [0, 0]
         waveform_sums = [0, 0]
-        waveform_sum = 0
-        total_samples = 500
+        total_samples = 1000
         stateZeroCount = 0
         stateOneCount = 0
         # Reset high/low vals to min/max respectively
@@ -843,7 +843,6 @@ class Circuit:
         self.__high_val = 0
         for i in range(len(waveform)):
             waveformPoint = waveform[i]
-            waveform_sum += waveformPoint
 
             if waveformPoint < self.__low_val:
                 self.__low_val = waveformPoint
@@ -853,11 +852,15 @@ class Circuit:
             if waveformPoint != None and waveformPoint < 1000:
                 if state[i] == 0:
                     stateZeroCount += 1
+                    waveform_diffs[0] += waveformPoint
+                    waveform_diffs[1] += (737 - waveformPoint)
                     waveform_sums[0] += waveformPoint
                 else:
                     stateOneCount += 1
+                    waveform_diffs[0] += (737 - waveformPoint)
+                    waveform_diffs[1] += waveformPoint
                     waveform_sums[1] += waveformPoint
-
+        
         with open("workspace/waveformlivedata.log", "w+") as waveLive:
             i = 1
             for points in waveform:
@@ -870,15 +873,19 @@ class Circuit:
                 stateLive.write(str(i) + ", " + str(points) + "\n")
                 i += 1
 
-        if waveform_sum == 0:
+        if sum(waveform) == 0:
             self.__fitness = 0
+        elif waveform_diffs[0] == 0 or waveform_diffs[1] == 0:
+            self.__fitness = 1
         else:
             stateZeroAve = (waveform_sums[0] / stateZeroCount)
             stateOneAve = (waveform_sums[1] / stateOneCount)
-            self.__fitness = 0.00001 * abs(stateZeroAve - stateOneAve)
+            self.__fitness = (abs(stateZeroAve - stateOneAve) / 737.0)
             self.__log_event(1,
             "State 0 Average = ",
-            stateZeroAve, " --- State 0 Count = ", stateZeroCount, " ----- State 1 Average = ", stateOneAve)
+            stateZeroAve, " --- State 0 Count = ", stateZeroCount,
+              " ----- State 1 Average = ", stateOneAve,
+              " State 1 Count = ", stateOneCount)
         
         self.__mean_voltage = sum(waveform) / len(waveform) #used by combined fitness func
 
@@ -1257,7 +1264,7 @@ class Circuit:
             List of all modifyable bits in bitstream.
         """
         return self.get_file_intrinsic_modifiable_bitstream(self.__hardware_file)
-    
+
     def get_intrinsic_modifiable_bitstream_array(self):
         """
         Returns an array of ints (0 or 1)

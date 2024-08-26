@@ -346,9 +346,8 @@ class Microcontroller:
 
         # The MCU returns a START line followed by many lines of data (500 currently) followed by a FINISHED line
         while b"START\n" not in line:
-            self.__serial.write(b'5')
+            # self.__serial.write(b'5')
             line = self.__serial.read_until()
-
             if (time() - start) >= self.__config.get_mcu_read_timeout():
                 self.__log_warning(1, "Did not read START from MCU")
                 self.__log_warning(1, "Time Exceeded. Halting MCU Reading.")

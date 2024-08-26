@@ -36,7 +36,7 @@ VARIANCE_THRESHOLD <= 0 as set in config.ini, continuing without randomization''
 # NOTE The Seed file is provided as a way to kickstart the evolutionary process
 # without having to perform a time-consuming random search for a seedable circuit.
 # Contact repository authors if you're interested in a new seed file.
-SEED_HARDWARE_FILEPATH = Path("data/seed-hardware.asc")
+SEED_HARDWARE_FILEPATH = Path("data/varmaxbest.asc")
 
 # The basename (filename without path or extensions) of the Circuit
 # hardware, bitstream, and data files.
@@ -572,19 +572,21 @@ class CircuitPopulation:
                 self.__best_epoch = self.get_current_epoch()
                 # Copy this circuit to the best file
                 copyfile(self.__circuits[0].get_hardware_file_path(), self.__config.get_best_file())
-                with open("workspace/bestwaveformlivedata.log", "w+") as waveLive:
-                    waveLive.write("NEW BEST BELOW: " + str(self.__circuits[0]) + " in gen " + str(self.get_current_epoch()) + "\n")
-                    i = 1
-                    for points in self.__circuits[0].get_waveform_td():
-                        waveLive.write(str(i) + ", " + str(points) + "\n")
-                        i += 1
-                with open("workspace/beststatelivedata.log", "w+") as stateLive:
-                    stateLive.write("NEW BEST BELOW: " + str(self.__circuits[0]) + " in gen " + str(self.get_current_epoch()) + "\n")
-                    i = 1
-                    for points in self.__circuits[0].get_state_td():
-                        stateLive.write(str(i) + ", " + str(points) + "\n")
-                        i += 1
-                self.__log_event(2, "New best found")
+
+                if (self.__config.get_fitness_func() == "TONE_DISCRIMINATOR"):
+                    with open("workspace/bestwaveformlivedata.log", "w+") as waveLive:
+                        waveLive.write("NEW BEST BELOW: " + str(self.__circuits[0]) + " in gen " + str(self.get_current_epoch()) + "\n")
+                        i = 1
+                        for points in self.__circuits[0].get_waveform_td():
+                            waveLive.write(str(i) + ", " + str(points) + "\n")
+                            i += 1
+                    with open("workspace/beststatelivedata.log", "w+") as stateLive:
+                        stateLive.write("NEW BEST BELOW: " + str(self.__circuits[0]) + " in gen " + str(self.get_current_epoch()) + "\n")
+                        i = 1
+                        for points in self.__circuits[0].get_state_td():
+                            stateLive.write(str(i) + ", " + str(points) + "\n")
+                            i += 1
+                    self.__log_event(2, "New best found")
 
             self.__logger.log_generation(self, epoch_time)
             # The circuits that are protected from randomization
@@ -665,7 +667,10 @@ class CircuitPopulation:
                 if not self.__config.is_pulse_func():
                     with open("workspace/heatmaplivedata.log", "a") as live_file2:
                         best = self.__circuits[0]
-                        data = best.get_waveform()
+                        if (self.__config.get_fitness_func() == "TONE_DISCRIMINATOR"):
+                            data  = best.get_waveform_td()
+                        else:
+                            data = best.get_waveform()
                         live_file2.write(("{}:{}\n").format(self.__current_epoch, ",".join(data)))
                 else:
                     with open("workspace/pulselivedata.log", "a") as live_file3:
@@ -673,7 +678,7 @@ class CircuitPopulation:
                         for ckt in self.__circuits:
                             data.append(str(ckt.get_pulses()))
                         live_file3.write(("{}:{}\n").format(self.__current_epoch, ",".join(data)))
-            
+
             if self.__config.saving_population_bistream():
                 if(self.__current_epoch %
                     self.__config.get_population_bistream_save_interval() == 0):
@@ -717,7 +722,10 @@ class CircuitPopulation:
         if (self.__current_epoch > 0):
             with open("workspace/heatmaplivedata.log", "a") as live_file:
                 best = self.__circuits[0]
-                live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(best.get_waveform())))
+                if (self.__config.get_fitness_func() == "TONE_DISCRIMINATOR"):
+                    live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(best.get_waveform_td())))
+                else:
+                    live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(best.get_waveform())))
 
     # SECTION Selection algorithms.
     def __run_classic_tournament(self):
@@ -1243,21 +1251,6 @@ class CircuitPopulation:
         self.__log_event(
                 2, "Number of differing bits:", count)
         return count
-
-    def get_differing_bits_str(self):
-        """
-        Returns an ASCII string that represents the number of circuits with a 1 at each bit in the bitstream
-
-        Returns
-        -------
-        str
-            The number of circuits with a 1 at each bit in the bitstream
-        
-        """
-        s = ""
-        for bit in self.__population_bistream_sum:
-            s += chr(int(bit)+32)
-        return s
 
     def __arr_eq(self, ar1, ar2):
         """

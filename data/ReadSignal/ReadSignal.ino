@@ -81,8 +81,9 @@ void loop(){
       else if (x == ADCMeasuretdSelection){
         Serial.print("START\nSTART\nSTART\n");
         digitalWrite(synchPin, HIGH);
+        digitalWrite(LED_BUILTIN, LOW);
 
-        for(int i=0; i<=499; i++){
+        for(int i=0; i<=999; i++){
             Serial.print(i+1);
             Serial.print(": ");
             Serial.print(analogRead(analogPin)); //buf[i]); //Write the buffer to Serial
@@ -91,13 +92,16 @@ void loop(){
             Serial.print("\n");
             // This determines the sampling frequency 
             //(500 samples delayed by 2 ms each results in a sampled time interval of 1 second)
-            delay(2); 
+            delayMicroseconds(1950); 
         }
 
         digitalWrite(synchPin, LOW);
+        digitalWrite(LED_BUILTIN, HIGH);
     
         Serial.print("FINISHED\nFINISHED\nFINISHED\n");
-        delay(10); //3016/1508 Delay to load the FPGA
+        delay(1000);
+        x = 0;
+        // delay(10); //3016/1508 Delay to load the FPGA
       }
       else if (x == pulseCountMeasureSelection){
         //Serial.print("START\nSTART\nSTART\n"); // currently breaks measure_pulses()

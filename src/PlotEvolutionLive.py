@@ -183,9 +183,12 @@ def run():
                 xs.append(int(x))
                 ys.append(float(y) * 3.3/715)
         ax4.clear()
-        ax4.set_xlim([0, 500])
+        if config.get_fitness_func() == "TONE_DISCRIMINATOR":
+            ax4.set_xlim([0, 1000])
+        else:
+            ax4.set_xlim([0, 500])
         #ax4.set_ylim([0, 750])
-        ax4.set_ylim([-0.5, 3.7])
+        ax4.set_ylim([-0.2, 3.5])
         ax4.plot(pulse_trigger, "r--")
         ax4.plot(xs, ys, color="blue")
 
@@ -206,7 +209,7 @@ def run():
                 xs.append(int(x))
                 ys.append(float(y))
         ax5.clear()
-        ax5.set_xlim([0, 500])
+        ax5.set_xlim([0, 1000])
         #ax4.set_ylim([0, 750])
         ax5.set_ylim([-0.1, 1.1])
         ax5.plot(pulse_trigger, "r--")
@@ -480,7 +483,7 @@ def run():
         rows = rows + 1
         has_wf_plot = True
 
-    if (config.get_fitness_func() == "TONE_DISCRIMINATOR"):
+    if (config.get_simulation_mode() == 'FULLY_INTRINSIC' and config.get_fitness_func() == "TONE_DISCRIMINATOR"):
         rows = rows + 1
         has_st_plot = True
 
