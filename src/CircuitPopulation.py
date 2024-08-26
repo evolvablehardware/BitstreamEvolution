@@ -36,7 +36,7 @@ VARIANCE_THRESHOLD <= 0 as set in config.ini, continuing without randomization''
 # NOTE The Seed file is provided as a way to kickstart the evolutionary process
 # without having to perform a time-consuming random search for a seedable circuit.
 # Contact repository authors if you're interested in a new seed file.
-SEED_HARDWARE_FILEPATH = Path("data/varmaxbest.asc")
+SEED_HARDWARE_FILEPATH = Path("data/seed-hardware.asc")
 
 # The basename (filename without path or extensions) of the Circuit
 # hardware, bitstream, and data files.
@@ -1251,6 +1251,20 @@ class CircuitPopulation:
         self.__log_event(
                 2, "Number of differing bits:", count)
         return count
+
+    def get_differing_bits_str(self):
+        """
+        Returns an ASCII string that represents the number of circuits with a 1 at each bit in the bitstream
+        Returns
+        -------
+        str
+            The number of circuits with a 1 at each bit in the bitstream
+        
+        """
+        s = ""
+        for bit in self.__population_bistream_sum:
+            s += chr(int(bit)+32)
+        return s 
 
     def __arr_eq(self, ar1, ar2):
         """
