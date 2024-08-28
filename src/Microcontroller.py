@@ -315,10 +315,8 @@ class Microcontroller:
 
     def measure_signal_td(self, circuit):
         """
-        Measures the signal 
-
-        .. todo::
-            Not really sure what this does. Is this the one that gets the waveform?
+        Measures (1) the FPGA waveform directly from FPGA output pin and (2) the "state"/frequency waveform
+        directly from the signal-generating Nano. Writes 1000 sample points' data to a file.
         
         .. todo::
             Preexisting todo: This whole section can probably be optimized.
@@ -338,14 +336,15 @@ class Microcontroller:
         self.__serial.reset_input_buffer()
         self.__serial.reset_output_buffer()
         self.__log_event(1, "Reading microcontroller.")
-        # The MCU is expecting a string '5' to initiate the ADC capture from the FPGA (waveform as opposed to pulses)
+        # The MCU is expecting a string '5' to initiate the ADC capture from the FPGA (waveform & state as opposed to pulses)
         self.__serial.write(b'5')
         line = self.__serial.read()
 
         start = time()
 
-        # The MCU returns a START line followed by many lines of data (500 currently) followed by a FINISHED line
+        # The MCU returns a START line followed by many lines of data (1000 currently) followed by a FINISHED line
         while b"START\n" not in line:
+            # Avoid spamming serial link. Experiment works without this.
             # self.__serial.write(b'5')
             line = self.__serial.read_until()
             if (time() - start) >= self.__config.get_mcu_read_timeout():
@@ -354,7 +353,7 @@ class Microcontroller:
                 break
 
         # TODO  This whole section can probably be optimized
-        # Reads in 500 samples from MCU, with each being 2 ms apart
+        # Reads in 1000 samples from MCU, with each being 2.5 ms apart
         # Then, dumps into a file
         while (b"FINISHED\n" not in line):
             line = self.__serial.read_until()

@@ -573,6 +573,8 @@ class CircuitPopulation:
                 # Copy this circuit to the best file
                 copyfile(self.__circuits[0].get_hardware_file_path(), self.__config.get_best_file())
 
+                # For tone discriminator experiments, update the best waveform and best state data
+                # Each file will contain all sampled data points from the new best circuit
                 if (self.__config.get_fitness_func() == "TONE_DISCRIMINATOR"):
                     with open("workspace/bestwaveformlivedata.log", "w+") as waveLive:
                         waveLive.write("NEW BEST BELOW: " + str(self.__circuits[0]) + " in gen " + str(self.get_current_epoch()) + "\n")
@@ -586,7 +588,7 @@ class CircuitPopulation:
                         for points in self.__circuits[0].get_state_td():
                             stateLive.write(str(i) + ", " + str(points) + "\n")
                             i += 1
-                    self.__log_event(2, "New best found")
+                self.__log_event(2, "New best found")
 
             self.__logger.log_generation(self, epoch_time)
             # The circuits that are protected from randomization
@@ -668,6 +670,7 @@ class CircuitPopulation:
                     with open("workspace/heatmaplivedata.log", "a") as live_file2:
                         best = self.__circuits[0]
                         if (self.__config.get_fitness_func() == "TONE_DISCRIMINATOR"):
+                            # Need a slightly different function for tone discriminator waveform
                             data  = best.get_waveform_td()
                         else:
                             data = best.get_waveform()
@@ -723,6 +726,7 @@ class CircuitPopulation:
             with open("workspace/heatmaplivedata.log", "a") as live_file:
                 best = self.__circuits[0]
                 if (self.__config.get_fitness_func() == "TONE_DISCRIMINATOR"):
+                    # Need a slightly different function for tone discriminator waveform
                     live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(best.get_waveform_td())))
                 else:
                     live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(best.get_waveform())))
