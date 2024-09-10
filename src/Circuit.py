@@ -484,7 +484,7 @@ class Circuit:
 
     def evaluate_tonedisc(self, record_data = False):
         """
-        Upload and run this Circuit on the FPGA and analyze its
+        Upload and run this tone discriminator Circuit on the FPGA and analyze its
         performance.
 
         Parameters
@@ -503,6 +503,8 @@ class Circuit:
         start = time()
 
         self.__run()
+
+        # Ask Nano microcontroller to measure the FPGA signal (waveform) and frequency information (state)
         self.__microcontroller.measure_signal_td(self)
 
         elapsed = time() - start
@@ -511,6 +513,11 @@ class Circuit:
             elapsed
         )
 
+        # Save off the following:
+        # (1) the waveform data (i.e., the actual ADC readings) read by Nano from FPGA
+        # (2) the state data (i.e., whether the Nano was generating a LOW (State = 0) or HIGH (State = 1) frequency)
+        # (3) the resulting fitness of the circuit based on the waveform and state data
+        
         waveform = self.__read_variance_data_td()[0]
         state = self.__read_variance_data_td()[1]
         fitness = self.__measure_tonedisc_fitness(waveform, state)
@@ -678,29 +685,44 @@ class Circuit:
 
     def __read_variance_data_td(self):
         """
-        Reads variance data from the Circuit data file, which contains readings from the Microcontroller
+        Reads tone discriminator data from the Circuit data file, 
+        which contains readings from the Microcontroller. Data includes waveform (ADC) AND 
+        state (input frequency) information.
+
+        .. todo::
+            Check the condition of the for loop. Why the -1? 
 
         Returns
         -------
-        list[int]
+        list[list[int]]
             waveform
+            state
         """
         data_file = open(self.__data_filepath, "rb")
         data = data_file.readlines()
-        total_samples = 500
+
+        # We take 1000 samples during each circuit's evaluation period
+        total_samples = 1000
+
+        # Create 2 empty arrays which will contain the waveform and state information.
         waveform = []
         state = []
+
+        # Append each data point to the appropriate array
         for i in range(total_samples-1):
             try:
+                # If the reading of the data suceeds, split into the waveform and state readings
                 dataPoint = data[i].decode("utf-8")
                 
                 x = int(re.split(" ", dataPoint)[1])
                 y = int(re.split(" ", dataPoint)[2])
 
+                # Add readings to arrays
                 waveform.append(x)
                 state.append(y)
             except:
-                self.__log_error(1, "RIP FAILED TO READ {} AT LINE {} -> ZEROIZING LINE".format(
+                # If the reading of the data fails, just record the data as 0s
+                self.__log_error(1, "TONE_DISC FAILED TO READ {} AT LINE {} -> ZEROIZING LINE".format(
                     self,
                     i
                 ))
@@ -709,6 +731,8 @@ class Circuit:
 
         self.__log_event(5, "Waveform: ", waveform)
         self.__log_event(5, "State: ", state) 
+
+        # Return the populated arrays
         return [waveform, state]
 
     def get_waveform(self):
@@ -728,7 +752,7 @@ class Circuit:
 
     def get_waveform_td(self):
         """
-        Returns the stored waveform from the most-recent run, as an array of strings.
+        Returns the stored waveform from the most-recent tone discriminator run, as an array of strings.
 
         Returns
         -------
@@ -737,13 +761,14 @@ class Circuit:
         """
 
         wf = []
+        # Since __read_variance_data_td() returns 2 arrays (waveform & state), we want the first array (waveform)
         for pt in self.__read_variance_data_td()[0]:
             wf.append(str(pt))
         return wf
 
     def get_state_td(self):
         """
-        Returns the stored waveform from the most-recent run, as an array of strings.
+        Returns the stored state from the most-recent tone discriminator run, as an array of strings.
 
         Returns
         -------
@@ -752,6 +777,7 @@ class Circuit:
         """
 
         wf = []
+        # Since __read_variance_data_td() returns 2 arrays (waveform & state), we want the second array (state)
         for pt in self.__read_variance_data_td()[1]:
             wf.append(str(pt))
         return wf
@@ -821,68 +847,113 @@ class Circuit:
     
     def __measure_tonedisc_fitness(self, waveform, state):
         """
-        Measure the fitness of this circuit using the variance-maximization fitness
-        function
+        Measure the fitness of this circuit using the tone discriminator fitness
+        function. 
         
         Parameters
         ----------
         waveform : list[int]
             Waveform of the run
+        state : list[int]
+            State of the run
 
         Returns
         -------
         float
-            The fitness. (Variance Maximization Fitness)
+            The fitness. (Tone Discriminator Fitness)
         """
 
-        difference_sum = 0
+        # Note: operating voltage of the Arduino Nano is 5 V, while that of the FPGA is 3.3 V
+        # According to the ice40 datasheet, 3.6 V is the absolute maximum output voltage of FPGA
+        # Thus, each ADC reading can range from 0 (0 V) to 737 (3.6 V = 5 V * (737 / 1024))
+        
+        # There are 2 acceptable cases to produce a perfect fitness of 1:
+            # (1): The circuit outputs 0 V for low frequencies (State = 0) and 3.6 V for high frequencies (State = 1)
+            # (2): The circuit outputs 0 V for high frequencies (State = 1) and 3.6 V for low frequencies (State = 0)
+
+        # waveform_diffs holds two values that correspond to the 2 cases outlined above
+            # (1): The first value holds the sum of absolute differences between the FPGA's waveform samples and an ideal, fitness = 1 waveform satisfying (1) above
+            # (2): The second value holds the sum of absolute differences between the FPGA's waveform samples and an ideal, fitness = 1 waveform satisfying (2) above
+        # waveform_diffs is ONLY used to check if the circuit is a perfect one, so this function can be rewritten to exclude it
+
+        # waveform_sums holds two values that correspond to:
+            # (1): The sum of the ADC waveform readings for when State = 0
+            # (2): The sum of the ADC waveform readings for when State = 1
+        # These sums are crucial to compute the fitness
+        # The sums are used to compute the AVERAGE FPGA voltage for when State = 0 and the AVERAGE FPGA voltage for when State = 1
+        # The higher the absolute difference between these averages, the better the circuit has done to "discriminate" the frequencies
+
+        waveform_diffs = [0, 0]
         waveform_sums = [0, 0]
-        waveform_sum = 0
-        total_samples = 500
+
+        # 1000 samples are taken per circuit
+        total_samples = 1000
+
+        # Counter variables track how many samples were captured when State = 0 and State = 1
+        # Ideally, these should be 500 and 500, but the Nano is not perfect.
+        # They should always add up to 1000 and should be very close to 500.
         stateZeroCount = 0
         stateOneCount = 0
+
         # Reset high/low vals to min/max respectively
         self.__low_val = 1024
         self.__high_val = 0
         for i in range(len(waveform)):
             waveformPoint = waveform[i]
-            waveform_sum += waveformPoint
 
+            # Perform bounds checking for valid ADC readings
             if waveformPoint < self.__low_val:
                 self.__low_val = waveformPoint
             if waveformPoint > self.__high_val:
                 self.__high_val = waveformPoint
 
+            # If we have a valid reading, check if the State was 0 (low frequency) or 1 (high frequency)
             if waveformPoint != None and waveformPoint < 1000:
+                # Update the correct arrays based on the state
                 if state[i] == 0:
                     stateZeroCount += 1
+                    waveform_diffs[0] += waveformPoint
+                    waveform_diffs[1] += (737 - waveformPoint)
                     waveform_sums[0] += waveformPoint
                 else:
                     stateOneCount += 1
+                    waveform_diffs[0] += (737 - waveformPoint)
+                    waveform_diffs[1] += waveformPoint
                     waveform_sums[1] += waveformPoint
-
+        
+        # Write waveform data to file
         with open("workspace/waveformlivedata.log", "w+") as waveLive:
             i = 1
             for points in waveform:
                 waveLive.write(str(i) + ", " + str(points) + "\n")
                 i += 1
 
+        # Write state data to file
         with open("workspace/statelivedata.log", "w+") as stateLive:
             i = 1
             for points in state:
                 stateLive.write(str(i) + ", " + str(points) + "\n")
                 i += 1
 
-        if waveform_sum == 0:
+        # Edge case checks for fitness
+        if sum(waveform) == 0:
             self.__fitness = 0
+        elif waveform_diffs[0] == 0 or waveform_diffs[1] == 0:
+            self.__fitness = 1
+
+        # Most common case below: fitness is proportional to the absolute different in mean voltage between States 0 and 1
+        # A perfect fitness of 1 means the difference was a perfect 3.6 V, meaning perfect discrimination.
         else:
             stateZeroAve = (waveform_sums[0] / stateZeroCount)
             stateOneAve = (waveform_sums[1] / stateOneCount)
-            self.__fitness = 0.00001 * abs(stateZeroAve - stateOneAve)
+            self.__fitness = (abs(stateZeroAve - stateOneAve) / 737.0)
             self.__log_event(1,
             "State 0 Average = ",
-            stateZeroAve, " --- State 0 Count = ", stateZeroCount, " ----- State 1 Average = ", stateOneAve)
+            stateZeroAve, " --- State 0 Count = ", stateZeroCount,
+              " ----- State 1 Average = ", stateOneAve,
+              " State 1 Count = ", stateOneCount)
         
+        # Compute mean voltage
         self.__mean_voltage = sum(waveform) / len(waveform) #used by combined fitness func
 
         return self.__fitness
@@ -1260,7 +1331,7 @@ class Circuit:
             List of all modifyable bits in bitstream.
         """
         return self.get_file_intrinsic_modifiable_bitstream(self.__hardware_file)
-    
+
     def get_intrinsic_modifiable_bitstream_array(self):
         """
         Returns an array of ints (0 or 1)
