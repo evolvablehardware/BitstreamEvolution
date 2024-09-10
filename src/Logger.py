@@ -139,7 +139,8 @@ class Logger:
         if not exists("workspace/template"):
             mkdir("workspace/template")
 
-        rmtree("workspace/plots")
+        if exists("workspace/plots"):
+            rmtree("workspace/plots")
         if not exists("workspace/plots"):
             mkdir("workspace/plots")
         # Determine if we need to the to initialize the analysis and

@@ -116,6 +116,9 @@ class Circuit:
         # NOTE Using log files instead of a data buffer in the event of premature termination
         self.__data_filepath = data_dir.joinpath(filename + ".log")
 
+        # Create the data file if it doesn't exist
+        open(self.__data_filepath, "w").close()
+
         # SECTION Intialize the hardware file
         # If template is falsy, won't copy the file
         if template:

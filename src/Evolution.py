@@ -31,6 +31,9 @@ class Evolution:
 
             print('Execution of evolve.py Finished.')
             return
+    
+        if not os.path.exists("./workspace"):
+            os.mkdir("./workspace")
 
         ## Creating the config that will be used.
         config_builder = ConfigBuilder(primary_config_path, override_base_config=base_config_path)
