@@ -57,24 +57,43 @@ class FileBasedCircuit(Circuit):
             return self.__rand.integers(48, 50)
         self.__run_at_each_modifiable(randomize_bit)
 
-    def __compile(self):
+    def crossover(self, parent, crossover_point: int):
         """
-        Compile circuit ASC file to a BIN file for hardware upload.
+        Copy part of the hardware file from parent into this circuit's hardware file.
+        Additionally, need to copy the parent's info line
+
+        Parameters
+        ----------
+        parent : Circuit
+            The circuit file this circuit is being crossed with
+        crossover_point : int
+            The index in the editable bitstream this crossover is occouring at
         """
-        #self.__log_event(2, "Compiling", self, "with icepack...")
+        parent_hw_file = parent.get_hardware_file()
+        # Need to keep track separately since we can have different-length comments
+        parent_tile = parent_hw_file.find(b".logic_tile")
+        my_tile = self.__hardware_file.find(b".logic_tile")
+        while my_tile > 0:
+            my_pos = my_tile + len(".logic_tile")
+            parent_pos = parent_tile + len(".logic_tile")
+            if self.__tile_is_included(self.__hardware_file, my_pos):
+                line_start = parent_hw_file.find(b"\n", parent_tile) + 1
+                line_end = parent_hw_file.find(b"\n", line_start + 1)
+                line_size = line_end - line_start + 1
 
-        # Ensure the file backing the mmap is up to date with the latest
-        # changes to the mmap.
-        self.__hardware_file.flush()
+                my_pos = my_tile + line_size * (crossover_point - 1)
+                parent_pos = parent_tile + line_size * (crossover_point - 1)
 
-        compile_command = [
-            COMPILE_CMD,
-            self.__hardware_filepath,
-            self.__bitstream_filepath
-        ]
-        run(compile_command)
+                data = parent_hw_file[parent_pos:parent_pos + line_size]
+                self.update_hardware_file(my_pos, line_size, data)
 
-        #self.__log_event(2, "Finished compiling", self)
+            parent_tile = parent_hw_file.find(b".logic_tile", parent_tile + 1)
+            my_tile = self.__hardware_file.find(b".logic_tile", my_tile + 1)
+        
+        # Need to set our source population to our parent's
+        src_pop = parent.get_file_attribute("src_population")
+        if src_pop != None:
+            self.set_file_attribute("src_population", src_pop)
 
     def __run_at_each_modifiable(self, lambda_func, hardware_file = None, accessible_columns = None,
         routing_type=None):
@@ -152,3 +171,22 @@ class FileBasedCircuit(Circuit):
             # Find the next logic tile, and start again
             # Will return -1 if .logic_tile isn't found, and the while loop will exit
             tile = hardware_file.find(b".logic_tile", tile + 1)
+
+    def __compile(self):
+        """
+        Compile circuit ASC file to a BIN file for hardware upload.
+        """
+        #self.__log_event(2, "Compiling", self, "with icepack...")
+
+        # Ensure the file backing the mmap is up to date with the latest
+        # changes to the mmap.
+        self.__hardware_file.flush()
+
+        compile_command = [
+            COMPILE_CMD,
+            self.__hardware_filepath,
+            self.__bitstream_filepath
+        ]
+        run(compile_command)
+
+        #self.__log_event(2, "Finished compiling", self)
