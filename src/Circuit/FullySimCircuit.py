@@ -47,3 +47,37 @@ class FullySimCircuit(Circuit):
     def upload(self):
         # Doesn't need to do anything, runs locally
         pass
+
+    def _get_measurement(self) -> float:
+        """
+        Evaluate the simulation bitstream (use sine function combinations, with variance formula)
+        """
+        
+        # Need to sum up the waveforms of every 1 that appears in our bitstream
+        sine_funcs = []
+        for pos in range(len(self.__simulation_bitstream)):
+            if self.__simulation_bitstream[pos] == 1:
+                # Need to calculate sine function for this position
+                sine_funcs.append(self.__src_sine_funcs[pos])
+
+        # Force them to have at least 10 sine functions turned on
+        if len(sine_funcs) <= 10:
+            return 0
+
+        # Ok now we need to generate our waveform
+        num_samples = 500
+        waveform = []
+        for i in range(num_samples):
+            sum = 0
+            for func in sine_funcs:
+                sum = sum + func(i)
+            # Taking the average keeps it within the drawable range
+            waveform.append(sum / len(sine_funcs))
+        
+        fitness = Circuit._calculate_variance_fitness(waveform)
+        return fitness
+    
+    def calculate_fitness(self) -> float:
+        # Calculate based on stored data
+        # For sim mode, just take an average
+        return sum(self._data) / len(self._data)
