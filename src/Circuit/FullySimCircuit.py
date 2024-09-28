@@ -11,7 +11,6 @@ class FullySimCircuit(Circuit):
 
         self.__src_sine_funcs = sine_funcs
         self.__simulation_bitstream = [0] * 100
-        pass
 
     def mutate(self):
         """
