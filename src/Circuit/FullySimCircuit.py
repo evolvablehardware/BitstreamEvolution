@@ -18,7 +18,7 @@ class FullySimCircuit(Circuit):
         Mutate the simulation mode circuit
         """
         for i in range(0, len(self.__simulation_bitstream)):
-            if self.__config.get_mutation_probability() >= self.__rand.uniform(0,1):
+            if self._config.get_mutation_probability() >= self._rand.uniform(0,1):
                 # Mutate this bit
                 self.__simulation_bitstream[i] = 1 - self.__simulation_bitstream[i]
 
@@ -27,7 +27,7 @@ class FullySimCircuit(Circuit):
         Fully randomize the simulation mode circuit
         """
         for i in range(0, len(self.__simulation_bitstream)):
-            self.__simulation_bitstream[i] = self.__rand.integers(0, 2)
+            self.__simulation_bitstream[i] = self._rand.integers(0, 2)
 
     def crossover(self, parent, crossover_point: int):
         """

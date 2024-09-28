@@ -15,32 +15,34 @@ class FileBasedCircuit(Circuit):
     Provides useful methods for working with hardware files
     """
 
-    def __init__(self, index: int, filename: str, config: Config, template: Path):
+    def __init__(self, index: int, filename: str, config: Config, template: Path, rand):
         Circuit.__init__(index, filename, config)
+
+        self._rand = rand
 
         asc_dir = config.get_asc_directory()
         bin_dir = config.get_bin_directory()
         data_dir = config.get_data_directory()
-        self.__hardware_filepath = asc_dir.joinpath(filename + ".asc")
-        self.__bitstream_filepath = bin_dir.joinpath(filename + ".bin")
+        self._hardware_filepath = asc_dir.joinpath(filename + ".asc")
+        self._bitstream_filepath = bin_dir.joinpath(filename + ".bin")
 
         # NOTE Using log files instead of a data buffer in the event of premature termination
-        self.__data_filepath = data_dir.joinpath(filename + ".log")
+        self._data_filepath = data_dir.joinpath(filename + ".log")
         # Create the data file if it doesn't exist
-        open(self.__data_filepath, "w").close()
+        open(self._data_filepath, "w").close()
 
         if template:
-            copyfile(template, self.__hardware_filepath)
+            copyfile(template, self._hardware_filepath)
 
         # Since the hardware file is written to and read from a lot, we
         # mmap it to improve preformance.
-        hardware_file = open(self.__hardware_filepath, "r+")
-        self.__hardware_file = mmap(hardware_file.fileno(), 0)
+        hardware_file = open(self._hardware_filepath, "r+")
+        self._hardware_file = mmap(hardware_file.fileno(), 0)
         hardware_file.close()
 
     def mutate(self):
         def mutate_bit(bit, row, col, *rest):
-            if self.__config.get_mutation_probability() >= self.__rand.uniform(0,1):
+            if self._config.get_mutation_probability() >= self._rand.uniform(0,1):
                 # Set this bit to either a 0 or 1 randomly
                 # Keep in mind that these are BYTES that we are modifying, not characters
                 # Therefore, we have to set it to either ASCII 0 (48) or ASCII 1 (49), not actual 0 or 1, which represent different characters
@@ -50,12 +52,12 @@ class FileBasedCircuit(Circuit):
                 # Note: If prev != 48 or 49, then we changed the wrong value because it was not a 0 or 1 previously
                 #self.__log_event(4, "Mutating:", self, "@(", row, ",", col, ") previous was", bit)
                 return 97 - bit
-        self.__run_at_each_modifiable(mutate_bit)
+        self._run_at_each_modifiable(mutate_bit)
 
     def randomize_bitstream(self):
         def randomize_bit(*rest):
-            return self.__rand.integers(48, 50)
-        self.__run_at_each_modifiable(randomize_bit)
+            return self._rand.integers(48, 50)
+        self._run_at_each_modifiable(randomize_bit)
 
     def crossover(self, parent, crossover_point: int):
         """
@@ -72,11 +74,11 @@ class FileBasedCircuit(Circuit):
         parent_hw_file = parent.get_hardware_file()
         # Need to keep track separately since we can have different-length comments
         parent_tile = parent_hw_file.find(b".logic_tile")
-        my_tile = self.__hardware_file.find(b".logic_tile")
+        my_tile = self._hardware_file.find(b".logic_tile")
         while my_tile > 0:
             my_pos = my_tile + len(".logic_tile")
             parent_pos = parent_tile + len(".logic_tile")
-            if self.__tile_is_included(self.__hardware_file, my_pos):
+            if self.__tile_is_included(self._hardware_file, my_pos):
                 line_start = parent_hw_file.find(b"\n", parent_tile) + 1
                 line_end = parent_hw_file.find(b"\n", line_start + 1)
                 line_size = line_end - line_start + 1
@@ -95,7 +97,7 @@ class FileBasedCircuit(Circuit):
         if src_pop != None:
             self.set_file_attribute("src_population", src_pop)
 
-    def __run_at_each_modifiable(self, lambda_func, hardware_file = None, accessible_columns = None,
+    def _run_at_each_modifiable(self, lambda_func, hardware_file = None, accessible_columns = None,
         routing_type=None):
         """
         Runs the lambda_func at every modifiable position
@@ -122,13 +124,13 @@ class FileBasedCircuit(Circuit):
         """
 
         if hardware_file is None:
-            hardware_file = self.__hardware_file
+            hardware_file = self._hardware_file
 
         if accessible_columns is None:
-            accessible_columns = self.__config.get_accessed_columns()
+            accessible_columns = self._config.get_accessed_columns()
 
         if routing_type is None:
-            routing_type = self.__config.get_routing_type()
+            routing_type = self._config.get_routing_type()
 
         # Set tile to the first location of the substring ".logic_tile"
         # The b prefix makes the string an instance of the "bytes" type
@@ -172,7 +174,7 @@ class FileBasedCircuit(Circuit):
             # Will return -1 if .logic_tile isn't found, and the while loop will exit
             tile = hardware_file.find(b".logic_tile", tile + 1)
 
-    def __compile(self):
+    def _compile(self):
         """
         Compile circuit ASC file to a BIN file for hardware upload.
         """
@@ -180,13 +182,64 @@ class FileBasedCircuit(Circuit):
 
         # Ensure the file backing the mmap is up to date with the latest
         # changes to the mmap.
-        self.__hardware_file.flush()
+        self._hardware_file.flush()
 
         compile_command = [
             COMPILE_CMD,
-            self.__hardware_filepath,
-            self.__bitstream_filepath
+            self._hardware_filepath,
+            self._bitstream_filepath
         ]
         run(compile_command)
 
         #self.__log_event(2, "Finished compiling", self)
+
+    def __tile_is_included(self, hardware_file, pos):
+        """
+        Determines whether a given tile is available for modificiation.
+        NOTE: Tile = the .logic_tile in the asc file.
+
+        .. todo::
+            Preexisting todo: Replace magic values with a more generalized solution. 
+            These magic values are indicative of the underlying hardware (ice40kh1k)
+
+        Parameters
+        ----------
+        hardware_file : mmap
+            Memory Mapped hardware file
+        pos : int
+            Index of the first byte in the .asc file for the hardware
+
+        Returns
+        -------
+        bool
+            True if the tile at that position is valid (The Tiles we can modigy)
+        """
+        # Replace these magic values with a more generalized solution
+        # Magic values are indicative of the underlying hardware (ice40hx1k)
+        # A different model will require different magic values (i.e. ice40hx8k)
+        VALID_TILE_X = range(4, 10)
+        VALID_TILE_Y = range(1, 17)
+
+        # NOTE x and y are stored as ints to aid the loops that search and identify
+        # tiles while scraping the asc files
+        # This is in the actual asc file; this is why we can simply pull from "pos"
+        # i.e. you'll see the header ".logic_file 1 1" - x=1, y=1
+        
+        # This is where we had a fundamental issue before: The value in the hardware at this position is going to be an ASCII char value, not the actual
+        # number. Here, we parse the byte as an integer, then to a char, then back to an integer
+        
+        # However, we have a great problem now: what about multi-digit numbers?
+        # Find the space that separates the x and y, and find the end of the line
+        # Then, grab the bytes for x, grab the bytes for y, convert to strings, and parse those strings
+        space_pos = hardware_file.find(b" ", pos + 1)
+        eol_pos = hardware_file.find(b"\n", pos)
+        x_bytes = hardware_file[pos:space_pos]
+        y_bytes = hardware_file[space_pos:eol_pos]
+        x_str = x_bytes.decode("utf-8").strip()
+        y_str = y_bytes.decode("utf-8").strip()
+        x = int(x_str)
+        y = int(y_str)
+        is_x_valid = x in VALID_TILE_X
+        is_y_valid = y in VALID_TILE_Y
+
+        return is_x_valid and is_y_valid

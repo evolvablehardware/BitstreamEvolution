@@ -27,11 +27,11 @@ class Circuit(ABC):
         return self.__filename
 
     def __init__(self, index: int, filename: str, config: Config):
-        self.__filename = filename
-        self.__config = config
-        self.__index = index
+        self._filename = filename
+        self._config = config
+        self._index = index
         
-        self.__data = []
+        self._data = []
 
     @abstractmethod
     def upload(self):
@@ -40,15 +40,14 @@ class Circuit(ABC):
         """
         pass
 
-    @abstractmethod
     def collect_data_once(self):
         """
         Collects one round of measurement data. Can be performed multiple times before each calculate_fitness call
         """
-        self.__data.append(self.__get_measurement())
+        self._data.append(self._get_measurement())
 
     @abstractmethod
-    def __get_measurement(self) -> float:
+    def _get_measurement(self) -> float:
         """
         This is for child classes to override
         Collects and returns the value of one round of data
@@ -66,7 +65,7 @@ class Circuit(ABC):
         """
         Clears the stored measurement data
         """
-        self.__data.clear()
+        self._data.clear()
 
     @abstractmethod
     def mutate(self):

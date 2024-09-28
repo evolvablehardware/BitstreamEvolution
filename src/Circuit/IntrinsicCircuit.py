@@ -11,36 +11,35 @@ class IntrinsicCircuit(FileBasedCircuit):
     """
     Still an abstract class. Represents circuits that get uploaded to the physical FPGA
     """
-    def __init__(self, index: int, filename: str, config: Config, template: Path):
-        FileBasedCircuit.__init__(index, filename, config, template)
+    def __init__(self, index: int, filename: str, config: Config, template: Path, rand):
+        FileBasedCircuit.__init__(index, filename, config, template, rand)
 
     def upload(self):
-        FileBasedCircuit.__compile()
         self.__run()
 
     def __run(self):
         """
         Compiles this Circuit, uploads it, and runs it on the FPGA
         """
-        self.__compile()
+        FileBasedCircuit._compile()
         
         cmd_str = [
             RUN_CMD,
-            self.__bitstream_filepath,
+            self._bitstream_filepath,
             "-d",
-            self.__microcontroller.get_fpga()
+            self._microcontroller.get_fpga()
         ]
         print(cmd_str)
         run(cmd_str)
         sleep(1)
 
         # if switching fpgas every sample, need to upload to the second fpga also
-        if self.__config.get_transfer_sample():
+        if self._config.get_transfer_sample():
             cmd_str = [
                 RUN_CMD,
-                self.__bitstream_filepath,
+                self._bitstream_filepath,
                 "-d",
-                self.__config.get_fpga2()
+                self._config.get_fpga2()
             ]
             print(cmd_str)
             run(cmd_str)
