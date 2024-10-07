@@ -14,17 +14,17 @@ What is the core API we want from the Circuit?
 '''
 
 class Circuit(ABC):
-    def __repr__(self):
-        """
-        Returns the string representation of this Circuit, used in
-        functions such as 'print'.
+    # def __repr__(self):
+    #     """
+    #     Returns the string representation of this Circuit, used in
+    #     functions such as 'print'.
 
-        Returns
-        -------
-        str
-            A string representation of the Circuit. (the file name)
-        """
-        return self.__filename
+    #     Returns
+    #     -------
+    #     str
+    #         A string representation of the Circuit. (the file name)
+    #     """
+        # return self._filename
 
     def __init__(self, index: int, filename: str, config: Config):
         self._filename = filename

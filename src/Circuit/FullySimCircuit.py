@@ -1,4 +1,4 @@
-from Circuit import Circuit
+from Circuit.Circuit import Circuit
 import Config
 
 class FullySimCircuit(Circuit):
@@ -6,11 +6,12 @@ class FullySimCircuit(Circuit):
     A concrete class, the fully simulated circuit that stores its own bitstream in memory
     """
 
-    def __init__(self, index: int, filename: str, config: Config, sine_funcs):
-        Circuit.__init__(index, filename, config)
+    def __init__(self, index: int, filename: str, config: Config, sine_funcs, rand):
+        Circuit.__init__(self, index, filename, config)
 
         self.__src_sine_funcs = sine_funcs
         self.__simulation_bitstream = [0] * 100
+        self._rand = rand
 
     def mutate(self):
         """
@@ -80,3 +81,9 @@ class FullySimCircuit(Circuit):
         # Calculate based on stored data
         # For sim mode, just take an average
         return sum(self._data) / len(self._data)
+
+    def get_bitstream(self) -> list[int]:
+        return self.__simulation_bitstream
+    
+    def inject_bitstream(self, bitstream: list[int]):
+        self.__simulation_bitstream = bitstream
