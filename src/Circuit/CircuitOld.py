@@ -463,7 +463,7 @@ class CircuitLegacy:
         start = time()
 
         self.__run()
-        self.__microcontroller.measure_signal(self)
+        self.__microcontroller.measure_signal(self.get_data_filepath())
 
         elapsed = time() - start
         self.__log_event(1,

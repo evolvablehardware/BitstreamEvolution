@@ -252,12 +252,9 @@ class Microcontroller:
 
         data_file.close()
 
-    def measure_signal(self, circuit):
+    def measure_signal(self, data_filepath):
         """
-        Measures the signal 
-
-        .. todo::
-            Not really sure what this does. Is this the one that gets the waveform?
+        Measures the signal, writing the waveform data to the provided data file
         
         .. todo::
             Preexisting todo: This whole section can probably be optimized.
@@ -267,12 +264,10 @@ class Microcontroller:
         circuit : Circuit
             The circuit we are measuring the signal of
         """
-        # TODO This whole section can probably be optimized
-        
         buf = []
 
         # Begin monitoring on load
-        data_file = open(circuit.get_data_filepath(), "wb")
+        data_file = open(data_filepath, "wb")
 
         self.__serial.reset_input_buffer()
         self.__serial.reset_output_buffer()
