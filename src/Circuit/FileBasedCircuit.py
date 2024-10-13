@@ -2,7 +2,8 @@ from mmap import mmap
 from pathlib import Path
 from shutil import copyfile
 from subprocess import run
-from Circuit import Circuit
+import os
+from Circuit.Circuit import Circuit
 import Config
 
 COMPILE_CMD = "icepack"
@@ -16,7 +17,7 @@ class FileBasedCircuit(Circuit):
     """
 
     def __init__(self, index: int, filename: str, config: Config, template: Path, rand):
-        Circuit.__init__(index, filename, config)
+        Circuit.__init__(self, index, filename, config)
 
         self._rand = rand
 
@@ -26,10 +27,15 @@ class FileBasedCircuit(Circuit):
         self._hardware_filepath = asc_dir.joinpath(filename + ".asc")
         self._bitstream_filepath = bin_dir.joinpath(filename + ".bin")
 
+        # Create directories if they don't exist
+        os.makedirs(asc_dir, exist_ok=True)
+        os.makedirs(bin_dir, exist_ok=True)
+        os.makedirs(data_dir, exist_ok=True)
+
         # NOTE Using log files instead of a data buffer in the event of premature termination
         self._data_filepath = data_dir.joinpath(filename + ".log")
         # Create the data file if it doesn't exist
-        open(self._data_filepath, "w").close()
+        open(self._data_filepath, "w+").close()
 
         if template:
             copyfile(template, self._hardware_filepath)

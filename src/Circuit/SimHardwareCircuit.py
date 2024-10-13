@@ -1,4 +1,5 @@
-from Circuit import FileBasedCircuit
+from pathlib import Path
+from Circuit.FileBasedCircuit import FileBasedCircuit
 import Config
 
 class SimHardwareCircuit(FileBasedCircuit):
@@ -6,8 +7,8 @@ class SimHardwareCircuit(FileBasedCircuit):
     A concrete class, the simulated circuit that bases its fitness off of the hardware file
     """
 
-    def __init__(self, index: int, filename: str, config: Config, sine_funcs):
-        FileBasedCircuit.__init__(index, filename, config)
+    def __init__(self, index: int, filename: str, config: Config, template: Path, rand):
+        FileBasedCircuit.__init__(self, index, filename, config, template, rand)
 
     def upload(self):
         # Need to compile, but not actually upload to the FPGA
