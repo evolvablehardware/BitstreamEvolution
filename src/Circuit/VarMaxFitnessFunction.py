@@ -2,13 +2,17 @@ from Circuit.FitnessFunction import FitnessFunction
 
 class VarMaxFitnessFunction(FitnessFunction):
     def __init__(self):
-        FitnessStrategy.__init__(self)
+        FitnessFunction.__init__(self)
 
-    def measure_fitness(self) -> float:
+    def get_measurements(self) -> list[float]:
         self._microcontroller.measure_signal()
         waveform = self.__read_waveform()
         fitness = self.__measure_variance_fitness(waveform)
-        return fitness
+        return [fitness]
+
+    def calculate_fitness(self, data: list[float]) -> float:
+        # Just take an average
+        return sum(data) / len(data)
 
     def __read_waveform(self):
         """

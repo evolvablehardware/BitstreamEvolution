@@ -14,7 +14,7 @@ class SimHardwareCircuit(FileBasedCircuit):
         # Need to compile, but not actually upload to the FPGA
         FileBasedCircuit._compile(self)
 
-    def _get_measurement(self) -> float:
+    def _get_measurement(self) -> list[float]:
         """
         Sum up all the bits in the compiled binary file
         Note: default configuration has 1728 modifiable bits
@@ -35,7 +35,7 @@ class SimHardwareCircuit(FileBasedCircuit):
 
         # self.__update_all_live_data()
 
-        return fitness
+        return [fitness]
     
     def calculate_fitness(self) -> float:
         # Calculate based on stored data

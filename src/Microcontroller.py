@@ -106,7 +106,7 @@ class Microcontroller:
         """
         return self.__fpga
 
-    def simple_measure_pulses(self, circuit: CircuitLegacy, samples: int):
+    def simple_measure_pulses(self, data_filepath, samples: int):
         """
         This measure pulses function will poll the MCU a certain number of times,
         and just put the raw pulse counts recorded into the circuit's data file
@@ -118,7 +118,7 @@ class Microcontroller:
         samples : int
             The number of times to repeat this measurement
         """
-        data_file = open(circuit.get_data_filepath(), "w")
+        data_file = open(data_filepath, "w")
         lines = []
         buf = []
         for i in range(0, samples):

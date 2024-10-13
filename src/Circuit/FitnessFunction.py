@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import Microcontroller
+import Config
 
 class FitnessFunction(ABC):
     """
@@ -12,10 +13,15 @@ class FitnessFunction(ABC):
     def __init__(self):
         pass
 
-    def attach(self, data_filepath, microcontroller: Microcontroller):
+    def attach(self, data_filepath, microcontroller: Microcontroller, config: Config):
         self._data_filepath = data_filepath
         self._microcontroller = microcontroller
+        self._config = config
 
     @abstractmethod
-    def measure_fitness(self) -> float:
+    def get_measurements(self) -> list[float]:
+        pass
+
+    @abstractmethod
+    def calculate_fitness(self, measurements: list[float]) -> float:
         pass

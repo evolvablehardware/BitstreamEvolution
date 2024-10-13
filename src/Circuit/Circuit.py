@@ -32,10 +32,10 @@ class Circuit(ABC):
         """
         Collects one round of measurement data. Can be performed multiple times before each calculate_fitness call
         """
-        self._data.append(self._get_measurement())
+        self._data.extend(self._get_measurement())
 
     @abstractmethod
-    def _get_measurement(self) -> float:
+    def _get_measurement(self) -> list[float]:
         """
         This is for child classes to override
         Collects and returns the value of one round of data

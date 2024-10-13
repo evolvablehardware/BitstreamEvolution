@@ -48,7 +48,7 @@ class FullySimCircuit(Circuit):
         # Doesn't need to do anything, runs locally
         pass
 
-    def _get_measurement(self) -> float:
+    def _get_measurement(self) -> list[float]:
         """
         Evaluate the simulation bitstream (use sine function combinations, with variance formula)
         """
@@ -75,7 +75,7 @@ class FullySimCircuit(Circuit):
             waveform.append(sum / len(sine_funcs))
         
         fitness = Circuit._calculate_variance_fitness(waveform)
-        return fitness
+        return [fitness]
     
     def calculate_fitness(self) -> float:
         # Calculate based on stored data
