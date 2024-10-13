@@ -16,7 +16,8 @@ class SimHardwareCircuit(FileBasedCircuit):
 
     def _get_measurement(self) -> float:
         """
-        Sum up all the bytes in the compiled binary file
+        Sum up all the bits in the compiled binary file
+        Note: default configuration has 1728 modifiable bits
 
         Returns
         -------
@@ -24,11 +25,11 @@ class SimHardwareCircuit(FileBasedCircuit):
             The fitness of the sim hardware. (sum of all bytes in compiled binary file)
         """
         fitness = 0
-        with open(self._bitstream_filepath, "rb") as f:
-            byte = f.read(1)
-            while byte != b"":
-                fitness = fitness + int.from_bytes(byte, "big")
-                byte = f.read(1)
+        def evaluate_bit(bit, *rest):
+            nonlocal fitness
+            fitness = fitness + (bit - 48)
+
+        self._run_at_each_modifiable(evaluate_bit)
         
         # self.__log_event(3, "Fitness: ", fitness)
 

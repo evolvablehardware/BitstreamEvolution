@@ -77,6 +77,10 @@ class FileBasedCircuit(Circuit):
         crossover_point : int
             The index in the editable bitstream this crossover is occouring at
         """
+        # If crossover point is not an int, then we get a weird error about defining __index__
+        # further down; fix manually to avoid confusion
+        crossover_point = int(crossover_point)
+
         parent_hw_file = parent.get_hardware_file()
         # Need to keep track separately since we can have different-length comments
         parent_tile = parent_hw_file.find(b".logic_tile")
@@ -96,7 +100,7 @@ class FileBasedCircuit(Circuit):
                 self.update_hardware_file(my_pos, line_size, data)
 
             parent_tile = parent_hw_file.find(b".logic_tile", parent_tile + 1)
-            my_tile = self.__hardware_file.find(b".logic_tile", my_tile + 1)
+            my_tile = self._hardware_file.find(b".logic_tile", my_tile + 1)
         
         # Need to set our source population to our parent's
         src_pop = parent.get_file_attribute("src_population")
@@ -249,3 +253,151 @@ class FileBasedCircuit(Circuit):
         is_y_valid = y in VALID_TILE_Y
 
         return is_x_valid and is_y_valid
+
+    def get_hardware_file(self):
+        return self._hardware_file
+
+    def update_hardware_file(self, pos, length, data):
+        """
+        Make changes to the hardware file associated with this circuit, updating it
+        with the value in "data"
+
+        .. todo::
+            Pre-existing: Add error checking here
+        
+        
+        Parameters
+        ----------
+        pos : int
+            The position in the hardware file to write data at
+        length : int
+            The length of the data to write
+        data : ReadableBuffer
+            The data to write into the hardware file
+        """
+        self._hardware_file[pos:pos + length] = data
+
+    @staticmethod
+    def get_file_attribute_st(mmapped_file, attribute):
+        '''
+        Returns the value of the stored attribute from the hardware file.
+        Circuits are capable of storing string name-value pairs in their hardware file, for purposes such as
+        tracking most recently-evaluated fitness of a Circuit
+        Static version of get_file_attribute that requires the memory-mapped file to be provided
+
+        Parameters
+        ----------
+        mmapped_file : mmap
+            The memory-mapped hardware file of the circuit
+        attribute : str
+            Attribute name to lookup
+
+        Returns
+        -------
+        str
+            File attribute value
+        '''
+        index = mmapped_file.find(b".comment FILE_ATTRIBUTES")
+        if index < 0:
+            return '0'
+        else:
+            newline_index = mmapped_file.find(b'\n', index)
+            searchable_area = mmapped_file[index:newline_index]
+            attr_index = searchable_area.find(bytes(attribute + '={', 'utf-8'))
+            if attr_index < 0: # Value doesn't exist yet
+                return '0'
+            attr_index = attr_index + len(attribute + "={")
+            end_index = searchable_area.find(b'}', attr_index)
+            value_bytes = searchable_area[attr_index:end_index]
+            return str(value_bytes, 'utf-8')
+
+    @staticmethod
+    def set_file_attribute_st(hardware_file, attribute, value):
+        '''
+        Sets a Circuit's file attribute to the specified value
+        Circuits are capable of storing string name-value pairs in their hardware file, for purposes such as
+        tracking most recently-evaluated fitness of a Circuit
+        Static version of set_file_attribute that requires the memory-mapped file to be provided
+
+        Parameters
+        ----------
+        hardware_file : mmap
+            The memory-mapped hardware file of the Circuit
+        attribute : str
+            The name of the attribute to modify
+        value : str
+            The value to assign to the attribute
+        '''
+        # Check if the comment exists
+        #hardware_file = open(file_path, "r+")
+        mmapped_file = mmap(hardware_file.fileno(), 0)
+        index = mmapped_file.find(b".comment FILE_ATTRIBUTES")
+        if index < 0:
+            # Create the comment
+            comment_line = ".comment FILE_ATTRIBUTES " + attribute + "={" + value + "}\n"
+            # This requires re-mapping the self._hardware_file
+            #hardware_file = open(file_path, "r+")
+            content = hardware_file.read()
+            hardware_file.seek(0, 0)
+            hardware_file.write(comment_line + content)
+        else:
+            # Check if the attribute exists
+            end_index = mmapped_file.find(b'\n', index)
+            line = str(mmapped_file[index:end_index], 'utf-8')
+            attr_index = line.find(attribute + "={")
+            lines = hardware_file.readlines()
+            line_index = 0 # Index of the line that contains the attribute comment
+            for l in lines:
+                if l.find(".comment FILE_ATTRIBUTES") >= 0:
+                    break
+                line_index = line_index + 1
+
+            if attr_index < 0:
+                # Attribute doesn't exist yet
+                line = line + " " + attribute + "={" + value + "}\n"
+            else:
+                attr_end_index = line.find('}', attr_index) + 2
+                before_attr = line[:attr_index]
+                after_attr = line[attr_end_index:]
+                line = before_attr + attribute + "={" + value + "} " + after_attr + '\n'
+            lines[line_index] = line
+            hardware_file.truncate(0)
+            hardware_file.seek(0)
+            hardware_file.writelines(lines)
+
+    def get_file_attribute(self, attribute):
+        '''
+        Returns the value of the stored attribute for this Circuit
+        Circuits are capable of storing string name-value pairs in their hardware file, for purposes such as
+        tracking most recently-evaluated fitness of a Circuit
+
+        Parameters
+        ----------
+        attrbute : str
+            The name of the attribute of this circuit you want
+
+        Returns
+        -------
+        str
+            The value of the attribute
+        '''
+        return FileBasedCircuit.get_file_attribute_st(self._hardware_file, attribute)
+    
+    def set_file_attribute(self, attribute, value):
+        '''
+        Sets this Circuit's file attribute to the specified value
+        Circuits are capable of storing string name-value pairs in their hardware file, for purposes such as
+        tracking most recently-evaluated fitness of a Circuit
+
+        Parameters
+        ----------
+        attribute : str
+            The name of the attribute to modify
+        value : str
+            The value to assign to the attribute
+        '''
+        hardware_file = open(self._hardware_filepath, "r+")
+        FileBasedCircuit.set_file_attribute_st(hardware_file, attribute, value)
+        # Re-map our hardware file
+        self._hardware_file = mmap(hardware_file.fileno(), 0)
+        hardware_file.close()

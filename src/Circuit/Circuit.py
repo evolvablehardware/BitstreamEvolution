@@ -1,18 +1,6 @@
 from abc import ABC, abstractmethod
 import Config
 
-'''
-TODO: Remove this comment; this is just used as a scratchpad
-
-What is the core API we want from the Circuit?
-* Upload to FPGA
-* Perform one run of collecting data
-* Calculate fitness based on the already-collected data
-* Clearing the collected data
-* Mutating itself
-* Crossover
-'''
-
 class Circuit(ABC):
     # def __repr__(self):
     #     """
