@@ -8,10 +8,23 @@ The delays are used to control for noise on the serial line.
 #define pulseWidthMeasureSelection '3'
 #define pulseCountMeasureSelection '1'
 #define ADCMeasureSelection '2' 
+#define switchConstant '4'
+#define ADCMeasuretdSelection '5'
 
+// A0 is used for ADC readings from the FPGA output pin (variance / tone discriminator)
+int analogPin = A0;
 
-const int analogPin = A0;
-const int interrupt = 2;
+// D3 is used for the "State" readings from the signal-generating Nano in tone discriminator experiments
+// If "State" = 0, the signal generator is outputting a low frequency (e.g. 1 kHz square wave).
+// If "State" = 1, the signal generator is outputting a high frequency (e.g. 10 kHz square wave).
+int digitalPin = 3;
+
+// D2 is an interrupt Nano pin to detect pulses for the pulse count experiments
+int interrupt = 2;
+
+// D4 is used for synchronization between the data-collecting Nano and the signal-generating Nano
+// The data-collecting Nano uses ReadSignal.ino, while the signal-generating Nano uses oscillate.ino
+int synchPin = 4;
 bool led_thingy = false;
 
 int buf[500]; //500 integers at 10 uS intervals = 5 mS
@@ -29,7 +42,10 @@ void setup(){
     //analogReference(EXTERNAL);
     
     pinMode(LED_BUILTIN, OUTPUT);
-    pinMode(interrupt, OUTPUT);
+    pinMode(synchPin, OUTPUT);
+    pinMode(interrupt, INPUT);
+    pinMode(analogPin, INPUT);
+    pinMode(digitalPin, INPUT);
 
     digitalWrite(LED_BUILTIN, LOW);
     Serial.begin(115200);
@@ -72,6 +88,42 @@ void loop(){
         Serial.print("FINISHED\nFINISHED\nFINISHED\n");
         delay(10); //3016/1508 Delay to load the FPGA
       }
+      else if (x == ADCMeasuretdSelection){
+        // Tone discriminator case.
+        Serial.print("START\nSTART\nSTART\n");
+
+        // Activate the synchronization pin, telling the signal-generating Nano to start
+        // transmitting the square wave.
+        digitalWrite(synchPin, HIGH);
+
+        // Indicate this activation by turning off LED.
+        digitalWrite(LED_BUILTIN, LOW);
+
+        // Take 1000 samples over 2.5 seconds.
+        for(int i=0; i<=999; i++){
+            Serial.print(i+1); // Record sample # (1 to 1000)
+            Serial.print(": ");
+            Serial.print(analogRead(analogPin)); // Record ADC reading (0 to 1023)
+            Serial.print(" ");
+            Serial.print(digitalRead(digitalPin)); // Record state reading (0 or 1)
+            Serial.print("\n");
+            // After extensive testing, delaying 1.95 ms instead of 2.5 ms is necessary
+            // to capture 1000 samples in 2.5 seconds. This is likely due to the amount
+            // of time needed to take an analog + digital reading every iteration.
+            delayMicroseconds(1950); 
+        }
+
+        // Deactivate the synchronization pin. The signal generating is done.
+        digitalWrite(synchPin, LOW);
+        
+        // Indicate completion of data collecting by turning on LED.
+        digitalWrite(LED_BUILTIN, HIGH);
+    
+        Serial.print("FINISHED\nFINISHED\nFINISHED\n");
+        delay(1000);
+        x = 0;
+        // delay(10); //3016/1508 Delay to load the FPGA
+      }
       else if (x == pulseCountMeasureSelection){
         //Serial.print("START\nSTART\nSTART\n"); // currently breaks measure_pulses()
         //PULSE COUNT   //using interrupt
@@ -109,6 +161,19 @@ void loop(){
       Serial.print("FINISHED\nFINISHED\nFINISHED\n");
       delay(10); //3016/1508 Delay to load the FPGA
       
+      }
+
+      else if(x == switchConstant)
+      {
+        detachInterrupt(digitalPinToInterrupt(interrupt));
+        if(analogPin == A0) {
+          analogPin = A6;
+          interrupt = 3;
+        } else {
+          analogPin = A0;
+          interrupt = 2;
+        }
+        attachInterrupt(digitalPinToInterrupt(interrupt),pulseCounter, RISING);
       }
     }
 }

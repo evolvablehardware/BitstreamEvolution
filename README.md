@@ -70,6 +70,7 @@ BitstreamEvolution alse requires the following Python libraries:
   * matplotlib
   * numpy
   * sortedcontainers
+  * pytest (optional, used to run tests if desired)
 
 ### Installing the dependencies
 Each of the dependencies above has a corresponding `apt` package of the
@@ -80,13 +81,13 @@ the packages can all be installed at once with the following commands:
 ```bash
 sudo apt update && sudo apt upgrade  # Optional, but recommended 
 sudo apt install build-essential clang bison flex libreadline-dev gawk tcl-dev libffi-dev libftdi-dev mercurial graphviz xdot \ 
-pkg-config python3 python3-pip libboost-all-dev cmake make
+pkg-config python3 python3-pip libboost-all-dev cmake make yosys arachne-pnr
 ```
 The Python libraries can be installed in one command in any Linux
 distribution as follows:
 
 ```bash
-python3 -m pip install pyserial numpy matplotlib sortedcontainers
+python3 -m pip install pyserial numpy matplotlib sortedcontainers pytest
 ```
 ### Configuring the BitstreamEvolution core
 Although BitstreamEvolution doesn't require any building or
@@ -392,8 +393,15 @@ that needs to be modified is the
 ### Configuration
 The project has various configuration options that can be specified in
 `data/config.ini`. The file`data/default_config.ini` contains the
-default options for the configuration and should not be modified. Below
-is a list of the options, their description, and their possible values:
+default options for the configuration and should not be modified. 
+
+The `TOP-LEVEL PARAMETER` `base_config` can be modified to specify a base config file.
+In the event of a missing config parameter, it will be filled in with that from the base config file.
+These can be stacked into a line of configuration files.
+The configuration files will be combined and the resulting file to use for evolution will
+be output. All parameters still must be specified at some point in the final configuration.
+
+Below is a list of the options, their description, and their possible values:
 
 <!-- NOTE Right now this only lists the most important options-->
 
@@ -409,11 +417,12 @@ is a list of the options, their description, and their possible values:
 #### Fitness Function Parameters
 | Parameter | Description | Possible Values | Recommended Values |
 |-----------|-------------|-----------------|--------------------|
-| Fitness function | The fitness function to use | PULSE_COUNT, VARIANCE, COMBINED |  |
+| Fitness function | The fitness function to use | TOLERANT_PULSE_COUNT, SENSITIVE_PULSE_COUNT, VARIANCE, COMBINED |  |
 | Desired frequency | If using the pulse fitness function, the target frequency of the evolved oscillator | (In Hertz) 1 - 1000000 | 1000 |
 | COMBINED_MODE | If using the combined fitness function, how to combine the fitnesses | ADD, MULT | |
 | PULSE_WEIGHT | If using the combined fitness function, what weigthing to use for closeness to the trigger voltage in combined fitness| 0.0 - 1.0 | |
 | VAR_WEIGHT | If using the combined fitness function, what weigthing to use for variance in combined fitness | 0.0 - 1.0 | |
+| NUM_SAMPLES | Number of samples to record in pulse count fitness functions. The minimum number recorded will be used to determine the actual pulse fitness. Higher number of samples will take longer to run, but should result in more stable circuits | 1+ | 1-5 |
 
 #### GA parameters
 | Parameter | Description | Possible Values | Recommended Values |
@@ -439,9 +448,10 @@ is a list of the options, their description, and their possible values:
 #### Initialization Parameters
 | Parameter | Description | Possible Values | Recommended Values |
 |-----------|-------------|-----------------|--------------------|
-| Init mode | The method to generate the initial random circuits | CLONE_SEED, CLONE_SEED_MUTATE, RANDOM, EXISTING_POPULATION | RANDOM |
+| Init mode | The method to generate the initial random circuits | CLONE_SEED, CLONE_SEED_MUTATE, RANDOM, EXISTING_POPULATION | RANDOM, CLONE_SEED_MUTATE |
 | Randomize until | The method used for randomizing the initial population | PULSE, VARIANCE, NO | NO |
 | Randomize threshold | The target fitness for initial random search before evolution begins| 3-8 | 4 |
+| Randomize mode | The method to use when "randomizing" each circuit | MUTATE, RANDOM | Depends on the situation. If a seed individual/population is used, then use MUTATE. Otherwise, use RANDOM |
 
 ##### Initialization Modes
 | Mode | Description |
@@ -474,6 +484,8 @@ is a list of the options, their description, and their possible values:
 | Data Directory | The directory to put the data files (MCU read data) | Any directory | ./workspace/experiment_data |
 | Analysis Directory | The directory to put the analysis files | Any directory | ./workspace/analysis || Best file | The path to put the asc file of the best performing circuit throughout evolution | Any file path | ./workspace/best.asc |
 | Source Populations Directory | The directory consisting of source populations to use in initialization | Any directory | ./workspace/source_populations |
+| Generations Directory | The directory to put generation files into, when populations are saved each generation. The reconstruct command pulls from this directory | Any directory | ./workspace/generations |
+| Use Overall Best | Whether or not to draw the overall best line in the plots | true or false | true |
 
 #### System parameters
 | Parameter | Description | Possible Values |
@@ -533,6 +545,30 @@ The other, more permanent way:
 ```bash
 sudo apt remove brltty
 ```
+
+### Running Test Cases
+Test case files are simple to run using the pytest framework. 
+To run the entire suite:
+```bash
+pytest "test/"
+```
+You can also specify the desired file to run:
+```bash
+pytest "test/test_config_builder.py"
+```
+Alternatively, you can run individual tests within a file like so:'
+```bash
+pytest "test/file.py::function"
+```
+
+## Tools
+### Generation Reconstruction
+The code will automatically save each generation to a generation file in the generations directory (which is specified in the config)
+
+You can later reconstruct generations. This will bring the generation back into your ASC directory. This is done by running `python3 src/tools/reconstruct.py [generation #]`
+
+### Pulse Count Histogram
+You can view a histogram of pulse counts for an entire experiment or particular generations using the pulse count histogram tool. Simply run `python3 src/tools/pulse_histogram.py`, and it will show the results for the last-run experiment (pulling from `workspace/pulselivedata.log`). A negative pulse count indicates the the microcontroller timed out five times in a row, and so no reading was recorded.
 
 ## Contributing
 <!--TODO ALIFE2021 define the desired approach -->

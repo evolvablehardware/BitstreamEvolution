@@ -1,10 +1,27 @@
 # config
 data/config.ini
 data/monitor
+data/seed-hardware.asc
+
+#automatically generated configs script by default
+data/GeneratedConfigs
+data/GeneratedConfigsResults
+data/runGeneratedConfigs.sh
+data/previous_best.asc
+
+src/tools/data/GeneratedConfigs
+src/tools/data/GeneratedConfigsResults
+src/tools/data/runGeneratedConfigs.sh
+src/tools/data
+
+# test outputs
+test/out/*
+!test/out/.gitkeep
 
 # no need to include temp files
 workspace/
 tools/
+!src/tools
 prev_workspaces/
 
 # Byte-compiled / optimized / DLL files
@@ -78,7 +95,10 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/_build/
+# anything in a subfolder of the docs directory, but not in th sphinx subfolder, except in it's build directory
+docs/*/**
+!docs/sphinx/**
+docs/sphinx/build/
 
 # PyBuilder
 target/
@@ -141,3 +161,4 @@ dmypy.json
 LICENSE.txt
 arduino-cli
 arduino-cli_latest_Linux_64bit.tar.gz
+
