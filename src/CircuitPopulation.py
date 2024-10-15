@@ -8,7 +8,7 @@ This class was reviewed, and should be fully documented at a basic level.
 import os
 import numpy as np
 from typing import NamedTuple
-from Circuit import Circuit
+from Circuit.CircuitOld import CircuitLegacy
 from shutil import copyfile
 from sortedcontainers import SortedKeyList
 from math import ceil
@@ -143,7 +143,7 @@ class CircuitPopulation:
         """
         #create circuit object
         self.__log_info(1, "Creating circuit object for fitness sensitivity experiment")
-        ckt = Circuit(
+        ckt = CircuitLegacy(
             1,
             "hardware1",
             self.__config.get_test_circuit(),
@@ -261,7 +261,7 @@ class CircuitPopulation:
                     hw_file = open(path, "r+")
                     mmapped_file = mmap(hw_file.fileno(), 0)
                     hw_file.close()
-                    fitness = float(Circuit.get_file_attribute_st(mmapped_file, "fitness"))
+                    fitness = float(CircuitLegacy.get_file_attribute_st(mmapped_file, "fitness"))
                     if fitness == None:
                         fitness = 0
                     subdir_circuits.add(CircuitPathInfo(path, fitness))
@@ -288,7 +288,7 @@ class CircuitPopulation:
             else:
                 seedArg = template
 
-            ckt = Circuit(
+            ckt = CircuitLegacy(
                 index,
                 file_name,
                 seedArg,

@@ -16,7 +16,7 @@ But, it will use the config values provided in the generation files for the rout
 
 from argparse import ArgumentParser
 import os
-from Circuit import Circuit
+from Circuit.CircuitOld import CircuitLegacy
 from utilities import wipe_folder
 from Config import Config
 from CircuitPopulation import SEED_HARDWARE_FILEPATH
@@ -68,7 +68,7 @@ def run():
     # Now, we can reconstruct each circuit
     for i in range(len(bitstreams)):
         # Some of these can be None since we aren't doing actual evolution with this circuit
-        circuit = Circuit(i + 1, 
+        circuit = CircuitLegacy(i + 1, 
             "hardware" + str(i), 
             SEED_HARDWARE_FILEPATH,
             None,
