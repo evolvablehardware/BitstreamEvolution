@@ -62,7 +62,7 @@ class FullySimCircuit(Circuit):
 
         # Force them to have at least 10 sine functions turned on
         if len(sine_funcs) <= 10:
-            return 0
+            return [0]
 
         # Ok now we need to generate our waveform
         num_samples = 500
