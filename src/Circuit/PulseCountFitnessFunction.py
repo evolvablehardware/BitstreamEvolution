@@ -1,11 +1,12 @@
 from Circuit.FitnessFunction import FitnessFunction
+import math
 
 class PulseCountFitnessFunction(FitnessFunction):
     def __init__(self):
         FitnessFunction.__init__(self)
 
     def get_measurements(self) -> list[float]:
-        self.__microcontroller.simple_measure_pulses(self._data_filepath)
+        self._microcontroller.simple_measure_pulses(self._data_filepath)
         pulses = self.__count_pulses()
         return pulses
 
@@ -22,7 +23,7 @@ class PulseCountFitnessFunction(FitnessFunction):
         return self.__calculate_pulse_fitness(pulse_count)
 
     def __count_pulses(self) -> list[float]:
-        data_file = open(self.__data_filepath, "r")
+        data_file = open(self._data_filepath, "r")
         data = data_file.readlines()
 
         # Extract the integer value from the log file indicating the pulses counted from
@@ -34,7 +35,7 @@ class PulseCountFitnessFunction(FitnessFunction):
         return pulse_counts
 
     def __is_tolerant_pulse_count(self):
-        return self.__config.get_fitness_func() == 'TOLERANT_PULSE_COUNT'
+        return self._config.get_fitness_func() == 'TOLERANT_PULSE_COUNT'
 
     def __calculate_pulse_fitness(self, pulses: int) -> float:
         desired_freq = self._config.get_desired_frequency()
@@ -55,7 +56,7 @@ class PulseCountFitnessFunction(FitnessFunction):
             else:
                 fitness = 1.0 / abs(desired_freq - pulses)
 
-        if pulses > 0:
+        # if pulses > 0:
             # Give fitness bonus for getting above 0 pulses
-            fitness = fitness + 1
+            # fitness = fitness + 1
         return fitness
