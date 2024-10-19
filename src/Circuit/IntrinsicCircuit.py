@@ -14,7 +14,7 @@ class IntrinsicCircuit(FileBasedCircuit):
     The fitness strategy provided is used to evaluate the circuits
     """
     def __init__(self, index: int, filename: str, config: Config, template: Path, rand,  microcontroller: Microcontroller, fitness_func: FitnessFunction):
-        FileBasedCircuit.__init__(index, filename, config, template, rand)
+        FileBasedCircuit.__init__(self, index, filename, config, template, rand)
         self._fitness_func = fitness_func
         self._fitness_func.attach(self._data_filepath, microcontroller, self._config)
 
