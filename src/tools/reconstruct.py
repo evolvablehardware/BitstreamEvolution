@@ -16,7 +16,7 @@ But, it will use the config values provided in the generation files for the rout
 
 from argparse import ArgumentParser
 import os
-from Circuit.CircuitOld import CircuitLegacy
+from Circuit.CircuitLegacy import CircuitLegacy
 from utilities import wipe_folder
 from Config import Config
 from CircuitPopulation import SEED_HARDWARE_FILEPATH

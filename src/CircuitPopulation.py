@@ -8,7 +8,7 @@ This class was reviewed, and should be fully documented at a basic level.
 import os
 import numpy as np
 from typing import NamedTuple
-from Circuit.CircuitOld import CircuitLegacy
+from Circuit.CircuitLegacy import CircuitLegacy
 from shutil import copyfile
 from sortedcontainers import SortedKeyList
 from math import ceil

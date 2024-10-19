@@ -19,7 +19,7 @@ from serial import Serial
 from time import time
 import numpy as np
 
-from Circuit.CircuitOld import CircuitLegacy
+from Circuit.CircuitLegacy import CircuitLegacy
 import typing
 
 from Config import Config
