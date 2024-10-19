@@ -1,8 +1,9 @@
 from Circuit.FitnessFunction import FitnessFunction
 
 class VarMaxFitnessFunction(FitnessFunction):
-    def __init__(self):
+    def __init__(self, total_samples: int):
         FitnessFunction.__init__(self)
+        self.__total_samples = total_samples
 
     def get_measurements(self) -> list[float]:
         self._microcontroller.measure_signal()
@@ -25,9 +26,8 @@ class VarMaxFitnessFunction(FitnessFunction):
         """
         data_file = open(self._data_filepath, "rb")
         data = data_file.readlines()
-        total_samples = 500
         waveform = []
-        for i in range(total_samples-1):
+        for i in range(self.__total_samples-1):
             try:
                 x = int(data[i].strip().split(b": ", 1)[1])
                 waveform.append(x)
@@ -58,7 +58,6 @@ class VarMaxFitnessFunction(FitnessFunction):
         """
 
         variance_sum = 0
-        total_samples = 500
         variances = []
         # Reset high/low vals to min/max respectively
         self.__low_val = 1024
@@ -98,7 +97,7 @@ class VarMaxFitnessFunction(FitnessFunction):
         #         waveLive.write(str(i) + ", " + str(points) + "\n")
         #         i += 1
 
-        var_max_fitness = variance_sum / total_samples
+        var_max_fitness = variance_sum / len(waveform)
         self.__mean_voltage = sum(waveform) / len(waveform) #used by combined fitness func
 
         return var_max_fitness
