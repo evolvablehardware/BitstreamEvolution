@@ -305,7 +305,7 @@ class Microcontroller:
         data_file.close()
         self.__log_event(2, "Completed writing to data file")
 
-    def measure_signal_td(self, circuit):
+    def measure_signal_td(self, data_filepath):
         """
         Measures (1) the FPGA waveform directly from FPGA output pin and (2) the "state"/frequency waveform
         directly from the signal-generating Nano. Writes 1000 sample points' data to a file.
@@ -323,7 +323,7 @@ class Microcontroller:
         buf = []
 
         # Begin monitoring on load
-        data_file = open(circuit.get_data_filepath(), "wb")
+        data_file = open(data_filepath, "wb")
 
         self.__serial.reset_input_buffer()
         self.__serial.reset_output_buffer()
