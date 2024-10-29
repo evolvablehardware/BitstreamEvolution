@@ -36,6 +36,8 @@ An Open Source Toolchain for the artificial evolution of FPGA bitstreams using g
   - [License](#license)
 
 ## Setup
+Instructions for setting up the hardware is available at [the Evolvable Hardware website](https://evolvablehardware.org/setup.html).
+
 Setting up BitstreamEvolution involves configuring the
 BitstreamEvolution core, the [Project Icestorm](http://www.clifford.at/icestorm/)
 tools, and the Arduino components. While BitstreamEvolution should run
