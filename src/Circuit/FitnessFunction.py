@@ -13,10 +13,11 @@ class FitnessFunction(ABC):
     def __init__(self):
         pass
 
-    def attach(self, data_filepath, microcontroller: Microcontroller, config: Config):
+    def attach(self, data_filepath, microcontroller: Microcontroller, config: Config, extra_data: dict[str, float]):
         self._data_filepath = data_filepath
         self._microcontroller = microcontroller
         self._config = config
+        self._extra_data = extra_data
 
     @abstractmethod
     def get_measurements(self) -> list[float]:

@@ -60,8 +60,8 @@ class VarMaxFitnessFunction(FitnessFunction):
         variance_sum = 0
         variances = []
         # Reset high/low vals to min/max respectively
-        self.__low_val = 1024
-        self.__high_val = 0
+        low_val = 1024
+        high_val = 0
         for i in range(len(waveform)-1):
             # NOTE Signal Variance is calculated by summing the absolute difference of
             # sequential voltage samples from the microcontroller.
@@ -76,9 +76,9 @@ class VarMaxFitnessFunction(FitnessFunction):
             #waveform.append(initial1)
 
             if initial1 < self.__low_val:
-                self.__low_val = initial1
+                low_val = initial1
             if initial1 > self.__high_val:
-                self.__high_val = initial1
+                high_val = initial1
 
             # Stability: if we want stable waves, we should want to differences between points to be
             # similar. i.e. we want to minimize the differences between these differences
@@ -98,6 +98,10 @@ class VarMaxFitnessFunction(FitnessFunction):
         #         i += 1
 
         var_max_fitness = variance_sum / len(waveform)
-        self.__mean_voltage = sum(waveform) / len(waveform) #used by combined fitness func
+        mean_voltage = sum(waveform) / len(waveform) #used by combined fitness func
+
+        self._extra_data['mean_voltage'] = mean_voltage
+        self._extra_data['low_voltage'] = low_val
+        self._extra_data['high_voltage'] = high_val
 
         return var_max_fitness

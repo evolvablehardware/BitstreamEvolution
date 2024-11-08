@@ -16,7 +16,8 @@ class IntrinsicCircuit(FileBasedCircuit):
     def __init__(self, index: int, filename: str, config: Config, template: Path, rand,  microcontroller: Microcontroller, fitness_func: FitnessFunction):
         FileBasedCircuit.__init__(self, index, filename, config, template, rand)
         self._fitness_func = fitness_func
-        self._fitness_func.attach(self._data_filepath, microcontroller, self._config)
+        self._extra_data = dict()
+        self._fitness_func.attach(self._data_filepath, microcontroller, self._config, self._extra_data)
 
     def _get_measurement(self):
         return self._fitness_func.get_measurements()

@@ -20,6 +20,7 @@ class PulseCountFitnessFunction(FitnessFunction):
                 dist = this_dist
                 pulse_count = pc
         
+        self._extra_data['pulses'] = pulse_count
         return self.__calculate_pulse_fitness(pulse_count)
 
     def __count_pulses(self) -> list[float]:
