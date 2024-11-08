@@ -2,17 +2,17 @@ from abc import ABC, abstractmethod
 import Config
 
 class Circuit(ABC):
-    # def __repr__(self):
-    #     """
-    #     Returns the string representation of this Circuit, used in
-    #     functions such as 'print'.
+    def __repr__(self):
+        """
+        Returns the string representation of this Circuit, used in
+        functions such as 'print'.
 
-    #     Returns
-    #     -------
-    #     str
-    #         A string representation of the Circuit. (the file name)
-    #     """
-        # return self._filename
+        Returns
+        -------
+        str
+            A string representation of the Circuit. (the file name)
+        """
+        return self._filename
 
     def __init__(self, index: int, filename: str, config: Config):
         self._filename = filename
@@ -43,7 +43,6 @@ class Circuit(ABC):
         """
         pass
 
-    @abstractmethod
     def calculate_fitness(self) -> float:
         """
         Calculates and returns the fitness indicated by the Circuit's currently-collected data
@@ -86,6 +85,18 @@ class Circuit(ABC):
             The other circuit the crossover is being performed with
         corssover_point : int
             The point in the modifiable bitstream to perform the point crossover.
+        """
+        pass
+
+    @abstractmethod
+    def copy_from(self, other):
+        """
+        Fully copy the bitstream from the other circuit
+
+        Parameters
+        ----------
+        other : Circuit
+            The other circuit to copy the bitstream from
         """
         pass
 

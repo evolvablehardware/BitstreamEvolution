@@ -44,6 +44,10 @@ class FullySimCircuit(Circuit):
             self.__simulation_bitstream[i] = parent.__simulation_bitstream[i]
         # Remaining bits left unchanged
 
+    def copy_from(self, other):
+        for i in range(0, len(other.__simulation_bitstream)):
+            self.__simulation_bitstream[i] = other.__simulation_bitstream[i]
+
     def upload(self):
         # Doesn't need to do anything, runs locally
         pass

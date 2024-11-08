@@ -8,7 +8,6 @@ This class was reviewed, and should be fully documented at a basic level.
 import os
 import numpy as np
 from typing import NamedTuple
-#from Circuit.CircuitLegacy import CircuitLegacy
 from shutil import copyfile
 from sortedcontainers import SortedKeyList
 from math import ceil
@@ -21,6 +20,13 @@ from subprocess import run
 import random
 import math
 from mmap import mmap
+from Circuit.FileBasedCircuit import FileBasedCircuit
+from Circuit.FullySimCircuit import FullySimCircuit
+from Circuit.IntrinsicCircuit import IntrinsicCircuit
+from Circuit.PulseCountFitnessFunction import PulseCountFitnessFunction
+from Circuit.SimHardwareCircuit import SimHardwareCircuit
+from Circuit.ToneDiscriminatorFitnessFunction import ToneDiscriminatorFitnessFunction
+from Circuit.VarMaxFitnessFunction import VarMaxFitnessFunction
 from Config import Config
 from ascTemplateBuilder import ascTemplateBuilder
 from utilities import wipe_folder
@@ -137,22 +143,16 @@ class CircuitPopulation:
         self.__n_elites = int(ceil(elitism_fraction * population_size))
 
     def run_fitness_sensitity(self):
-        # TODO
-        return
         """
         Gets the same circuit, runs it repeatedly and reports each fitness.
         Internally has a while loop to determine how many times to run.
         """
         #create circuit object
         self.__log_info(1, "Creating circuit object for fitness sensitivity experiment")
-        ckt = CircuitLegacy(
+        ckt = self.__construct_circuit(
             1,
             "hardware1",
             self.__config.get_test_circuit(),
-            self.__microcontroller,
-            self.__logger,
-            self.__config,
-            self.__rand,
             self.__generate_sine_funcs()
         )
 
@@ -224,20 +224,20 @@ class CircuitPopulation:
         return sine_funcs
 
     def __construct_circuit(self, index, file_name, seed_arg, sine_funcs):
-        if self.__config.get_simulation_mode() == 'FULLY_INTRINSIC':
-            return FullySimCircuit(
-                
-            )
-        ckt = CircuitLegacy(
-            index,
-            file_name,
-            seedArg,
-            self.__microcontroller,
-            self.__logger,
-            self.__config,
-            self.__rand,
-            sine_funcs
-        )
+        if self.__config.get_simulation_mode() == 'FULLY_SIM':
+            return FullySimCircuit(index, file_name, self.__config, sine_funcs, self.__rand)
+        elif self.__config.get_simulation_mode() == 'SIM_HARDWARE':
+            return SimHardwareCircuit(index, file_name, self.__config, seed_arg, self.__rand)
+        else:
+            fit_func = None
+            if self.__config.get_fitness_func() == 'VARIANCE':
+                fit_func = VarMaxFitnessFunction(500)
+            elif self.__config.get_fitness_func() in ['PULSE_COUNT', 'SENSITIVE_PULSE_COUNT', 'TOLERANT_PULSE_COUNT']:
+                fit_func = PulseCountFitnessFunction()
+            elif self.__config.get_fitness_func() == 'TONE_DISCRIMINATOR':
+                fit_func = ToneDiscriminatorFitnessFunction()
+
+            return IntrinsicCircuit(index, file_name, self.__config, seed_arg, self.__rand, self.__microcontroller, fit_func)
 
     def populate(self):
         """
@@ -279,7 +279,7 @@ class CircuitPopulation:
                     hw_file = open(path, "r+")
                     mmapped_file = mmap(hw_file.fileno(), 0)
                     hw_file.close()
-                    fitness = float(CircuitLegacy.get_file_attribute_st(mmapped_file, "fitness"))
+                    fitness = float(FileBasedCircuit.get_file_attribute_st(mmapped_file, "fitness"))
                     if fitness == None:
                         fitness = 0
                     subdir_circuits.add(CircuitPathInfo(path, fitness))
@@ -459,7 +459,7 @@ class CircuitPopulation:
                 should_continue = False
         return should_continue
 
-    def __eval_ckt(self, circuit, record_data = False):
+    def __eval_ckt(self, circuit):
         """
         Selects the evaluation method for the circuit based on the simulation mode.
 
@@ -467,33 +467,15 @@ class CircuitPopulation:
         ----------
         circuit : Circuit
             Circuit to be evaluated
-        record_data : bool
-            True if we want data recorded into circuit's data file (passed to circuit.evaluate method)
 
         Returns
         -------
         float
             Returns the fitness of the circuit
         """
-        # Biggest difference between Fully Instrinsic and Hardware Sim: The fitness evaluation
-        fitness = 0
-        if self.__config.get_simulation_mode() == "FULLY_SIM":
-            func = self.__config.get_fitness_func()
-            fitness = circuit.evaluate_sim(func == "COMBINED")
-        elif self.__config.get_simulation_mode() == "SIM_HARDWARE":
-            fitness = circuit.evaluate_sim_hardware()
-        else:
-            func = self.__config.get_fitness_func()
-            if func == "PULSE_COUNT" or func == "TOLERANT_PULSE_COUNT" or func == "SENSITIVE_PULSE_COUNT" or func == "PULSE_CONSISTENCY":
-                # The PULSE_CONSISTENCY function will call pulse count eval, which will save pulses off for later
-                fitness = circuit.evaluate_pulse_count(record_data = record_data)
-            elif func == "VARIANCE":
-                fitness = circuit.evaluate_variance(record_data = record_data)
-            elif func == "COMBINED":
-                fitness = circuit.evaluate_combined(record_data = record_data)
-            elif func == "TONE_DISCRIMINATOR":
-                fitness = circuit.evaluate_tonedisc(record_data = record_data)
-        return fitness
+        for i in range(self.__config.get_num_samples()):
+            circuit.collect_data_once()
+        circuit.calculate_fitness()
 
     def evolve(self):
         """
@@ -529,16 +511,11 @@ class CircuitPopulation:
             # Evaluate all the Circuits in this CircuitPopulation.
             start = time()
 
-            is_multi_pass = (self.__config.get_num_passes() > 1)
-            if is_multi_pass:
-                for i in range(self.__config.get_num_passes()):
-                    # Shuffle the circuits each time
-                    circuits = np.random.permutation(self.__circuits)
-                    for circuit in circuits:
-                        self.__eval_ckt(circuit, record_data = True)
-                # We can keep the circuits in order after this
-                for circuit in self.__circuits:
-                    circuit.calculate_fitness_from_data()
+            for i in range(self.__config.get_num_passes()):
+                # Shuffle the circuits each time
+                circuits = np.random.permutation(self.__circuits)
+                for circuit in circuits:
+                    self.__eval_ckt(circuit)
 
             self.__population_bistream_sum = np.zeros(self.__population_bistream_sum.size)
             for circuit in self.__circuits:
@@ -546,7 +523,7 @@ class CircuitPopulation:
                 # the threshold and we are done.
 
                 # fitness = circuit.get_fitness()
-                fitness = circuit.get_fitness() if is_multi_pass else self.__eval_ckt(circuit)
+                fitness = circuit.get_fitness()
 
                 # Save off various circuit metrics
                 if self.__config.get_simulation_mode() != 'FULLY_SIM':
@@ -562,7 +539,8 @@ class CircuitPopulation:
                 reevaulated_circuits.add(circuit)
 
                 #add the circuit's bistream to our population sum - for diversity calculation and visualization
-                self.__population_bistream_sum += circuit.get_intrinsic_modifiable_bitstream_array()
+                if self.__config.get_simulation_mode() != 'FULLY_SIM':
+                    self.__population_bistream_sum += circuit.get_bitstream()
 
             epoch_time = time() - start
             self.__circuits = reevaulated_circuits
@@ -772,7 +750,7 @@ class CircuitPopulation:
                 self.__single_point_crossover(winner, loser)
             else:
                 self.__log_event(3, "Cloning:", winner, " ---> ", loser)
-                loser.copy_hardware_from(winner)
+                loser.copy_from(winner)
 
             loser.mutate()
 
@@ -789,7 +767,6 @@ class CircuitPopulation:
             # Mutate the hardware of every circuit that is not the best
             if ckt != best:
                 if ckt.get_fitness() <= best.get_fitness():
-                    #ckt.copy_hardware_from(best)
                     ckt.mutate()
             else:
                 self.__log_info(2, ckt, "is current BEST")
@@ -851,14 +828,14 @@ class CircuitPopulation:
             if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite and ckt not in elites:
                 # if self.__config.get_crossover_probability() == 0:
                 # 	self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
-                # 	ckt.copy_hardware_from(rand_elite)
+                # 	ckt.copy_from(rand_elite)
                 # else:
                 # 	self.__single_point_crossover(rand_elite, ckt)
                 if self.__rand.uniform(0, 1) <= self.__config.get_crossover_probability():
                     self.__single_point_crossover(rand_elite, ckt)
                 else:
                     self.__log_event(4, "Cloning:", rand_elite, " ---> ", ckt)
-                    ckt.copy_hardware_from(rand_elite)
+                    ckt.copy_from(rand_elite)
                 ckt.mutate()
 
     def __run_rank_proportional_selection(self):
@@ -912,7 +889,7 @@ class CircuitPopulation:
             if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite and ckt not in elites:
                 # if self.__config.get_crossover_probability() == 0:
                 #     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
-                #     ckt.copy_hardware_from(rand_elite)
+                #     ckt.copy_from(rand_elite)
                 # else:
                 #     self.__single_point_crossover(rand_elite, ckt)
 
@@ -920,7 +897,7 @@ class CircuitPopulation:
                     self.__single_point_crossover(rand_elite, ckt)
                 else:
                     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
-                    ckt.copy_hardware_from(rand_elite)
+                    ckt.copy_from(rand_elite)
                 ckt.mutate()
 
     def __run_fractional_elite_tournament(self):
@@ -956,7 +933,7 @@ class CircuitPopulation:
                     self.__single_point_crossover(rand_elite, ckt)
                 else:
                     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
-                    ckt.copy_hardware_from(rand_elite)
+                    ckt.copy_from(rand_elite)
                 ckt.mutate()
 
     def __run_map_elites_selection(self):
@@ -981,7 +958,7 @@ class CircuitPopulation:
             # If not an elite, then we will clone and mutate
             if ckt not in elites:
                 rand_elite = self.__rand.choice(elites)
-                ckt.copy_hardware_from(rand_elite)
+                ckt.copy_from(rand_elite)
                 ckt.mutate()
         
         self.__output_map_file(elite_map)
@@ -1119,7 +1096,7 @@ class CircuitPopulation:
         # Replace magic values with more generalized solutions
         if self.__config.get_simulation_mode() == "FULLY_SIM":
             crossover_point = self.__rand.integers(
-                1, len(self.__circuits[0].get_sim_bitstream()) - 1)
+                1, len(self.__circuits[0].get_bitstream()) - 1)
         elif self.__config.get_routing_type() == "MOORE":
             crossover_point = self.__rand.integers(1, 3)
         elif self.__config.get_routing_type() == "NWSE":
@@ -1128,7 +1105,7 @@ class CircuitPopulation:
             self.__log_error(
                 1, "Invalid routing type specified in config.ini. Exiting...")
             exit()
-        dest.copy_genes_from(source, crossover_point)
+        dest.crossover(source, crossover_point)
 
     def avg_hamming_dist(self):
         """
@@ -1145,14 +1122,16 @@ class CircuitPopulation:
 
         self.__log_event(4, "Starting Hamming Distance Calculation")
 
-        bitstreams = []
-        if self.__config.get_simulation_mode() == "FULLY_SIM":
-            bitstreams = map(lambda c: c.get_sim_bitstream(), self.__circuits)
-        else:
-            # Need to convert the char byte values to 0s and 1s along the way
-            bitstreams = map(lambda c: list(map(
-                lambda char: char-48, c.get_intrinsic_modifiable_bitstream())), self.__circuits)
-        bitstreams = list(bitstreams)
+        #TODO: remove dead code
+        # bitstreams = []
+        # if self.__config.get_simulation_mode() == "FULLY_SIM":
+        #     bitstreams = map(lambda c: c.get_bitstream(), self.__circuits)
+        # else:
+        #     # Need to convert the char byte values to 0s and 1s along the way
+        #     bitstreams = map(lambda c: list(map(
+        #         lambda char: char-48, c.get_bitstream())), self.__circuits)
+        # bitstreams = list(bitstreams)
+        bitstreams = list(map(lambda c: c.get_bitstream(), self.__circuits))
 
         # We now have all the bitstreams, we can do the faster hamming calculation by comparing each bit of them
         # Then we multiply the count of 1s for that bit by the count of 0s for that bit and add it to the running_total

@@ -267,6 +267,9 @@ class Config:
 			the calculated frequency from the number of pulses in a second to the target frequency.
 			The closer to the target, the higher the fitness. This fitness function is more 'sensitive'
 			of errors, meaning it has an abrupt drop-off in fitness scores even for slight errors.
+		**TONE_DISCRIMINATOR**
+			This randomly alternates between a 1kHz and 10kHz signal sent to the FPGA, and
+			reads in a high/low output from the FGPA to get the predicted frequency.
 
         Returns
         -------
