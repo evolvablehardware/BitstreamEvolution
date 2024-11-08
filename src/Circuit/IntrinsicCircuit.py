@@ -21,7 +21,7 @@ class IntrinsicCircuit(FileBasedCircuit):
     def _get_measurement(self):
         return self._fitness_func.get_measurements()
 
-    def calculate_fitness(self) -> float:
+    def _calculate_fitness(self) -> float:
         return self._fitness_func.calculate_fitness(self._data)
 
     def upload(self):

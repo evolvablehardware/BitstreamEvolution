@@ -8,7 +8,7 @@ This class was reviewed, and should be fully documented at a basic level.
 import os
 import numpy as np
 from typing import NamedTuple
-from Circuit.CircuitLegacy import CircuitLegacy
+#from Circuit.CircuitLegacy import CircuitLegacy
 from shutil import copyfile
 from sortedcontainers import SortedKeyList
 from math import ceil
@@ -137,6 +137,8 @@ class CircuitPopulation:
         self.__n_elites = int(ceil(elitism_fraction * population_size))
 
     def run_fitness_sensitity(self):
+        # TODO
+        return
         """
         Gets the same circuit, runs it repeatedly and reports each fitness.
         Internally has a while loop to determine how many times to run.
@@ -221,6 +223,22 @@ class CircuitPopulation:
             self.__sine_strs.append(sine_str)
         return sine_funcs
 
+    def __construct_circuit(self, index, file_name, seed_arg, sine_funcs):
+        if self.__config.get_simulation_mode() == 'FULLY_INTRINSIC':
+            return FullySimCircuit(
+                
+            )
+        ckt = CircuitLegacy(
+            index,
+            file_name,
+            seedArg,
+            self.__microcontroller,
+            self.__logger,
+            self.__config,
+            self.__rand,
+            sine_funcs
+        )
+
     def populate(self):
         """
         Creates initial population based on the config.
@@ -230,7 +248,7 @@ class CircuitPopulation:
         """
         # Always creates a circuit with the seed file, but if we have certain randomization
         # modes then perform necessary operations
-        sine_funcs = self.__generate_sine_funcs();
+        sine_funcs = self.__generate_sine_funcs()
 
         # Wipe the current folder, so if we go from 100 circuits in one experiment to 50 in the next,
         # we don't still have 100 (with 50 that we use and 50 residual ones)
@@ -288,16 +306,7 @@ class CircuitPopulation:
             else:
                 seedArg = template
 
-            ckt = CircuitLegacy(
-                index,
-                file_name,
-                seedArg,
-                self.__microcontroller,
-                self.__logger,
-                self.__config,
-                self.__rand,
-                sine_funcs
-            )
+            ckt = self.__construct_circuit(index, file_name, seedArg, sine_funcs)
             if self.__config.get_init_mode() == "RANDOM":
                 ckt.randomize_bits()
             elif self.__config.get_init_mode() == "CLONE_SEED_MUTATE":

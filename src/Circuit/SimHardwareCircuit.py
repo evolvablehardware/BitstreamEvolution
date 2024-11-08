@@ -37,7 +37,7 @@ class SimHardwareCircuit(FileBasedCircuit):
 
         return [fitness]
     
-    def calculate_fitness(self) -> float:
+    def _calculate_fitness(self) -> float:
         # Calculate based on stored data
         # For sim mode, just take an average
         return sum(self._data) / len(self._data)

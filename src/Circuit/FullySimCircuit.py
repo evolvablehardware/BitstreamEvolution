@@ -77,7 +77,7 @@ class FullySimCircuit(Circuit):
         fitness = Circuit._calculate_variance_fitness(waveform)
         return [fitness]
     
-    def calculate_fitness(self) -> float:
+    def _calculate_fitness(self) -> float:
         # Calculate based on stored data
         # For sim mode, just take an average
         return sum(self._data) / len(self._data)

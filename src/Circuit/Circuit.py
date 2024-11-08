@@ -18,6 +18,7 @@ class Circuit(ABC):
         self._filename = filename
         self._config = config
         self._index = index
+        self._fitness = 0
         
         self._data = []
 
@@ -47,6 +48,11 @@ class Circuit(ABC):
         """
         Calculates and returns the fitness indicated by the Circuit's currently-collected data
         """
+        self._fitness = self._calculate_fitness()
+        return self._fitness
+
+    @abstractmethod
+    def _calculate_fitness(self) -> float:
         pass
 
     def clear_data(self):
@@ -82,6 +88,9 @@ class Circuit(ABC):
             The point in the modifiable bitstream to perform the point crossover.
         """
         pass
+
+    def get_fitness(self):
+        return self._fitness
 
     @staticmethod
     def _calculate_variance_fitness(waveform):
