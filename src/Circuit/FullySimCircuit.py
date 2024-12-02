@@ -91,3 +91,6 @@ class FullySimCircuit(Circuit):
     
     def inject_bitstream(self, bitstream: list[int]):
         self.__simulation_bitstream = bitstream
+
+    def get_file_attribute(self, name: str):
+        return None

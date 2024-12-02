@@ -90,12 +90,11 @@ class VarMaxFitnessFunction(FitnessFunction):
             if initial1 != None and initial1 < 1000:
                 variance_sum += variance
 
-        # TODO: Log waveform
-        # with open("workspace/waveformlivedata.log", "w+") as waveLive:
-        #     i = 1
-        #     for points in waveform:
-        #         waveLive.write(str(i) + ", " + str(points) + "\n")
-        #         i += 1
+        with open("workspace/waveformlivedata.log", "w+") as waveLive:
+            i = 1
+            for points in waveform:
+                waveLive.write(str(i) + ", " + str(points) + "\n")
+                i += 1
 
         var_max_fitness = variance_sum / len(waveform)
         mean_voltage = sum(waveform) / len(waveform) #used by combined fitness func

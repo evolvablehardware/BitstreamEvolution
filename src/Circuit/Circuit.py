@@ -110,6 +110,50 @@ class Circuit(ABC):
     def get_fitness(self):
         return self._fitness
 
+    @abstractmethod
+    def get_file_attribute(self, name: str):
+        pass
+
+    def _get_all_live_reported_value(self) -> list[float]:
+        return [self._fitness]
+
+    def _update_all_live_data(self):
+        '''
+        Updates this circuit's entry in alllivedata.log (the circuit's fitness and source population)
+        '''
+        # Read in the file contents first
+        lines = []
+        with open("workspace/alllivedata.log", "r") as allLive:
+            lines = allLive.readlines()
+
+        # Modify the content internally
+        index = self._index - 1
+        if len(lines) <= index:
+            for i in range(index - len(lines) + 1):
+                lines.append("\n")
+
+        # Shows pulse count in this chart if in PULSE_COUNT fitness func, and fitness otherwise
+        # Value is always an array separated by semicolons. If values in __data, then use those. Otherwise, use scalar pulses or fitness
+        value = [str(x) for x in self._get_all_live_reported_value()] 
+        # if len(self._data) > 0:
+        #     # Flatten data
+        #     value = [str(item) for sublist in self._data for item in sublist]
+        # else:
+        #     if is_pulse_func(self._config):
+        #         value = [str(self._pulses)]
+        #     else:
+        #         value = [str(self._fitness)]
+
+        lines[index] = "{},{},{}\n".format(
+            self.__index, 
+            ';'.join(value),
+            self.get_file_attribute('src_population')
+        )
+
+        # Write these new lines to the file
+        with open("workspace/alllivedata.log", "w+") as allLive:
+            allLive.writelines(lines)
+
     @staticmethod
     def _calculate_variance_fitness(waveform):
         """

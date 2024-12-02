@@ -23,6 +23,9 @@ class PulseCountFitnessFunction(FitnessFunction):
         self._extra_data['pulses'] = pulse_count
         return self.__calculate_pulse_fitness(pulse_count)
 
+    def _get_all_live_reported_value(self) -> list[float]:
+        return self._data
+
     def __count_pulses(self) -> list[float]:
         data_file = open(self._data_filepath, "r")
         data = data_file.readlines()

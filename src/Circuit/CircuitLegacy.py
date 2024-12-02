@@ -1155,7 +1155,7 @@ class CircuitLegacy:
             self.get_file_attribute('src_population')
         )
 
-        # Write these new liens to the file
+        # Write these new lines to the file
         with open("workspace/alllivedata.log", "w+") as allLive:
             allLive.writelines(lines)
 
