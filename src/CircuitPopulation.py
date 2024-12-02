@@ -558,7 +558,8 @@ class CircuitPopulation:
                 )
                 self.__best_epoch = self.get_current_epoch()
                 # Copy this circuit to the best file
-                copyfile(self.__circuits[0].get_hardware_file_path(), self.__config.get_best_file())
+                if isinstance(self.__circuits[0], FileBasedCircuit):
+                    copyfile(self.__circuits[0].get_hardware_file_path(), self.__config.get_best_file())
 
                 # For tone discriminator experiments, update the best waveform and best state data
                 # Each file will contain all sampled data points from the new best circuit

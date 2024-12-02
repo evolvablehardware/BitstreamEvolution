@@ -46,6 +46,9 @@ class FileBasedCircuit(Circuit):
         self._hardware_file = mmap(hardware_file.fileno(), 0)
         hardware_file.close()
 
+    def copy_from(self, other):
+        copyfile(other._hardware_filepath, self._hardware_filepath)
+
     def mutate(self):
         def mutate_bit(bit, row, col, *rest):
             if self._config.get_mutation_probability() >= self._rand.uniform(0,1):
@@ -256,6 +259,16 @@ class FileBasedCircuit(Circuit):
 
     def get_hardware_file(self):
         return self._hardware_file
+
+    def get_bitstream(self):
+        bitstream = []
+        def add_bit(bit, *rest):
+            bitstream.append(bit)
+        self._run_at_each_modifiable(add_bit)
+        return bitstream
+
+    def get_hardware_file_path(self):
+        return self._hardware_filepath
 
     def update_hardware_file(self, pos, length, data):
         """

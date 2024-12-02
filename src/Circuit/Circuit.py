@@ -29,6 +29,13 @@ class Circuit(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_bitstream(self) -> list[int]:
+        """
+        Returns the full bitstream of the circuit
+        """
+        pass
+
     def collect_data_once(self):
         """
         Collects one round of measurement data. Can be performed multiple times before each calculate_fitness call
