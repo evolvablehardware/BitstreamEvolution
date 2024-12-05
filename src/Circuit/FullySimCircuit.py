@@ -12,6 +12,7 @@ class FullySimCircuit(Circuit):
         self.__src_sine_funcs = sine_funcs
         self.__simulation_bitstream = [0] * 100
         self._rand = rand
+        self.randomize_bitstream()
 
     def mutate(self):
         """

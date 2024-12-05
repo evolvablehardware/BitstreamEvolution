@@ -459,24 +459,6 @@ class CircuitPopulation:
                 should_continue = False
         return should_continue
 
-    def __eval_ckt(self, circuit):
-        """
-        Selects the evaluation method for the circuit based on the simulation mode.
-
-        Parameters
-        ----------
-        circuit : Circuit
-            Circuit to be evaluated
-
-        Returns
-        -------
-        float
-            Returns the fitness of the circuit
-        """
-        for i in range(self.__config.get_num_samples()):
-            circuit.collect_data_once()
-        circuit.calculate_fitness()
-
     def evolve(self):
         """
         Runs an evolutionary loop and records the circuit with the highest fitness throughout the loop,
@@ -515,7 +497,11 @@ class CircuitPopulation:
                 # Shuffle the circuits each time
                 circuits = np.random.permutation(self.__circuits)
                 for circuit in circuits:
-                    self.__eval_ckt(circuit)
+                    for i in range(self.__config.get_num_samples()):
+                        circuit.collect_data_once()
+
+            for circuit in self.__circuits:
+                circuit.calculate_fitness()
 
             self.__population_bistream_sum = np.zeros(self.__population_bistream_sum.size)
             for circuit in self.__circuits:
