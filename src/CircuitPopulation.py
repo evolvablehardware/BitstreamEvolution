@@ -308,7 +308,7 @@ class CircuitPopulation:
 
             ckt = self.__construct_circuit(index, file_name, seedArg, sine_funcs)
             if self.__config.get_init_mode() == "RANDOM":
-                ckt.randomize_bits()
+                ckt.randomize_bitstream()
             elif self.__config.get_init_mode() == "CLONE_SEED_MUTATE":
                 # Call mutate once on this circuit
                 ckt.mutate()
@@ -331,7 +331,7 @@ class CircuitPopulation:
                     if not ckt in elites:
                         ckt.copy_sim(random.choice(elites))
                         ckt.mutate()
-                        #ckt.randomize_bits()
+                        #ckt.randomize_bitstream()
                         ckt.evaluate_sim(False)
 
                 elite_map = self.__generate_map()
@@ -374,7 +374,7 @@ class CircuitPopulation:
             self.__log_event(3, "Randomizing to generate pulses")
             for circuit in self.__circuits:
                 if self.__config.get_randomize_mode() == 'RANDOM':
-                    circuit.randomize_bits()
+                    circuit.randomize_bitstream()
                 else:
                     circuit.mutate()
 
@@ -395,7 +395,7 @@ class CircuitPopulation:
             self.__log_event(3, "Randomizing to get voltage")
             for circuit in self.__circuits:
                 if self.__config.get_randomize_mode() == 'RANDOM':
-                    circuit.randomize_bits()
+                    circuit.randomize_bitstream()
                 else:
                     circuit.mutate()
 
@@ -417,7 +417,7 @@ class CircuitPopulation:
         while bestVariance < self.__config.get_randomize_threshold():
             self.__log_event(3, "Randomizing to generate variance")
             for circuit in self.__circuits:
-                circuit.randomize_bits()
+                circuit.randomize_bitstream()
                 variance = circuit.evaluate_variance()
                 self.__log_info(3, "Variance generated:", variance)
 
@@ -576,7 +576,7 @@ class CircuitPopulation:
                 circuits_to_randomize = self.__circuits[-amt:]
                 for ckt in circuits_to_randomize:
                     if ckt not in self.__protected_elites:
-                        ckt.randomize_bits()
+                        ckt.randomize_bitstream()
 
             self.__write_to_livedata()
             self.__next_epoch()
