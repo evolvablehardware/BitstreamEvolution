@@ -78,6 +78,12 @@ class FullySimCircuit(Circuit):
                 sum = sum + func(i)
             # Taking the average keeps it within the drawable range
             waveform.append(sum / len(sine_funcs))
+
+        with open("workspace/waveformlivedata.log", "w+") as waveLive:
+            i = 1
+            for points in waveform:
+                waveLive.write(str(i) + ", " + str(points) + "\n")
+                i += 1
         
         fitness = Circuit._calculate_variance_fitness(waveform)
         return [fitness]
