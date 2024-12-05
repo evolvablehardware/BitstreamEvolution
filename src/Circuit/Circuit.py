@@ -180,14 +180,11 @@ class Circuit(ABC):
             # NOTE Signal Variance is calculated by summing the absolute difference of
             # sequential voltage samples from the microcontroller.
             # Capture the next point in the data file to a variable
-            initial1 = waveform[i] #int(data[i].strip().split(b": ", 1)[1])
+            initial1 = waveform[i]
             # Capture the next point + 1 in the data file to a variable
-            initial2 = waveform[i+1] #int(data[i + 1].strip().split(b": ", 1)[1])
+            initial2 = waveform[i+1]
             # Take the absolute difference of the two points and store to a variable
             variance = abs(initial2 - initial1)
-            # Append the variance to the waveform list
-            # Removed since we do this already
-            #waveform.append(initial1)
 
             # if initial1 < self.__low_val:
             #     self.__low_val = initial1
@@ -196,12 +193,6 @@ class Circuit(ABC):
 
             if initial1 != None and initial1 < 1000:
                 variance_sum += variance
-
-        # with open("workspace/waveformlivedata.log", "w+") as waveLive:
-        #     i = 1
-        #     for points in waveform:
-        #         waveLive.write(str(i) + ", " + str(points) + "\n")
-        #         i += 1
 
         fitness = variance_sum / total_samples
         #self.__mean_voltage = sum(waveform) / len(waveform) #used by combined fitness func
