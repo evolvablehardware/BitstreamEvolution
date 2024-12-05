@@ -103,18 +103,19 @@ class Logger:
         if not plots_dir.exists():
             plots_dir.mkdir()
 
-        if (self.__config.get_simulation_mode() == 'INTRINSIC_SENSITIVITY'):
-            args = TERM_CMD + ["python3", "src/PlotSensitivityLive.py"]
-        else: 
-            args = TERM_CMD + ["python3", "src/PlotEvolutionLive.py"]
-        
-        try:
-            run(args, check=True, capture_output=True)
-        except OSError as e:
-            self.log_error(1, "An error occured while launching PlotEvolutionLive.py")
-        except CalledProcessError as e:
-            self.log_error(1, "An error occured in PlotEvolutionLive.py")
-            self.log_error(1, e)
+        if self.__config.get_launch_plots():
+            if (self.__config.get_simulation_mode() == 'INTRINSIC_SENSITIVITY'):
+                args = TERM_CMD + ["python3", "src/PlotSensitivityLive.py"]
+            else: 
+                args = TERM_CMD + ["python3", "src/PlotEvolutionLive.py"]
+            
+            try:
+                run(args, check=True, capture_output=True)
+            except OSError as e:
+                self.log_error(1, "An error occured while launching PlotEvolutionLive.py")
+            except CalledProcessError as e:
+                self.log_error(1, "An error occured in PlotEvolutionLive.py")
+                self.log_error(1, e)
 
     def __init__(self, config, explanation):
         self.__config = config

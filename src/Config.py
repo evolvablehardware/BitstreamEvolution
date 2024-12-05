@@ -134,6 +134,23 @@ class Config:
 		"""
 		return self.__config_parser.get("STOPPING CONDITION PARAMETERS", param)
 
+	def get_plotting_parameters(self, param):
+		"""
+		Returns the value of a parameter from the "PLOTTING PARAMETERS"
+		section of the config file.
+
+		Parameters
+		----------
+		param : str
+			The name of the parameter to return
+
+		Returns
+		-------
+		str
+			The value of the parameter
+		"""
+		return self.__config_parser.get("PLOTTING PARAMETERS", param)
+
 	def get_logging_parameters(self, param):
 		"""
 		Returns the value of a parameter from the "LOGGING PARAMETERS"
@@ -721,6 +738,13 @@ class Config:
 	def get_mcu_read_timeout(self):
 		return float(self.get_hardware_parameters("MCU_READ_TIMEOUT"))
 
+	def get_launch_plots(self):
+		value = self.get_plotting_parameters("launch_plots")
+		return value == "true" or value == "True"
+
+	def get_frame_interval(self):
+		return int(self.get_plotting_parameters("frame_interval"))
+
 	def check_valid_value(self, param_name, user_input, allowed_values):
 		if not user_input in allowed_values:
 			self.__log_error(1, "Invalid " + param_name + " '" + str(user_input) + "'. Valid parameters are: " + 
@@ -743,6 +767,8 @@ class Config:
 		if self.get_simulation_mode != 'FULLY_SIM' and self.get_simulation_mode != 'SIM_HARDWARE':
 			self.validate_system_params()
 			self.validate_hardware_params()
+
+		self.validate_plotting_params()
 
 		# Make sure user follows our requirements
 		# Pulse consistency must have >=1 passes and >=1 samples
@@ -834,6 +860,10 @@ class Config:
 		if self.get_using_configurable_io():
 			self.get_input_pins()
 			self.get_output_pins()
+
+	def validate_plotting_params(self):
+		self.get_launch_plots()
+		self.get_frame_interval()
 
 	def validate_sensitivity_params(self):
 		self.get_test_circuit()
