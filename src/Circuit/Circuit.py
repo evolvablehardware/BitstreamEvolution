@@ -55,6 +55,7 @@ class Circuit(ABC):
         Calculates and returns the fitness indicated by the Circuit's currently-collected data
         """
         self._fitness = self._calculate_fitness()
+        self._update_all_live_data()
         return self._fitness
 
     @abstractmethod
@@ -145,7 +146,7 @@ class Circuit(ABC):
         #         value = [str(self._fitness)]
 
         lines[index] = "{},{},{}\n".format(
-            self.__index, 
+            self._index, 
             ';'.join(value),
             self.get_file_attribute('src_population')
         )
