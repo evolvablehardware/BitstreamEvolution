@@ -6,7 +6,7 @@ class VarMaxFitnessFunction(FitnessFunction):
         self.__total_samples = total_samples
 
     def get_measurements(self) -> list[float]:
-        self._microcontroller.measure_signal()
+        self._microcontroller.measure_signal(self._data_filepath)
         waveform = self.__read_waveform()
         fitness = self.__measure_variance_fitness(waveform)
         return [fitness]
@@ -75,9 +75,9 @@ class VarMaxFitnessFunction(FitnessFunction):
             # Removed since we do this already
             #waveform.append(initial1)
 
-            if initial1 < self.__low_val:
+            if initial1 < low_val:
                 low_val = initial1
-            if initial1 > self.__high_val:
+            if initial1 > high_val:
                 high_val = initial1
 
             # Stability: if we want stable waves, we should want to differences between points to be
