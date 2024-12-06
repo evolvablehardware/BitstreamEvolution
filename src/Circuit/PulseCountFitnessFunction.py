@@ -23,6 +23,9 @@ class PulseCountFitnessFunction(FitnessFunction):
         self._extra_data['pulses'] = pulse_count
         return self.__calculate_pulse_fitness(pulse_count)
 
+    def get_waveform(self):
+        return []
+
     def _get_all_live_reported_value(self) -> list[float]:
         return self._data
 

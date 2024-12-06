@@ -67,6 +67,13 @@ class ToneDiscriminatorFitnessFunction(FitnessFunction):
         # Return the populated arrays
         return (waveform, state)
 
+    def get_waveform(self):
+        wf = []
+        # Since __read_variance_data_td() returns 2 arrays (waveform & state), we want the first array (waveform)
+        for pt in self.__read_variance_data_td()[0]:
+            wf.append(str(pt))
+        return wf
+
     def __measure_tonedisc_fitness(self, waveform, state):
         """
         Measure the fitness of this circuit using the tone discriminator fitness

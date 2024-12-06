@@ -15,6 +15,12 @@ class VarMaxFitnessFunction(FitnessFunction):
         # Just take an average
         return sum(data) / len(data)
 
+    def get_waveform(self) -> list[float]:
+        wf = []
+        for pt in self.__read_waveform():
+            wf.append(str(pt))
+        return wf
+
     def __read_waveform(self):
         """
         Reads variance data from the Circuit data file, which contains readings from the Microcontroller

@@ -20,6 +20,10 @@ class FitnessFunction(ABC):
         self._extra_data = extra_data
 
     @abstractmethod
+    def get_waveform(self) -> list[float]:
+        pass
+
+    @abstractmethod
     def get_measurements(self) -> list[float]:
         pass
 

@@ -28,6 +28,9 @@ class IntrinsicCircuit(FileBasedCircuit):
     def upload(self):
         self.__run()
 
+    def get_waveform(self):
+        return self._fitness_func.get_waveform()
+
     def __run(self):
         """
         Compiles this Circuit, uploads it, and runs it on the FPGA

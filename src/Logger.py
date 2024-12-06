@@ -107,7 +107,7 @@ class Logger:
             if (self.__config.get_simulation_mode() == 'INTRINSIC_SENSITIVITY'):
                 args = TERM_CMD + ["python3", "src/PlotSensitivityLive.py"]
             else: 
-                args = TERM_CMD + ["python3", "src/PlotEvolutionLive.py"]
+                args = TERM_CMD + ["python3", "src/PlotEvolutionLive.py", "--frame-interval", str(self.__config.get_frame_interval())]
             
             try:
                 run(args, check=True, capture_output=True)
