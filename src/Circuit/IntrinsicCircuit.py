@@ -7,6 +7,7 @@ import Config
 import Microcontroller
 
 RUN_CMD = "iceprog"
+COMPILE_CMD = "icepack"
 
 class IntrinsicCircuit(FileBasedCircuit):
     """
@@ -33,15 +34,15 @@ class IntrinsicCircuit(FileBasedCircuit):
 
     def __run(self):
         """
-        Compiles this Circuit, uploads it, and runs it on the FPGA
+        Compiles and uploads the compiled circuit and runs it on the FPGA
         """
-        FileBasedCircuit._compile()
+        self._compile()
         
         cmd_str = [
             RUN_CMD,
             self._bitstream_filepath,
             "-d",
-            self._microcontroller.get_fpga()
+            self._config.get_fpga()
         ]
         print(cmd_str)
         run(cmd_str)

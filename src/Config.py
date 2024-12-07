@@ -608,6 +608,12 @@ class Config:
 		except NoOptionError:
 			return Path("./prev_workspaces")
 	
+	def get_final_experiment_directory(self):
+		try:
+			return Path(self.get_logging_parameters("final_experiment_dir"))
+		except NoOptionError:
+			return Path("./experiments")
+
 	def get_backup_workspace(self):
 		try:
 			input = self.get_logging_parameters("backup_workspace")

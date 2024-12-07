@@ -497,6 +497,8 @@ class CircuitPopulation:
                 # Shuffle the circuits each time
                 circuits = np.random.permutation(self.__circuits)
                 for circuit in circuits:
+                    if isinstance(circuit, IntrinsicCircuit):
+                        circuit.upload()
                     for i in range(self.__config.get_num_samples()):
                         circuit.collect_data_once()
 
