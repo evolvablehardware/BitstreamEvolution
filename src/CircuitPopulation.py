@@ -463,7 +463,7 @@ class CircuitPopulation:
 
     def __eval_circuit_once(self, circuit):
         circuit.clear_data()
-        if isinstance(scircuit, IntrinsicCircuit):
+        if isinstance(circuit, FileBasedCircuit):
             circuit.upload()
         for i in range(self.__config.get_num_samples()):
             circuit.collect_data_once()
@@ -511,7 +511,7 @@ class CircuitPopulation:
                 # Shuffle the circuits each time
                 circuits = np.random.permutation(self.__circuits)
                 for circuit in circuits:
-                    if isinstance(circuit, IntrinsicCircuit):
+                    if isinstance(circuit, FileBasedCircuit):
                         circuit.upload()
                     for i in range(self.__config.get_num_samples()):
                         circuit.collect_data_once()
