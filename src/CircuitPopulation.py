@@ -167,7 +167,12 @@ class CircuitPopulation:
         #loop through trials and log fitness
         should_continue = True
         while should_continue:
-            fitness = self.__eval_ckt(ckt)
+            if isinstance(ckt, IntrinsicCircuit):
+                ckt.upload()
+            for i in range(self.__config.get_num_samples()):
+                ckt.collect_data_once()
+
+            fitness = ckt.calculate_fitness()
             with open("workspace/fitnesssensitivity.log", "a") as live_file:
                 if self.__config.is_pulse_func():
                     data2 = ckt.get_pulses()
@@ -590,7 +595,12 @@ class CircuitPopulation:
         # We have finished evolution! Lets quickly re-evaluate the top circuit, since it
         # will then output its waveform
         if not is_pulse_func(self.__config):
-            self.__eval_ckt(self.__circuits[0])
+            if isinstance(self.__circuits[0], IntrinsicCircuit):
+                self.__circuits[0].upload()
+            for i in range(self.__config.get_num_samples()):
+                self.__circuits[0].collect_data_once()
+
+            self.__circuits[0].calculate_fitness()
         # Also, log the name of the top circuit
         self.__log_event(1, "Top Circuit in Final Generation:", self.__circuits[0])
 

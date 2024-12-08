@@ -32,7 +32,7 @@ class SimHardwareCircuit(FileBasedCircuit):
 
         self._run_at_each_modifiable(evaluate_bit)
         
-        # self.__log_event(3, "Fitness: ", fitness)
+        self._log_event(3, "Fitness: ", fitness)
 
         # self.__update_all_live_data()
 
