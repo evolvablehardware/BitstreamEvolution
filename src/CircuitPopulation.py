@@ -623,17 +623,18 @@ class CircuitPopulation:
             diversity = 0
         # Providing any invalid measure of diversity will make it constantly 0
         # Write the generation data (avg/best/worst fitness, etc) to file
-        with open("workspace/bestlivedata.log", "a") as liveFile:
-            avg = fitness_sum / self.__config.get_population_size()
-            # Format: Epoch, Best Fitness, Worst Fitness, Average Fitness, Ovr Best Fitness, Diversity Measure
-            liveFile.write("{}, {}, {}, {}, {}, {}\n".format(
-                str(self.get_current_epoch()),
-                str(self.__circuits[0].get_fitness()),
-                str(self.__circuits[-1].get_fitness()),
-                str(avg),
-                str(self.get_overall_best_circuit_info().fitness),
-                diversity
-            ))
+        if self.get_current_epoch() > 0:
+            with open("workspace/bestlivedata.log", "a") as liveFile:
+                avg = fitness_sum / self.__config.get_population_size()
+                # Format: Epoch, Best Fitness, Worst Fitness, Average Fitness, Ovr Best Fitness, Diversity Measure
+                liveFile.write("{}, {}, {}, {}, {}, {}\n".format(
+                    str(self.get_current_epoch()),
+                    str(self.__circuits[0].get_fitness()),
+                    str(self.__circuits[-1].get_fitness()),
+                    str(avg),
+                    str(self.get_overall_best_circuit_info().fitness),
+                    diversity
+                ))
         
         if self.__multiple_populations:
             # Write the population counts to file (i.e. count of circuits from each source population)
