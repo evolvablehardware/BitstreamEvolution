@@ -167,12 +167,9 @@ class CircuitPopulation:
         #loop through trials and log fitness
         should_continue = True
         while should_continue:
-            if isinstance(ckt, IntrinsicCircuit):
-                ckt.upload()
-            for i in range(self.__config.get_num_samples()):
-                ckt.collect_data_once()
+            self.__eval_circuit_once(ckt)
+            fitness = ckt.get_fitness()
 
-            fitness = ckt.calculate_fitness()
             with open("workspace/fitnesssensitivity.log", "a") as live_file:
                 if self.__config.is_pulse_func():
                     data2 = ckt.get_pulses()
@@ -464,6 +461,15 @@ class CircuitPopulation:
                 should_continue = False
         return should_continue
 
+    def __eval_circuit_once(self, circuit):
+        circuit.clear_data()
+        if isinstance(scircuit, IntrinsicCircuit):
+            circuit.upload()
+        for i in range(self.__config.get_num_samples()):
+            circuit.collect_data_once()
+
+        circuit.calculate_fitness()
+
     def evolve(self):
         """
         Runs an evolutionary loop and records the circuit with the highest fitness throughout the loop,
@@ -498,6 +504,9 @@ class CircuitPopulation:
             # Evaluate all the Circuits in this CircuitPopulation.
             start = time()
 
+            for circuit in self.__circuits:
+                circuit.clear_data()
+                
             for i in range(self.__config.get_num_passes()):
                 # Shuffle the circuits each time
                 circuits = np.random.permutation(self.__circuits)
@@ -595,12 +604,7 @@ class CircuitPopulation:
         # We have finished evolution! Lets quickly re-evaluate the top circuit, since it
         # will then output its waveform
         if not is_pulse_func(self.__config):
-            if isinstance(self.__circuits[0], IntrinsicCircuit):
-                self.__circuits[0].upload()
-            for i in range(self.__config.get_num_samples()):
-                self.__circuits[0].collect_data_once()
-
-            self.__circuits[0].calculate_fitness()
+            self.__eval_circuit_once(self.__circuits[0])
         # Also, log the name of the top circuit
         self.__log_event(1, "Top Circuit in Final Generation:", self.__circuits[0])
 
