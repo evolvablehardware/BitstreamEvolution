@@ -23,7 +23,7 @@ class SimHardwareCircuit(FileBasedCircuit):
         Returns
         -------
         float
-            The fitness of the sim hardware. (sum of all bytes in compiled binary file)
+            The fitness of the sim hardware. (sum of all modifiable bits in compiled binary file)
         """
         fitness = 0
         def evaluate_bit(bit, *rest):
