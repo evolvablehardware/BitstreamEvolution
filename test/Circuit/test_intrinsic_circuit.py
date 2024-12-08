@@ -6,6 +6,7 @@ from Circuit.IntrinsicCircuit import IntrinsicCircuit
 circuit = None
 config = Mock()
 rand = Mock()
+logger = Mock()
 microcontroller = Mock()
 
 fitness_func = Mock()
@@ -20,7 +21,7 @@ config.get_accessed_columns.return_value = [14,15,24,25,40,41]
 config.get_routing_type.return_value = 'MOORE'
 
 template = Path(os.path.join('test', 'res', 'inputs', 'hardware_file.asc'))
-circuit = IntrinsicCircuit(1, 'test', config, template, rand, microcontroller, fitness_func)
+circuit = IntrinsicCircuit(1, 'test', config, template, rand, logger, microcontroller, fitness_func)
 
 # NOTE: Don't need to test mutation/crossover since those are already tested by sim hardware tests
 # Just need to test fitness evaluation

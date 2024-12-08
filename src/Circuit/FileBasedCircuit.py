@@ -5,6 +5,7 @@ from subprocess import run
 import os
 from Circuit.Circuit import Circuit
 import Config
+import Logger
 
 COMPILE_CMD = "icepack"
 
@@ -16,10 +17,11 @@ class FileBasedCircuit(Circuit):
     Provides useful methods for working with hardware files
     """
 
-    def __init__(self, index: int, filename: str, config: Config, template: Path, rand):
+    def __init__(self, index: int, filename: str, config: Config, template: Path, rand, logger: Logger):
         Circuit.__init__(self, index, filename, config)
 
         self._rand = rand
+        self._logger = logger
 
         asc_dir = config.get_asc_directory()
         bin_dir = config.get_bin_directory()
@@ -59,7 +61,7 @@ class FileBasedCircuit(Circuit):
                 # 48 = 0, 49 = 1. To flip, just need to do (48+49) - the current value (48+49=97)
                 # This now always flips the bit instead of randomly assigning it every time
                 # Note: If prev != 48 or 49, then we changed the wrong value because it was not a 0 or 1 previously
-                #self.__log_event(4, "Mutating:", self, "@(", row, ",", col, ") previous was", bit)
+                self._log_event(4, "Mutating:", self, "@(", row, ",", col, ") previous was", bit)
                 return 97 - bit
         self._run_at_each_modifiable(mutate_bit)
 
@@ -191,7 +193,7 @@ class FileBasedCircuit(Circuit):
         """
         Compile circuit ASC file to a BIN file for hardware upload.
         """
-        #self.__log_event(2, "Compiling", self, "with icepack...")
+        self._log_event(2, "Compiling", self, "with icepack...")
 
         # Ensure the file backing the mmap is up to date with the latest
         # changes to the mmap.
@@ -204,7 +206,7 @@ class FileBasedCircuit(Circuit):
         ]
         run(compile_command)
 
-        #self.__log_event(2, "Finished compiling", self)
+        self._log_event(2, "Finished compiling", self)
 
     def __tile_is_included(self, hardware_file, pos):
         """
@@ -414,3 +416,10 @@ class FileBasedCircuit(Circuit):
         # Re-map our hardware file
         self._hardware_file = mmap(hardware_file.fileno(), 0)
         hardware_file.close()
+
+    def _log_event(self, level, *event):
+        """
+        Emit an event-level log. This function is fulfilled through
+        the logger.
+        """
+        self._logger.log_event(level, *event)

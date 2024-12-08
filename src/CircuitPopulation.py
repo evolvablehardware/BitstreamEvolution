@@ -227,7 +227,7 @@ class CircuitPopulation:
         if self.__config.get_simulation_mode() == 'FULLY_SIM':
             return FullySimCircuit(index, file_name, self.__config, sine_funcs, self.__rand)
         elif self.__config.get_simulation_mode() == 'SIM_HARDWARE':
-            return SimHardwareCircuit(index, file_name, self.__config, seed_arg, self.__rand)
+            return SimHardwareCircuit(index, file_name, self.__config, seed_arg, self.__logger, self.__rand)
         else:
             fit_func = None
             if self.__config.get_fitness_func() == 'VARIANCE':
@@ -237,7 +237,7 @@ class CircuitPopulation:
             elif self.__config.get_fitness_func() == 'TONE_DISCRIMINATOR':
                 fit_func = ToneDiscriminatorFitnessFunction()
 
-            return IntrinsicCircuit(index, file_name, self.__config, seed_arg, self.__rand, self.__microcontroller, fit_func)
+            return IntrinsicCircuit(index, file_name, self.__config, seed_arg, self.__rand, self.__logger, self.__microcontroller, fit_func)
 
     def populate(self):
         """

@@ -6,6 +6,7 @@ from Circuit.SimHardwareCircuit import SimHardwareCircuit
 circuit = None
 config = Mock()
 rand = Mock()
+logger = Mock()
 
 # Set directories for workspace files in tests
 config.get_data_directory.return_value = Path(os.path.join('test', 'out', 'data'))
@@ -17,7 +18,7 @@ config.get_accessed_columns.return_value = [14,15,24,25,40,41]
 config.get_routing_type.return_value = 'MOORE'
 
 template = Path(os.path.join('test', 'res', 'inputs', 'hardware_file.asc'))
-circuit = SimHardwareCircuit(1, 'test', config, template, rand)
+circuit = SimHardwareCircuit(1, 'test', config, template, logger, rand)
 
 def test_zero_eval():
     # Mock randomize all to set every bit to 0
@@ -59,7 +60,7 @@ def test_mutate():
     assert fit == 1728
     
 def test_crossover():
-    parent = SimHardwareCircuit(2, 'test2', config, template, rand)
+    parent = SimHardwareCircuit(2, 'test2', config, template, logger, rand)
     
     rand.integers.return_value = 48
     circuit.randomize_bitstream()

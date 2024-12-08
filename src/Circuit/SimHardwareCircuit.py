@@ -1,14 +1,15 @@
 from pathlib import Path
 from Circuit.FileBasedCircuit import FileBasedCircuit
 import Config
+import Logger
 
 class SimHardwareCircuit(FileBasedCircuit):
     """
     A concrete class, the simulated circuit that bases its fitness off of the hardware file
     """
 
-    def __init__(self, index: int, filename: str, config: Config, template: Path, rand):
-        FileBasedCircuit.__init__(self, index, filename, config, template, rand)
+    def __init__(self, index: int, filename: str, config: Config, template: Path, logger: Logger, rand):
+        FileBasedCircuit.__init__(self, index, filename, config, template, rand, logger)
 
     def upload(self):
         # Need to compile, but not actually upload to the FPGA
