@@ -21,6 +21,11 @@ class IntrinsicCircuit(FileBasedCircuit):
         self._extra_data = dict()
         self._fitness_func.attach(self._data_filepath, microcontroller, self._config, self._extra_data)
 
+    def evaluate_once(self):
+        self.clear_data()
+        self.collect_data_once()
+        self.calculate_fitness()
+
     def _get_measurement(self):
         return self._fitness_func.get_measurements()
 
@@ -32,6 +37,9 @@ class IntrinsicCircuit(FileBasedCircuit):
 
     def get_waveform(self):
         return self._fitness_func.get_waveform()
+
+    def get_extra_data(self, key):
+        return self._extra_data[key]
 
     def __run(self):
         """

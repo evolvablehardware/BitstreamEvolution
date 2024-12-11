@@ -368,6 +368,7 @@ class CircuitPopulation:
         """
         Randomizes population until minimum number of pulses is found.
         Called by populate(self)
+        Should only be used with pulse count fitness functions
         """
         no_pulses_generated = True
         while no_pulses_generated:
@@ -380,8 +381,8 @@ class CircuitPopulation:
                 else:
                     circuit.mutate()
 
-                circuit.evaluate_pulse_count()
-                pulses = circuit.get_pulses()
+                circuit.evaluate_once()
+                pulses = circuit.get_extra_data('pulses')
                 th = self.__config.get_randomize_threshold()
                 if (pulses > th):
                     no_pulses_generated = False
@@ -392,6 +393,7 @@ class CircuitPopulation:
         """
         Randomizes population until a mean voltage is found near the desired value
         called by populate(self)
+        Should only be used with variance maximization fitness function
         """
         while True:
             self.__log_event(3, "Randomizing to get voltage")
@@ -401,7 +403,8 @@ class CircuitPopulation:
                 else:
                     circuit.mutate()
 
-                mean_voltage = circuit.measure_mean_voltage()
+                circuit.evaluate_once()
+                mean_voltage = circuit.get_extra_data('mean_voltage')
                 if (abs(mean_voltage - 341) < 10):
                     self.__log_info(1, "Voltage Achieved! Exiting randomization. Voltage:", mean_voltage)
                     break
@@ -412,6 +415,7 @@ class CircuitPopulation:
         """
         Randomizes population until minimum variance fitness is found.
         called by populate(self)
+        Should only be used with variance maximization fitness function
         """
         # Variance threshold is the desired variance
         bestVariance = 0
@@ -420,7 +424,8 @@ class CircuitPopulation:
             self.__log_event(3, "Randomizing to generate variance")
             for circuit in self.__circuits:
                 circuit.randomize_bitstream()
-                variance = circuit.evaluate_variance()
+                circuit.evaluate_once()
+                variance = circuit.get_fitness()
                 self.__log_info(3, "Variance generated:", variance)
 
                 with open("workspace/randomizationdata.log", "a") as liveFile:
