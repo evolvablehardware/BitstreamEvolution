@@ -1058,9 +1058,12 @@ class Circuit:
             else:
                 fitness = 1.0 / abs(desired_freq - pulses)
 
-        if pulses > 0:
+        #if pulses > 0:
             # Give fitness bonus for getting above 0 pulses
-            fitness = fitness + 1
+            #fitness = fitness + 1
+        # anything with 0 pulses gets an automatic 0 for fitness
+        if pulses <= 0:
+            fitness = 0
         return fitness
 
     def __measure_combined_fitness(self, waveform):
