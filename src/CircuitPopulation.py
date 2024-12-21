@@ -172,9 +172,9 @@ class CircuitPopulation:
 
             with open("workspace/fitnesssensitivity.log", "a") as live_file:
                 if self.__config.is_pulse_func():
-                    data2 = ckt.get_pulses()
+                    data2 = ckt.get_extra_data('pulses')
                 else:
-                    data2 = ckt.get_mean_voltage()
+                    data2 = ckt.get_extra_data('mean_voltage')
 
                 #get temp and humidity reading
                 t = 0
@@ -536,7 +536,7 @@ class CircuitPopulation:
                 if self.__config.get_simulation_mode() != 'FULLY_SIM':
                     circuit.set_file_attribute("fitness", str(fitness))
                     if self.__config.is_pulse_count():
-                        circuit.set_file_attribute("pulse_count", str(circuit.get_pulses()))
+                        circuit.set_file_attribute("pulse_count", str(circuit.get_extra_data('pulses')))
 
                 # Commented out for now while we test
                 # Pretty sure this was originally for pulse count only, leaving it commented out since things are working right now
@@ -675,7 +675,7 @@ class CircuitPopulation:
                     with open("workspace/pulselivedata.log", "a") as live_file3:
                         data = []    
                         for ckt in self.__circuits:
-                            data.append(str(ckt.get_pulses()))
+                            data.append(str(ckt.get_extra_data('pulses')))
                         live_file3.write(("{}:{}\n").format(self.__current_epoch, ",".join(data)))
 
             if self.__config.saving_population_bistream():

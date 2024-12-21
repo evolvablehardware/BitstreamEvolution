@@ -81,10 +81,10 @@ class Evolution:
         try:
             run(args, check=True, capture_output=True)
         except OSError as e:
-            self.log_error(1, "An error occured while launching PlotEvolutionLive.py")
+            self.logger.log_error(1, "An error occured while launching PlotEvolutionLive.py")
         except CalledProcessError as e:
-            self.log_error(1, "An error occured in PlotEvolutionLive.py")
-            self.log_error(1, e)
+            self.logger.log_error(1, "An error occured in PlotEvolutionLive.py")
+            self.logger.log_error(1, e)
 
         # SECTION Clean up resources
 
