@@ -48,7 +48,7 @@ def is_pulse_func(config):
     return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
             or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT' or config.get_fitness_func() == 'PULSE_CONSISTENCY')
 
-class Circuit:
+class CircuitLegacy:
     """
     Represents a manifestation of a particular configuration
     on an FPGA and all its associated information. It tracks the
@@ -242,7 +242,7 @@ class Circuit:
         str
             The value of the attribute
         '''
-        return Circuit.get_file_attribute_st(self.__hardware_file, attribute)
+        return CircuitLegacy.get_file_attribute_st(self.__hardware_file, attribute)
     
     def set_file_attribute(self, attribute, value):
         '''
@@ -258,7 +258,7 @@ class Circuit:
             The value to assign to the attribute
         '''
         hardware_file = open(self.__hardware_filepath, "r+")
-        Circuit.set_file_attribute_st(hardware_file, attribute, value)
+        CircuitLegacy.set_file_attribute_st(hardware_file, attribute, value)
         # Re-map our hardware file
         self.__hardware_file = mmap(hardware_file.fileno(), 0)
         hardware_file.close()
@@ -287,7 +287,7 @@ class Circuit:
             self.__hardware_filepath,
             self.__bitstream_filepath
         ]
-        run(compile_command);
+        run(compile_command)
 
         self.__log_event(2, "Finished compiling", self)
 
@@ -463,7 +463,7 @@ class Circuit:
         start = time()
 
         self.__run()
-        self.__microcontroller.measure_signal(self)
+        self.__microcontroller.measure_signal(self.get_data_filepath())
 
         elapsed = time() - start
         self.__log_event(1,
@@ -552,7 +552,7 @@ class Circuit:
         start = time()
         self.__run()
         #self.__microcontroller.measure_pulses(self)
-        self.__microcontroller.simple_measure_pulses(self, self.__config.get_num_samples())
+        self.__microcontroller.simple_measure_pulses(self.get_data_filepath(), self.__config.get_num_samples())
 
         elapsed = time() - start
         self.__log_event(1,
@@ -1158,7 +1158,7 @@ class Circuit:
             self.get_file_attribute('src_population')
         )
 
-        # Write these new liens to the file
+        # Write these new lines to the file
         with open("workspace/alllivedata.log", "w+") as allLive:
             allLive.writelines(lines)
 

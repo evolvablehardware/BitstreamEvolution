@@ -19,7 +19,7 @@ from serial import Serial
 from time import time
 import numpy as np
 
-from Circuit import Circuit
+from Circuit.CircuitLegacy import CircuitLegacy
 import typing
 
 from Config import Config
@@ -106,59 +106,56 @@ class Microcontroller:
         """
         return self.__fpga
 
-    def simple_measure_pulses(self, circuit: Circuit, samples: int):
+    def simple_measure_pulses(self, data_filepath):
         """
-        This measure pulses function will poll the MCU a certain number of times,
-        and just put the raw pulse counts recorded into the circuit's data file
+        This measure pulses function will poll the MCU,
+        and just put the raw pulse count recorded into the circuit's data file
 
         Parameters
         ----------
         circuit : Circuit
             The circuit we will measure pulses of.
-        samples : int
-            The number of times to repeat this measurement
         """
-        data_file = open(circuit.get_data_filepath(), "w")
+        data_file = open(data_filepath, "w")
         lines = []
         buf = []
-        for i in range(0, samples):
-            # Poll serial line until START signal
-            self.__log_event(3, f"Starting loop for reading (sample {i+1}/{samples})")
-            
-            self.__serial.reset_input_buffer()
-            self.__serial.reset_output_buffer()
-            # NOTE The MCU is expecting a string '1' if fitness isn't measured this may be why
-            self.__serial.write(b'1') 
-            start = time()
-            self.__log_event(3, f"Starting MCU loop... (sample {i+1}/{samples})")
+        # Poll serial line until START signal
+        self.__log_event(3, f"Starting loop for reading")
+        
+        self.__serial.reset_input_buffer()
+        self.__serial.reset_output_buffer()
+        # NOTE The MCU is expecting a string '1' if fitness isn't measured this may be why
+        self.__serial.write(b'1') 
+        start = time()
+        self.__log_event(3, f"Starting MCU loop...")
 
-            max_attempts = 5
-            attempts = 0
-            while True:
-                attempts = attempts + 1
-                self.__log_event(3, f"Serial reading... (sample {i+1}/{samples})")
-                p = self.__serial.read_until()
-                self.__log_event(3, f"Serial read done (sample {i+1}/{samples})")
-                if (time() - start) >= self.__config.get_mcu_read_timeout():
-                    self.__log_warning(1, f"Time Exceeded (sample {i+1}/{samples})")
-                    if attempts >= max_attempts:
-                        self.__log_warning(3, f"Exceeded max attempts ({max_attempts}). Halting MCU reading")
-                        buf.append(-1)
-                        break
-                # TODO We should be able to do whatever this line does better
-                # This is currently doing a poor job at REGEXing the MCU serial return - can be done better
-                # It's supposed to handle exceptions from transmission loss (i.e. dropped or additional spaces, shifted colons, etc)
-                self.__log_event(3, "Pulled", p, f"from MCU (sample {i+1}/{samples})")
-                if (p != b"" and b":" not in p and b"START" not in p and b"FINISH" not in p and b" " not in p):
-                    p = p.translate(None, b"\r\n")
-                    buf.append(p)
+        max_attempts = 5
+        attempts = 0
+        while True:
+            attempts = attempts + 1
+            self.__log_event(3, f"Serial reading...")
+            p = self.__serial.read_until()
+            self.__log_event(3, f"Serial read done")
+            if (time() - start) >= self.__config.get_mcu_read_timeout():
+                self.__log_warning(1, f"Time Exceeded")
+                if attempts >= max_attempts:
+                    self.__log_warning(3, f"Exceeded max attempts ({max_attempts}). Halting MCU reading")
+                    buf.append(-1)
                     break
+            # TODO We should be able to do whatever this line does better
+            # This is currently doing a poor job at REGEXing the MCU serial return - can be done better
+            # It's supposed to handle exceptions from transmission loss (i.e. dropped or additional spaces, shifted colons, etc)
+            self.__log_event(3, "Pulled", p, f"from MCU")
+            if (p != b"" and b":" not in p and b"START" not in p and b"FINISH" not in p and b" " not in p):
+                p = p.translate(None, b"\r\n")
+                buf.append(p)
+                break
 
-            end = time() - start
+        end = time() - start
 
-            # if the transfer interval is "SAMPLE", switch to the other fpga between samples
-            if self.__config.get_transfer_sample():
-                self.switch_fpga()
+        # if the transfer interval is "SAMPLE", switch to the other fpga between samples
+        # if self.__config.get_transfer_sample():
+        #     self.switch_fpga()
 
         # buf now has `samples` entries
         self.__log_event(2, 'Length of buffer:', len(buf))
@@ -175,7 +172,7 @@ class Microcontroller:
         data_file.writelines(lines)
         data_file.close()
 
-    def measure_pulses(self, circuit: Circuit):
+    def measure_pulses(self, circuit: CircuitLegacy):
         """
         Measures the number of pulses generated by the circuit provided.
         
@@ -252,12 +249,9 @@ class Microcontroller:
 
         data_file.close()
 
-    def measure_signal(self, circuit):
+    def measure_signal(self, data_filepath):
         """
-        Measures the signal 
-
-        .. todo::
-            Not really sure what this does. Is this the one that gets the waveform?
+        Measures the signal, writing the waveform data to the provided data file
         
         .. todo::
             Preexisting todo: This whole section can probably be optimized.
@@ -267,12 +261,10 @@ class Microcontroller:
         circuit : Circuit
             The circuit we are measuring the signal of
         """
-        # TODO This whole section can probably be optimized
-        
         buf = []
 
         # Begin monitoring on load
-        data_file = open(circuit.get_data_filepath(), "wb")
+        data_file = open(data_filepath, "wb")
 
         self.__serial.reset_input_buffer()
         self.__serial.reset_output_buffer()
@@ -313,7 +305,7 @@ class Microcontroller:
         data_file.close()
         self.__log_event(2, "Completed writing to data file")
 
-    def measure_signal_td(self, circuit):
+    def measure_signal_td(self, data_filepath):
         """
         Measures (1) the FPGA waveform directly from FPGA output pin and (2) the "state"/frequency waveform
         directly from the signal-generating Nano. Writes 1000 sample points' data to a file.
@@ -331,7 +323,7 @@ class Microcontroller:
         buf = []
 
         # Begin monitoring on load
-        data_file = open(circuit.get_data_filepath(), "wb")
+        data_file = open(data_filepath, "wb")
 
         self.__serial.reset_input_buffer()
         self.__serial.reset_output_buffer()

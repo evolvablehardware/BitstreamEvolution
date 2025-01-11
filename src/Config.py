@@ -134,6 +134,23 @@ class Config:
 		"""
 		return self.__config_parser.get("STOPPING CONDITION PARAMETERS", param)
 
+	def get_plotting_parameters(self, param):
+		"""
+		Returns the value of a parameter from the "PLOTTING PARAMETERS"
+		section of the config file.
+
+		Parameters
+		----------
+		param : str
+			The name of the parameter to return
+
+		Returns
+		-------
+		str
+			The value of the parameter
+		"""
+		return self.__config_parser.get("PLOTTING PARAMETERS", param)
+
 	def get_logging_parameters(self, param):
 		"""
 		Returns the value of a parameter from the "LOGGING PARAMETERS"
@@ -267,6 +284,9 @@ class Config:
 			the calculated frequency from the number of pulses in a second to the target frequency.
 			The closer to the target, the higher the fitness. This fitness function is more 'sensitive'
 			of errors, meaning it has an abrupt drop-off in fitness scores even for slight errors.
+		**TONE_DISCRIMINATOR**
+			This randomly alternates between a 1kHz and 10kHz signal sent to the FPGA, and
+			reads in a high/low output from the FGPA to get the predicted frequency.
 
         Returns
         -------
@@ -588,6 +608,12 @@ class Config:
 		except NoOptionError:
 			return Path("./prev_workspaces")
 	
+	def get_final_experiment_directory(self):
+		try:
+			return Path(self.get_logging_parameters("final_experiment_dir"))
+		except NoOptionError:
+			return Path("./experiments")
+
 	def get_backup_workspace(self):
 		try:
 			input = self.get_logging_parameters("backup_workspace")
@@ -718,6 +744,13 @@ class Config:
 	def get_mcu_read_timeout(self):
 		return float(self.get_hardware_parameters("MCU_READ_TIMEOUT"))
 
+	def get_launch_plots(self):
+		value = self.get_plotting_parameters("launch_plots")
+		return value == "true" or value == "True"
+
+	def get_frame_interval(self):
+		return int(self.get_plotting_parameters("frame_interval"))
+
 	def check_valid_value(self, param_name, user_input, allowed_values):
 		if not user_input in allowed_values:
 			self.__log_error(1, "Invalid " + param_name + " '" + str(user_input) + "'. Valid parameters are: " + 
@@ -740,6 +773,8 @@ class Config:
 		if self.get_simulation_mode != 'FULLY_SIM' and self.get_simulation_mode != 'SIM_HARDWARE':
 			self.validate_system_params()
 			self.validate_hardware_params()
+
+		self.validate_plotting_params()
 
 		# Make sure user follows our requirements
 		# Pulse consistency must have >=1 passes and >=1 samples
@@ -831,6 +866,10 @@ class Config:
 		if self.get_using_configurable_io():
 			self.get_input_pins()
 			self.get_output_pins()
+
+	def validate_plotting_params(self):
+		self.get_launch_plots()
+		self.get_frame_interval()
 
 	def validate_sensitivity_params(self):
 		self.get_test_circuit()

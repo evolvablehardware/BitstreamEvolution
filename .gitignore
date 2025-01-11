@@ -23,6 +23,7 @@ workspace/
 tools/
 !src/tools
 prev_workspaces/
+experiments/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

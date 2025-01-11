@@ -19,6 +19,7 @@ import sys
 from utilities import determine_color
 from os.path import exists
 from os import mkdir
+import argparse
 
 """
 Static parameters can be found and changed in the config.ini file in the root project folder
@@ -26,10 +27,14 @@ DO NOT CHANGE THEM HERE
 """
 
 MAX_VIOLIN_PLOTS = 11
-HEATMAP_BINS = 40 
-FRAME_INTERVAL = 10000
+HEATMAP_BINS = 40
 
 config = Config("workspace/builtconfig.ini")
+
+arg_parser = argparse.ArgumentParser()
+arg_parser.add_argument("-f", "--frame-interval", required=False, default=10000)
+args = arg_parser.parse_args()
+FRAME_INTERVAL = int(args.frame_interval)
 
 def run():
     """Temporary function to run all of Plot Evolution Live."""
