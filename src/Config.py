@@ -702,6 +702,21 @@ class Config:
 	# SECTION Getters for system parameters.
 	def get_fpga(self):
 		return self.get_system_parameters("FPGA")
+	
+	def get_fpgas(self):
+		value = self.get_system_parameters("FPGAS")
+		return value.split(',')
+	
+	def get_pins(self):
+		try:
+			value = self.get_system_parameters("PINS")
+			pinStrings = value.split(',')
+			pins = []
+			for pin in pinStrings:
+				pins.append(int(pin))
+			return pins
+		except NoOptionError:
+			return [0]
 
 	def get_usb_path(self):
 		return self.get_system_parameters("USB_PATH")
@@ -857,6 +872,8 @@ class Config:
 	def validate_system_params(self):
 		self.get_fpga()
 		self.get_usb_path()
+		self.get_fpgas()
+		self.get_pins()
 
 	def validate_hardware_params(self):
 		self.get_routing_type()
