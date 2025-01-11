@@ -9,8 +9,12 @@ The delays are used to control for noise on the serial line.
 #define ADCMeasureSelection '2' 
 #define switchConstant '4'
 #define ADCMeasuretdSelection '5'
-#define DIGITAL_PINS 2
+// Version is checked when program starts to verify that the main software
+// and Arduino are in sync with the correct code (Evolution.py)
+#define GetVersionSelection 'V'
+#define Version 1
 // Only D2 and D3 can be used for interrupts
+#define DIGITAL_PINS 2
 
 // A0 is used for ADC readings from the FPGA output pin (variance / tone discriminator)
 int analogPin = A0;
@@ -138,7 +142,9 @@ void loop(){
         providedPin = -1;
       }
       
-      if (x == ADCMeasureSelection){
+      if (x == GetVersionSelection) {
+        Serial.print(Version);
+      } else if (x == ADCMeasureSelection){
         Serial.print("START\nSTART\nSTART\n");
 
         int analogPin = providedPinToAnalog(providedPin);

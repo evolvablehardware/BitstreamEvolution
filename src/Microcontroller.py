@@ -102,6 +102,18 @@ class Microcontroller:
         """
         return self.__fpga
 
+    def get_mcu_version(self) -> int:
+        """
+        Prompts the MCU for the current version of the Arduino code
+
+        Should match an expected version in this software
+
+        Returns the version (byte)
+        """
+        self.__serial.write(b'V')
+        version = self.__serial.read(1)
+        return int(version)
+
     def simple_measure_pulses(self, data_filepath, pin):
         """
         This measure pulses function will poll the MCU,

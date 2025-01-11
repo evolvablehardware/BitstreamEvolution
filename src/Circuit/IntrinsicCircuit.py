@@ -55,7 +55,7 @@ class IntrinsicCircuit(FileBasedCircuit):
             RUN_CMD,
             self._bitstream_filepath,
             "-d",
-            self._config.get_fpga()
+            self._config.get_fpgas()[self._fpga_index]
         ]
         print(cmd_str)
         run(cmd_str)

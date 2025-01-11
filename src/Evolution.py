@@ -8,6 +8,8 @@ import os
 
 from WorkspaceFormatter import WorkspaceFormatter
 
+MCU_CODE_VERSION = 1
+
 class Evolution:
 
     def __init__(self):
@@ -61,6 +63,12 @@ class Evolution:
         self.validate_arguments(output_directory)
         mcu = Microcontroller(config, logger)
         population = CircuitPopulation(mcu, config, logger)
+
+        # Verify the version of the Arduino code
+        mcuVersion = mcu.get_mcu_version()
+        if mcuVersion != MCU_CODE_VERSION:
+            logger.log_error(f'MCU code is incorrect version; expected {MCU_CODE_VERSION}, found {mcuVersion}')
+            return
 
         self.output_directory = output_directory
         self.config = config
