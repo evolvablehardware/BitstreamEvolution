@@ -46,6 +46,8 @@ instructions assume you are running a Debian-based distrubtion such as
 Debian or Ubuntu.
 
 ### Requirements
+BitstreamEvolution requires Python version 3.7 or higher.
+
 BistreamEvolution requires the following libraries and packages:
   * build-essential
   * clang
