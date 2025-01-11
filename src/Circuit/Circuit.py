@@ -42,6 +42,15 @@ class Circuit(ABC):
         """
         self._data.extend(self._get_measurement())
 
+    def get_extra_data(self, key):
+        return 0
+    
+    def set_file_attribute(self, attribute, value):
+        pass # No default behavior
+
+    def get_file_attribute(self, attribute):
+        return '0' # No default behavior
+
     @abstractmethod
     def _get_measurement(self) -> list[float]:
         """

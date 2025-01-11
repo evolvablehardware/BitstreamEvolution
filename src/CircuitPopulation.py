@@ -287,7 +287,7 @@ class CircuitPopulation:
                     subdir_circuits.add(CircuitPathInfo(path, fitness))
 
                 all_subdir_circuits.append(subdir_circuits)
-            subdirectory_index = 0
+        subdirectory_index = 0
 
         # if we're using custom i/o pin configurations
         # need to configure to io tiles of the seed circuit
@@ -351,7 +351,7 @@ class CircuitPopulation:
         elif self.__config.get_randomization_type() == "VARIANCE":
             self.__log_info(1, "VARIANCE randomization mode selected.")
             if self.__config.get_randomize_threshold() <= 0:
-                self.log_error(INVALID_VARIANCE_ERR_MSG)
+                self.__log_error(INVALID_VARIANCE_ERR_MSG)
             else:
                 self.__randomize_until_variance()
         elif self.__config.get_randomization_type() == "VOLTAGE":
@@ -1130,16 +1130,6 @@ class CircuitPopulation:
         num_pairs = n * (n-1) / 2
 
         self.__log_event(4, "Starting Hamming Distance Calculation")
-
-        #TODO: remove dead code
-        # bitstreams = []
-        # if self.__config.get_simulation_mode() == "FULLY_SIM":
-        #     bitstreams = map(lambda c: c.get_bitstream(), self.__circuits)
-        # else:
-        #     # Need to convert the char byte values to 0s and 1s along the way
-        #     bitstreams = map(lambda c: list(map(
-        #         lambda char: char-48, c.get_bitstream())), self.__circuits)
-        # bitstreams = list(bitstreams)
         bitstreams = list(map(lambda c: c.get_bitstream(), self.__circuits))
 
         # We now have all the bitstreams, we can do the faster hamming calculation by comparing each bit of them
