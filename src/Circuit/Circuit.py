@@ -20,7 +20,14 @@ class Circuit(ABC):
         self._index = index
         self._fitness = 0
         
+        # For the current circuit, used to record the data
         self._data = []
+        # After collecting the data for a certain FPGA, add it here
+        # This is used to calculate the fitness for the entire abstract circuit,
+        # after running it on each FPGA
+        self._fpga_datas = []
+        # The current FPGA we're evaluating
+        self._fpga_index = 0
 
     @abstractmethod
     def upload(self):
@@ -35,6 +42,18 @@ class Circuit(ABC):
         Returns the full bitstream of the circuit
         """
         pass
+
+    def next_fpga(self):
+        """
+        Switches to the next FPGA for collecting data
+        You will need to upload again
+        """
+        while len(self._fpga_datas) <= self._fpga_index:
+            self._fpga_datas.append([])
+
+        self._fpga_datas[self._fpga_index] = self._data
+        self._data.clear()
+        self._fpga_index = self._fpga_index + 1
 
     def collect_data_once(self):
         """
@@ -67,6 +86,8 @@ class Circuit(ABC):
         Clears the stored measurement data
         """
         self._data.clear()
+        self._fpga_datas.clear()
+        self._fpga_index = 0
 
     @abstractmethod
     def mutate(self):

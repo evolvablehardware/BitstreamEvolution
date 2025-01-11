@@ -30,7 +30,11 @@ class IntrinsicCircuit(FileBasedCircuit):
         return self._fitness_func.get_measurements()
 
     def _calculate_fitness(self) -> float:
-        return self._fitness_func.calculate_fitness(self._data)
+        fitness_sum = 0
+        for data in self._fpga_datas:
+            fitness_sum = fitness_sum + self._fitness_func.calculate_fitness(data)
+        mean = fitness_sum / len(self._fpga_datas)
+        return mean
 
     def upload(self):
         self.__run()

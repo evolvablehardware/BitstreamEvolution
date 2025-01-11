@@ -551,7 +551,6 @@ class CircuitLegacy:
         """
         start = time()
         self.__run()
-        #self.__microcontroller.measure_pulses(self)
         self.__microcontroller.simple_measure_pulses(self.get_data_filepath(), self.__config.get_num_samples())
 
         elapsed = time() - start

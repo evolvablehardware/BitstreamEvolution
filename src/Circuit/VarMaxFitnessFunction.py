@@ -6,7 +6,7 @@ class VarMaxFitnessFunction(FitnessFunction):
         self.__total_samples = total_samples
 
     def get_measurements(self) -> list[float]:
-        self._microcontroller.measure_signal(self._data_filepath)
+        self._microcontroller.measure_signal(self._data_filepath, self.__config.pins[self._fpga_index])
         waveform = self.__read_waveform()
         fitness = self.__measure_variance_fitness(waveform)
         return [fitness]

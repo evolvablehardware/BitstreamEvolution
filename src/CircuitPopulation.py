@@ -470,8 +470,10 @@ class CircuitPopulation:
         circuit.clear_data()
         if isinstance(circuit, FileBasedCircuit):
             circuit.upload()
-        for i in range(self.__config.get_num_samples()):
-            circuit.collect_data_once()
+        for j in range(self.__config.get_fpgas()):
+            for i in range(self.__config.get_num_samples()):
+                circuit.collect_data_once()
+            circuit.next_fpga()
 
         circuit.calculate_fitness()
 

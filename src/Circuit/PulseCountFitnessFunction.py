@@ -6,7 +6,7 @@ class PulseCountFitnessFunction(FitnessFunction):
         FitnessFunction.__init__(self)
 
     def get_measurements(self) -> list[float]:
-        self._microcontroller.simple_measure_pulses(self._data_filepath)
+        self._microcontroller.simple_measure_pulses(self._data_filepath, self.__config.pins[self._fpga_index])
         pulses = self.__count_pulses()
         return pulses
 
