@@ -1,0 +1,146 @@
+[config.sphinx] # Metadata displayed on Sphinx page (custom)
+name = "Testing Github"
+#version = uses version in tool.poetry
+copyright_message = '2024, Evolvable Hardware'
+author = 'Evolvable Hardware'
+
+theme = "sphinx_nefertiti"
+dev_theme = "sphinx_book_theme"
+#OPTIONS:   'sphinx_book_theme'
+#           'sphinx_wagtail_theme'
+#           'sphinx_nefertiti'      <== Default/Suggested
+#           'pydata_sphinx_theme'
+
+logo = "https://evolvablehardware.org/images/EHWsetup.jpg"
+dev_logo = "https://evolvablehardware.org/images/setup_tutorial_2.jpg"
+test_fail_logo = "https://evolvablehardware.org/images/EHWsetup.jpg"
+
+# Config For testing in github workflows
+[tests]
+# all values used when testing
+
+[tests.workflows]
+# these are values that need verification in testing
+python-versions = ["3.10","3.11","3.12","3.13"]
+# These are the marker groups we are testing together, separate more for greater concurrency
+pytest-testing-groups = ["immediate or short", "long"]
+# Test Results to Display:
+#     f - failed        X - xpassed
+#     E - error         p - passed
+#     s - skipped       P - passed with output
+#     x - xfailed
+test-results-display-selector = "fEXxs"
+# Whether or not you see summary table in test results
+test-results-display-summary = true
+
+
+[tool.pytest.ini_options]
+# This line is automatically appended on any "pytest" command run
+addopts = "--strict-markers"
+# The markers are specified to the left of the colons, and descriptions to the right.
+# These descriptions can be viewed by typing "pytest --markers"
+markers = [
+    "immediate: For tests that are almost immediate, i.e. run < 10 sec        Group: test_length (default)",
+    "short:     For tests that are relatively short, i.e. run < 60 sec        Group: test_length",
+    "long:      For tests that run over a long time, i.e. run > 1 min         Group: test_length",
+    "all:       Automatically applied to all tests                            Group: all_tests (default)",
+]
+
+[tool.pytest.marker_groups]
+# These are the test groups that all tests must be a part of, so if one test is not marked, the default mark will be applied.
+# Here the name of the marker group is the variable assigned, and the markers in it are the members of the group
+# The marker at index 0 is the default
+# the logic for this is in conftest.py
+test_length = ["immediate", "short","long"]
+all_tests = ["all"]
+
+
+# Config File for Poetry:
+# More Info: https://python-poetry.org/docs/pyproject/
+[tool.poetry]
+name = "bitstreamevolution"
+version = "0.1.0"
+description = "Open Source Evolution Toolkit"
+
+authors = [
+    "Isaac Mierow <mierowir@rose-hulman.edu>"
+    ]
+
+#maintainers = [ # Should be distinct from list of authors Optional
+#  "Isaac Mierow <mierowir@rose-hulman.edu>"
+#  ]
+
+#What we want to include or exclude in the package
+#exclude = ["requirements.txt"]
+
+#Package information & websites
+package-mode = false
+# Change to true when we want to publish
+readme = "README.md"
+license = "GPL-3.0" # more licenses at https://spdx.org/licenses/
+homepage = "https://evolvablehardware.org/"
+repository = "https://github.com/evolvablehardware/BitstreamEvolution"
+documentation = "https://evolvablehardware.org/setup.html"
+
+#This is where we can put other URLs we want to link to
+[tool.poetry.urls]
+#"Bug Tracker" = "https://github.com/python-poetry/poetry/issues"
+
+#dependancies needed to run the app under normal conditions
+[tool.poetry.dependencies]
+python = "^3.10"
+toml = "^0.10.2"
+pyserial = "^3.5"
+numpy = "^2.2.2"
+matplotlib = "^3.10.0"
+sortedcontainers = "^2.4.0"
+
+#dev group for developers updating the code
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.0"
+Sphinx = "^7.2.6"
+sphinx-nefertiti = "^0.3.2"
+sphinx-book-theme = "^1.1.2"
+sphinx-wagtail-theme = "^6.3.0"
+pydata-sphinx-theme = "^0.15.2"
+sphinx-design = "^0.6.1"
+
+
+[tool.poetry.group.gh_read_pyproject] #This is used when we want to read pyproject.toml while evaluating workflows.
+optional = true
+
+[tool.poetry.group.gh_read_pyproject.dependencies]
+toml = "^0.10.2"
+
+#gh_tests group for all testing on github.
+[tool.poetry.group.gh_tests]
+optional = true
+
+[tool.poetry.group.gh_tests.dependencies]
+pytest = "^8.2.0"
+toml = "^0.10.2"
+
+#gh_tests group for building documentation on github.
+[tool.poetry.group.gh_docs]
+optional = true
+
+[tool.poetry.group.gh_docs.dependencies]
+pytest = "^8.2.0"
+toml = "^0.10.2"
+Sphinx = "^7.2.6"
+sphinx-nefertiti = "^0.3.2"
+sphinx-book-theme = "^1.1.2"
+sphinx-wagtail-theme = "^6.3.0"
+pydata-sphinx-theme = "^0.15.2"
+sphinx-design = "^0.6.1"
+
+
+[tool.poetry.group.tests.dependencies] #tests group is group for testing in local contexts
+pytest = "^8.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
