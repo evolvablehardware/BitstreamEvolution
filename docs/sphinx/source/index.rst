@@ -6,6 +6,9 @@
 Welcome to Evolvable Hardware's documentation!
 ==============================================
 
+.. todo::
+   Figure out how to get the dev website to work properly.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
