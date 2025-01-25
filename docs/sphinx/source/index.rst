@@ -11,6 +11,7 @@ Welcome to Evolvable Hardware's documentation!
    :caption: Contents:
 
    code/index
+   dev/index
 
 
 Indices and tables
