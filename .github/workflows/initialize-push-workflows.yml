@@ -97,6 +97,7 @@ jobs:
     
   build-website:
     needs: RunTests
+    if: ${{always()}}
     
     runs-on: ubuntu-latest
     steps:
