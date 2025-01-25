@@ -35,6 +35,8 @@ test-results-display-summary = true
 
 
 [tool.pytest.ini_options]
+
+pythonpath = ["src"]
 # This line is automatically appended on any "pytest" command run
 addopts = "--strict-markers"
 # The markers are specified to the left of the colons, and descriptions to the right.

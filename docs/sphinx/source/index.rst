@@ -10,7 +10,7 @@ Welcome to Evolvable Hardware's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   dev/index
+   code/index
 
 
 Indices and tables
