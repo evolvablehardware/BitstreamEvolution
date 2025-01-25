@@ -1,4 +1,4 @@
 {
-    "board": "arduino:avr:uno",
+    "board": "arduino:avr:nano",
     "sketch": "data\\ReadSignal\\ReadSignal.ino"
 }
