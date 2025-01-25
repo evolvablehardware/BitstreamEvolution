@@ -19,13 +19,13 @@ class sTag(Enum):
 
 # Tags are a method of 
 def tag_is_applied(tag:sTag)->bool:
-    return tag.value in tags
+    return tag.value in tags                                #pyright: ignore
 
 def any_tag_is_applied(tag_list:list[sTag])->bool:
     return any([tag_is_applied(tag) for tag in tag_list])
 
 def apply_tag(tag:sTag)->None:
-    tags.add(tag.value)
+    tags.add(tag.value)                                     #pyright: ignore
 
 ######################### Apply all automatic Tags ##################
 if not tag_is_applied(sTag.dev):
@@ -39,7 +39,7 @@ print("\t-> All Defined Tags")
 for tag in sTag:
     if tag_is_applied(tag):
         print("\t\t|-> "+tag.name)
-unknown_tags=set(tags).difference(sTag._member_names_)
+unknown_tags=set(tags).difference(sTag._member_names_)      #pyright: ignore
 print("\t-> All Undefined Tags")
 for tag in unknown_tags:
     print("\t\t|-> "+tag)
