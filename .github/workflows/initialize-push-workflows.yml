@@ -1,0 +1,159 @@
+name: Test and Build Website for Pushed Code
+run-name: Testing ${{ github.actor }}'s commit
+
+on:
+  push:
+    branches: ["main","develop"]
+
+env:
+  MAIN_BRANCH: 'main' # Have this specified in some other file.
+  SECONDARY_BRANCH: 'develop' # Have this specified in some other file.
+  TEMP_WEBSITE_FOLDER: '.website'
+  SECONDARY_SITE_DIRECTORY: 'dev'
+
+permissions:
+  contents: write
+
+jobs:
+
+  PyprojectTOML:
+    uses: evolvablehardware/BitstreamEvolution/.github/workflows/read-toml.yml@main
+    with:
+      branch: ${{github.ref_name}} #select committed branch
+      values: "[\"python_versions\",\"homepage\",\"repository\",
+        \"pytest_testing_groups\",\"test_results_display_selector\",
+        \"test_results_display_summary\"]"
+
+  RunTests:
+    needs: PyprojectTOML
+
+    strategy:
+      fail-fast: false #this means that all matrix tests don't stop as soon as first on fails
+      matrix:
+        python-version: ${{fromJson(needs.PyprojectTOML.outputs.toml_values)['python_versions']}}
+        pytest-testing-group: ${{fromJson(needs.PyprojectTOML.outputs.toml_values)['pytest_testing_groups']}}
+        run-on: ['ubuntu-latest']
+    
+    runs-on: ${{matrix.run-on}}
+    
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{matrix.python-version}}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{matrix.python-version}}
+    - name: Install pipx
+      if: false
+      run: |
+        sudo apt update
+        sudo apt install pipx
+        pipx ensurepath 
+        sudo pipx ensurepath
+          
+    - name: Install poetry
+      run: |
+        pip install poetry
+        
+    - name: Install Testing Dependencies
+      run: |
+        poetry install --with gh_tests
+    
+    - name: Run Tests in Python ${{matrix.python-version}} with masks ${{matrix.pytest-testing-group}}
+      run: |
+        poetry run pytest -m "${{matrix.pytest-testing-group}}" --junitxml=junit/test-results-${{ matrix.python-version }}.xml
+
+    - name: Upload pytest test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: pytest-results-${{strategy.job-index}}of${{strategy.job-total}}-python${{ matrix.python-version }}
+        path: junit/test-results-${{ matrix.python-version }}.xml
+      # Use always() to always run this step to publish test results when there are test failures
+      if: ${{ always() }}
+
+    - name: View Test results
+      uses: pmeier/pytest-results-action@main
+      if: ${{ always() }}
+      with:
+        # A list of JUnit XML files, directories containing the former, and wildcard
+        # patterns to process.
+        path: junit/test-results-${{ matrix.python-version }}.xml
+
+        # (Optional) Add a summary of the results at the top of the report
+        summary: ${{fromJson(needs.PyprojectTOML.outputs.toml_values)['test_results_display_summary']}}
+
+        # (Optional) Select which results should be included in the report.
+        #   f - failed        X - xpassed
+        #   E - error         p - passed
+        #   s - skipped       P - passed with output
+        #   x - xfailed
+        display-options: ${{fromJson(needs.PyprojectTOML.outputs.toml_values)['test_results_display_selector']}}
+
+        # (Optional) Fail the workflow if no JUnit XML was found.
+        fail-on-empty: true
+
+        # (Optional) Title of the test results section in the workflow summary
+        title: Results For python${{matrix.python-version}} markers "${{matrix.pytest-testing-group}}"
+
+    
+  build-website:
+    needs: RunTests
+    
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Setup python
+        uses: actions/setup-python@v5
+
+      - name: Setup Directory Structure
+        run: |
+          mkdir $MAIN_BRANCH
+          mkdir $SECONDARY_BRANCH
+          mkdir $TEMP_WEBSITE_FOLDER
+
+      - name: Install General dependencies
+        run: |
+          pip install poetry
+          
+      - name: Checkout Main Branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{env.MAIN_BRANCH}}
+          path: ${{github.workspace}}/${{env.MAIN_BRANCH}}
+
+      - name: 'MAIN SITE: Install dependencies with Sphinx'
+        run: |
+          cd ${{github.workspace}}/${{env.MAIN_BRANCH}}
+          poetry install --with gh_docs --no-root
+
+      - name: 'MAIN SITE: Sphinx build (Release Mode)'
+        run: |
+          cd ${{github.workspace}}/${{env.MAIN_BRANCH}}
+          poetry run sphinx-build docs/sphinx/source docs/sphinx/build -t release
+          cp -r docs/sphinx/build/* ${{github.workspace}}/${{env.TEMP_WEBSITE_FOLDER}}
+
+      - name: Checkout Secondary Branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{env.SECONDARY_BRANCH}}
+          path: ${{github.workspace}}/${{env.SECONDARY_BRANCH}}
+
+      - name: 'SECONDARY SITE: Install dependencies with Sphinx'
+        run: |
+          ls -a ${{github.workspace}}
+          cd ${{github.workspace}}/${{env.SECONDARY_BRANCH}}
+          pwd
+          poetry install --with gh_docs --no-root
+  
+      - name: 'SECONDARY SITE: Sphinx build (Dev Mode)'
+        run: |
+          cd ${{github.workspace}}/${{env.SECONDARY_BRANCH}}
+          poetry run sphinx-build docs/sphinx/source ${{github.workspace}}/${{env.TEMP_WEBSITE_FOLDER}}/${{env.SECONDARY_SITE_DIRECTORY}} -t dev
+          
+
+      - name: Deploy Combined Website to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          publish_branch: gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ${{ env.TEMP_WEBSITE_FOLDER }}
+          force_orphan: true

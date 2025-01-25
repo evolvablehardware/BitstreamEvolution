@@ -19,7 +19,7 @@ class sTag(Enum):
 
 # Tags are a method of 
 def tag_is_applied(tag:sTag)->bool:
-    return tag.value in tags                                #pyright: ignore
+    return tag.value in tags                                #pyright: ignore reportUndefinedVariables
 
 def any_tag_is_applied(tag_list:list[sTag])->bool:
     return any([tag_is_applied(tag) for tag in tag_list])

@@ -1,0 +1,87 @@
+
+name: Read Toml File
+run-name: Extracting Information from Toml File
+
+on: 
+    workflow_call:
+        inputs:
+            branch:
+                description: 'The name of the branch to extract toml values from.'
+                default: 'main'
+                required: false
+                type: string
+            values:
+                description: 'The names of the values to extract from the toml file. Provide them as a json list i.e. "["value1","value2","value3"]" '
+                required: true
+                type: string
+        outputs:
+            toml_values:
+                description: 'The values extracted from Toml in a json format using interpret_pyproject.py'
+                value: ${{jobs.extractinfo.outputs.output_json}}
+
+jobs:
+  extractinfo:
+    runs-on: ubuntu-latest
+    name: extract info from toml file form commit
+    outputs:
+      output_json: ${{steps.get-vals.outputs.output_json}}
+    
+    steps:
+      - name: Interpret variable list into arguments
+        id: arg-creator
+        uses: jannekem/run-python-script-action@v1
+        env:
+          input-str: ${{inputs.values}}
+        with:
+          fail-on-error: true
+          util: true
+          script: |
+            import os, json
+            input_list = os.environ["input-str"]
+            print(f"Input List: {input_list}")
+
+            group("Processing Printout")
+            
+            jdecode = json.JSONDecoder()
+            input_list = list(jdecode.decode(input_list))
+
+            output_args = ""
+            arg_prefix = "--"
+            arg_suffix = " "
+
+            if (len(input_list) != 0):
+              for arg in input_list:
+                print(f"evaluating {arg}")
+                output_args += arg_prefix + arg +arg_suffix
+
+            set_output("arguments",output_args)
+            end_group()
+
+            print(f"Arguments Created: {output_args}")
+
+      - name: Checkout Committed Branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{inputs.branch}}
+      
+      - name: Install pipx
+        if: false
+        run: |
+          sudo apt update
+          sudo apt install pipx
+          pipx ensurepath 
+          sudo pipx ensurepath
+
+      - name: Install sphinx
+        run : |
+          pip install poetry
+
+      - name: Setup to collect variables
+        run: |
+          poetry install  --with gh_read_pyproject
+
+      - id: get-vals
+        run: |
+          echo "Obtaining values from pyproject.toml script."
+          echo "output_json=$(poetry run python3 interpret_pyproject.py ${{steps.arg-creator.outputs.arguments}})" >> "$GITHUB_OUTPUT"
+          echo $GITHUB_OUTPUT
