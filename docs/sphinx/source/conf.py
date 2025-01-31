@@ -79,8 +79,8 @@ exclude_patterns = []
 # may be possible to use __init__.py to get around this and import the project directly, like i think Scipy is doing.
 # directory_of_source_code = os.path.join(os.getcwd(),"../../../src") # Add src
 # sys.path.append(directory_of_source_code)
-# directory_of_old_source_code = os.path.join(os.getcwd(),"../../../src_old") # Add old_src
-# sys.path.append(directory_of_old_source_code)
+directory_of_old_source_code = os.path.join(os.getcwd(),"../../../src_old") # Add old_src               # DEPENDANCY ANNOYANCE: Have to do this so imports in the files work, because they are evaluated relative to the home directory when python runs, but relative to path directory when sphinx runs.
+sys.path.append(directory_of_old_source_code)
 # directory_of_interfaces = os.path.join(os.getcwd(),"../../../interface") # Add abstractions
 # sys.path.append(directory_of_interfaces)
 
