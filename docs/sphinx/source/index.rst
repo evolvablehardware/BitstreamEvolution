@@ -13,7 +13,7 @@ This is the |doc_version| documentation for BitstreamEvolution.
    Run tests from the repository dev or main that was last pushed.
 
 .. todo::
-   Display results from test runs on website. Likely put this in the dev branch.
+   Display results from test runs on website. Likely put this in the dev folder, only revealing on the dev branch.
 
 .. toctree::
    :maxdepth: 2
