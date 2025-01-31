@@ -12,8 +12,8 @@ This is the |doc_version| documentation for BitstreamEvolution.
 .. todo::
    Run tests from the repository dev or main that was last pushed.
 
-.. todo:: 
-   Implement logic that marks the develop branch as the develop branch.
+.. todo::
+   Display results from test runs on website. Likely put this in the dev branch.
 
 .. toctree::
    :maxdepth: 2
@@ -35,6 +35,6 @@ To Do List
 ==========
 .. todolist::
 
-.. warning::
+.. important::
    Todo lists only appear if enabled. They will not be enabled on the main website, only develop.
    to do this, run: `sphinx-build -M  html source build -t dev`
