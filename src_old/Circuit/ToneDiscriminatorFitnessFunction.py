@@ -13,7 +13,7 @@ class ToneDiscriminatorFitnessFunction(FitnessFunction):
 
     def calculate_fitness(self, measurements: list[float]) -> float:
         # Just take an average
-        return sum(data) / len(data)
+        return sum(measurements) / len(measurements)
 
     def __read_variance_data_td(self):
         """
@@ -46,8 +46,8 @@ class ToneDiscriminatorFitnessFunction(FitnessFunction):
                 # If the reading of the data suceeds, split into the waveform and state readings
                 dataPoint = data[i].decode("utf-8")
                 
-                x = int(re.split(" ", dataPoint)[1])
-                y = int(re.split(" ", dataPoint)[2])
+                x = int(re.split(" ", dataPoint)[1])                                                                #pyright: ignore
+                y = int(re.split(" ", dataPoint)[2])                                                                #pyright: ignore
 
                 # Add readings to arrays
                 waveform.append(x)

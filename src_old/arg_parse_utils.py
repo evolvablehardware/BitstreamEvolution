@@ -5,7 +5,7 @@ This is intended to keep imports clear and allow easy reuse of this code."""
 
 def add_bool_argument(arg_parser:argparse.ArgumentParser,
                  feature_name:str,
-                 flag_names:{'enable':[str],'disable':[str]} = {'enable':[],'disable':[]},
+                 flag_names:{'enable':[str],'disable':[str]} = {'enable':[],'disable':[]}, #pyright: ignore
                  default:bool=False,
                  is_required:bool=False):
     "This allows you to create mutually exclusive boolean flags for the feature, and even specify the names of the flags you desire to switch it with, but you don't need to."
