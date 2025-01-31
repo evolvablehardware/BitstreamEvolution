@@ -1,8 +1,8 @@
-==================
-Code Documentation
-==================
+======================
+Old Code Documentation
+======================
 
-This page serves to index the documentation of the current components of the Evolvable Hardware codebase.
+This page serves to index the documentation of the pre-refactor components of the Evolvable Hardware codebase.
 
 .. toctree::
     arg_parse_utils
@@ -24,17 +24,12 @@ This page serves to index the documentation of the current components of the Evo
     utilities
 
 
-======================
-Documentation of Tools
-======================
+==========================
+Documentation of Old Tools
+==========================
 
 .. toctree::
     tools/pulse_histogram
     tools/reconstruct
 
-============
-Things To Do
-============
-
-.. todolist::
     

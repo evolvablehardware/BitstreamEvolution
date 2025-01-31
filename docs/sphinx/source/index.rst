@@ -7,14 +7,15 @@ Welcome to Evolvable Hardware's documentation!
 ==============================================
 
 .. todo::
-   Figure out how to get the dev website to work properly.
+   Run tests from the repository dev or main that was last pushed.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+   dev/index
 
    code/index
-   dev/index
+   
 
 
 Indices and tables
