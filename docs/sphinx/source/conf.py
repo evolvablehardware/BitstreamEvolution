@@ -77,8 +77,13 @@ exclude_patterns = []
 
 # -- Adding Modules To sys.path so they can be addressed ---------------------
 # may be possible to use __init__.py to get around this and import the project directly, like i think Scipy is doing.
-directory_of_source_code = os.path.join(os.getcwd(),"../../../src")
+directory_of_source_code = os.path.join(os.getcwd(),"../../../src") # Add src
 sys.path.append(directory_of_source_code)
+directory_of_old_source_code = os.path.join(os.getcwd(),"../../../src_old") # Add old_src
+sys.path.append(directory_of_old_source_code)
+directory_of_interfaces = os.path.join(os.getcwd(),"../../../interface") # Add abstractions
+sys.path.append(directory_of_interfaces)
+
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

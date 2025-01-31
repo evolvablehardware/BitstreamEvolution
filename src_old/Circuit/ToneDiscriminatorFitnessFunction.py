@@ -21,7 +21,7 @@ class ToneDiscriminatorFitnessFunction(FitnessFunction):
         which contains readings from the Microcontroller. Data includes waveform (ADC) AND 
         state (input frequency) information.
 
-        .. todo::
+        .. warning::
             Check the condition of the for loop. Why the -1? 
 
         Returns

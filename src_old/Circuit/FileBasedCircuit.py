@@ -121,7 +121,7 @@ class FileBasedCircuit(Circuit):
         If lambda_func returns None, then the bit is left unmodified
         Keep in mind the bytes are the ASCII codes, so for example 49 = 1
 
-        .. todo::
+        .. warning::
             Go over this with someone who can clarify what all of the data types are. 
 
         Parameters
@@ -213,7 +213,7 @@ class FileBasedCircuit(Circuit):
         Determines whether a given tile is available for modificiation.
         NOTE: Tile = the .logic_tile in the asc file.
 
-        .. todo::
+        .. warning::
             Preexisting todo: Replace magic values with a more generalized solution. 
             These magic values are indicative of the underlying hardware (ice40kh1k)
 
@@ -277,7 +277,7 @@ class FileBasedCircuit(Circuit):
         Make changes to the hardware file associated with this circuit, updating it
         with the value in "data"
 
-        .. todo::
+        .. warning::
             Pre-existing: Add error checking here
         
         

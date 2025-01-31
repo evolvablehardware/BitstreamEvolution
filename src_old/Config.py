@@ -20,7 +20,7 @@ class Config:
 	This class is instantiated to aquire values from the config file for the evolutionary run. 
 	This object is given to other objects so they can access value sin the config.
 
-	.. todo:: 
+	.. warning:: 
 		Preexisting todo: Add handling for missing values. This does fail gracefully at missing values currently.
 	"""
 

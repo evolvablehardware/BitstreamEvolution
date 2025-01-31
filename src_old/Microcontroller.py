@@ -5,13 +5,13 @@ Microcontroller.py
 This file has a class that is used to interact with a microcontroller to extract information about the running circuit.
 This interacts with serial. 
 
-.. todo::
+.. warning::
     Make a Mock of the Microcontroller to test standard operation without connection to the microcontroller.
 
-.. todo::
+.. warning::
     Make a Testing program that would allow you to directly get values from the micrcocontroller class. Maybe a terminal input or something would be good.
 
-.. todo::
+.. warning::
     Figure out how to mock Serial connection to allow this class to be tested.
 
 """
@@ -77,7 +77,7 @@ class Microcontroller:
         """
         If there are multiple FPGAs, switch which FPGA the microcontroller is acting on and reading from.
 
-        .. todo::
+        .. warning::
             Allyn, Is this the correct interpretation of what this does? Do you want to add additional detail?
             Please also check that the other multi-fpga logic is properly represented as well.
         """
@@ -96,7 +96,7 @@ class Microcontroller:
         """
         Get __fpga string
 
-        .. todo::
+        .. warning::
             Allyn, another one for you. What is this?
 
         Returns
@@ -253,7 +253,7 @@ class Microcontroller:
         """
         Measures the signal, writing the waveform data to the provided data file
         
-        .. todo::
+        .. warning::
             Preexisting todo: This whole section can probably be optimized.
 
         Parameters
@@ -310,7 +310,7 @@ class Microcontroller:
         Measures (1) the FPGA waveform directly from FPGA output pin and (2) the "state"/frequency waveform
         directly from the signal-generating Nano. Writes 1000 sample points' data to a file.
         
-        .. todo::
+        .. warning::
             Preexisting todo: This whole section can probably be optimized.
 
         Parameters

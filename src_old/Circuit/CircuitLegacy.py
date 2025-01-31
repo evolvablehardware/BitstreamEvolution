@@ -32,7 +32,7 @@ def is_pulse_func(config):
     """
     Used in multiple places, will be removed soon.
 
-    .. todo::
+    .. warning::
         unite the is_pulse_func() across files!
 
     Parameters
@@ -319,7 +319,7 @@ class CircuitLegacy:
         If performing multi-sample/pass pulse function, then takes the product of fitnesses.
         If performing pulse consistency, then calculates the pulse consistency fitness using the sample data.
 
-        .. todo::
+        .. warning::
             There was the following TODO statement at the bottom of the code:
             TODO Evaluate based on a fitness function defined in the config file
             while still utilizing the existing or newly added evaluate functions in this class::
@@ -689,7 +689,7 @@ class CircuitLegacy:
         which contains readings from the Microcontroller. Data includes waveform (ADC) AND 
         state (input frequency) information.
 
-        .. todo::
+        .. warning::
             Check the condition of the for loop. Why the -1? 
 
         Returns
@@ -977,10 +977,10 @@ class CircuitLegacy:
         If record_data is true, then we will return the total pulses counted
         Otherwise, we will return the calculated fitness
 
-        .. todo::
+        .. warning::
             Preexisting comment: ``TODO: Refactor``
         
-        .. todo::
+        .. warning::
             Preexisting comments in this area suggest we use log files instead of data buffer in the event of a premature termination.
 
         Parameters
@@ -1230,7 +1230,7 @@ class CircuitLegacy:
         If lambda_func returns None, then the bit is left unmodified
         Keep in mind the bytes are the ASCII codes, so for example 49 = 1
 
-        .. todo::
+        .. warning::
             Go over this with someone who can clarify what all of the data types are. 
 
         Parameters
@@ -1353,7 +1353,7 @@ class CircuitLegacy:
         Takes this circuit, and replaces all of its modifiable bits with those in
         the provided bitstream
 
-        .. todo::
+        .. warning::
             Someone should review this after looking at __run_at_each_modifiable()
 
         Parameters
@@ -1473,7 +1473,7 @@ class CircuitLegacy:
         Make changes to the hardware file associated with this circuit, updating it
         with the value in "data"
 
-        .. todo::
+        .. warning::
             Pre-existing TODO: Add error checking here
         
         
@@ -1635,7 +1635,7 @@ class CircuitLegacy:
         Determines whether a given tile is available for modificiation.
         NOTE: Tile = the .logic_tile in the asc file.
 
-        .. todo::
+        .. warning::
             Preexisting todo: Replace magic values with a more generalized solution. 
             These magic values are indicative of the underlying hardware (ice40kh1k)
 

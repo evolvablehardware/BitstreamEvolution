@@ -1,5 +1,5 @@
 [config.sphinx] # Metadata displayed on Sphinx page (custom)
-name = "Testing Github"
+name = "Bitstream Evolution"
 #version = uses version in tool.poetry
 copyright_message = '2024, Evolvable Hardware'
 author = 'Evolvable Hardware'

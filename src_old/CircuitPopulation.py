@@ -65,7 +65,7 @@ def is_pulse_func(config):
     """
     Used in multiple places, will be removed soon.
 
-    .. todo::
+    .. warning::
         unite the is_pulse_func() functions for ease of change.
 
     Parameters
@@ -1309,7 +1309,7 @@ class CircuitPopulation:
     @staticmethod
     def __group(iterable, n, fillvalue=None):
         """
-        .. todo::
+        .. warning::
             Take a closer look at this function. Not sure why, but a comment here told me to.
             Also, further document what this function is I couldn't tell.
         
