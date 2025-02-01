@@ -98,6 +98,7 @@ matplotlib = "^3.10.0"
 sortedcontainers = "^2.4.0"
 
 #dev group for developers updating the code
+result = "^0.17.0"
 [tool.poetry.group.dev]
 optional = true
 
