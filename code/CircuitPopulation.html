@@ -1,0 +1,908 @@
+
+
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="docsearch:name" content="Testing Github" />
+    <meta name="docsearch:package_type" content="" />
+    <meta name="docsearch:release" content="0.1.0" />
+    <meta name="docsearch:version" content="" />
+    
+      <title>CircuitPopulation.py &mdash; Testing Github 0.1.0 documentation</title>
+    
+      <link rel="icon" href="https://evolvablehardware.org/images/EHWsetup.jpg" />
+    <link rel="stylesheet" href="../_static/bootstrap-icons.css" type="text/css" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/pygments.css', priority=200, rel='stylesheet', type='text/css')" -->
+          <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/graphviz.css', priority=500, rel='stylesheet', type='text/css')" -->
+          <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/pygments_dark.css', priority=500, rel='stylesheet', type='text/css', media='(prefers-color-scheme: dark)', id='pygments_dark_css')" -->
+          <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/sphinx-design.min.css', priority=500, rel='stylesheet', type='text/css')" -->
+          <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/colorsets/sphinx-nefertiti-default-0.3.7.min.css', priority=500, rel='stylesheet', type='text/css')" -->
+          <link rel="stylesheet" type="text/css" href="../_static/colorsets/sphinx-nefertiti-default-0.3.7.min.css" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/fonts/nunito/stylesheet.css', priority=500, rel='stylesheet', type='text/css')" -->
+          <link rel="stylesheet" type="text/css" href="../_static/fonts/nunito/stylesheet.css" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/fonts/red-hat-mono/stylesheet.css', priority=500, rel='stylesheet', type='text/css')" -->
+          <link rel="stylesheet" type="text/css" href="../_static/fonts/red-hat-mono/stylesheet.css" />
+        <link rel="index" title="Index" href="../genindex.html" />
+        <link rel="search" title="Search" href="../search.html" />
+        <link rel="top" title="Testing Github 0.1.0 documentation" href="#" />
+        <link rel="up" title="Code Documentation" href="index.html" />
+        <link rel="next" title="config_builder.py" href="config_builder.html" />
+        <link rel="prev" title="Circuit.py" href="Circuit.html" />
+    <style>
+      :root {
+        --nftt-body-font-family: "Nunito", var(--nftt-font-sans-serif) !important;
+        --nftt-font-monospace: "Red Hat Mono", var(--nftt-font-family-monospace) !important;
+        --nftt-project-name-font: var(--nftt-body-font-family);
+        --nftt-documentation-font: var(--nftt-body-font-family);
+        --nftt-doc-headers-font: "Georgia", var(--nftt-documentation-font);}
+      h1 *, h2 *, h3 *, h4 *, h5 *, h6 * { font-size: inherit; }
+    </style>
+  </head>
+  <body>
+    <header class="navbar navbar-expand-xl navbar-dark nftt-navbar flex-column fixed-top">
+      <div class="skip-links container-fluid visually-hidden-focusable overflow-hidden justify-content-start flex-grow-1">
+        <div class="border-bottom mb-2 pb-2 w-100">
+          <a class="d-none d-md-inline-flex p-2 m-1" href="#sidebar-filter">Skip to docs navigation</a>
+          <a class="d-inline-flex p-2 m-1" href="#content">Skip to main content</a>
+        </div>
+      </div>
+      <nav class="container-xxl nftt-gutter flex-wrap flex-xl-nowrap" aria-label="Main navigation">
+        <div class="nftt-navbar-toggler">
+          <button class="navbar-toggler p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar" aria-label="Toggle documentation navigation">
+            <i class="bi bi-list"></i>
+          </button>
+        </div>
+          <a href="../index.html"
+              
+              class="navbar-brand p-0 me-0 md-lg-2"
+          ><span class="brand-text">Testing Github</span></a>
+        
+        <div class="d-flex d-xl-none">
+          <button class="navbar-toggler p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#nfttSearch" aria-controls="nfttSearch" aria-label="Search">
+            <i class="bi bi-search"></i>
+          </button>
+          <button class="navbar-toggler p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#nfttNavbar" aria-controls="nfttNavbar" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+        </div>
+        
+<div class="offcanvas-xl offcanvas-end flex-grow-1" tabindex="-1" id="nfttSearch" aria-labelledby="nfttSearchOffcanvasLabel" data-bs-scroll="true">
+  <div class="offcanvas-header px-4 pb-0">
+    <h5 class="offcanvas-title fw-bold" id="nfttSearchOffcanvasLabel">Search the documentation</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#nfttSearch"></button>
+  </div>
+  <div class="offcanvas-body p-4 pt-0 p-xl-0 px-xl-3">
+    <hr class="d-xl-none text-white-50">
+    <ul class="navbar-nav flex-row align-items-center flex-wrap ms-md-auto">
+      <li class="nav-item col-12 col-xl-auto">
+        <form id="nftt-search-form" action="../search.html" method="get">
+          <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Search docs" aria-label="Search" aria-describedby="button-search">
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+            <button class="btn btn-primary" type="submit" id="button-search" aria-label="Search"><i class="bi bi-search"></i></button>
+          </div>
+        </form>
+      </li>
+    </ul>
+  </div>
+</div>
+
+        <div class="offcanvas-xl offcanvas-end" tabindex="-1" id="nfttNavbar" aria-labelledby="nfttNavbarOffcanvasLabel" data-bs-scroll="true">
+          <div class="offcanvas-header px-4 pb-0">
+            <div class="offcanvas-title navbar-brand" id="nfttNavbarOffcanvasLabel"><span class="brand-text">Nefertiti for Sphinx</span></div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#nfttNavbar"></button>
+          </div>
+          <div class="offcanvas-body p-4 pt-0 p-xl-0 px-xl-3">
+            <hr class="d-xl-none text-white-50">
+            <ul class="navbar-nav flex-row align-items-center flex-wrap ms-lg-auto">
+              
+              <!-- version_dropdown.html -->
+
+              
+              <!-- colorscheme_dropdown.html -->
+<li class="nav-item dropdown">
+  <a class="nav-link d-flex py-2 px-0 px-xl-2 dropdown-toggle align-items-center" id="snftt-luz" href="#" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" aria-label="Toggle light/dark">
+    <i class="bi bi-circle-half" data-snftt-luz-icon-active></i>
+    <span id="snftt-luz-text" class="d-xl-none small ms-2">Toggle light/dark</span>
+  </a>
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="snftt-luz-text">
+    <li>
+      <h6 class="dropdown-header">Light/dark</h6>
+    </li>
+    <li>
+      <a class="dropdown-item d-flex align-items-center" data-snftt-luz="light" href="#" aria-pressed="false">
+        <span class="small">
+          <i class="bi bi-sun" data-snftt-luz-icon="light"></i>
+        </span>
+        <span class="small ms-3">Light</span>
+        <i class="bi bi-check ms-auto"></i>
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item d-flex align-items-center" data-snftt-luz="dark" href="#" aria-pressed="false">
+        <span class="small">
+          <i class="bi bi-moon-stars" data-snftt-luz-icon="dark"></i>
+        </span>
+        <span class="small ms-3">Dark</span>
+        <i class="bi bi-check ms-auto"></i>
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item current d-flex align-items-center" data-snftt-luz="default" href="#" aria-pressed="false">
+        <span class="small">
+          <i class="bi bi-circle-half" data-snftt-luz-icon="default"></i>
+        </span>
+        <span class="small ms-3">Default</span>
+        <i class="bi bi-check ms-auto"></i>
+      </a>
+    </li>
+  </ul>
+</li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <div class="container-fluid flex-grow-1">
+      <div class="nftt-gutter nftt-page">
+        <aside class="nftt-sidebar ">
+          <div class="nftt-sidebar-content">
+            
+            <div class="title d-none d-xl-block">
+              <i class="bi bi-book"></i>&nbsp;&nbsp;<span>Index</span>
+            </div>
+            <div id="sidebar" tabindex="-1" class="offcanvas-xl offcanvas-start" aria-labelledby="nfttSidebarOffcanvasLabel">
+                <!-- danirus sidebartemplate: "globaltoc.html" --><div class="offcanvas-header border-bottom">
+  <h5 class="offcanvas-title fw-bold" id="nfttSidebarOffcanvasLabel">
+    Table of contents
+  </h5>
+  <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#sidebar"></button>
+</div>
+
+<div class="offcanvas-body">
+  <nav class="toc" aria-label="Main menu">
+    <div class="mb-3 p-1 pt-3 pb-4 border-bottom">
+      <input id="sidebar-filter" type="text" name="filter" class="form-control form-control-sm" placeholder="filter" aria-label="filter">
+    </div>
+    <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Code Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="arg_parse_utils.html">arg_parse_utils.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ascTemplateBuilder.html">ascTemplateBuilder.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Circuit.html">Circuit.py</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">CircuitPopulation.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_builder.html">config_builder.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Config.html">Config.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ConfigBuilder.html">ConfigBuilder.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ConfigValue.html">ConfigValue.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Evolution.html">Evolution.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evolve.html">evolve.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="init.html">init.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Logger.html">Logger.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Microcontroller.html">Microcontroller.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Monitor.html">Monitor.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi_evolve.html">multi_evolve.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PlotEvolutionLive.html">PlotEvolutionLive.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilities.html">utilities.py</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#documentation-of-tools">Documentation of Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools/pulse_histogram.html">pulse_histogram.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools/reconstruct.html">reconstruct.py</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#things-to-do">Things To Do</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">dev index</a></li>
+</ul>
+
+  </nav>
+  <template data-toggle-item-template>
+    <button class="btn btn-sm btn-link toctree-expand" type="button">
+      <i class="bi bi-caret-right"></i>
+      <span class="visually-hidden">Toggle menu contents</span>
+    </button>
+  </template>
+</div>
+            </div>
+            
+          </div>
+        </aside>
+        <article id="content" class="nftt-content" role="main">
+    <section id="module-CircuitPopulation">
+<span id="circuitpopulation-py"></span><h1>CircuitPopulation.py<a class="headerlink" href="#module-CircuitPopulation" title="Link to this heading">¶</a></h1>
+<section id="circuit-population">
+<h2>Circuit Population<a class="headerlink" href="#circuit-population" title="Link to this heading">¶</a></h2>
+<p>This class was reviewed, and should be fully documented at a basic level.</p>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CircuitPopulation.</span></span><span class="sig-name descname"><span class="pre">CircuitInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitness</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitInfo" title="Link to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitInfo._asdict">
+<span class="sig-name descname"><span class="pre">_asdict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitInfo._asdict" title="Link to this definition">¶</a></dt>
+<dd><p>Return a new dict which maps field names to their values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitInfo._make">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_make</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitInfo._make" title="Link to this definition">¶</a></dt>
+<dd><p>Make a new CircuitInfo object from a sequence or iterable</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitInfo._replace">
+<span class="sig-name descname"><span class="pre">_replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitInfo._replace" title="Link to this definition">¶</a></dt>
+<dd><p>Return a new CircuitInfo object replacing specified fields with new values</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitInfo.fitness">
+<span class="sig-name descname"><span class="pre">fitness</span></span><a class="headerlink" href="#CircuitPopulation.CircuitInfo.fitness" title="Link to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitInfo.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#CircuitPopulation.CircuitInfo.name" title="Link to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPathInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CircuitPopulation.</span></span><span class="sig-name descname"><span class="pre">CircuitPathInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitness</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPathInfo" title="Link to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPathInfo._asdict">
+<span class="sig-name descname"><span class="pre">_asdict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPathInfo._asdict" title="Link to this definition">¶</a></dt>
+<dd><p>Return a new dict which maps field names to their values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPathInfo._make">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_make</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPathInfo._make" title="Link to this definition">¶</a></dt>
+<dd><p>Make a new CircuitPathInfo object from a sequence or iterable</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPathInfo._replace">
+<span class="sig-name descname"><span class="pre">_replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPathInfo._replace" title="Link to this definition">¶</a></dt>
+<dd><p>Return a new CircuitPathInfo object replacing specified fields with new values</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPathInfo.fitness">
+<span class="sig-name descname"><span class="pre">fitness</span></span><a class="headerlink" href="#CircuitPopulation.CircuitPathInfo.fitness" title="Link to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPathInfo.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#CircuitPopulation.CircuitPathInfo.path" title="Link to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CircuitPopulation.</span></span><span class="sig-name descname"><span class="pre">CircuitPopulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mcu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="Config.html#Config.Config" title="Config.Config"><span class="pre">Config</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CircuitPopulation.html#CircuitPopulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CircuitPopulation.CircuitPopulation" title="Link to this definition">¶</a></dt>
+<dd><p>Manages the initializing the population of circuits,
+updating and recording information about the population throughout evolution,
+and deciding when to stop evolution</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__arr_eq">
+<span class="sig-name descname"><span class="pre">__arr_eq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ar2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__arr_eq" title="Link to this definition">¶</a></dt>
+<dd><p>Returns True if the arrays or equal or False otherwise
+Compares each element of ar1 and ar2</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ar1</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – an array</p></li>
+<li><p><strong>ar2</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – an array</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the arrays are equivalent in content and order, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__files_eq">
+<span class="sig-name descname"><span class="pre">__files_eq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fp1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fp2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__files_eq" title="Link to this definition">¶</a></dt>
+<dd><p>Returns true if the files are equal (have the same content)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fp1</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Path to file 1</p></li>
+<li><p><strong>fp2</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Path to file 2</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if both files contain the same content, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__generate_map">
+<span class="sig-name descname"><span class="pre">__generate_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__generate_map" title="Link to this definition">¶</a></dt>
+<dd><p>Generates the elite map for this generation based on variance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A 2D array of circuits catagorized based off of shared characteristics</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>(Circuit))</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__generate_pulse_map">
+<span class="sig-name descname"><span class="pre">__generate_pulse_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__generate_pulse_map" title="Link to this definition">¶</a></dt>
+<dd><p>Generates the elite map for this generation based on pulse count.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A 2D array of circuits catagorized based off of shared characteristics</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Circuit[][]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__generate_sine_funcs">
+<span class="sig-name descname"><span class="pre">__generate_sine_funcs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__generate_sine_funcs" title="Link to this definition">¶</a></dt>
+<dd><p>Builds a list of randomly generated sine functions used in the simulation mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of randomly generated sine functions</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[functions]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__group">
+<span class="sig-name descname"><span class="pre">__group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__group" title="Link to this definition">¶</a></dt>
+<dd><p>Collect data into fixed-length chunks or blocks
+#grouper(‘ABCDEFG’, 3, ‘x’) –&gt; ABC DEF Gxx
+Taken from python recipes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mcu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="Config.html#Config.Config" title="Config.Config"><span class="pre">Config</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CircuitPopulation.html#CircuitPopulation.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Generates the initial population of circuits with the following arguments</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mcu</strong> (<a class="reference internal" href="Microcontroller.html#Microcontroller.Microcontroller" title="Microcontroller.Microcontroller"><em>Microcontroller</em></a>) – Object containing an instance of Microcontroller class</p></li>
+<li><p><strong>config</strong> (<a class="reference internal" href="Config.html#Config.Config" title="Config.Config"><em>Config</em></a>) – Object containing an instance of Config class</p></li>
+<li><p><strong>logger</strong> (<em>Logger</em>) – Object containing an instance of Logger class</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__log_error">
+<span class="sig-name descname"><span class="pre">__log_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">error</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__log_error" title="Link to this definition">¶</a></dt>
+<dd><p>Emit an error-level log. This function is fulfilled through
+the logger.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The level of importance of the logged information (lower level = higher importance)</p></li>
+<li><p><strong>error</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em>[</em><em>string</em><em>]</em>) – The message being logged</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__log_event">
+<span class="sig-name descname"><span class="pre">__log_event</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__log_event" title="Link to this definition">¶</a></dt>
+<dd><p>Emit an event-level log. This function is fulfilled through
+the logger.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The level of importance of the logged information (lower level = higher importance)</p></li>
+<li><p><strong>event</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em>[</em><em>string</em><em>]</em>) – The message being logged</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__log_info">
+<span class="sig-name descname"><span class="pre">__log_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__log_info" title="Link to this definition">¶</a></dt>
+<dd><p>Emit an info-level log. This function is fulfilled through
+the logger.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The level of importance of the logged information (lower level = higher importance)</p></li>
+<li><p><strong>info</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em>[</em><em>string</em><em>]</em>) – The message being logged</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__log_warning">
+<span class="sig-name descname"><span class="pre">__log_warning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">warning</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__log_warning" title="Link to this definition">¶</a></dt>
+<dd><p>Emit a warning-level log. This function is fulfilled through
+the logger.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The level of importance of the logged information (lower level = higher importance)</p></li>
+<li><p><strong>warning</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em>[</em><em>string</em><em>]</em>) – The message being logged</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__next_epoch">
+<span class="sig-name descname"><span class="pre">__next_epoch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__next_epoch" title="Link to this definition">¶</a></dt>
+<dd><p>Moves to the next generation/epoch
+Currently, only needs to increase the generation by 1
+All other generation-specific behavior will be derived from this value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__output_map_file">
+<span class="sig-name descname"><span class="pre">__output_map_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elite_map</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__output_map_file" title="Link to this definition">¶</a></dt>
+<dd><p>Writes the map to a file (workspace/maplivedata.log)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>elite_map</strong> (<em>Circuit</em><em>[</em><em>]</em><em>[</em><em>]</em>) – 2D array of circuits that fell into these groupings depending on their characteristics.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__randomize_until_pulses">
+<span class="sig-name descname"><span class="pre">__randomize_until_pulses</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__randomize_until_pulses" title="Link to this definition">¶</a></dt>
+<dd><p>Randomizes population until minimum number of pulses is found.
+Called by populate(self)
+Should only be used with pulse count fitness functions</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__randomize_until_variance">
+<span class="sig-name descname"><span class="pre">__randomize_until_variance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__randomize_until_variance" title="Link to this definition">¶</a></dt>
+<dd><p>Randomizes population until minimum variance fitness is found.
+called by populate(self)
+Should only be used with variance maximization fitness function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__randomize_until_voltage">
+<span class="sig-name descname"><span class="pre">__randomize_until_voltage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__randomize_until_voltage" title="Link to this definition">¶</a></dt>
+<dd><p>Randomizes population until a mean voltage is found near the desired value
+called by populate(self)
+Should only be used with variance maximization fitness function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__run_classic_tournament">
+<span class="sig-name descname"><span class="pre">__run_classic_tournament</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__run_classic_tournament" title="Link to this definition">¶</a></dt>
+<dd><p>Selection Algorithm that randomly pairs together circuits, compares their fitness, and preforms crossover on and mutates the “loser”</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__run_fitness_proportional_selection">
+<span class="sig-name descname"><span class="pre">__run_fitness_proportional_selection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__run_fitness_proportional_selection" title="Link to this definition">¶</a></dt>
+<dd><p>Selection algorithm that compares every circuit in the population to a random elite (chosen proportionally based on each elite’s fitness).
+If circuit has a lower fitness, crossover or mutate the circuit</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__run_fractional_elite_tournament">
+<span class="sig-name descname"><span class="pre">__run_fractional_elite_tournament</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__run_fractional_elite_tournament" title="Link to this definition">¶</a></dt>
+<dd><p>Selection algorithm that compares every circuit in the population to a random elite. If circuit has a lower fitness, crossover or mutate the circuit</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__run_map_elites_selection">
+<span class="sig-name descname"><span class="pre">__run_map_elites_selection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__run_map_elites_selection" title="Link to this definition">¶</a></dt>
+<dd><p>Selection Algorithm that is an alternate version of the map elites algorithm from another paper.
+This version of map elites will protect the highest-fitness individual in each “square”
+We’re going to have slightly granular squares to make sure that circuits have room to spread out early
+to hopefully promote diversity
+Group size length of 50 means we’ll have 21x21 groups</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__run_rank_proportional_selection">
+<span class="sig-name descname"><span class="pre">__run_rank_proportional_selection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__run_rank_proportional_selection" title="Link to this definition">¶</a></dt>
+<dd><p>Selection algorithm that compares every circuit in the population to a random elite (chosen proportionally based on each elite’s rank).
+If circuit has a lower fitness, crossover or mutate the circuit</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__run_single_elite_tournament">
+<span class="sig-name descname"><span class="pre">__run_single_elite_tournament</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__run_single_elite_tournament" title="Link to this definition">¶</a></dt>
+<dd><p>Selection Algorithm that mutates the hardware of every circuit that is not the current best circuit</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__save_generation">
+<span class="sig-name descname"><span class="pre">__save_generation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__save_generation" title="Link to this definition">¶</a></dt>
+<dd><p>Saves the current generation to the generations directory
+Each generation gets its own file</p>
+<p>Saves all modifiable parts of a generation so it can be reconstructed.</p>
+<p>called by __write_to_livedata(self)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__should_continue_evo">
+<span class="sig-name descname"><span class="pre">__should_continue_evo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__should_continue_evo" title="Link to this definition">¶</a></dt>
+<dd><p>Checks with config whether we have reached any of the end conditions for the simulation run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if evolution should continue, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__single_point_crossover">
+<span class="sig-name descname"><span class="pre">__single_point_crossover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__single_point_crossover" title="Link to this definition">¶</a></dt>
+<dd><p>Copy some series of chiasmas (points of genetic exchange) from fitter circuit into children</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<em>Circuit</em>) – The circuit you are copying data from.</p></li>
+<li><p><strong>dest</strong> (<em>Circuit</em>) – The circuit you are overwriting data from source to.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__unique">
+<span class="sig-name descname"><span class="pre">__unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__unique" title="Link to this definition">¶</a></dt>
+<dd><p>Returns an array of unique arrays from the input</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>arrays</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><em>T</em><em>]</em><em>]</em>) – An array containing arrays</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns a list of all of the unique lists contained in the arrays variable</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[T]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.__write_to_livedata">
+<span class="sig-name descname"><span class="pre">__write_to_livedata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.__write_to_livedata" title="Link to this definition">¶</a></dt>
+<dd><p>Runs each generation to write data to files used to store data needed for Live plots (PlotEvolutionLive.py)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.avg_hamming_dist">
+<span class="sig-name descname"><span class="pre">avg_hamming_dist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CircuitPopulation.html#CircuitPopulation.avg_hamming_dist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.avg_hamming_dist" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates and returns the average Hamming distance for the population</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Returns Hamming distance in the population.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.count_differing_bits">
+<span class="sig-name descname"><span class="pre">count_differing_bits</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CircuitPopulation.html#CircuitPopulation.count_differing_bits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.count_differing_bits" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the number of bits in the bistream where 2 circuits have different values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of bits in the bistream where 2 circuits have different values</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.count_unique">
+<span class="sig-name descname"><span class="pre">count_unique</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CircuitPopulation.html#CircuitPopulation.count_unique"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.count_unique" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the number of unique files in the population</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of unique circuits in the population</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.evolve">
+<span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CircuitPopulation.html#CircuitPopulation.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.evolve" title="Link to this definition">¶</a></dt>
+<dd><p>Runs an evolutionary loop and records the circuit with the highest fitness throughout the loop,
+while also storing statistics in a file for the plot to access.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.get_best_epoch">
+<span class="sig-name descname"><span class="pre">get_best_epoch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CircuitPopulation.html#CircuitPopulation.get_best_epoch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.get_best_epoch" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the generation number that contained the circuit with the highest fitness</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Generation number that hat the circuit with the highest fitness</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.get_current_best_circuit">
+<span class="sig-name descname"><span class="pre">get_current_best_circuit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CircuitPopulation.html#CircuitPopulation.get_current_best_circuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.get_current_best_circuit" title="Link to this definition">¶</a></dt>
+<dd><p>Gets the circuit in the current generation with the highest fitness</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Returns the best circuit in population.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Circuit</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.get_current_epoch">
+<span class="sig-name descname"><span class="pre">get_current_epoch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CircuitPopulation.html#CircuitPopulation.get_current_epoch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.get_current_epoch" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the generation number</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Returns the generation number of the current evolution.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.get_differing_bits_str">
+<span class="sig-name descname"><span class="pre">get_differing_bits_str</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CircuitPopulation.html#CircuitPopulation.get_differing_bits_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.get_differing_bits_str" title="Link to this definition">¶</a></dt>
+<dd><p>Returns an ASCII string that represents the number of circuits with a 1 at each bit in the bitstream
+:returns: The number of circuits with a 1 at each bit in the bitstream
+:rtype: str</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.get_overall_best_circuit_info">
+<span class="sig-name descname"><span class="pre">get_overall_best_circuit_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CircuitPopulation.html#CircuitPopulation.get_overall_best_circuit_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.get_overall_best_circuit_info" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the information of the circuit with the highest fitness throughout the run</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Returns the info object for the overall best circuit throughout the run.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#CircuitPopulation.CircuitInfo" title="CircuitPopulation.CircuitInfo">CircuitInfo</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.populate">
+<span class="sig-name descname"><span class="pre">populate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CircuitPopulation.html#CircuitPopulation.populate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.populate" title="Link to this definition">¶</a></dt>
+<dd><p>Creates initial population based on the config.
+1. Clears the files used to keep track of circuit
+2. Uses appropriate initialization method specified by config.
+3. Handles randomization until condition in config is met.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CircuitPopulation.CircuitPopulation.run_fitness_sensitity">
+<span class="sig-name descname"><span class="pre">run_fitness_sensitity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CircuitPopulation.html#CircuitPopulation.run_fitness_sensitity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CircuitPopulation.CircuitPopulation.run_fitness_sensitity" title="Link to this definition">¶</a></dt>
+<dd><p>Gets the same circuit, runs it repeatedly and reports each fitness.
+Internally has a while loop to determine how many times to run.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CircuitPopulation.is_pulse_func">
+<span class="sig-prename descclassname"><span class="pre">CircuitPopulation.</span></span><span class="sig-name descname"><span class="pre">is_pulse_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CircuitPopulation.html#is_pulse_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CircuitPopulation.is_pulse_func" title="Link to this definition">¶</a></dt>
+<dd><p>Used in multiple places, will be removed soon.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference internal" href="Config.html#Config.Config" title="Config.Config"><em>Config</em></a>) – Configuration Class to interact with config</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if it is any type of oscilator (uses count pulses), False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+</article>
+        <aside class="nftt-toc">
+          
+          <div class="mt-3 mb-1 my-lg-0 ps-xl-3 text-muted">
+            <button class="btn btn-link link-dark p-lg-0 mb-2 mb-lg-0 text-decoration-none nftt-toc-toggle d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#tocContents" aria-expanded="false" aria-controls="tocContents"
+            >On this page <i class="ms-2 bi bi-chevron-expand"></i></button>
+            <div class="title d-none d-lg-block">
+              <i class="bi bi-file-earmark-text"></i>&nbsp;&nbsp;<span class="small">On this page</span>
+            </div>
+            <div class="collapse nftt-toc-collapse" id="tocContents">
+              <nav id="TableOfContents">
+                <ul>
+<li><a class="reference internal" href="#">CircuitPopulation.py</a><ul>
+<li><a class="reference internal" href="#circuit-population">Circuit Population</a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitInfo"><code class="docutils literal notranslate"><span class="pre">CircuitInfo</span></code></a><ul>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitInfo._asdict"><code class="docutils literal notranslate"><span class="pre">CircuitInfo._asdict()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitInfo._make"><code class="docutils literal notranslate"><span class="pre">CircuitInfo._make()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitInfo._replace"><code class="docutils literal notranslate"><span class="pre">CircuitInfo._replace()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitInfo.fitness"><code class="docutils literal notranslate"><span class="pre">CircuitInfo.fitness</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitInfo.name"><code class="docutils literal notranslate"><span class="pre">CircuitInfo.name</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPathInfo"><code class="docutils literal notranslate"><span class="pre">CircuitPathInfo</span></code></a><ul>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPathInfo._asdict"><code class="docutils literal notranslate"><span class="pre">CircuitPathInfo._asdict()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPathInfo._make"><code class="docutils literal notranslate"><span class="pre">CircuitPathInfo._make()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPathInfo._replace"><code class="docutils literal notranslate"><span class="pre">CircuitPathInfo._replace()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPathInfo.fitness"><code class="docutils literal notranslate"><span class="pre">CircuitPathInfo.fitness</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPathInfo.path"><code class="docutils literal notranslate"><span class="pre">CircuitPathInfo.path</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation</span></code></a><ul>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__arr_eq"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__arr_eq()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__files_eq"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__files_eq()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__generate_map"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__generate_map()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__generate_pulse_map"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__generate_pulse_map()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__generate_sine_funcs"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__generate_sine_funcs()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__group"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__group()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__init__"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__log_error"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__log_error()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__log_event"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__log_event()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__log_info"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__log_info()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__log_warning"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__log_warning()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__next_epoch"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__next_epoch()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__output_map_file"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__output_map_file()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__randomize_until_pulses"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__randomize_until_pulses()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__randomize_until_variance"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__randomize_until_variance()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__randomize_until_voltage"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__randomize_until_voltage()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__run_classic_tournament"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__run_classic_tournament()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__run_fitness_proportional_selection"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__run_fitness_proportional_selection()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__run_fractional_elite_tournament"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__run_fractional_elite_tournament()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__run_map_elites_selection"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__run_map_elites_selection()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__run_rank_proportional_selection"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__run_rank_proportional_selection()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__run_single_elite_tournament"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__run_single_elite_tournament()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__save_generation"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__save_generation()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__should_continue_evo"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__should_continue_evo()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__single_point_crossover"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__single_point_crossover()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__unique"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__unique()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.__write_to_livedata"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__write_to_livedata()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.avg_hamming_dist"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.avg_hamming_dist()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.count_differing_bits"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.count_differing_bits()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.count_unique"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.count_unique()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.evolve"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.evolve()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.get_best_epoch"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.get_best_epoch()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.get_current_best_circuit"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.get_current_best_circuit()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.get_current_epoch"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.get_current_epoch()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.get_differing_bits_str"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.get_differing_bits_str()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.get_overall_best_circuit_info"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.get_overall_best_circuit_info()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.populate"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.populate()</span></code></a></li>
+<li><a class="reference internal" href="#CircuitPopulation.CircuitPopulation.run_fitness_sensitity"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.run_fitness_sensitity()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#CircuitPopulation.is_pulse_func"><code class="docutils literal notranslate"><span class="pre">is_pulse_func()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+              </nav>
+            </div>
+          </div>
+          
+        </aside>
+      </div>
+    </div>
+
+    <footer class="nftt-footer">
+      <nav id="paginator" class="py-4" aria-label="Documentation navigation">
+    <div class="container">
+      <ul class="pagination justify-content-between mb-0"><li class="page-item">
+            <a href="Circuit.html" class="d-flex px-5 align-items-end" rel="prev" aria-label="Previous page: Circuit.py">
+              <span class="prev-page"><i class="bi bi-caret-left"></i></span>
+              <div class="d-flex flex-column">
+                <span class="text-small text-start text-muted">Previous</span>
+                <span class="underline">Circuit.py</span>
+              </div>
+            </a>
+          </li>
+        <li class="page-item ms-auto">
+            <a href="config_builder.html" class="d-flex px-5 align-items-end" rel="next" aria-label="Next page: config_builder.py">
+              <div class="d-flex flex-column">
+                <span class="text-small text-end text-start text-muted">Next</span>
+                <span class="underline">config_builder.py</span>
+              </div>
+              <span class="next-page"><i class="bi bi-caret-right"></i></span>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </nav>
+
+      <div class="py-5 px-4 px-md-3">
+  <div class="container">
+    
+
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <a class="brand-text d-inline-flex align-items-center mb-2 text-decoration-none" href="/" aria-label="Nefertiti-for-Sphinx">
+          <span class="fs-6 fw-bold">Testing Github</span>
+        </a>
+        
+          <ul class="list-unstyled small text-muted">
+            <li>2024, Evolvable Hardware</li>
+          </ul>
+        
+        
+        <div class="built-with pt-2">
+          Built with <a href="http://sphinx-doc.org">Sphinx 7.4.7</a> and <a href="https://github.com/danirus/sphinx-nefertiti">Nefertiti 0.3.7</a>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+    </footer>
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+
+    <script type="text/javascript" src="../_static/sphinx-nefertiti-0.3.7.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap.bundle-0.3.7.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/doc_versions.js"></script>
+  </body>
+</html>

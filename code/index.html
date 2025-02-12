@@ -1,0 +1,485 @@
+
+
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="docsearch:name" content="Testing Github" />
+    <meta name="docsearch:package_type" content="" />
+    <meta name="docsearch:release" content="0.1.0" />
+    <meta name="docsearch:version" content="" />
+    
+      <title>Code Documentation &mdash; Testing Github 0.1.0 documentation</title>
+    
+      <link rel="icon" href="https://evolvablehardware.org/images/EHWsetup.jpg" />
+    <link rel="stylesheet" href="../_static/bootstrap-icons.css" type="text/css" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/pygments.css', priority=200, rel='stylesheet', type='text/css')" -->
+          <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/graphviz.css', priority=500, rel='stylesheet', type='text/css')" -->
+          <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/pygments_dark.css', priority=500, rel='stylesheet', type='text/css', media='(prefers-color-scheme: dark)', id='pygments_dark_css')" -->
+          <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/sphinx-design.min.css', priority=500, rel='stylesheet', type='text/css')" -->
+          <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/colorsets/sphinx-nefertiti-default-0.3.7.min.css', priority=500, rel='stylesheet', type='text/css')" -->
+          <link rel="stylesheet" type="text/css" href="../_static/colorsets/sphinx-nefertiti-default-0.3.7.min.css" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/fonts/nunito/stylesheet.css', priority=500, rel='stylesheet', type='text/css')" -->
+          <link rel="stylesheet" type="text/css" href="../_static/fonts/nunito/stylesheet.css" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/fonts/red-hat-mono/stylesheet.css', priority=500, rel='stylesheet', type='text/css')" -->
+          <link rel="stylesheet" type="text/css" href="../_static/fonts/red-hat-mono/stylesheet.css" />
+        <link rel="index" title="Index" href="../genindex.html" />
+        <link rel="search" title="Search" href="../search.html" />
+        <link rel="top" title="Testing Github 0.1.0 documentation" href="#" />
+        <link rel="next" title="arg_parse_utils.py" href="arg_parse_utils.html" />
+        <link rel="prev" title="Welcome to Evolvable Hardware’s documentation!" href="../index.html" />
+    <style>
+      :root {
+        --nftt-body-font-family: "Nunito", var(--nftt-font-sans-serif) !important;
+        --nftt-font-monospace: "Red Hat Mono", var(--nftt-font-family-monospace) !important;
+        --nftt-project-name-font: var(--nftt-body-font-family);
+        --nftt-documentation-font: var(--nftt-body-font-family);
+        --nftt-doc-headers-font: "Georgia", var(--nftt-documentation-font);}
+      h1 *, h2 *, h3 *, h4 *, h5 *, h6 * { font-size: inherit; }
+    </style>
+  </head>
+  <body>
+    <header class="navbar navbar-expand-xl navbar-dark nftt-navbar flex-column fixed-top">
+      <div class="skip-links container-fluid visually-hidden-focusable overflow-hidden justify-content-start flex-grow-1">
+        <div class="border-bottom mb-2 pb-2 w-100">
+          <a class="d-none d-md-inline-flex p-2 m-1" href="#sidebar-filter">Skip to docs navigation</a>
+          <a class="d-inline-flex p-2 m-1" href="#content">Skip to main content</a>
+        </div>
+      </div>
+      <nav class="container-xxl nftt-gutter flex-wrap flex-xl-nowrap" aria-label="Main navigation">
+        <div class="nftt-navbar-toggler">
+          <button class="navbar-toggler p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar" aria-label="Toggle documentation navigation">
+            <i class="bi bi-list"></i>
+          </button>
+        </div>
+          <a href="../index.html"
+              
+              class="navbar-brand p-0 me-0 md-lg-2"
+          ><span class="brand-text">Testing Github</span></a>
+        
+        <div class="d-flex d-xl-none">
+          <button class="navbar-toggler p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#nfttSearch" aria-controls="nfttSearch" aria-label="Search">
+            <i class="bi bi-search"></i>
+          </button>
+          <button class="navbar-toggler p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#nfttNavbar" aria-controls="nfttNavbar" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+        </div>
+        
+<div class="offcanvas-xl offcanvas-end flex-grow-1" tabindex="-1" id="nfttSearch" aria-labelledby="nfttSearchOffcanvasLabel" data-bs-scroll="true">
+  <div class="offcanvas-header px-4 pb-0">
+    <h5 class="offcanvas-title fw-bold" id="nfttSearchOffcanvasLabel">Search the documentation</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#nfttSearch"></button>
+  </div>
+  <div class="offcanvas-body p-4 pt-0 p-xl-0 px-xl-3">
+    <hr class="d-xl-none text-white-50">
+    <ul class="navbar-nav flex-row align-items-center flex-wrap ms-md-auto">
+      <li class="nav-item col-12 col-xl-auto">
+        <form id="nftt-search-form" action="../search.html" method="get">
+          <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Search docs" aria-label="Search" aria-describedby="button-search">
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+            <button class="btn btn-primary" type="submit" id="button-search" aria-label="Search"><i class="bi bi-search"></i></button>
+          </div>
+        </form>
+      </li>
+    </ul>
+  </div>
+</div>
+
+        <div class="offcanvas-xl offcanvas-end" tabindex="-1" id="nfttNavbar" aria-labelledby="nfttNavbarOffcanvasLabel" data-bs-scroll="true">
+          <div class="offcanvas-header px-4 pb-0">
+            <div class="offcanvas-title navbar-brand" id="nfttNavbarOffcanvasLabel"><span class="brand-text">Nefertiti for Sphinx</span></div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#nfttNavbar"></button>
+          </div>
+          <div class="offcanvas-body p-4 pt-0 p-xl-0 px-xl-3">
+            <hr class="d-xl-none text-white-50">
+            <ul class="navbar-nav flex-row align-items-center flex-wrap ms-lg-auto">
+              
+              <!-- version_dropdown.html -->
+
+              
+              <!-- colorscheme_dropdown.html -->
+<li class="nav-item dropdown">
+  <a class="nav-link d-flex py-2 px-0 px-xl-2 dropdown-toggle align-items-center" id="snftt-luz" href="#" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" aria-label="Toggle light/dark">
+    <i class="bi bi-circle-half" data-snftt-luz-icon-active></i>
+    <span id="snftt-luz-text" class="d-xl-none small ms-2">Toggle light/dark</span>
+  </a>
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="snftt-luz-text">
+    <li>
+      <h6 class="dropdown-header">Light/dark</h6>
+    </li>
+    <li>
+      <a class="dropdown-item d-flex align-items-center" data-snftt-luz="light" href="#" aria-pressed="false">
+        <span class="small">
+          <i class="bi bi-sun" data-snftt-luz-icon="light"></i>
+        </span>
+        <span class="small ms-3">Light</span>
+        <i class="bi bi-check ms-auto"></i>
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item d-flex align-items-center" data-snftt-luz="dark" href="#" aria-pressed="false">
+        <span class="small">
+          <i class="bi bi-moon-stars" data-snftt-luz-icon="dark"></i>
+        </span>
+        <span class="small ms-3">Dark</span>
+        <i class="bi bi-check ms-auto"></i>
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item current d-flex align-items-center" data-snftt-luz="default" href="#" aria-pressed="false">
+        <span class="small">
+          <i class="bi bi-circle-half" data-snftt-luz-icon="default"></i>
+        </span>
+        <span class="small ms-3">Default</span>
+        <i class="bi bi-check ms-auto"></i>
+      </a>
+    </li>
+  </ul>
+</li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <div class="container-fluid flex-grow-1">
+      <div class="nftt-gutter nftt-page">
+        <aside class="nftt-sidebar ">
+          <div class="nftt-sidebar-content">
+            
+            <div class="title d-none d-xl-block">
+              <i class="bi bi-book"></i>&nbsp;&nbsp;<span>Index</span>
+            </div>
+            <div id="sidebar" tabindex="-1" class="offcanvas-xl offcanvas-start" aria-labelledby="nfttSidebarOffcanvasLabel">
+                <!-- danirus sidebartemplate: "globaltoc.html" --><div class="offcanvas-header border-bottom">
+  <h5 class="offcanvas-title fw-bold" id="nfttSidebarOffcanvasLabel">
+    Table of contents
+  </h5>
+  <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#sidebar"></button>
+</div>
+
+<div class="offcanvas-body">
+  <nav class="toc" aria-label="Main menu">
+    <div class="mb-3 p-1 pt-3 pb-4 border-bottom">
+      <input id="sidebar-filter" type="text" name="filter" class="form-control form-control-sm" placeholder="filter" aria-label="filter">
+    </div>
+    <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Code Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arg_parse_utils.html">arg_parse_utils.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ascTemplateBuilder.html">ascTemplateBuilder.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Circuit.html">Circuit.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CircuitPopulation.html">CircuitPopulation.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_builder.html">config_builder.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Config.html">Config.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ConfigBuilder.html">ConfigBuilder.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ConfigValue.html">ConfigValue.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Evolution.html">Evolution.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evolve.html">evolve.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="init.html">init.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Logger.html">Logger.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Microcontroller.html">Microcontroller.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Monitor.html">Monitor.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi_evolve.html">multi_evolve.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PlotEvolutionLive.html">PlotEvolutionLive.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilities.html">utilities.py</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#documentation-of-tools">Documentation of Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools/pulse_histogram.html">pulse_histogram.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools/reconstruct.html">reconstruct.py</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#things-to-do">Things To Do</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">dev index</a></li>
+</ul>
+
+  </nav>
+  <template data-toggle-item-template>
+    <button class="btn btn-sm btn-link toctree-expand" type="button">
+      <i class="bi bi-caret-right"></i>
+      <span class="visually-hidden">Toggle menu contents</span>
+    </button>
+  </template>
+</div>
+            </div>
+            
+          </div>
+        </aside>
+        <article id="content" class="nftt-content" role="main">
+    <section id="code-documentation">
+<h1>Code Documentation<a class="headerlink" href="#code-documentation" title="Link to this heading">¶</a></h1>
+<p>This page serves to index the documentation of the current components of the Evolvable Hardware codebase.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="arg_parse_utils.html">arg_parse_utils.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arg_parse_utils.html#arg_parse_utils.add_bool_argument"><code class="docutils literal notranslate"><span class="pre">add_bool_argument()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ascTemplateBuilder.html">ascTemplateBuilder.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Circuit.html">Circuit.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CircuitPopulation.html">CircuitPopulation.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CircuitPopulation.html#circuit-population">Circuit Population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitInfo"><code class="docutils literal notranslate"><span class="pre">CircuitInfo</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitInfo._asdict"><code class="docutils literal notranslate"><span class="pre">CircuitInfo._asdict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitInfo._make"><code class="docutils literal notranslate"><span class="pre">CircuitInfo._make()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitInfo._replace"><code class="docutils literal notranslate"><span class="pre">CircuitInfo._replace()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitInfo.fitness"><code class="docutils literal notranslate"><span class="pre">CircuitInfo.fitness</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitInfo.name"><code class="docutils literal notranslate"><span class="pre">CircuitInfo.name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPathInfo"><code class="docutils literal notranslate"><span class="pre">CircuitPathInfo</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPathInfo._asdict"><code class="docutils literal notranslate"><span class="pre">CircuitPathInfo._asdict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPathInfo._make"><code class="docutils literal notranslate"><span class="pre">CircuitPathInfo._make()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPathInfo._replace"><code class="docutils literal notranslate"><span class="pre">CircuitPathInfo._replace()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPathInfo.fitness"><code class="docutils literal notranslate"><span class="pre">CircuitPathInfo.fitness</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPathInfo.path"><code class="docutils literal notranslate"><span class="pre">CircuitPathInfo.path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__arr_eq"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__arr_eq()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__files_eq"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__files_eq()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__generate_map"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__generate_map()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__generate_pulse_map"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__generate_pulse_map()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__generate_sine_funcs"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__generate_sine_funcs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__group"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__init__"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__log_error"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__log_error()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__log_event"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__log_event()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__log_info"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__log_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__log_warning"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__log_warning()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__next_epoch"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__next_epoch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__output_map_file"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__output_map_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__randomize_until_pulses"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__randomize_until_pulses()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__randomize_until_variance"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__randomize_until_variance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__randomize_until_voltage"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__randomize_until_voltage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__run_classic_tournament"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__run_classic_tournament()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__run_fitness_proportional_selection"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__run_fitness_proportional_selection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__run_fractional_elite_tournament"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__run_fractional_elite_tournament()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__run_map_elites_selection"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__run_map_elites_selection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__run_rank_proportional_selection"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__run_rank_proportional_selection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__run_single_elite_tournament"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__run_single_elite_tournament()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__save_generation"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__save_generation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__should_continue_evo"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__should_continue_evo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__single_point_crossover"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__single_point_crossover()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__unique"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__unique()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.__write_to_livedata"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.__write_to_livedata()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.avg_hamming_dist"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.avg_hamming_dist()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.count_differing_bits"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.count_differing_bits()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.count_unique"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.count_unique()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.evolve"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.evolve()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.get_best_epoch"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.get_best_epoch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.get_current_best_circuit"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.get_current_best_circuit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.get_current_epoch"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.get_current_epoch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.get_differing_bits_str"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.get_differing_bits_str()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.get_overall_best_circuit_info"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.get_overall_best_circuit_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.populate"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.populate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.CircuitPopulation.run_fitness_sensitity"><code class="docutils literal notranslate"><span class="pre">CircuitPopulation.run_fitness_sensitity()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="CircuitPopulation.html#CircuitPopulation.is_pulse_func"><code class="docutils literal notranslate"><span class="pre">is_pulse_func()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="config_builder.html">config_builder.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="config_builder.html#config-builder">Config Builder</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Config.html">Config.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Config.html#id1">Config.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Config.html#Config.Config"><code class="docutils literal notranslate"><span class="pre">Config</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.__init__"><code class="docutils literal notranslate"><span class="pre">Config.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.__log_error"><code class="docutils literal notranslate"><span class="pre">Config.__log_error()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.__log_event"><code class="docutils literal notranslate"><span class="pre">Config.__log_event()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.__log_info"><code class="docutils literal notranslate"><span class="pre">Config.__log_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.__log_warning"><code class="docutils literal notranslate"><span class="pre">Config.__log_warning()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.add_logger"><code class="docutils literal notranslate"><span class="pre">Config.add_logger()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.get_combined_mode"><code class="docutils literal notranslate"><span class="pre">Config.get_combined_mode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.get_desired_frequency"><code class="docutils literal notranslate"><span class="pre">Config.get_desired_frequency()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.get_fitness_func"><code class="docutils literal notranslate"><span class="pre">Config.get_fitness_func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.get_fitness_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_fitness_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.get_ga_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_ga_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.get_hardware_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_hardware_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.get_init_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_init_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.get_logging_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_logging_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.get_num_samples"><code class="docutils literal notranslate"><span class="pre">Config.get_num_samples()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.get_plotting_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_plotting_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.get_pulse_weight"><code class="docutils literal notranslate"><span class="pre">Config.get_pulse_weight()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.get_sensitivity_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_sensitivity_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.get_simulation_mode"><code class="docutils literal notranslate"><span class="pre">Config.get_simulation_mode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.get_stop_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_stop_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.get_system_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_system_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.get_top_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_top_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.get_transfer_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_transfer_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Config.html#Config.Config.get_var_weight"><code class="docutils literal notranslate"><span class="pre">Config.get_var_weight()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ConfigBuilder.html">ConfigBuilder.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ConfigBuilder.html#ConfigBuilder.BASE_CONFIG_PARAM_NAME"><code class="docutils literal notranslate"><span class="pre">BASE_CONFIG_PARAM_NAME</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ConfigValue.html">ConfigValue.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ConfigValue.html#ConfigValue.ConfigValue"><code class="docutils literal notranslate"><span class="pre">ConfigValue</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ConfigValue.html#ConfigValue.ConfigValue.__init__"><code class="docutils literal notranslate"><span class="pre">ConfigValue.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Evolution.html">Evolution.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evolve.html">evolve.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evolve.html#id1">evolve.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evolve.html#evolve.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="init.html">init.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="init.html#id1">init.py</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Logger.html">Logger.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Microcontroller.html">Microcontroller.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Microcontroller.html#id1">Microcontroller.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Microcontroller.html#Microcontroller.Microcontroller"><code class="docutils literal notranslate"><span class="pre">Microcontroller</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Microcontroller.html#Microcontroller.Microcontroller.__init__"><code class="docutils literal notranslate"><span class="pre">Microcontroller.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Microcontroller.html#Microcontroller.Microcontroller.get_fpga"><code class="docutils literal notranslate"><span class="pre">Microcontroller.get_fpga()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Microcontroller.html#Microcontroller.Microcontroller.measure_humidity"><code class="docutils literal notranslate"><span class="pre">Microcontroller.measure_humidity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Microcontroller.html#Microcontroller.Microcontroller.measure_pulses"><code class="docutils literal notranslate"><span class="pre">Microcontroller.measure_pulses()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Microcontroller.html#Microcontroller.Microcontroller.measure_signal"><code class="docutils literal notranslate"><span class="pre">Microcontroller.measure_signal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Microcontroller.html#Microcontroller.Microcontroller.measure_signal_td"><code class="docutils literal notranslate"><span class="pre">Microcontroller.measure_signal_td()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Microcontroller.html#Microcontroller.Microcontroller.measure_temp"><code class="docutils literal notranslate"><span class="pre">Microcontroller.measure_temp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Microcontroller.html#Microcontroller.Microcontroller.simple_measure_pulses"><code class="docutils literal notranslate"><span class="pre">Microcontroller.simple_measure_pulses()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Microcontroller.html#Microcontroller.Microcontroller.switch_fpga"><code class="docutils literal notranslate"><span class="pre">Microcontroller.switch_fpga()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Monitor.html">Monitor.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Monitor.html#monitor-not-used">Monitor - NOT USED</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="multi_evolve.html">multi_evolve.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="multi_evolve.html#multi_evolve.evolve_list_of_configs"><code class="docutils literal notranslate"><span class="pre">evolve_list_of_configs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi_evolve.html#multi_evolve.evolve_list_of_configs_selecting_evolution"><code class="docutils literal notranslate"><span class="pre">evolve_list_of_configs_selecting_evolution()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PlotEvolutionLive.html">PlotEvolutionLive.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">utilities.py</a></li>
+</ul>
+</div>
+</section>
+<section id="documentation-of-tools">
+<h1>Documentation of Tools<a class="headerlink" href="#documentation-of-tools" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tools/pulse_histogram.html">pulse_histogram.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools/pulse_histogram.html#pulse-histogram">Pulse Histogram</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools/reconstruct.html">reconstruct.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools/reconstruct.html#reconstruct-py-current-state">reconstruct.py - current state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools/reconstruct.html#program-goal">program goal</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="things-to-do">
+<h1>Things To Do<a class="headerlink" href="#things-to-do" title="Link to this heading">¶</a></h1>
+</section>
+
+</article>
+        <aside class="nftt-toc">
+          
+          <div class="mt-3 mb-1 my-lg-0 ps-xl-3 text-muted">
+            <button class="btn btn-link link-dark p-lg-0 mb-2 mb-lg-0 text-decoration-none nftt-toc-toggle d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#tocContents" aria-expanded="false" aria-controls="tocContents"
+            >On this page <i class="ms-2 bi bi-chevron-expand"></i></button>
+            <div class="title d-none d-lg-block">
+              <i class="bi bi-file-earmark-text"></i>&nbsp;&nbsp;<span class="small">On this page</span>
+            </div>
+            <div class="collapse nftt-toc-collapse" id="tocContents">
+              <nav id="TableOfContents">
+                <ul>
+<li><a class="reference internal" href="#">Code Documentation</a></li>
+<li><a class="reference internal" href="#documentation-of-tools">Documentation of Tools</a></li>
+<li><a class="reference internal" href="#things-to-do">Things To Do</a></li>
+</ul>
+
+              </nav>
+            </div>
+          </div>
+          
+        </aside>
+      </div>
+    </div>
+
+    <footer class="nftt-footer">
+      <nav id="paginator" class="py-4" aria-label="Documentation navigation">
+    <div class="container">
+      <ul class="pagination justify-content-between mb-0"><li class="page-item">
+            <a href="../index.html" class="d-flex px-5 align-items-end" rel="prev" aria-label="Previous page: Welcome to Evolvable Hardware’s documentation!">
+              <span class="prev-page"><i class="bi bi-caret-left"></i></span>
+              <div class="d-flex flex-column">
+                <span class="text-small text-start text-muted">Previous</span>
+                <span class="underline">Welcome to Evolvable Hardware’s documentation!</span>
+              </div>
+            </a>
+          </li>
+        <li class="page-item ms-auto">
+            <a href="arg_parse_utils.html" class="d-flex px-5 align-items-end" rel="next" aria-label="Next page: arg_parse_utils.py">
+              <div class="d-flex flex-column">
+                <span class="text-small text-end text-start text-muted">Next</span>
+                <span class="underline">arg_parse_utils.py</span>
+              </div>
+              <span class="next-page"><i class="bi bi-caret-right"></i></span>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </nav>
+
+      <div class="py-5 px-4 px-md-3">
+  <div class="container">
+    
+
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <a class="brand-text d-inline-flex align-items-center mb-2 text-decoration-none" href="/" aria-label="Nefertiti-for-Sphinx">
+          <span class="fs-6 fw-bold">Testing Github</span>
+        </a>
+        
+          <ul class="list-unstyled small text-muted">
+            <li>2024, Evolvable Hardware</li>
+          </ul>
+        
+        
+        <div class="built-with pt-2">
+          Built with <a href="http://sphinx-doc.org">Sphinx 7.4.7</a> and <a href="https://github.com/danirus/sphinx-nefertiti">Nefertiti 0.3.7</a>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+    </footer>
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+
+    <script type="text/javascript" src="../_static/sphinx-nefertiti-0.3.7.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap.bundle-0.3.7.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/doc_versions.js"></script>
+  </body>
+</html>

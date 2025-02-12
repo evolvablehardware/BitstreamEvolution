@@ -1,0 +1,367 @@
+
+
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="docsearch:name" content="Testing Github" />
+    <meta name="docsearch:package_type" content="" />
+    <meta name="docsearch:release" content="0.1.0" />
+    <meta name="docsearch:version" content="" />
+    
+      <title>evolve &mdash; Testing Github 0.1.0 documentation</title>
+    
+      <link rel="icon" href="https://evolvablehardware.org/images/EHWsetup.jpg" />
+    <link rel="stylesheet" href="../_static/bootstrap-icons.css" type="text/css" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/pygments.css', priority=200, rel='stylesheet', type='text/css')" -->
+          <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/graphviz.css', priority=500, rel='stylesheet', type='text/css')" -->
+          <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/pygments_dark.css', priority=500, rel='stylesheet', type='text/css', media='(prefers-color-scheme: dark)', id='pygments_dark_css')" -->
+          <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/sphinx-design.min.css', priority=500, rel='stylesheet', type='text/css')" -->
+          <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/colorsets/sphinx-nefertiti-default-0.3.7.min.css', priority=500, rel='stylesheet', type='text/css')" -->
+          <link rel="stylesheet" type="text/css" href="../_static/colorsets/sphinx-nefertiti-default-0.3.7.min.css" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/fonts/nunito/stylesheet.css', priority=500, rel='stylesheet', type='text/css')" -->
+          <link rel="stylesheet" type="text/css" href="../_static/fonts/nunito/stylesheet.css" />
+          <!-- add (1) pathto "_CascadingStyleSheet('_static/fonts/red-hat-mono/stylesheet.css', priority=500, rel='stylesheet', type='text/css')" -->
+          <link rel="stylesheet" type="text/css" href="../_static/fonts/red-hat-mono/stylesheet.css" />
+        <link rel="index" title="Index" href="../genindex.html" />
+        <link rel="search" title="Search" href="../search.html" />
+        <link rel="top" title="Testing Github 0.1.0 documentation" href="#" />
+        <link rel="up" title="Module code" href="index.html" />
+    <style>
+      :root {
+        --nftt-body-font-family: "Nunito", var(--nftt-font-sans-serif) !important;
+        --nftt-font-monospace: "Red Hat Mono", var(--nftt-font-family-monospace) !important;
+        --nftt-project-name-font: var(--nftt-body-font-family);
+        --nftt-documentation-font: var(--nftt-body-font-family);
+        --nftt-doc-headers-font: "Georgia", var(--nftt-documentation-font);}
+      h1 *, h2 *, h3 *, h4 *, h5 *, h6 * { font-size: inherit; }
+    </style>
+  </head>
+  <body>
+    <header class="navbar navbar-expand-xl navbar-dark nftt-navbar flex-column fixed-top">
+      <div class="skip-links container-fluid visually-hidden-focusable overflow-hidden justify-content-start flex-grow-1">
+        <div class="border-bottom mb-2 pb-2 w-100">
+          <a class="d-none d-md-inline-flex p-2 m-1" href="#sidebar-filter">Skip to docs navigation</a>
+          <a class="d-inline-flex p-2 m-1" href="#content">Skip to main content</a>
+        </div>
+      </div>
+      <nav class="container-xxl nftt-gutter flex-wrap flex-xl-nowrap" aria-label="Main navigation">
+        <div class="nftt-navbar-toggler">
+          <button class="navbar-toggler p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar" aria-label="Toggle documentation navigation">
+            <i class="bi bi-list"></i>
+          </button>
+        </div>
+          <a href="../index.html"
+              
+              class="navbar-brand p-0 me-0 md-lg-2"
+          ><span class="brand-text">Testing Github</span></a>
+        
+        <div class="d-flex d-xl-none">
+          <button class="navbar-toggler p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#nfttSearch" aria-controls="nfttSearch" aria-label="Search">
+            <i class="bi bi-search"></i>
+          </button>
+          <button class="navbar-toggler p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#nfttNavbar" aria-controls="nfttNavbar" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+        </div>
+        
+<div class="offcanvas-xl offcanvas-end flex-grow-1" tabindex="-1" id="nfttSearch" aria-labelledby="nfttSearchOffcanvasLabel" data-bs-scroll="true">
+  <div class="offcanvas-header px-4 pb-0">
+    <h5 class="offcanvas-title fw-bold" id="nfttSearchOffcanvasLabel">Search the documentation</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#nfttSearch"></button>
+  </div>
+  <div class="offcanvas-body p-4 pt-0 p-xl-0 px-xl-3">
+    <hr class="d-xl-none text-white-50">
+    <ul class="navbar-nav flex-row align-items-center flex-wrap ms-md-auto">
+      <li class="nav-item col-12 col-xl-auto">
+        <form id="nftt-search-form" action="../search.html" method="get">
+          <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Search docs" aria-label="Search" aria-describedby="button-search">
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+            <button class="btn btn-primary" type="submit" id="button-search" aria-label="Search"><i class="bi bi-search"></i></button>
+          </div>
+        </form>
+      </li>
+    </ul>
+  </div>
+</div>
+
+        <div class="offcanvas-xl offcanvas-end" tabindex="-1" id="nfttNavbar" aria-labelledby="nfttNavbarOffcanvasLabel" data-bs-scroll="true">
+          <div class="offcanvas-header px-4 pb-0">
+            <div class="offcanvas-title navbar-brand" id="nfttNavbarOffcanvasLabel"><span class="brand-text">Nefertiti for Sphinx</span></div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#nfttNavbar"></button>
+          </div>
+          <div class="offcanvas-body p-4 pt-0 p-xl-0 px-xl-3">
+            <hr class="d-xl-none text-white-50">
+            <ul class="navbar-nav flex-row align-items-center flex-wrap ms-lg-auto">
+              
+              <!-- version_dropdown.html -->
+
+              
+              <!-- colorscheme_dropdown.html -->
+<li class="nav-item dropdown">
+  <a class="nav-link d-flex py-2 px-0 px-xl-2 dropdown-toggle align-items-center" id="snftt-luz" href="#" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" aria-label="Toggle light/dark">
+    <i class="bi bi-circle-half" data-snftt-luz-icon-active></i>
+    <span id="snftt-luz-text" class="d-xl-none small ms-2">Toggle light/dark</span>
+  </a>
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="snftt-luz-text">
+    <li>
+      <h6 class="dropdown-header">Light/dark</h6>
+    </li>
+    <li>
+      <a class="dropdown-item d-flex align-items-center" data-snftt-luz="light" href="#" aria-pressed="false">
+        <span class="small">
+          <i class="bi bi-sun" data-snftt-luz-icon="light"></i>
+        </span>
+        <span class="small ms-3">Light</span>
+        <i class="bi bi-check ms-auto"></i>
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item d-flex align-items-center" data-snftt-luz="dark" href="#" aria-pressed="false">
+        <span class="small">
+          <i class="bi bi-moon-stars" data-snftt-luz-icon="dark"></i>
+        </span>
+        <span class="small ms-3">Dark</span>
+        <i class="bi bi-check ms-auto"></i>
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item current d-flex align-items-center" data-snftt-luz="default" href="#" aria-pressed="false">
+        <span class="small">
+          <i class="bi bi-circle-half" data-snftt-luz-icon="default"></i>
+        </span>
+        <span class="small ms-3">Default</span>
+        <i class="bi bi-check ms-auto"></i>
+      </a>
+    </li>
+  </ul>
+</li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <div class="container-fluid flex-grow-1">
+      <div class="nftt-gutter nftt-page">
+        <aside class="nftt-sidebar ">
+          <div class="nftt-sidebar-content">
+            
+            <div class="title d-none d-xl-block">
+              <i class="bi bi-book"></i>&nbsp;&nbsp;<span>Index</span>
+            </div>
+            <div id="sidebar" tabindex="-1" class="offcanvas-xl offcanvas-start" aria-labelledby="nfttSidebarOffcanvasLabel">
+                <!-- danirus sidebartemplate: "globaltoc.html" --><div class="offcanvas-header border-bottom">
+  <h5 class="offcanvas-title fw-bold" id="nfttSidebarOffcanvasLabel">
+    Table of contents
+  </h5>
+  <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#sidebar"></button>
+</div>
+
+<div class="offcanvas-body">
+  <nav class="toc" aria-label="Main menu">
+    <div class="mb-3 p-1 pt-3 pb-4 border-bottom">
+      <input id="sidebar-filter" type="text" name="filter" class="form-control form-control-sm" placeholder="filter" aria-label="filter">
+    </div>
+    <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../code/index.html">Code Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../code/arg_parse_utils.html">arg_parse_utils.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/ascTemplateBuilder.html">ascTemplateBuilder.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/Circuit.html">Circuit.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/CircuitPopulation.html">CircuitPopulation.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/config_builder.html">config_builder.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/Config.html">Config.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/ConfigBuilder.html">ConfigBuilder.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/ConfigValue.html">ConfigValue.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/Evolution.html">Evolution.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/evolve.html">evolve.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/init.html">init.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/Logger.html">Logger.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/Microcontroller.html">Microcontroller.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/Monitor.html">Monitor.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/multi_evolve.html">multi_evolve.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/PlotEvolutionLive.html">PlotEvolutionLive.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/utilities.html">utilities.py</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../code/index.html#documentation-of-tools">Documentation of Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../code/tools/pulse_histogram.html">pulse_histogram.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/tools/reconstruct.html">reconstruct.py</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../code/index.html#things-to-do">Things To Do</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">dev index</a></li>
+</ul>
+
+  </nav>
+  <template data-toggle-item-template>
+    <button class="btn btn-sm btn-link toctree-expand" type="button">
+      <i class="bi bi-caret-right"></i>
+      <span class="visually-hidden">Toggle menu contents</span>
+    </button>
+  </template>
+</div>
+            </div>
+            
+          </div>
+        </aside>
+        <article id="content" class="nftt-content" role="main">
+    <h1>Source code for evolve</h1><div class="highlight"><pre>
+<span></span><span class="linenos">  1</span><span class="ch">#! /bin/python3</span>
+<span class="linenos">  2</span><span class="c1">#Genetic Algorithm for Intrinsic Analog Hardware Evolution</span>
+<span class="linenos">  3</span><span class="c1"># FOR USE WITH LATTICE iCE40 FPGAs ONLY</span>
+<span class="linenos">  4</span><span class="c1">#</span>
+<span class="linenos">  5</span><span class="c1"># This code can be used to evolve an analog oscillator</span>
+<span class="linenos">  6</span><span class="c1">#</span>
+<span class="linenos">  7</span><span class="c1"># Author: Derek Whitley</span>
+<span class="linenos">  8</span>
+<span class="linenos">  9</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 10</span><span class="sd">evolve.py</span>
+<span class="linenos"> 11</span><span class="sd">---------</span>
+<span class="linenos"> 12</span>
+<span class="linenos"> 13</span><span class="sd">This file is run to initiate a round of evolution. There are command line arguments to help initiate an evolution run.</span>
+<span class="linenos"> 14</span>
+<span class="linenos"> 15</span><span class="sd">This file has been reviewed, and should be at a satisfacroty level.</span>
+<span class="linenos"> 16</span>
+<span class="linenos"> 17</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 18</span>
+<span class="linenos"> 19</span>
+<span class="linenos"> 20</span><span class="kn">from</span><span class="w"> </span><span class="nn">Evolution</span><span class="w"> </span><span class="kn">import</span> <span class="n">Evolution</span>
+<span class="linenos"> 21</span><span class="kn">from</span><span class="w"> </span><span class="nn">arg_parse_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">add_bool_argument</span>
+<span class="linenos"> 22</span><span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="linenos"> 23</span><span class="kn">import</span><span class="w"> </span><span class="nn">signal</span>
+<span class="linenos"> 24</span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="linenos"> 25</span>
+<span class="linenos"> 26</span><span class="c1">## Command Line Argument And Help information for this file.</span>
+<span class="linenos"> 27</span>
+<span class="linenos"> 28</span><span class="c1">#Program info for --help output</span>
+<span class="linenos"> 29</span><span class="n">program_name</span><span class="o">=</span><span class="s2">&quot;evolve&quot;</span>
+<span class="linenos"> 30</span><span class="n">program_description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;This program evolves a population of FPGA layouts (or simulations of them) acording to a predefined fitness function. </span>
+<span class="linenos"> 31</span><span class="s2">All files will presume the main directory of BitStreamEvolution unless absolute path given.&quot;&quot;&quot;</span>
+<span class="linenos"> 32</span><span class="n">program_epilog</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;For non-simulations, and Arduino and the Lattice iCE40 FPGA are also needed.</span>
+<span class="linenos"> 33</span><span class="s2">Exit Status:</span>
+<span class="linenos"> 34</span><span class="s2">0 - No issues</span>
+<span class="linenos"> 35</span><span class="s2">1 - Issue while running</span>
+<span class="linenos"> 36</span><span class="s2">130 - KeyboardInterrupt (ctrl+c)&quot;&quot;&quot;</span>
+<span class="linenos"> 37</span><span class="c1">#Check exit codes by running `echo $?` after running the command.</span>
+<span class="linenos"> 38</span>
+<span class="linenos"> 39</span><span class="c1">## Setting Default Values for Function Call</span>
+<span class="linenos"> 40</span><span class="n">default_config</span> <span class="o">=</span> <span class="s2">&quot;data/config.ini&quot;</span> <span class="c1">#Use none if want specified</span>
+<span class="linenos"> 41</span><span class="c1"># By default, we don&#39;t want to use a base config.</span>
+<span class="linenos"> 42</span><span class="c1"># We also don&#39;t want to override by default, as that would defeat the purpose of the parameter</span>
+<span class="linenos"> 43</span><span class="c1"># in config files to specify the base config to use</span>
+<span class="linenos"> 44</span><span class="c1"># &#39;default_config&#39; is provided as a sample file, not totally meant to be used - but, might need a rename</span>
+<span class="linenos"> 45</span><span class="n">default_base_config</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#&quot;data/default_config.ini&quot;</span>
+<span class="linenos"> 46</span><span class="n">default_output_directory</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#If not changed, information only saved internally.</span>
+<span class="linenos"> 47</span><span class="n">default_experiment_description</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#If not changed, requires user to enter.</span>
+<span class="linenos"> 48</span>
+<span class="linenos"> 49</span><span class="c1"># This is where the completed config from Config Builder is stored while evolution is active for easy access.</span>
+<span class="linenos"> 50</span><span class="n">BUILT_CONFIG_PATH</span> <span class="o">=</span> <span class="s2">&quot;./workspace/builtconfig.ini&quot;</span>
+<span class="linenos"> 51</span>
+<span class="linenos"> 52</span><span class="c1">## Creating an Argument Parser to Parse Arguments</span>
+<span class="linenos"> 53</span><span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">prog</span><span class="o">=</span><span class="n">program_name</span><span class="p">,</span>
+<span class="linenos"> 54</span>                                 <span class="n">description</span><span class="o">=</span><span class="n">program_description</span><span class="p">,</span>
+<span class="linenos"> 55</span>                                 <span class="n">epilog</span><span class="o">=</span><span class="n">program_epilog</span><span class="p">)</span>
+<span class="linenos"> 56</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-c&#39;</span><span class="p">,</span><span class="s1">&#39;--config&#39;</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="n">default_config</span><span class="p">,</span>
+<span class="linenos"> 57</span>                   <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;The file this simulation is generated from. Default: </span><span class="si">{</span><span class="n">default_config</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 58</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-bc&#39;</span><span class="p">,</span><span class="s1">&#39;--base-config&#39;</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="n">default_base_config</span><span class="p">,</span>
+<span class="linenos"> 59</span>                    <span class="n">help</span><span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;The config any unspecified values in the main config is pulled from. &quot;</span> <span class="o">+</span>\
+<span class="linenos"> 60</span>                        <span class="sa">f</span><span class="s2">&quot;This overpowers the main config specified in the file if provided. Default: </span><span class="si">{</span><span class="n">default_base_config</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 61</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-o&#39;</span><span class="p">,</span><span class="s1">&#39;--output-directory&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="n">default_output_directory</span><span class="p">,</span>
+<span class="linenos"> 62</span>                    <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;The directory output from the simulation is copied to after a successful simulation. Default: </span><span class="si">{</span><span class="n">default_output_directory</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 63</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-d&#39;</span><span class="p">,</span><span class="s1">&#39;--description&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="n">default_experiment_description</span><span class="p">,</span>
+<span class="linenos"> 64</span>                    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The description of this simulation. Requires manual entry if not an argument.&quot;</span><span class="p">)</span>
+<span class="linenos"> 65</span><span class="n">print_flags</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;enable&#39;</span><span class="p">:[</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span><span class="s1">&#39;--print-only&#39;</span><span class="p">,</span><span class="s1">&#39;--test&#39;</span><span class="p">,</span><span class="s1">&#39;--no-action&#39;</span><span class="p">],</span>
+<span class="linenos"> 66</span>            <span class="s1">&#39;disable&#39;</span><span class="p">:[</span><span class="s1">&#39;-np&#39;</span><span class="p">,</span> <span class="s1">&#39;--no-print-only&#39;</span><span class="p">,</span><span class="s1">&#39;--normal&#39;</span><span class="p">,</span><span class="s1">&#39;--act&#39;</span><span class="p">]}</span>
+<span class="linenos"> 67</span><span class="n">add_bool_argument</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span><span class="s2">&quot;print_only&quot;</span><span class="p">,</span><span class="n">flag_names</span><span class="o">=</span><span class="n">print_flags</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos"> 68</span><span class="c1"># --help is added by default</span>
+<span class="linenos"> 69</span>
+<div class="viewcode-block" id="run">
+<a class="viewcode-back" href="../code/evolve.html#evolve.run">[docs]</a>
+<span class="linenos"> 70</span><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">():</span>
+<span class="linenos"> 71</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform evolution according to the provided config.&quot;&quot;&quot;</span>
+<span class="linenos"> 72</span>    <span class="c1">## Parsing Args and configuring Variables</span>
+<span class="linenos"> 73</span>    <span class="n">__args</span><span class="o">=</span><span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+<span class="linenos"> 74</span>
+<span class="linenos"> 75</span>    <span class="c1">## TODO: DELETE ME WHEN args are Logged</span>
+<span class="linenos"> 76</span>    <span class="k">if</span> <span class="p">(</span><span class="n">__args</span><span class="o">.</span><span class="n">print_only</span><span class="p">):</span>
+<span class="linenos"> 77</span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Arguments Detected:  </span><span class="si">{</span><span class="n">__args</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># probably should log this instead. not sure if with logger directly or through config.</span>
+<span class="linenos"> 78</span>
+<span class="linenos"> 79</span>    <span class="c1"># Run Evolution class, which actually executes an experiment</span>
+<span class="linenos"> 80</span>    <span class="n">evolution</span> <span class="o">=</span> <span class="n">Evolution</span><span class="p">()</span>
+<span class="linenos"> 81</span>    <span class="k">def</span><span class="w"> </span><span class="nf">sig_int_handler</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+<span class="linenos"> 82</span>        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;User Interrupt&#39;</span><span class="p">)</span>
+<span class="linenos"> 83</span>        <span class="n">evolution</span><span class="o">.</span><span class="n">clean_up</span><span class="p">()</span>
+<span class="linenos"> 84</span>        <span class="c1"># Still exit, but make sure we can save everything first</span>
+<span class="linenos"> 85</span>        <span class="c1"># Denote with exit that a user interrupt occoured</span>
+<span class="linenos"> 86</span>        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">130</span><span class="p">)</span>
+<span class="linenos"> 87</span>
+<span class="linenos"> 88</span>    <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGINT</span><span class="p">,</span> <span class="n">sig_int_handler</span><span class="p">)</span>
+<span class="linenos"> 89</span>
+<span class="linenos"> 90</span>    <span class="n">evolution</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="linenos"> 91</span>        <span class="n">primary_config_path</span> <span class="o">=</span>       <span class="n">__args</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+<span class="linenos"> 92</span>        <span class="n">base_config_path</span> <span class="o">=</span>          <span class="n">__args</span><span class="o">.</span><span class="n">base_config</span><span class="p">,</span>
+<span class="linenos"> 93</span>        <span class="n">output_directory</span> <span class="o">=</span>          <span class="n">__args</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span>
+<span class="linenos"> 94</span>        <span class="n">experiment_description</span> <span class="o">=</span>    <span class="n">__args</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+<span class="linenos"> 95</span>        <span class="n">built_config_path</span><span class="o">=</span>          <span class="n">BUILT_CONFIG_PATH</span><span class="p">,</span>
+<span class="linenos"> 96</span>        <span class="n">print_action_only</span><span class="o">=</span>          <span class="n">__args</span><span class="o">.</span><span class="n">print_only</span>
+<span class="linenos"> 97</span>    <span class="p">)</span></div>
+
+<span class="linenos"> 98</span>
+<span class="linenos"> 99</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">100</span>    <span class="n">run</span><span class="p">()</span>
+</pre></div>
+</article>
+        <aside class="nftt-toc">
+          
+        </aside>
+      </div>
+    </div>
+
+    <footer class="nftt-footer">
+      
+<nav id="paginator"></nav>
+
+      <div class="py-5 px-4 px-md-3">
+  <div class="container">
+    
+
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <a class="brand-text d-inline-flex align-items-center mb-2 text-decoration-none" href="/" aria-label="Nefertiti-for-Sphinx">
+          <span class="fs-6 fw-bold">Testing Github</span>
+        </a>
+        
+          <ul class="list-unstyled small text-muted">
+            <li>2024, Evolvable Hardware</li>
+          </ul>
+        
+        
+        <div class="built-with pt-2">
+          Built with <a href="http://sphinx-doc.org">Sphinx 7.4.7</a> and <a href="https://github.com/danirus/sphinx-nefertiti">Nefertiti 0.3.7</a>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+    </footer>
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+
+    <script type="text/javascript" src="../_static/sphinx-nefertiti-0.3.7.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap.bundle-0.3.7.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/doc_versions.js"></script>
+  </body>
+</html>
