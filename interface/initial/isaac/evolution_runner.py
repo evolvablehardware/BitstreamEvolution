@@ -41,9 +41,9 @@ class Hardware:
     It may be a good idea to pass this to the fitness evaluation function or something similar. 
     This must also have a function that is called when starting evolution to connect to the hardware, make sure it is all accessible, and even upload scripts to the hardware.
     """
-    def run_fitness_test(individual:Individual)-> tuple[Individual,Result[HardwareData,Exception]]:
+    def run_fitness_test(self,individual:Individual)-> tuple[Individual,Result[HardwareData,Exception]]:
         "This runs the fitness test on the hardware and return a result either with the relevant data if successful or the exception thrown if failed."
-        pass
+        return (Individual(),Ok(HardwareData()))
 
 
 
@@ -71,9 +71,9 @@ class FitnessEvaluator:
         "This sets up the hardware and allows any parameters of fitness to be changed."
         pass
 
-    def evaluate_fitness(population:tuple[Individual]) -> tuple[ tuple[Individual, Result[Fitness,Exception] ] ]:
+    def evaluate_fitness(self,population:tuple[Individual]) -> tuple[ tuple[Individual, Result[Fitness,Exception] ] ]:
         "This gets a population and outputs the fitness evaluation it performed using the hardware."
-        pass
+        return ((Individual(),Ok(Fitness())),)
 
 class Mutator:
     """
@@ -86,9 +86,9 @@ class Selector:
 
     This, like the Evaluated Fitness, also has an opportunity to implemented as a function.
     """
-    def select(evaluated_population:tuple[ tuple[Individual, Result[Fitness,Exception] ] ])->dict[str,tuple[ tuple[Individual, Result[Fitness,Exception] ] ]]:
+    def select(self,evaluated_population:tuple[ tuple[Individual, Result[Fitness,Exception] ] ])->dict[str,tuple[ tuple[Individual, Result[Fitness,Exception] ] ]]:
         "Splits a single populations into smaller populations that can be acted on."
-        pass
+        return {"":((Individual(),Ok(Fitness())),)}
 
 class Reproducer:
     """
@@ -101,11 +101,11 @@ class ReproducePopulation:
     """
     This class gets an evaluated populatoin and outputs a new unevaluated population, after both selection and mutation.
     """
-    def reproduce(select:Selector,final_muatator:Mutator,
+    def reproduce(self,select:Selector,final_muatator:Mutator,
                   selected_mutator:dict[str,Mutator],selected_reproducer:dict[str,Reproducer],
                   evaluated_population: tuple[ tuple[Individual, Result[Fitness,Exception] ] ]
                   ) ->tuple[Individual]:
-        pass
+        return (Individual(),)
 
 class EvolutionRunner:
     """
@@ -129,10 +129,10 @@ class EvolutionRunner:
         """
         pass
 
-    def verify()->bool:
+    def verify(self)->bool:
         "Verify all parts of the evolution object are designed to work together"
-        pass
+        return True
 
-    def evolve():
+    def evolve(self):
         "Performs evolution when called"
         pass
