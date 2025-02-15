@@ -14,7 +14,7 @@ Looking at this example code, it seems ideal to only have Hardware, Individual, 
 
 """
 
-from result import Ok, Err, Result, is_ok, is_err
+from result import Ok, Err, Result, is_ok, is_err, as_result
 from dataclasses import dataclass
 
 class Individual:
@@ -136,3 +136,7 @@ class EvolutionRunner:
     def evolve(self):
         "Performs evolution when called"
         pass
+
+@as_result(TypeError,ValueError)
+def raise_exception():
+    raise TypeError()
