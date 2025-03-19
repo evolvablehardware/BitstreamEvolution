@@ -22,6 +22,7 @@ This is the |doc_version| documentation for BitstreamEvolution.
    interface/index
    code/index
    old_code/index
+   BitstreamEvolutionProtocols
 
 ==================
 Indices and tables
