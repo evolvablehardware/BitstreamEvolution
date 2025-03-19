@@ -162,8 +162,8 @@ def GenerateMeasurements(Protocol):
 def Hardware(Protocol):
     "Used to Evaluate Measurements"
     #Has FPGAs
-    #Has Active Measurements
-    #Has Pending MEasurements
+    #Has Active Measurements being evaluated
+    #Has Pending MEasurements to be evaluated
     def request_measurement(measurement:Measurement)->Measurement: ... #make this an async function
     def get_available_FPGAs()->list[str]: ... # This could be a list of ids, or some sort of FPGA object with the UUID included and other relevant data.
 
