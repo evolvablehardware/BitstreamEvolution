@@ -4,6 +4,7 @@ from abc import ABC
 from pathlib import Path
 from result import Result,Ok
 from enum import Enum, auto
+import asyncio
 
 class GenData(Protocol):
     """
@@ -164,8 +165,20 @@ def Hardware(Protocol):
     #Has FPGAs
     #Has Active Measurements being evaluated
     #Has Pending MEasurements to be evaluated
-    def request_measurement(measurement:Measurement)->Measurement: ... #make this an async function
+    async def request_measurement(measurement:Measurement)->Measurement: ... #make this an async function
     def get_available_FPGAs()->list[str]: ... # This could be a list of ids, or some sort of FPGA object with the UUID included and other relevant data.
+
+# Example usage
+if False:
+    #https://www.pythontutorial.net/python-concurrency/python-async-await/
+    async def evalMeas(Measurements:list[Measurement]):
+        hw = Hardware(...)
+        for m in Measurements:
+            await Hardware.request_measurement(m)
+    
+    asyncio.run(evalMeas(...))
+    
+    
 
 
 #TODO: Objects from Presentation
