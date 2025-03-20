@@ -48,17 +48,15 @@ class Individual(Protocol):
     """
     ...
 
-
 class FPGA_Model(Enum):
     "All of the FPGA models that any part of our code supports"
-    ICE30 = auto()          # Check
+    ICE40 = auto()          # Check
 
 # This class may even be able to have somewhat of a universal application for for particular FPGA models.
 class FPGA_Compilation_Data(Protocol):
     "This contains all data needed to compile data for a particular FPGA."
     model:FPGA_Model
     "The id for the particular FPGA (Maybe?)"
-
 
 class Circuit(Protocol):
     """
@@ -106,12 +104,16 @@ class Population:
         fit = list(fitnesses) if (fitnesses is not None) and (len(fitnesses) == len(ind)) else [None]*len(ind)
 
         self.population_list:list[tuple[Individual,Optional[Fitness]]] = list(zip(ind,fit))
+        # = [(Individual, Fitness), (Individual2, Fitness2), ...]
 
     def __iter__(self)->list[tuple[Individual,Optional[Fitness]]]:
         # call iter() to get iterator, then next()
         # If wanted to be safe, return a copy that can't change
         return self.population_list
     
+    def set_fitness_by_index(self,index:int,fitness:Fitness)->None:
+        self.population_list[index] = (self.population_list[index][0],fitness)
+
     def set_fitness(self, individual:Individual, fitness:Fitness)->None:
         "This can return value error if provided individual is not in the population."
         for i,if_tup in self.population_list:
@@ -119,9 +121,11 @@ class Population:
                 self.set_fitness_by_index(index=i,fitness=fitness)
                 return
         raise ValueError(f"Cound not find provided Individual in the population. Individual: {individual}")
-                
-    def set_fitness_by_index(self,index:int,fitness:Fitness)->None:
-        self.population_list[index] = (self.population_list[index][0],fitness)
+    
+    def set_fitness_of_unevaluated_individuals(self,default_fitness:Fitness)->None:
+        for i,if_tup in self.population_list:
+            if if_tup[1] is None:
+                self.set_fitness_by_index(index=i,fitness=default_fitness)
                 
     def sort(self,key:Callable[[Fitness],Fitness],reverse:bool)->None:
         "Operates on the Population fitness function like the standard sort for a list. May Raise TypeError if population not fully evaluated."
@@ -132,11 +136,6 @@ class Population:
             )
         except TypeError:
             raise TypeError(f"Population does not have all individual's fitnesses fully specified. {sum([t[1] is None for t in self.population_list])} individuals did not have a fitness assigned.")
-
-    def set_fitness_of_unevaluated_individuals(self,default_fitness:Fitness)->None:
-        for i,if_tup in self.population_list:
-            if if_tup[1] is None:
-                self.set_fitness_by_index(index=i,fitness=default_fitness)
 
 def Reproduce(Protocol):
     def __call__(self,population:Population)->Population: ...
@@ -161,7 +160,7 @@ def GenerateMeasurements(Protocol):
     def __call__(self,population:Population)->list[Measurement]: ...
 
 def Hardware(Protocol):
-    "Used to Evaluate Measurements"
+    "Used to Evaluate Measurements. Compile hardware would be responsible for compiling the Circuit in the Measurement object passed to it in request_measurement()."
     #Has FPGAs
     #Has Active Measurements being evaluated
     #Has Pending MEasurements to be evaluated
@@ -179,11 +178,6 @@ if False:
     asyncio.run(evalMeas(...))
     
     
-
-
-#TODO: Objects from Presentation
-# - O: FPGA/Hardware ID??
-# - O: Hardware (Evaluate Measurements)
 
 
 ## Interesting Experiment to consider if update python version;
