@@ -24,6 +24,7 @@ class GenDataFactory(Protocol):
     # If want to say it can't have any other positional only arguments, use:
     #def __call__(self,gen_data:GenData|None,/, **kwds:Any) -> GenData|None: ...
 
+
 # TODO: Replace this with Self if update to python 3.12
 F = TypeVar('F',bound='Fitness')
 # Want this to match the specific instance of the thing implementing Fitness it was matched with,
@@ -140,7 +141,7 @@ class Population:
 def Reproduce(Protocol):
     def __call__(self,population:Population)->Population: ...
 
-def Generate_Initial_Population():
+def Generate_Initial_Population(Protocol):
     def __call__(self)->Population: ...
 
 def Measurement(Protocol):
