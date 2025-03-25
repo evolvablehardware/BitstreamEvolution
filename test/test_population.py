@@ -22,11 +22,17 @@ def test_set_fitness():
         else:
             assert fitness is None
 
-# def test_sort():
-#     group = []
-#     fits = [2, 3, 8, 1, 5, 0, 6, 7, 4, 9]
-#     for _ in range(10):
-#         individual = Mock()
-#         group.append(individual)
-#     population = Population(group.copy(), fits)
+def test_sort():
+    group = []
+    fits = [2, 3, 8, 1, 5, 0, 6, 7, 4, 9]
+    for _ in range(10):
+        individual = Mock()
+        group.append(individual)
+    population = Population(group.copy(), fits.copy())
+    population.sort(lambda x: x, False)
+    it = iter(population)
+    fits.sort()
+    for (i, (_, fitness)) in enumerate(it):
+        assert fits[i] == fitness
+
 
