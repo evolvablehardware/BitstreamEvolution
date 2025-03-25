@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Protocol, Callable, Iterable, Optional, Any, TypeVar
+from typing import Iterator, Protocol, Callable, Iterable, Optional, TypeVar
 from abc import ABC
 from pathlib import Path
 from result import Result,Ok
@@ -94,6 +94,7 @@ class Population:
     Fitnesses can be added to individuals in the population as desired, and once all individuals are added, the population can be sorted. 
     The Population can also be itterated through. (iter() -then-> next())
     """
+
     # May want specific type variables.
     def __init__(self,individuals: Iterable[Individual], fitnesses:Optional[Iterable[Fitness|None]]=None):
         "Can raise ValueError if Individuals are not unique."
@@ -107,24 +108,24 @@ class Population:
         self.population_list:list[tuple[Individual,Optional[Fitness]]] = list(zip(ind,fit))
         # = [(Individual, Fitness), (Individual2, Fitness2), ...]
 
-    def __iter__(self)->list[tuple[Individual,Optional[Fitness]]]:
+    def __iter__(self)->Iterator[tuple[Individual,Optional[Fitness]]]:
         # call iter() to get iterator, then next()
         # If wanted to be safe, return a copy that can't change
-        return self.population_list
+        return iter(self.population_list)
     
     def set_fitness_by_index(self,index:int,fitness:Fitness)->None:
         self.population_list[index] = (self.population_list[index][0],fitness)
 
     def set_fitness(self, individual:Individual, fitness:Fitness)->None:
         "This can return value error if provided individual is not in the population."
-        for i,if_tup in self.population_list:
+        for i,if_tup in enumerate(self.population_list):
             if if_tup[0] == individual:
                 self.set_fitness_by_index(index=i,fitness=fitness)
                 return
         raise ValueError(f"Cound not find provided Individual in the population. Individual: {individual}")
     
     def set_fitness_of_unevaluated_individuals(self,default_fitness:Fitness)->None:
-        for i,if_tup in self.population_list:
+        for i,if_tup in enumerate(self.population_list):
             if if_tup[1] is None:
                 self.set_fitness_by_index(index=i,fitness=default_fitness)
                 
