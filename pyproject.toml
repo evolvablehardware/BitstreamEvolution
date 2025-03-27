@@ -96,11 +96,11 @@ pyserial = "^3.5"
 numpy = "^2.2.2"
 matplotlib = "^3.10.0"
 sortedcontainers = "^2.4.0"
-
-#dev group for developers updating the code
 result = "^0.17.0"
 mypy = "^1.15.0"
+
 [tool.poetry.group.dev]
+#dev group for developers updating the code
 optional = true
 
 [tool.poetry.group.dev.dependencies]
@@ -119,16 +119,18 @@ optional = true
 [tool.poetry.group.gh_read_pyproject.dependencies]
 toml = "^0.10.2"
 
-#gh_tests group for all testing on github.
+
 [tool.poetry.group.gh_tests]
+#gh_tests group for all testing on github.
 optional = true
 
 [tool.poetry.group.gh_tests.dependencies]
 pytest = "^8.2.0"
 toml = "^0.10.2"
 
-#gh_tests group for building documentation on github.
+
 [tool.poetry.group.gh_docs]
+#gh_tests group for building documentation on github.
 optional = true
 
 [tool.poetry.group.gh_docs.dependencies]

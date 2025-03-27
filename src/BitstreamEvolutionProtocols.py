@@ -1,14 +1,15 @@
 from dataclasses import dataclass
-from typing import Iterator, Protocol, Callable, Iterable, Optional, TypeVar
+from typing import Iterator, Protocol, Callable, Iterable, Optional, TypeVar, Any
 from abc import ABC
 from pathlib import Path
-from result import Result,Ok
+from result import Result,Ok,Err
 from enum import Enum, auto
 import asyncio
 
-class GenData(Protocol):
+@dataclass
+class GenData:
     """
-    The most basic Class Protocol for Generation Data Objects. This simply requires a generation_number.
+    The most basic Generation Data Object. This simply requires a generation_number.
     """
     generation_number: int
 
@@ -20,7 +21,7 @@ class GenDataFactory(Protocol):
     It also constructs the initial GenData object (gen_data is None) 
     and determines when the final generation occours (returns None).
     """
-    def __call__(self,gen_data:GenData|None,*args:Any, **kwds:Any) -> GenData|None: ...
+    def __call__(self,gen_data:GenData|None,*args:Any, **kwds:Any) -> GenData|None: ...   #pyright: ignore
     # If want to say it can't have any other positional only arguments, use:
     #def __call__(self,gen_data:GenData|None,/, **kwds:Any) -> GenData|None: ...
 
@@ -139,29 +140,53 @@ class Population:
         except TypeError:
             raise TypeError(f"Population does not have all individual's fitnesses fully specified. {sum([t[1] is None for t in self.population_list])} individuals did not have a fitness assigned.")
 
-def Reproduce(Protocol):
+class Reproduce(Protocol):
     def __call__(self,population:Population)->Population: ...
 
-def Generate_Initial_Population(Protocol):
+class Generate_Initial_Population(Protocol):
     def __call__(self)->Population: ...
 
-def Measurement(Protocol):
-    "All measurement data, this could even be a class potentially"
-    FPGA_request:str
-    data_request:Enum
-    circuit:Circuit
-    FPGA_used:Optional[str]
-    result = Result[Any,Exception] # The Any should be the measurement data, which we may want to standardize at some point
+class MeasurementError(Exception):
+    ...
 
-def EvaluateFitness(Protocol):
+class MeasurementNotTaken(MeasurementError):
+    ...
+
+class Measurement(Protocol):
+    "All measurement data, this could even be a class potentially"
+    # FPGA_request:str
+    # data_request:Enum
+    # circuit:Circuit
+    # FPGA_used:Optional[str]
+    # result = Result[Any,Exception] 
+    def __init__(self, FPGA_request:str, data_request:Enum,circuit_to_measure:Circuit)->None:
+        self.FPGA_request:str = FPGA_request #may want to refine typing here
+        self.data_request:Enum = data_request
+        self.circuit:Circuit = circuit_to_measure
+        self.FPGA_used:Optional[str] = None
+        self.result: Result[Any,Exception] = Err(MeasurementNotTaken("Initialized Measurement option has not been measured."))
+                      # The Any should be the measurement data, which we may want to standardize at some point
+    
+    def record_FPGA_used(self,FPGA:str)->None:
+        self.FPGA_used = FPGA
+    
+    def record_measurement_result(self,result:Any|Exception):
+        if isinstance(result,Exception):
+            self.result = Err(result)
+        else:
+            self.result = Ok(result)
+
+        
+
+class EvaluateFitness(Protocol):
     "Fully Evaluates a Population"
     def __call__(self,population:Population,measurements:list[Measurement])->Population: ...
 
-def GenerateMeasurements(Protocol):
+class GenerateMeasurements(Protocol):
     "Generate the measurements to take for the given population"
     def __call__(self,population:Population)->list[Measurement]: ...
 
-def Hardware(Protocol):
+class Hardware(Protocol):
     "Used to Evaluate Measurements. Compile hardware would be responsible for compiling the Circuit in the Measurement object passed to it in request_measurement()."
     #Has FPGAs
     #Has Active Measurements being evaluated
