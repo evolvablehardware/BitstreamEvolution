@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Iterator, Protocol, Callable, Iterable, Optional, TypeVar
+from typing import Iterator, Protocol, Callable, Iterable, Optional, TypeVar, Any
 from abc import ABC
 from pathlib import Path
 from result import Result,Ok
@@ -36,11 +36,11 @@ class Fitness(Protocol):
     compare the resulting fitness. This should match most numeric types (i.e. int, float) 
     but allows you to do something more complex as desired.
     """
-    def __lt__(self: F, o: F)->bool: ...
-    def __gt__(self: F, o: F)->bool: ...
-    def __eq__(self: F, o: F)->bool: ...
-    def __le__(self: F, o: F)->bool: ...
-    def __ge__(self: F, o: F)->bool: ...
+    def __lt__(self: F, o: F, /)->bool: ...
+    def __gt__(self: F, o: F, /)->bool: ...
+    def __eq__(self: F, o: F, /)->bool: ...
+    def __le__(self: F, o: F, /)->bool: ...
+    def __ge__(self: F, o: F, /)->bool: ...
 
 class Individual(Protocol):
     """
@@ -103,7 +103,8 @@ class Population:
         if len(set(ind)) != len(ind):
             raise ValueError("There are duplicate individuals in this population. Each Individual in a population must be a unique object.")
 
-        fit = list(fitnesses) if (fitnesses is not None) and (len(fitnesses) == len(ind)) else [None]*len(ind)
+        fit_list = list(fitnesses) if fitnesses is not None else [None]*len(ind)
+        fit = fit_list if len(fit_list) == len(ind) else [None]*len(ind)
 
         self.population_list:list[tuple[Individual,Optional[Fitness]]] = list(zip(ind,fit))
         # = [(Individual, Fitness), (Individual2, Fitness2), ...]
@@ -145,7 +146,7 @@ def Reproduce(Protocol):
 def Generate_Initial_Population(Protocol):
     def __call__(self)->Population: ...
 
-def Measurement(Protocol):
+class Measurement(Protocol):
     "All measurement data, this could even be a class potentially"
     FPGA_request:str
     data_request:Enum
