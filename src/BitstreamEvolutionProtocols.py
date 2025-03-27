@@ -152,7 +152,7 @@ class MeasurementError(Exception):
 class MeasurementNotTaken(MeasurementError):
     ...
 
-class Measurement(Protocol):
+class Measurement(ABC):
     "All measurement data, this could even be a class potentially"
     # FPGA_request:str
     # data_request:Enum
@@ -160,6 +160,10 @@ class Measurement(Protocol):
     # FPGA_used:Optional[str]
     # result = Result[Any,Exception] 
     def __init__(self, FPGA_request:str, data_request:Enum,circuit_to_measure:Circuit)->None:
+        """
+        TODO::
+          Figure out the format for an FPGA Request, potentially also changing the type, and adjust that here.
+        """
         self.FPGA_request:str = FPGA_request #may want to refine typing here
         self.data_request:Enum = data_request
         self.circuit:Circuit = circuit_to_measure
