@@ -16,3 +16,4 @@ Refactored Code
     This is mostly a problem because sphinx must be provided a path and must be able to perform the needed imports, and providing multiple paths risks having names overlap so is undesireable.
 
 .. toctree::
+    BitstreamEvolutionProtocols.rst
