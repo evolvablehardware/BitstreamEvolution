@@ -37,11 +37,11 @@ class Fitness(Protocol):
     compare the resulting fitness. This should match most numeric types (i.e. int, float) 
     but allows you to do something more complex as desired.
     """
-    def __lt__(self: F, o: F)->bool: ...
-    def __gt__(self: F, o: F)->bool: ...
-    def __eq__(self: F, o: F)->bool: ...
-    def __le__(self: F, o: F)->bool: ...
-    def __ge__(self: F, o: F)->bool: ...
+    def __lt__(self: F, o: F, /)->bool: ...
+    def __gt__(self: F, o: F, /)->bool: ...
+    def __eq__(self: F, o: F, /)->bool: ...
+    def __le__(self: F, o: F, /)->bool: ...
+    def __ge__(self: F, o: F, /)->bool: ...
 
 class Individual(Protocol):
     """
@@ -104,7 +104,8 @@ class Population:
         if len(set(ind)) != len(ind):
             raise ValueError("There are duplicate individuals in this population. Each Individual in a population must be a unique object.")
 
-        fit = list(fitnesses) if (fitnesses is not None) and (len(fitnesses) == len(ind)) else [None]*len(ind)
+        fit_list = list(fitnesses) if fitnesses is not None else [None]*len(ind)
+        fit = fit_list if len(fit_list) == len(ind) else [None]*len(ind)
 
         self.population_list:list[tuple[Individual,Optional[Fitness]]] = list(zip(ind,fit))
         # = [(Individual, Fitness), (Individual2, Fitness2), ...]
@@ -148,7 +149,6 @@ class Generate_Initial_Population(Protocol):
 
 class MeasurementError(Exception):
     ...
-
 class MeasurementNotTaken(MeasurementError):
     ...
 
@@ -164,7 +164,7 @@ class Measurement(Protocol):
         self.data_request:Enum = data_request
         self.circuit:Circuit = circuit_to_measure
         self.FPGA_used:Optional[str] = None
-        self.result: Result[Any,Exception] = Err(MeasurementNotTaken("Initialized Measurement option has not been measured."))
+        self.result: Result[Any,Exception] = Err(MeasurementNotTaken("Initialized Measurement option has not yet been measured."))
                       # The Any should be the measurement data, which we may want to standardize at some point
     
     def record_FPGA_used(self,FPGA:str)->None:
