@@ -2,9 +2,19 @@ from dataclasses import dataclass
 from typing import Iterator, Protocol, Callable, Iterable, Optional, TypeVar, Any
 from abc import ABC
 from pathlib import Path
-from result import Result,Ok,Err
+from result import Result, Ok, Err
 from enum import Enum, auto
 import asyncio
+
+# TODO:
+# Mutation - is this performed on Individuals or Circuits (very likely on Individuals)
+# - In that case, we need some mechanism/interface for mutating them (like a function defined on Individual)
+# - Also in that case, we need a way to link those to Circuits, or have a way to transmit the filepaths to the hardware file between Individual and Circuit
+#   - Could just get copied in CircuitFactory for when there's a 1-to-1 relationship between Individuals and Circuits
+# Only thing is I think we need some protocol for taking/collecting a measurement. Potentially replacing the "data_request" field in Measurement
+# - This would have diff. implementations for VarMax, PulseCount, ToneDiscrimination, etc.
+# - Not 100% sure on the interface for this, it should take in one or more Measurements and compute their results, and take in 
+#   a Circuit?
 
 @dataclass
 class GenData:
@@ -67,8 +77,9 @@ class FPGA_Model(Enum):
 # This class may even be able to have somewhat of a universal application for for particular FPGA models.
 class FPGA_Compilation_Data(Protocol):
     "This contains all data needed to compile data for a particular FPGA."
-    model:FPGA_Model
+    model: FPGA_Model
     "The id for the particular FPGA (Maybe?)"
+    id: str
 
 class Circuit(Protocol):
     """
@@ -194,21 +205,27 @@ class Measurement(ABC):
 
         
 
+<<<<<<< HEAD
 class EvaluatePopulationFitness(Protocol):
     "Fully Evaluates a Population, the fitnesses in the population are fully specified."
     def __call__(self,population:Population,measurements:list[Measurement])->Population: ...
+=======
+class EvaluateFitness(Protocol):
+    "Fully Evaluates a Population"
+    def __call__(self, population: Population, measurements: list[Measurement]) -> Population: ...
+>>>>>>> e38cd643296583de717017ede9e2bc559e85356d
 
 class GenerateMeasurements(Protocol):
     "Generate the measurements to take for the given population"
-    def __call__(self,population:Population)->list[Measurement]: ...
+    def __call__(self, population: Population) -> list[Measurement]: ...
 
 class Hardware(Protocol):
     "Used to Evaluate Measurements. Compile hardware would be responsible for compiling the Circuit in the Measurement object passed to it in request_measurement()."
     #Has FPGAs
     #Has Active Measurements being evaluated
     #Has Pending MEasurements to be evaluated
-    async def request_measurement(measurement:Measurement)->Measurement: ... #make this an async function
-    def get_available_FPGAs()->list[str]: ... # This could be a list of ids, or some sort of FPGA object with the UUID included and other relevant data.
+    async def request_measurement(self, measurement: Measurement)->Measurement: ... #make this an async function
+    def get_available_FPGAs(self)->list[str]: ... # This could be a list of ids, or some sort of FPGA object with the UUID included and other relevant data.
 
 # Example usage
 if False:
