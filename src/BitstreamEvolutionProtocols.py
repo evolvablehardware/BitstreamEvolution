@@ -21,9 +21,17 @@ class GenDataFactory(Protocol):
     It also constructs the initial GenData object (gen_data is None) 
     and determines when the final generation occours (returns None).
     """
-    def __call__(self,gen_data:GenData|None,*args:Any, **kwds:Any) -> GenData|None: ...   #pyright: ignore
+    def __call__(self,gen_data:GenData|None,*args:Any, **kwds:Any) -> GenData|None: ...  
     # If want to say it can't have any other positional only arguments, use:
     #def __call__(self,gen_data:GenData|None,/, **kwds:Any) -> GenData|None: ...
+
+def GenDataIncrementer(initialGenData:Optional[GenData], max_gen_num:int)->Optional[GenData]:
+    if initialGenData is None:
+        return GenData(generation_number=0)
+    if initialGenData.generation_number < max_gen_num-1:
+        return GenData(initialGenData.generation_number + 1)
+    else:
+        return None
 
 
 # TODO: Replace this with Self if update to python 3.12
@@ -36,6 +44,8 @@ class Fitness(Protocol):
     The most basic Class Protocol that contains the result of an evaluation, allowing you to
     compare the resulting fitness. This should match most numeric types (i.e. int, float) 
     but allows you to do something more complex as desired.
+
+    The slash here ensures that the arguments before it can only be provided as positional arguments.
     """
     def __lt__(self: F, o: F, /)->bool: ...
     def __gt__(self: F, o: F, /)->bool: ...
@@ -142,9 +152,11 @@ class Population:
             raise TypeError(f"Population does not have all individual's fitnesses fully specified. {sum([t[1] is None for t in self.population_list])} individuals did not have a fitness assigned.")
 
 class Reproduce(Protocol):
+    "Gets a population and returns another population filled with the children of this generation. (reproduce + mutation)"
     def __call__(self,population:Population)->Population: ...
 
 class Generate_Initial_Population(Protocol):
+    "Somehow gets you an initial implementation."
     def __call__(self)->Population: ...
 
 class MeasurementError(Exception):
@@ -182,8 +194,8 @@ class Measurement(ABC):
 
         
 
-class EvaluateFitness(Protocol):
-    "Fully Evaluates a Population"
+class EvaluatePopulationFitness(Protocol):
+    "Fully Evaluates a Population, the fitnesses in the population are fully specified."
     def __call__(self,population:Population,measurements:list[Measurement])->Population: ...
 
 class GenerateMeasurements(Protocol):
