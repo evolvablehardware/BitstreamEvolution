@@ -205,15 +205,9 @@ class Measurement(ABC):
 
         
 
-<<<<<<< HEAD
 class EvaluatePopulationFitness(Protocol):
     "Fully Evaluates a Population, the fitnesses in the population are fully specified."
     def __call__(self,population:Population,measurements:list[Measurement])->Population: ...
-=======
-class EvaluateFitness(Protocol):
-    "Fully Evaluates a Population"
-    def __call__(self, population: Population, measurements: list[Measurement]) -> Population: ...
->>>>>>> e38cd643296583de717017ede9e2bc559e85356d
 
 class GenerateMeasurements(Protocol):
     "Generate the measurements to take for the given population"
@@ -226,7 +220,7 @@ class Hardware(Protocol):
     #Has Pending MEasurements to be evaluated
     async def request_measurement(self, measurement: Measurement)->Measurement: ... #make this an async function
     def get_available_FPGAs(self)->list[str]: ... # This could be a list of ids, or some sort of FPGA object with the UUID included and other relevant data.
-
+    
 # Example usage
 if False:
     #https://www.pythontutorial.net/python-concurrency/python-async-await/
