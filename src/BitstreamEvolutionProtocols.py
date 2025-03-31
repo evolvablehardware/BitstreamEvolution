@@ -75,7 +75,8 @@ class FPGA_Model(Enum):
     ICE40 = auto()          # Check
 
 # This class may even be able to have somewhat of a universal application for for particular FPGA models.
-class FPGA_Compilation_Data(Protocol):
+@dataclass
+class FPGA_Compilation_Data:
     "This contains all data needed to compile data for a particular FPGA."
     model: FPGA_Model
     "The id for the particular FPGA (Maybe?)"
@@ -220,7 +221,7 @@ class Hardware(Protocol):
     #Has Pending MEasurements to be evaluated
     async def request_measurement(self, measurement: Measurement)->Measurement: ... #make this an async function
     def get_available_FPGAs(self)->list[str]: ... # This could be a list of ids, or some sort of FPGA object with the UUID included and other relevant data.
-    
+
 # Example usage
 if False:
     #https://www.pythontutorial.net/python-concurrency/python-async-await/
