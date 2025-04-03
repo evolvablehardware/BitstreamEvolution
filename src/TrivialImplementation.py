@@ -1,4 +1,5 @@
-from BitstreamEvolutionProtocols import Circuit, Individual, CircuitFactory, FPGA_Compilation_Data
+import random
+from BitstreamEvolutionProtocols import Circuit, Individual, CircuitFactory, FPGA_Compilation_Data, Population
 from pathlib import Path
 from result import Result, Ok, Err
 
@@ -38,3 +39,25 @@ def TrivialCircuitFactory(individual:Individual)->Circuit:
 
 
 ## --------------------------------------------- Other People's Code --------------------------------------------------
+class TrivialReproduce:
+    def __init__(self, random: random.Random):
+        self.random = random
+
+    def __call__(self, population: Population[TrivialCircuit]) -> Population[TrivialCircuit]:
+        population.sort(lambda x: x, True)
+        individuals = list(iter(population))
+        kept_individuals = individuals[0:(len(individuals) // 2)]
+        new_pop = []
+        new_fits = []
+        for (p, f) in kept_individuals:
+            # keep one
+            new_pop.append(TrivialCircuit(f))
+            new_fits.append(f)
+            # mutate
+            if self.random.random() < 0.5:
+                new_pop.append(TrivialCircuit(f + 1))
+                new_fits.append(f + 1)
+            else:
+                new_pop.append(TrivialCircuit(f - 1))
+                new_fits.append(f - 1)
+        return Population(new_pop, new_fits)

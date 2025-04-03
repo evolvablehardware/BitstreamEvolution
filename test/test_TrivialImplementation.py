@@ -1,5 +1,6 @@
-from BitstreamEvolutionProtocols import FPGA_Compilation_Data, FPGA_Model
-from TrivialImplementation import TrivialCircuit, TrivialCircuitFactory
+from random import Random
+from BitstreamEvolutionProtocols import FPGA_Compilation_Data, FPGA_Model, Population
+from TrivialImplementation import TrivialCircuit, TrivialCircuitFactory, TrivialReproduce
 from result import Result, Ok, Err
 import pytest
 from collections.abc import Generator
@@ -20,7 +21,7 @@ def test_TrivialCircuit_SetsInherentFitness():
 
 #This test uses the fixture seen above
 def test_TrivialCircuit_ImplementsCompile(FPGA_compilation_data:FPGA_Compilation_Data):
-    output = TrivialCircuit(23).compile(FPGA_compilation_data,"random/dir")
+    output = TrivialCircuit(23).compile(FPGA_compilation_data, "random/dir")
     match output:
         case Ok(filepath):
             pass #don't care what this is
@@ -40,3 +41,19 @@ def test_TrivialCircuitFatory_ReturnsTheIndividualAsACircuit():
 
 
 ## ----------------------------------------- Other People's Tests ----------------------------------------------------
+def test_TrivialReproduce_KeepsTopHalf():
+    pop = []
+    fits = []
+    for f in range(100):
+        pop.append(TrivialCircuit(f + 1))
+        fits.append(f + 1)
+    population = Population(pop, fits)
+    r = TrivialReproduce(Random())
+    result = r(population)
+    print(result)
+    fit_list = list(map(lambda x: x[1], iter(result)))
+    for f in range(50):
+        fit = f + 50
+        assert fit in fit_list
+    # also, we know all individuals should have >= 49 fitness, and <= 101
+    assert all(map(lambda x: x <= 101 and x >= 49, fit_list))
