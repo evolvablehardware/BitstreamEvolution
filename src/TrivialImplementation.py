@@ -1,7 +1,7 @@
 import random
 from BitstreamEvolutionProtocols import Circuit, Individual, CircuitFactory, FPGA_Compilation_Data, Population
 from pathlib import Path
-from result import Result, Ok, Err
+from result import Result, Ok, Err # type: ignore
 
 """
 As discussed in the main meeting (3/28/2025), we are first putting together a trivial implementation of all of the components.
@@ -34,8 +34,9 @@ class TrivialCircuit:
         return Ok("no/compilation/used/../../..")
 
 
-def TrivialCircuitFactory(individual:Individual)->Circuit:
-    return individual #they are the same thing for this implementation
+def TrivialCircuitFactory(individuals: list[Individual]) -> list[Circuit]:
+    # they are the same thing for this implementation
+    return individuals # type: ignore
 
 
 ## --------------------------------------------- Other People's Code --------------------------------------------------
@@ -51,13 +52,13 @@ class TrivialReproduce:
         new_fits = []
         for (p, f) in kept_individuals:
             # keep one
-            new_pop.append(TrivialCircuit(f))
+            new_pop.append(TrivialCircuit(f)) # type: ignore
             new_fits.append(f)
             # mutate
             if self.random.random() < 0.5:
-                new_pop.append(TrivialCircuit(f + 1))
-                new_fits.append(f + 1)
+                new_pop.append(TrivialCircuit(f + 1)) # type: ignore
+                new_fits.append(f + 1) # type: ignore
             else:
-                new_pop.append(TrivialCircuit(f - 1))
-                new_fits.append(f - 1)
+                new_pop.append(TrivialCircuit(f - 1)) # type: ignore
+                new_fits.append(f - 1) # type: ignore
         return Population(new_pop, new_fits)
