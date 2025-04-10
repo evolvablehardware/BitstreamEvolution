@@ -172,9 +172,9 @@ class Reproduce(Protocol):
     "Gets a population and returns another population filled with the children of this generation. (reproduce + mutation)"
     def __call__(self,population:Population[I])->Population[I]: ...
 
-class GenerateInitialPopulation(Protocol):
+class GenerateInitialPopulations(Protocol):
     "Somehow gets you an initial implementation."
-    def __call__(self)->Population: ...
+    def __call__(self)->list[Population]: ...
 
 class MeasurementError(Exception):
     ...
@@ -217,7 +217,8 @@ class EvaluatePopulationFitness(Protocol):
 
 class GenerateMeasurements(Protocol):
     "Generate the measurements to take for the given population"
-    def __call__(self, circuits: list[Circuit]) -> list[Measurement]: ...
+    # future: maybe change populations to varargs
+    def __call__(self, factory: CircuitFactory, populations: list[Population]) -> list[Measurement]: ...
 
 class Hardware(Protocol):
     "Used to Evaluate Measurements. Compile hardware would be responsible for compiling the Circuit in the Measurement object passed to it in request_measurement()."
