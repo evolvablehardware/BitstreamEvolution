@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Generic, Iterator, Protocol, Callable, Iterable, Optional, TypeVar, Any
 from abc import ABC
 from pathlib import Path
-from result import Result, Ok, Err
+from result import Result, Ok, Err # type: ignore
 from enum import Enum, auto
 import asyncio
 
@@ -31,17 +31,20 @@ class GenDataFactory(Protocol):
     It also constructs the initial GenData object (gen_data is None) 
     and determines when the final generation occours (returns None).
     """
-    def __call__(self,gen_data:GenData|None,*args:Any, **kwds:Any) -> GenData|None: ...  
+    def __call__(self, gen_data:GenData|None) -> GenData|None: ...  
     # If want to say it can't have any other positional only arguments, use:
     #def __call__(self,gen_data:GenData|None,/, **kwds:Any) -> GenData|None: ...
 
-def GenDataIncrementer(initialGenData:Optional[GenData], max_gen_num:int)->Optional[GenData]:
-    if initialGenData is None:
-        return GenData(generation_number=0)
-    if initialGenData.generation_number < max_gen_num-1:
-        return GenData(initialGenData.generation_number + 1)
-    else:
-        return None
+class GenDataIncrementer():
+    def __init__(self, max_gen_num:int):
+        self.__max_gen_num = max_gen_num
+    def __call__(self, initialGenData: Optional[GenData]) -> Optional[GenData]:
+        if initialGenData is None:
+            return GenData(generation_number=0)
+        if initialGenData.generation_number < self.__max_gen_num-1:
+            return GenData(initialGenData.generation_number + 1)
+        else:
+            return None
 
 
 # TODO: Replace this with Self if update to python 3.12
@@ -104,8 +107,8 @@ class CircuitFactory(Protocol):
     How the circuit is built should be fully specified here, and any unique roles the individuals have should be specified here;
     however, how these individuals are selected and matched to roles is not.
     """
-    def __call__(self, *args:Individual, **kwds:Any)->Circuit:
-        "This takes one or many Individuals and constructs a Circuit from it as requested."
+    def __call__(self, individuals: list[Individual], **kwds:Any) -> list[Circuit]:
+        "This takes the population of Individuals and constructs the necessary Circuit from it as requested."
         ...
 
 I = TypeVar("I", bound=Individual)
@@ -159,7 +162,7 @@ class Population(Generic[I]):
         "Operates on the Population fitness function like the standard sort for a list. May Raise TypeError if population not fully evaluated."
         try:
             self.population_list.sort(
-                key=lambda if_tup: key(if_tup[1]),
+                key=lambda if_tup: key(if_tup[1]), # type: ignore
                 reverse= reverse
             )
         except TypeError:
@@ -169,9 +172,9 @@ class Reproduce(Protocol):
     "Gets a population and returns another population filled with the children of this generation. (reproduce + mutation)"
     def __call__(self,population:Population[I])->Population[I]: ...
 
-class Generate_Initial_Population(Protocol):
+class GenerateInitialPopulations(Protocol):
     "Somehow gets you an initial implementation."
-    def __call__(self)->Population: ...
+    def __call__(self)->list[Population]: ...
 
 class MeasurementError(Exception):
     ...
@@ -214,7 +217,8 @@ class EvaluatePopulationFitness(Protocol):
 
 class GenerateMeasurements(Protocol):
     "Generate the measurements to take for the given population"
-    def __call__(self, population: Population) -> list[Measurement]: ...
+    # future: maybe change populations to varargs
+    def __call__(self, factory: CircuitFactory, populations: list[Population]) -> list[Measurement]: ...
 
 class Hardware(Protocol):
     "Used to Evaluate Measurements. Compile hardware would be responsible for compiling the Circuit in the Measurement object passed to it in request_measurement()."

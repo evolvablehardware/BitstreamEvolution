@@ -1,12 +1,12 @@
 from src.BitstreamEvolutionProtocols import Population, Individual, Fitness, GenData,GenDataFactory, GenDataIncrementer
 from dataclasses import dataclass
 from typing import Optional
-import pytest
-
+import pytest # type: ignore
 
 
 def test_GenDataIncrementer_InstantiatesInput():
-    result = GenDataIncrementer(None,500)
+    inc = GenDataIncrementer(200)
+    result = inc(None)
     assert result is not None
     assert result.generation_number == 0
 
@@ -28,29 +28,31 @@ def test_GenDataIncrementer_InstantiatesInput():
 )
 def test_GenDataIncrementer_Increments(pre_increment, post_increment):
     input = GenData(54)
-    result = GenDataIncrementer(input,500)
+    inc = GenDataIncrementer(500)
+    result = inc(input)
     assert result is not None
     assert result.generation_number == 55
-    result = GenDataIncrementer(result,500)
+    result = inc(result)
     assert result is not None
     assert result.generation_number == 56
 
 def test_GenDataIncrementer_EndsLoopCorrectly():
     input = GenData(499)
-    result = GenDataIncrementer(input,500)
+    inc = GenDataIncrementer(500)
+    result = inc(input)
     assert result is None
 
 def test_GenDataIncrementer_EndsLoop_IfExceedsMaxGenNumber():
-    assert GenDataIncrementer(GenData(500), 500) is None, "Failed to end loop when Gen Data (500) exceeded max_gen_num (500)"
-    assert GenDataIncrementer(GenData(501), 500) is None, "Failed to end loop when Gen Data (501) exceeded max_gen_num (500)"
-    assert GenDataIncrementer(GenData(600), 500) is None, "Failed to end loop when Gen Data (600) exceeded max_gen_num (500)"
-    assert GenDataIncrementer(GenData(999), 500) is None, "Failed to end loop when Gen Data (999) exceeded max_gen_num (500)"
+    assert GenDataIncrementer(500)(GenData(500)) is None, "Failed to end loop when Gen Data (500) exceeded max_gen_num (500)"
+    assert GenDataIncrementer(500)(GenData(501)) is None, "Failed to end loop when Gen Data (501) exceeded max_gen_num (500)"
+    assert GenDataIncrementer(500)(GenData(600)) is None, "Failed to end loop when Gen Data (600) exceeded max_gen_num (500)"
+    assert GenDataIncrementer(500)(GenData(999)) is None, "Failed to end loop when Gen Data (999) exceeded max_gen_num (500)"
 
-    assert GenDataIncrementer(GenData(30), 30) is None,   "Failed to end loop when Gen Data  (30) exceeded max_gen_num  (30)"
-    assert GenDataIncrementer(GenData(490), 30) is None,  "Failed to end loop when Gen Data (490) exceeded max_gen_num  (30)"
+    assert GenDataIncrementer(30)(GenData(30)) is None,   "Failed to end loop when Gen Data  (30) exceeded max_gen_num  (30)"
+    assert GenDataIncrementer(30)(GenData(490)) is None,  "Failed to end loop when Gen Data (490) exceeded max_gen_num  (30)"
 
-    assert GenDataIncrementer(GenData(709), 709) is None, "Failed to end loop when Gen Data (709) exceeded max_gen_num (709)"
-    assert GenDataIncrementer(GenData(999), 709) is None, "Failed to end loop when Gen Data (999) exceeded max_gen_num (709)"
+    assert GenDataIncrementer(709)(GenData(709)) is None, "Failed to end loop when Gen Data (709) exceeded max_gen_num (709)"
+    assert GenDataIncrementer(709)(GenData(999)) is None, "Failed to end loop when Gen Data (999) exceeded max_gen_num (709)"
 
 
 @pytest.mark.parametrize(
@@ -59,11 +61,12 @@ def test_GenDataIncrementer_EndsLoop_IfExceedsMaxGenNumber():
 )
 def test_GenDataIncrementer_PerformsEntireLoopCorrectly(max_gen_num):
     input = None
+    inc = GenDataIncrementer(max_gen_num)
     for i in range(max_gen_num):
-        input = GenDataIncrementer(input,max_gen_num)
+        input = inc(input)
         assert input is not None, f"Error, failed to increment to {i}, instead was None"
         assert input.generation_number == i, f"Error, failed to increment to {i}, instead was {input.generation_number}"
-    input = GenDataIncrementer(input,max_gen_num)
+    input = inc(input)
     assert input is None, f"Failed to correctly end the loop. Returned: {input}"
     
 
