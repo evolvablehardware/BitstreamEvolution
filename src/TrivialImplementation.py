@@ -62,3 +62,25 @@ class TrivialReproduce:
                 new_pop.append(TrivialCircuit(f - 1)) # type: ignore
                 new_fits.append(f - 1) # type: ignore
         return Population(new_pop, new_fits)
+
+
+
+class TrivialGenerateInitialPopulation:
+    "Generates a a list of two populations which have fitnesses numbered from"
+    "zero and population_size sorted in descending order"
+    def __init__(self, random: random.Random):
+        self.random = random
+
+    def __call__(self, population_size:int) -> list [Population[TrivialCircuit]]:
+        num_populations = 2;
+
+        population_list = []
+        for(i) in range(num_populations):
+            new_pop = []
+            new_fitnesses = []
+            for (j) in range(population_size):
+                new_pop.append(TrivialCircuit(j))
+                new_fitnesses.append(j)
+            new_pop.sort(reverse=True);
+            population_list.append(Population(new_pop, new_fitnesses))
+        return population_list
