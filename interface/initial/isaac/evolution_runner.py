@@ -70,10 +70,18 @@ class FitnessEvaluator:
     def __init__(self, hardware:Hardware)->None:
         "This sets up the hardware and allows any parameters of fitness to be changed."
         pass
-
+    
     def evaluate_fitness(self,population:tuple[Individual]) -> tuple[ tuple[Individual, Result[Fitness,Exception] ] ]:
-        "This gets a population and outputs the fitness evaluation it performed using the hardware."
-        return ((Individual(),Ok(Fitness())),)
+       "This gets a population and outputs the fitness evaluation it performed using the hardware."
+       results = []
+       for individual in population:
+           try:
+               hardware_result = self.hardware.run_fitness_test(individual)
+               fitness_result = Ok(Fitness()) if is_ok(hardware_result[1]) else hardware_result[1]
+               results.append((individual, fitness_result))
+           except Exception as e:
+               results.append((individual, Err(e)))
+       return tuple(results)
 
 class Mutator:
     """
