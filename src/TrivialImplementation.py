@@ -2,6 +2,7 @@ import random
 from BitstreamEvolutionProtocols import Circuit, Individual,FPGA_Compilation_Data, Population, CircuitFactory, Measurement, EvaluatePopulationFitness, GenData, GenDataFactory, GenerateInitialPopulation, GenerateMeasurements, Hardware, Reproducer
 from pathlib import Path
 from result import Result, Ok, Err # type: ignore
+import functools as ft
 
 """
 As discussed in the main meeting (3/28/2025), we are first putting together a trivial implementation of all of the components.
@@ -65,25 +66,21 @@ class TrivialReproduce:
 
 
 
-class TrivialGenerateInitialPopulation:
-    "Generates a a list of two populations which have fitnesses numbered from"
-    "zero and population_size sorted in descending order"
-    def __init__(self, random: random.Random):
-        self.random = random
+def TrivialGenerateInitialPopulation(population_size:int, 
+                                     random: random.Random, min_fitness:int, max_fitness:int) -> Population[TrivialCircuit]:
+    """
+    Generates a a list of two populations which have fitnesses numbered from
+    zero and population_size sorted in descending order
 
-    def __call__(self, population_size:int) -> list [Population[TrivialCircuit]]:
-        num_populations = 2;
+    Here min & max fitness refers to the minimum and maximum inherent fitnesses that can be generated for an individual. 
+    """
 
-        population_list = []
-        for(i) in range(num_populations):
-            new_pop = []
-            new_fitnesses = []
-            for (j) in range(population_size):
-                new_pop.append(TrivialCircuit(j))
-                new_fitnesses.append(j)
-            new_pop.sort(reverse=True);
-            population_list.append(Population(new_pop, new_fitnesses))
-        return population_list
+    new_pop = []
+    for _ in range(population_size):
+        new_pop.append(TrivialCircuit(random.randint(min_fitness,max_fitness)))
+
+    #create new population with fitnesses unspecified b/c "unknown"
+    return Population(new_pop, None)
 
 
 ## ------------------------------------ Trivial Evolution Object -----------------------------------------

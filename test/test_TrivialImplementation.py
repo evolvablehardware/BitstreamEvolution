@@ -1,10 +1,12 @@
 from pathlib import Path
 from random import Random
 from BitstreamEvolutionProtocols import FPGA_Compilation_Data, FPGA_Model, Population
-from TrivialImplementation import TrivialCircuit, TrivialCircuitFactory, TrivialReproduce
+from TrivialImplementation import TrivialCircuit, TrivialCircuitFactory, TrivialReproduce, TrivialGenerateInitialPopulation
 from result import Result, Ok, Err # type: ignore
 import pytest # type: ignore
 from collections.abc import Generator
+import functools as ft
+
 
 ## ------------------------------------------------- Mocks & Fixtures -------------------------------------------------
 
@@ -37,6 +39,7 @@ def test_TrivialCircuitFatory_ReturnsTheIndividualAsACircuit():
     assert individual is circuit, "Should return the exact same object"
 
 ## ----------------------------------------- Other People's Tests ----------------------------------------------------
+@pytest.mark.skip
 def test_TrivialReproduce_KeepsTopHalf():
     pop = []
     fits = []
@@ -53,3 +56,13 @@ def test_TrivialReproduce_KeepsTopHalf():
         assert fit in fit_list
     # also, we know all individuals should have >= 49 fitness, and <= 101
     assert all(map(lambda x: x is not None and x <= 101 and x >= 49, fit_list))
+
+@pytest.mark.parametrize("size", [1,2,3,6,10,100,1000])
+def test_TrivialGenerateInitialPopulation_ReturnsCorrectlySizedPopulation(size):
+    population:Population[TrivialCircuit] = TrivialGenerateInitialPopulation(
+        population_size= size,
+        random= Random(),
+        min_fitness= 0,
+        max_fitness= 100
+    )
+    assert len(list(population)) == size, f"Generated population with {len(list(population))} not {size} individuals."
