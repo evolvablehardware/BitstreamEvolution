@@ -168,13 +168,13 @@ class Population(Generic[I]):
         except TypeError:
             raise TypeError(f"Population does not have all individual's fitnesses fully specified. {sum([t[1] is None for t in self.population_list])} individuals did not have a fitness assigned.")
 
-class Reproduce(Protocol):
+class Reproducer(Protocol):
     "Gets a population and returns another population filled with the children of this generation. (reproduce + mutation)"
     def __call__(self,population:Population[I])->Population[I]: ...
 
-class GenerateInitialPopulations(Protocol):
+class GenerateInitialPopulation(Protocol):
     "Somehow gets you an initial implementation."
-    def __call__(self)->list[Population]: ...
+    def __call__(self)->Population: ...
 
 class MeasurementError(Exception):
     ...
@@ -236,7 +236,7 @@ if False:
         for m in Measurements:
             await Hardware.request_measurement(m)
     
-    asyncio.run(evalMeas(...))
+    asyncio.run(evalMeas(...)) # or something of this nature
     
     
 

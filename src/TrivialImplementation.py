@@ -1,5 +1,5 @@
 import random
-from BitstreamEvolutionProtocols import Circuit, Individual, CircuitFactory, FPGA_Compilation_Data, Population
+from BitstreamEvolutionProtocols import Circuit, Individual,FPGA_Compilation_Data, Population, CircuitFactory, Measurement, EvaluatePopulationFitness, GenData, GenDataFactory, GenerateInitialPopulation, GenerateMeasurements, Hardware, Reproducer
 from pathlib import Path
 from result import Result, Ok, Err # type: ignore
 
@@ -84,3 +84,78 @@ class TrivialGenerateInitialPopulation:
             new_pop.sort(reverse=True);
             population_list.append(Population(new_pop, new_fitnesses))
         return population_list
+
+
+## ------------------------------------ Trivial Evolution Object -----------------------------------------
+
+def fake_evaluate_measurements_trivialimplemention(measurements: list[Measurement])->list[Measurement]:
+    "This is a function that prevents me from having to use async & hardware while testing out TrivialEvolution."
+    return measurements
+
+
+class TrivialEvolution:
+    """
+    This class utilizes the protocols defined to run experiments
+    This is an example that should be generalized for a more general solution.
+    There should be different versions of Evolution for structurally different experiments.
+        (e.x. Multiple populations of individuals evolved simultaniously, bacterial populations where only some individuals are evaluated and reproduce each loop)
+    Any other evolution implementations should try to maintain as similar of function signatures as possible, 
+        with arguments communicated with protocols that are as general as possible. 
+    This implementations generates, evaluates, and reproduces entire populations at once,
+        and does so in discrete timesteps.
+    """
+
+    def __init__(self, 
+                 generation_data_factory:GenDataFactory,
+                 circuit_factory:CircuitFactory,
+                 reproducer:Reproducer,
+                 generate_intial_population: GenerateInitialPopulation,
+                 evaluate_population_fitness: EvaluatePopulationFitness,
+                 generate_measurements: GenerateMeasurements,
+                 hardware:Hardware):
+        """
+        Initializes the Evolution with all of the objects and functions needed for it
+        to carry out it the evolution.
+        This does not execute any functions passed in.
+        """
+        self._generation_data_factory:GenDataFactory                 = generation_data_factory
+        self._circuit_factory:CircuitFactory                         = circuit_factory
+        self._reproduce:Reproducer                                   = reproducer
+        self._generate_intial_population:GenerateInitialPopulation   = generate_intial_population
+        self._evaluate_population_fitness:EvaluatePopulationFitness  = evaluate_population_fitness
+        self._generate_measurements:GenerateMeasurements             = generate_measurements
+        self._hardware:Hardware                                      = hardware
+
+    def run(self):
+        """
+        This Function Runs the evolution run specified by the protocols provided, using them
+        according to how the architecture of this evolution object is configured.
+
+        This implementations generates, evaluates, and reproduces entire populations at once,
+            and does so in discrete timesteps.
+        """
+        prev_population:Population|None = None
+        current_population:Population = self._generate_intial_population()
+        current_gendata:GenData|None = None
+
+        while (current_gendata:=
+               self._generation_data_factory(gen_data=current_gendata)
+               ) is not None:
+            
+            measurements:list[Measurement] = self._generate_measurements(self._circuit_factory,[current_population])
+            #NOTE: If we want to add multiple populations, create different evolution object, 
+            #       and specify how you create initial populations for each set of individuals, 
+            #       then specify in circuit_factory how to turn one individual from each population into a circuit,
+            #       then, generate measurements decides which circuits it wants to make from those individuals 
+            #       and it should be provided with a list that is the same number of populations as the number of arguments in circuit_factory.
+
+            measurements = fake_evaluate_measurements_trivialimplemention(measurements)
+
+            #move current_population to prev. & reproduce to current_pop
+            prev_population = self._evaluate_population_fitness(current_population,measurements)
+            current_population = self._reproduce(prev_population)
+        
+        print("Trivial Evolution Complete!")
+
+
+
