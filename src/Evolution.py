@@ -36,7 +36,7 @@ class Evolution:
             tasks = [self.__hardware.request_measurement(m) for m in measurements]
             results = await asyncio.gather(*tasks)
             populations = list(map(lambda p: self.__eval_population_fitness(p, results), populations))
-            populations = list(map(lambda p: self.__reproduce(p), populations))
+            populations = list(map(lambda p: self.__reproduce(p), populations))                         # 
             # population = self.__eval_population_fitness(population, results)
-            # population = self.__reproduce(population)
-            gen_data = self.__gen_data_factory(gen_data)
+            # population = self.__reproduce(population)                                                 # Create next population
+            gen_data = self.__gen_data_factory(gen_data)                                                # Decide what to do for next Iteration  
