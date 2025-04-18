@@ -5,7 +5,7 @@ from TrivialImplementation import TrivialCircuit, TrivialCircuitFactory, Trivial
 from result import Result, Ok, Err # type: ignore
 import pytest # type: ignore
 from pytest_mock import MockerFixture
-from collections.abc import Generator
+from collections.abc import Generator,Iterable
 import functools as ft
 
 ## ------------------------------------------------- Mocks & Fixtures -------------------------------------------------
@@ -15,6 +15,18 @@ def FPGA_compilation_data()->Generator[FPGA_Compilation_Data,None,None]:
     #Do setup
     yield FPGA_Compilation_Data(FPGA_Model.ICE40,"randomID") #get object
     #Do Cleanup
+
+def Generate_Population_From_Iterable(inherent_fitnesses:Iterable[int],
+                                      fitnesses_discovered:bool)->Population[TrivialCircuit]:
+    """
+    Returns a population of circuits with the inherent_fitnesses specified, 
+    which is also stored in the population if fitness_discovered==true."
+    """
+    if fitnesses_discovered:
+        return Population([TrivialCircuit(f) for f in inherent_fitnesses],[f for f in inherent_fitnesses])
+    else:
+        return Population([TrivialCircuit(f) for f in inherent_fitnesses],None)
+    
 
 ## ----------------------- Circuit & Individual & CircuitFactory Tests (Isaac) ---------------------------------------
 
@@ -38,26 +50,7 @@ def test_TrivialCircuitFatory_ReturnsTheIndividualAsACircuit():
     circuit = TrivialCircuitFactory([individual])[0]
     assert individual is circuit, "Should return the exact same object"
 
-## ----------------------------------------- Other People's Tests ----------------------------------------------------
-@pytest.mark.skip
-def test_TrivialReproduce_KeepsTopHalf():
-    pop = []
-    fits = []
-    for f in range(100):
-        pop.append(TrivialCircuit(f + 1))
-        fits.append(f + 1)
-    population = Population(pop, fits)
-    r = TrivialReproduce(Random())
-    result = r(population)
-    print(result)
-    fit_list = list(map(lambda x: x[1], iter(result)))
-    for f in range(50):
-        fit = f + 50
-        assert fit in fit_list
-    # also, we know all individuals should have >= 49 fitness, and <= 101
-    assert all(map(lambda x: x is not None and x <= 101 and x >= 49, fit_list))
-
-
+## ----------------------------------------- Generate Initial Population ----------------------------------------------------
 
 @pytest.mark.parametrize("size", [1,2,3,6,10,100,1000])
 def test_TrivialGenerateInitialPopulation_ReturnsCorrectlySizedPopulation(size):
@@ -138,3 +131,19 @@ def test_TrivialGenerateInitialPopulation_WorksWithPartial(mocker:MockerFixture)
     assert spy_rand.call_count == 100
     assert all(map(lambda call: call.args[0] == 34 and call.args[1] == 100, spy_rand.call_args_list)),\
           "Fitness limits should be passed by functools.partial() and used in function."
+
+## -------------------------------------- Reproduce ---------------------------------------------
+
+def test_TrivialReproduce_KeepsTopHalf():
+    
+    population = Generate_Population_From_Iterable(range(1,100+1),fitnesses_discovered=True)
+
+    r = TrivialReproduce(Random())
+    result = r(population)
+    print(result)
+    fit_list = list(map(lambda x: x[1], iter(result)))
+    for f in range(50):
+        fit = f + 50
+        assert fit in fit_list
+    # also, we know all individuals should have >= 49 fitness, and <= 101
+    assert all(map(lambda x: x is not None and x <= 101 and x >= 49, fit_list))
