@@ -98,7 +98,7 @@ matplotlib = "^3.10.0"
 sortedcontainers = "^2.4.0"
 result = "^0.17.0"
 mypy = "^1.15.0"
-pytest-mock = "^3.14.0"
+
 
 [tool.poetry.group.dev]
 #dev group for developers updating the code
@@ -106,6 +106,7 @@ optional = true
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
+pytest-mock = "^3.14.0"
 Sphinx = "^7.2.6"
 sphinx-nefertiti = "^0.3.2"
 sphinx-book-theme = "^1.1.2"
@@ -127,6 +128,7 @@ optional = true
 
 [tool.poetry.group.gh_tests.dependencies]
 pytest = "^8.2.0"
+pytest-mock = "^3.14.0"
 toml = "^0.10.2"
 
 
@@ -136,6 +138,7 @@ optional = true
 
 [tool.poetry.group.gh_docs.dependencies]
 pytest = "^8.2.0"
+pytest-mock = "^3.14.0"
 toml = "^0.10.2"
 Sphinx = "^7.2.6"
 sphinx-nefertiti = "^0.3.2"
@@ -147,6 +150,7 @@ sphinx-design = "^0.6.1"
 
 [tool.poetry.group.tests.dependencies] #tests group is group for testing in local contexts
 pytest = "^8.2.0"
+pytest-mock = "^3.14.0"
 
 [build-system]
 requires = ["poetry-core"]

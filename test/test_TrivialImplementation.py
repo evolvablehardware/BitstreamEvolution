@@ -1,6 +1,6 @@
 from pathlib import Path
 from random import Random
-from BitstreamEvolutionProtocols import FPGA_Compilation_Data, FPGA_Model, Population
+from BitstreamEvolutionProtocols import FPGA_Compilation_Data, FPGA_Model, Population, GenerateInitialPopulation
 from TrivialImplementation import TrivialCircuit, TrivialCircuitFactory, TrivialReproduce, TrivialGenerateInitialPopulation
 from result import Result, Ok, Err # type: ignore
 import pytest # type: ignore
@@ -57,6 +57,8 @@ def test_TrivialReproduce_KeepsTopHalf():
     # also, we know all individuals should have >= 49 fitness, and <= 101
     assert all(map(lambda x: x is not None and x <= 101 and x >= 49, fit_list))
 
+
+
 @pytest.mark.parametrize("size", [1,2,3,6,10,100,1000])
 def test_TrivialGenerateInitialPopulation_ReturnsCorrectlySizedPopulation(size):
     population:Population[TrivialCircuit] = TrivialGenerateInitialPopulation(
@@ -95,5 +97,44 @@ def test_TrivialGenerateInitialPopulation_GeneratesIndividualsWithRandomInt(monk
     inherent_fitnesses = [i[0].inherent_fitness for i in pop]
     assert sorted(inherent_fitnesses) == sorted(rand_returns), "all fitnesses should be assigned based on rand return value"
 
+
+def test_TrivialGenerateInitialPopulation_ReturnsEmptyPopulationIfZeroOrNegativePopulationSize():
     
-        
+    result = TrivialGenerateInitialPopulation(0,Random(),0,100)
+    assert len(list(result)) == 0, "Population_size=0 should Be an Empty Population"
+    
+    result = TrivialGenerateInitialPopulation(-1,Random(),0,100)
+    assert len(list(result)) == 0, "Population_size=-1 should Be an Empty Population"
+    
+    result = TrivialGenerateInitialPopulation(-43,Random(),0,100)
+    assert len(list(result)) == 0, "Population_size=-43 should Be an Empty Population"
+
+def test_TrivialGenerateInitialPopulation_WorksWithPartial(mocker:MockerFixture):
+    
+    rand = Random()
+
+    partial_func:GenerateInitialPopulation = \
+            ft.partial(TrivialGenerateInitialPopulation,
+                        random = rand,
+                        min_fitness = 34,
+                        max_fitness = 100)
+    
+    mocker.patch.mock_module
+
+    spy_rand = mocker.spy(rand,"randint")
+
+    result = partial_func(10)
+
+    assert len(list(result)) == 10
+    assert spy_rand.call_count == 10
+    assert all(map(lambda call: call.args[0] == 34 and call.args[1] == 100, spy_rand.call_args_list)),\
+          "Fitness limits should be passed by functools.partial() and used in function."
+
+    spy_rand.reset_mock()
+
+    result = partial_func(100)
+
+    assert len(list(result)) == 100
+    assert spy_rand.call_count == 100
+    assert all(map(lambda call: call.args[0] == 34 and call.args[1] == 100, spy_rand.call_args_list)),\
+          "Fitness limits should be passed by functools.partial() and used in function."
