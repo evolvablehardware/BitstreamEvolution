@@ -4,9 +4,9 @@ from BitstreamEvolutionProtocols import FPGA_Compilation_Data, FPGA_Model, Popul
 from TrivialImplementation import TrivialCircuit, TrivialCircuitFactory, TrivialReproduce, TrivialGenerateInitialPopulation
 from result import Result, Ok, Err # type: ignore
 import pytest # type: ignore
+from pytest_mock import MockerFixture
 from collections.abc import Generator
 import functools as ft
-
 
 ## ------------------------------------------------- Mocks & Fixtures -------------------------------------------------
 
@@ -66,3 +66,34 @@ def test_TrivialGenerateInitialPopulation_ReturnsCorrectlySizedPopulation(size):
         max_fitness= 100
     )
     assert len(list(population)) == size, f"Generated population with {len(list(population))} not {size} individuals."
+
+def test_TrivialGenerateInitialPopulation_GeneratesIndividualsWithRandomInt(monkeypatch,mocker:MockerFixture):
+    rand = Random()
+    min_fit = 34
+    max_fit = 69
+    population_size = 200
+    rand_returns = []   + [34]*50 \
+                        + [45]*50 \
+                        + [52]*50 \
+                        + [69]*50
+    
+    mock_randint = mocker.patch.object(rand,"randint",side_effect = rand_returns)
+
+    pop = TrivialGenerateInitialPopulation(
+        population_size = population_size,
+        random          = rand,
+        min_fitness     = min_fit,
+        max_fitness     = max_fit
+    )
+
+    assert len(list(pop)) == population_size
+    assert mock_randint.call_count == population_size, "randint() should be called once for each individual"
+    assert all((i.args[0] == min_fit for i in mock_randint.call_args_list)), "Should always pass the minimum fitness as first argument"
+    assert all((i.args[1] == max_fit for i in mock_randint.call_args_list)), "Should always pass the max fitness as second argument"
+
+    assert all([i[1] is None for i in pop]), "All fitnesses should be set to None"
+    inherent_fitnesses = [i[0].inherent_fitness for i in pop]
+    assert sorted(inherent_fitnesses) == sorted(rand_returns), "all fitnesses should be assigned based on rand return value"
+
+    
+        
