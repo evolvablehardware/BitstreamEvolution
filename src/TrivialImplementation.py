@@ -41,28 +41,29 @@ def TrivialCircuitFactory(individuals: list[Individual]) -> list[Circuit]:
 
 
 ## --------------------------------------------- Other People's Code --------------------------------------------------
-class TrivialReproduce:
-    def __init__(self, random: random.Random):
-        self.random = random
+def TrivialReproduceWithMutation (population: Population[TrivialCircuit],random: random.Random) -> Population[TrivialCircuit]:
+    """
+    Returns a population where all of the top half of the circuits are included, unchanged, 
+        and each will get a child that is mutated randomly, being incremented or decremented.
+    This primarily ensures the population remains the same size.
+    If an odd length population is passed on, the next individual is kept, but does not reproduce or mutate.
+    The outputed population has all of its fitnesses unevaluated (None).
+    """
+    population.sort(lambda x: x, True)
+    individuals = list(iter(population))
 
-    def __call__(self, population: Population[TrivialCircuit]) -> Population[TrivialCircuit]:
-        population.sort(lambda x: x, True)
-        individuals = list(iter(population))
-        kept_individuals = individuals[0:(len(individuals) // 2)]
-        new_pop = []
-        new_fits = []
-        for (p, f) in kept_individuals:
-            # keep one
-            new_pop.append(TrivialCircuit(f)) # type: ignore
-            new_fits.append(f)
-            # mutate
-            if self.random.random() < 0.5:
-                new_pop.append(TrivialCircuit(f + 1)) # type: ignore
-                new_fits.append(f + 1) # type: ignore
-            else:
-                new_pop.append(TrivialCircuit(f - 1)) # type: ignore
-                new_fits.append(f - 1) # type: ignore
-        return Population(new_pop, new_fits)
+    population_size = len(individuals)
+    #keep_extra = population_size % 2 != 0
+
+    kept_individuals = individuals[0:((population_size+1) // 2)]
+    new_pop = [i[0] for i in kept_individuals] #get only the trivial circuits
+    for (individual, fitness) in kept_individuals[0:(population_size//2)]: 
+        # mutate & add child
+        if random.random() < 0.5:
+            new_pop.append(TrivialCircuit(fitness + 1))
+        else:
+            new_pop.append(TrivialCircuit(fitness - 1)) 
+    return Population(new_pop, None)
 
 
 

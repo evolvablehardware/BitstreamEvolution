@@ -1,7 +1,7 @@
 from pathlib import Path
 from random import Random
 from BitstreamEvolutionProtocols import FPGA_Compilation_Data, FPGA_Model, Population, GenerateInitialPopulation
-from TrivialImplementation import TrivialCircuit, TrivialCircuitFactory, TrivialReproduce, TrivialGenerateInitialPopulation
+from TrivialImplementation import TrivialCircuit, TrivialCircuitFactory, TrivialReproduceWithMutation, TrivialGenerateInitialPopulation
 from result import Result, Ok, Err # type: ignore
 import pytest # type: ignore
 from pytest_mock import MockerFixture
@@ -134,16 +134,47 @@ def test_TrivialGenerateInitialPopulation_WorksWithPartial(mocker:MockerFixture)
 
 ## -------------------------------------- Reproduce ---------------------------------------------
 
-def test_TrivialReproduce_KeepsTopHalf():
+def test_TrivialReproduceWithMutation_ReturnsSameSizeUnevaluatedPopulation():
     
     population = Generate_Population_From_Iterable(range(1,100+1),fitnesses_discovered=True)
+    new_pop = TrivialReproduceWithMutation(population, Random())
+    assert len(list(population)) == len(list(new_pop)), f"Population Sizes (100) Should Match for this Reproduce Method"
+    assert all([i[1] is None for i in new_pop]), "The resulting population should not have its fitnesses evaluated"
 
-    r = TrivialReproduce(Random())
-    result = r(population)
-    print(result)
-    fit_list = list(map(lambda x: x[1], iter(result)))
-    for f in range(50):
-        fit = f + 50
-        assert fit in fit_list
-    # also, we know all individuals should have >= 49 fitness, and <= 101
-    assert all(map(lambda x: x is not None and x <= 101 and x >= 49, fit_list))
+    population = Generate_Population_From_Iterable(range(1,500+1),fitnesses_discovered=True)
+    new_pop = TrivialReproduceWithMutation(population, Random())
+    assert len(list(population)) == len(list(new_pop)), f"Population Sizes (500) Should Match for this Reproduce Method"
+    assert all([i[1] is None for i in new_pop]), "The resulting population should not have its fitnesses evaluated"
+
+    population = Generate_Population_From_Iterable(range(1,13+1),fitnesses_discovered=True)
+    new_pop = TrivialReproduceWithMutation(population, Random())
+    assert len(list(population)) == len(list(new_pop)), f"Population Sizes (13) Should Match for this Reproduce Method"
+    assert all([i[1] is None for i in new_pop]), "The resulting population should not have its fitnesses evaluated"
+
+    population = Generate_Population_From_Iterable(range(1,51+1),fitnesses_discovered=True)
+    new_pop = TrivialReproduceWithMutation(population, Random())
+    assert len(list(population)) == len(list(new_pop)), f"Population Sizes (51) Should Match for this Reproduce Method"
+    assert all([i[1] is None for i in new_pop]), "The resulting population should not have its fitnesses evaluated"
+
+
+@pytest.mark.parametrize("population_size",[50,100,13,51])
+def test_TrivialReproduceWithMutation_KeepsTopHalfOfPopulation(population_size:int):
+    # If anything, this test should be more hard-coded, as this can be a little hard to follow.
+
+    population = Generate_Population_From_Iterable(range(1,population_size+1),fitnesses_discovered=True)
+    
+    fitness_cutoff = (population_size+1)//2 # because top half includes the odd one
+    #Below works because all individuals have different inherent fitness.
+    top_half_individuals = list(filter(lambda i: i.inherent_fitness > fitness_cutoff,
+                                       map(lambda p: p[0], population)))
+    
+    result = TrivialReproduceWithMutation(population, Random())
+
+    individuals = list(map(lambda x: x[0], iter(result)))
+    inherent_fitnesses = [i.inherent_fitness for i in individuals]
+
+    for successful_individual in top_half_individuals:
+        assert successful_individual in individuals, f"Could not find an individual who should have reproduced in the output: {successful_individual}\n {successful_individual.inherent_fitness} in {inherent_fitnesses}"
+
+## TODO: Complete reproduce tests by mocking random and making sure fitnesses are properly incremented and decremented
+## TODO: Complete reproduce tests by ensuring it can handle multiple duplicate fitness values at cuttoff point.
