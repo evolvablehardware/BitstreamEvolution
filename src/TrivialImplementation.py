@@ -40,7 +40,7 @@ def TrivialCircuitFactory(individuals: list[Individual]) -> list[Circuit]:
     return individuals # type: ignore
 
 
-## --------------------------------------------- Other People's Code --------------------------------------------------
+## --------------------------------------------- Generate & Reproduce Populations --------------------------------------------------
 def TrivialReproduceWithMutation (population: Population[TrivialCircuit],random: random.Random) -> Population[TrivialCircuit]:
     """
     Returns a population where all of the top half of the circuits are included, unchanged, 
@@ -66,7 +66,6 @@ def TrivialReproduceWithMutation (population: Population[TrivialCircuit],random:
     return Population(new_pop, None)
 
 
-
 def TrivialGenerateInitialPopulation(population_size:int, 
                                      random: random.Random, min_fitness:int, max_fitness:int) -> Population[TrivialCircuit]:
     """
@@ -84,11 +83,20 @@ def TrivialGenerateInitialPopulation(population_size:int,
     return Population(new_pop, None)
 
 
+## ------------------------------------ Generate Measurements --------------------------------------------
+
+
+
 ## ------------------------------------ Trivial Evolution Object -----------------------------------------
 
-def fake_evaluate_measurements_trivialimplemention(measurements: list[Measurement])->list[Measurement]:
-    "This is a function that prevents me from having to use async & hardware while testing out TrivialEvolution."
-    return measurements
+def FakeMeasuringFitnessTrivialImplemention(unevaluated_population: Population[TrivialCircuit])->Population[TrivialCircuit]:
+    """This is a function that prevents me from having to use async & hardware while testing out TrivialEvolution. 
+    This returns the same population, it just evaluates it."""
+    
+    for individual, fitness in unevaluated_population:
+        unevaluated_population.set_fitness(individual,individual.inherent_fitness)
+
+    return unevaluated_population
 
 
 class TrivialEvolution:
@@ -105,24 +113,25 @@ class TrivialEvolution:
 
     def __init__(self, 
                  generation_data_factory:GenDataFactory,
-                 circuit_factory:CircuitFactory,
+                 #circuit_factory:CircuitFactory,
                  reproducer:Reproducer,
                  generate_intial_population: GenerateInitialPopulation,
-                 evaluate_population_fitness: EvaluatePopulationFitness,
-                 generate_measurements: GenerateMeasurements,
-                 hardware:Hardware):
+                 #evaluate_population_fitness: EvaluatePopulationFitness,
+                 #generate_measurements: GenerateMeasurements,
+                 #hardware:Hardware
+                 ):
         """
         Initializes the Evolution with all of the objects and functions needed for it
         to carry out it the evolution.
         This does not execute any functions passed in.
         """
         self._generation_data_factory:GenDataFactory                 = generation_data_factory
-        self._circuit_factory:CircuitFactory                         = circuit_factory
+        #self._circuit_factory:CircuitFactory                         = circuit_factory
         self._reproduce:Reproducer                                   = reproducer
         self._generate_intial_population:GenerateInitialPopulation   = generate_intial_population
-        self._evaluate_population_fitness:EvaluatePopulationFitness  = evaluate_population_fitness
-        self._generate_measurements:GenerateMeasurements             = generate_measurements
-        self._hardware:Hardware                                      = hardware
+        #self._evaluate_population_fitness:EvaluatePopulationFitness  = evaluate_population_fitness
+        #self._generate_measurements:GenerateMeasurements             = generate_measurements
+        #self._hardware:Hardware                                      = hardware
 
     def run(self):
         """
@@ -140,17 +149,24 @@ class TrivialEvolution:
                self._generation_data_factory(gen_data=current_gendata)
                ) is not None:
             
-            measurements:list[Measurement] = self._generate_measurements(self._circuit_factory,[current_population])
+            # measurements:list[Measurement] = self._generate_measurements(self._circuit_factory,[current_population])
+            # tasks = [self.__hardware.request_measurement(m) for m in measurements]
+            # self._hardware.request_measurement(measurement for measurement in measurements)
+            # results = asyncio.run( asyncio.gather(*tasks) ) # I added asyncio.run to make sure that the async experiements were run at this point
+            #     # Maybe figure out task groups. See https://docs.python.org/3/library/asyncio-task.html#coroutines-and-tasks
+            #
+            # prev_population = self._evaluate_population_fitness(current_population,measurements)
+
             #NOTE: If we want to add multiple populations, create different evolution object, 
             #       and specify how you create initial populations for each set of individuals, 
             #       then specify in circuit_factory how to turn one individual from each population into a circuit,
             #       then, generate measurements decides which circuits it wants to make from those individuals 
             #       and it should be provided with a list that is the same number of populations as the number of arguments in circuit_factory.
 
-            measurements = fake_evaluate_measurements_trivialimplemention(measurements)
+            
 
             #move current_population to prev. & reproduce to current_pop
-            prev_population = self._evaluate_population_fitness(current_population,measurements)
+            prev_population = FakeMeasuringFitnessTrivialImplemention(current_population)
             current_population = self._reproduce(prev_population)
         
         print("Trivial Evolution Complete!")

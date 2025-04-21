@@ -1,7 +1,7 @@
 from pathlib import Path
 from random import Random
-from BitstreamEvolutionProtocols import FPGA_Compilation_Data, FPGA_Model, Population, GenerateInitialPopulation
-from TrivialImplementation import TrivialCircuit, TrivialCircuitFactory, TrivialReproduceWithMutation, TrivialGenerateInitialPopulation
+from BitstreamEvolutionProtocols import FPGA_Compilation_Data, FPGA_Model, Population, GenerateInitialPopulation, GenDataIncrementer
+from TrivialImplementation import TrivialCircuit, TrivialCircuitFactory, TrivialReproduceWithMutation, TrivialGenerateInitialPopulation, FakeMeasuringFitnessTrivialImplemention, TrivialEvolution
 from result import Result, Ok, Err # type: ignore
 import pytest # type: ignore
 from pytest_mock import MockerFixture
@@ -178,3 +178,49 @@ def test_TrivialReproduceWithMutation_KeepsTopHalfOfPopulation(population_size:i
 
 ## TODO: Complete reproduce tests by mocking random and making sure fitnesses are properly incremented and decremented
 ## TODO: Complete reproduce tests by ensuring it can handle multiple duplicate fitness values at cuttoff point.
+
+
+## --------------------------------- Test my Fake Measuring Fitness Funciton -------------------------------------------------------
+
+def test_FakeMeasuringFitnessTrivialImplemention_EvaluatesTheSamePopulation():
+    correct_fitnesses = [1,23,42,53,65,75]
+    unevaluated_population = Generate_Population_From_Iterable(
+        correct_fitnesses,
+        fitnesses_discovered=False
+        )
+    
+    assert all(i[1] is None for i in unevaluated_population), "Verify unevaluated_population starts unevaluated"
+
+    evaluated_population = FakeMeasuringFitnessTrivialImplemention(unevaluated_population)
+
+    for individual, fitness in evaluated_population:
+        assert fitness is not None
+        assert individual.inherent_fitness == fitness
+        assert fitness in correct_fitnesses
+    
+    assert len(list(evaluated_population)) == len(correct_fitnesses), "Verify there are the same number of individuals afterwards"
+    assert evaluated_population is unevaluated_population, "Ensure the same object was returned as was provided"
+
+
+## --------------------------------- Test running an Evolutionary Run -------------------------------------------------
+@pytest.mark.short # Haven't verified this time lenth
+def test_TrivialEvolution_InitializeAndRunEvolution():
+    
+    initial_pop = ft.partial(TrivialGenerateInitialPopulation,
+                             population_size = 100,
+                             random = Random(),
+                             min_fitness = 0,
+                             max_fitness = 500)
+    
+    reproducer = ft.partial(TrivialReproduceWithMutation,
+                            random = Random())
+    
+    gen_data_factory = GenDataIncrementer(50)
+
+    evolution = TrivialEvolution(
+        generation_data_factory     = gen_data_factory,
+        reproducer                  = reproducer,
+        generate_intial_population  = initial_pop
+    )
+
+    evolution.run()

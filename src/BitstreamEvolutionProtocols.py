@@ -38,11 +38,11 @@ class GenDataFactory(Protocol):
 class GenDataIncrementer():
     def __init__(self, max_gen_num:int):
         self.__max_gen_num = max_gen_num
-    def __call__(self, initialGenData: Optional[GenData]) -> Optional[GenData]:
-        if initialGenData is None:
+    def __call__(self, gen_data: Optional[GenData]) -> Optional[GenData]:
+        if gen_data is None:
             return GenData(generation_number=0)
-        if initialGenData.generation_number < self.__max_gen_num-1:
-            return GenData(initialGenData.generation_number + 1)
+        if gen_data.generation_number < self.__max_gen_num-1:
+            return GenData(gen_data.generation_number + 1)
         else:
             return None
 
