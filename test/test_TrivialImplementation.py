@@ -224,3 +224,42 @@ def test_TrivialEvolution_InitializeAndRunEvolution():
     )
 
     evolution.run()
+
+
+class Generate_Initial_Population_OO:
+    def __init__(self,population_size:int,random:Random,
+            min_fitness:int, max_fitness:int ):
+        self.population_size = population_size
+        self.random = random
+        self.min_fitness = min_fitness
+        self.max_fitness = max_fitness
+    
+    def generate(self)->Population[TrivialCircuit]:
+        return TrivialGenerateInitialPopulation(
+            population_size         = self.population_size,
+            random                  = self.random,
+            min_fitness             = self.min_fitness,
+            max_fitness             = self.max_fitness
+        )
+
+pytest.mark.short # Haven't verified this time lenth
+def test_TrivialEvolution_TestUsingOOAndRunEvolution():
+    
+    initial_pop = Generate_Initial_Population_OO(
+                             population_size = 100,
+                             random = Random(),
+                             min_fitness = 0,
+                             max_fitness = 500)
+    
+    reproducer = ft.partial(TrivialReproduceWithMutation,
+                            random = Random())
+    
+    gen_data_factory = GenDataIncrementer(50)
+
+    evolution = TrivialEvolution(
+        generation_data_factory     = gen_data_factory,
+        reproducer                  = reproducer,
+        generate_intial_population  = initial_pop.generate
+    )
+
+    evolution.run()
