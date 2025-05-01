@@ -1,5 +1,7 @@
 
-from BitstreamEvolutionProtocols import CircuitFactory, EvaluatePopulationFitness, GenDataFactory, GenerateInitialPopulation, GenerateMeasurements, Hardware, Reproducer
+from BitstreamEvolutionProtocols import CircuitFactory, EvaluatePopulationFitness, GenDataFactory, GenerateMeasurements, Hardware, Reproducer
+from PopulationInitialization import GenerateInitialPopulations
+
 import asyncio
 
 class Evolution:
@@ -12,7 +14,7 @@ class Evolution:
     """
 
     def __init__(self, gen_data_factory: GenDataFactory, circuit_factory: CircuitFactory, reproduce: Reproducer, 
-                 gen_init_populations: GenerateInitialPopulation, eval_population_fitness: EvaluatePopulationFitness,
+                 gen_init_populations: GenerateInitialPopulations, eval_population_fitness: EvaluatePopulationFitness,
                  generate_measurements: GenerateMeasurements, hardware: Hardware):
         '''
         Initializes the Evolution object with all of the protocols.
@@ -30,7 +32,7 @@ class Evolution:
         '''
         Runs the desired experiment, based on the protocols provided
         '''
-        populations = self.__gen_init_populations()
+        populations = self.__gen_init_populations.generate()
         gen_data = self.__gen_data_factory(None)
         while gen_data is not None:
             measurements = self.__generate_measurements(self.__circuit_factory, populations)

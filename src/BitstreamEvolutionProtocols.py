@@ -106,8 +106,7 @@ class Circuit(Protocol):
         """
         ...
 
-I = TypeVar("I", bound=Individual)
-
+I = TypeVar('I',bound='Individual')
 class Population(Generic[I]):
     """
     This is the Population object used to hold individuals and their fitnesses durring evolution. 
@@ -226,8 +225,8 @@ class Measurement(ABC):
         
 
 class EvaluatePopulationFitness(Protocol):
-    "Fully Evaluates a Population, the fitnesses in the population are fully specified."
-    def __call__(self,population:Population,measurements:list[Measurement])->Population: ...
+    "Fully Evaluates a Population, the fitnesses in the population are fully specified. The populations involved will be edited in place. Any populations not provided will not be edited."
+    def __call__(self,population:Population,measurements:list[Measurement])->None: ...
 
 class GenerateMeasurements(Protocol):
     "Generate the measurements to take for the given population. Returns a dict where all new measurements are given, and map to the individuals whose fitnesses they impact and the population the individuals are in."
