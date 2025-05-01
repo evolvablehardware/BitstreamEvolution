@@ -116,3 +116,5 @@ class RandomizeBitstreamPostConstructionStrategy:
     def run(self, ckt: FileBasedCircuit) -> FileBasedCircuit:
         ckt.randomize_bitstream()
         return ckt
+
+# TODO: to add in randomize_until modes, we need a way to get circuit fitness/measurements AT initialization time
