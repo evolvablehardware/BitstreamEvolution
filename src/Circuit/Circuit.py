@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
+from pathlib import Path
 
+from BitstreamEvolutionProtocols import FPGA_Compilation_Data
 from Logger import Logger
+from result import Result # type: ignore
 
 class Circuit(ABC):
     def __repr__(self):
@@ -21,7 +24,7 @@ class Circuit(ABC):
         self._logger = logger
 
     @abstractmethod
-    def upload(self):
+    def compile(self, fpga: FPGA_Compilation_Data, working_dir:Path) -> Result[Path,Exception]:
         """
         Performs the upload function of this Circuit. Prerequisite to collecting data
         """

@@ -3,11 +3,15 @@ from pathlib import Path
 from shutil import copyfile
 from subprocess import run
 import os
+from time import sleep
+from BitstreamEvolutionProtocols import FPGA_Compilation_Data
 from Circuit.Circuit import Circuit
 from Directories import Directories
 from Logger import Logger
+from result import Result, Ok, Err # type: ignore
 
 COMPILE_CMD = "icepack"
+RUN_CMD = "iceprog"
 
 class FileBasedCircuit(Circuit):
     """
@@ -20,7 +24,7 @@ class FileBasedCircuit(Circuit):
                  mutation_prob: float, routing_type: str, accessed_columns: list[int]):
         Circuit.__init__(self, index, filename, logger)
 
-        self._rand = rand
+        self.__rand = rand
 
         self.__mutation_prob = mutation_prob
         self.__routing_type = routing_type
@@ -29,8 +33,8 @@ class FileBasedCircuit(Circuit):
         asc_dir = directories.asc_dir
         bin_dir = directories.bin_dir
         data_dir = directories.data_dir
-        self._hardware_filepath = asc_dir.joinpath(filename + ".asc")
-        self._bitstream_filepath = bin_dir.joinpath(filename + ".bin")
+        self.__hardware_filepath = asc_dir.joinpath(filename + ".asc")
+        self.__bitstream_filepath = bin_dir.joinpath(filename + ".bin")
 
         # Create directories if they don't exist
         os.makedirs(asc_dir, exist_ok=True)
@@ -43,20 +47,52 @@ class FileBasedCircuit(Circuit):
         open(self._data_filepath, "w+").close()
 
         if template:
-            copyfile(template, self._hardware_filepath)
+            copyfile(template, self.__hardware_filepath)
 
         # Since the hardware file is written to and read from a lot, we
         # mmap it to improve preformance.
-        hardware_file = open(self._hardware_filepath, "r+")
+        hardware_file = open(self.__hardware_filepath, "r+")
         self._hardware_file = mmap(hardware_file.fileno(), 0)
         hardware_file.close()
 
     def copy_from(self, other):
-        copyfile(other._hardware_filepath, self._hardware_filepath)
+        copyfile(other._hardware_filepath, self.__hardware_filepath)
+
+    def compile(self, fpga: FPGA_Compilation_Data, working_dir: Path) -> Result[Path,Exception]:
+        """
+        Compiles and uploads the compiled circuit and runs it on the FPGA
+        """
+
+        # TODO: change to use working_dir parameter rather than using construction parameter for path
+        self.__compile()
+        
+        cmd_str = [
+            RUN_CMD,
+            self.__bitstream_filepath,
+            "-d",
+            fpga.id
+        ]
+        print(cmd_str)
+        run(cmd_str)
+        sleep(1)
+
+        return Ok(self.__bitstream_filepath)
+
+        # if switching fpgas every sample, need to upload to the second fpga also
+        # if self._config.get_transfer_sample():
+        #     cmd_str = [
+        #         RUN_CMD,
+        #         self._bitstream_filepath,
+        #         "-d",
+        #         self._config.get_fpga2()
+        #     ]
+        #     print(cmd_str)
+        #     run(cmd_str)
+        #     sleep(1)
 
     def mutate(self):
         def mutate_bit(bit, row, col, *rest):
-            if self.__mutation_prob >= self._rand.uniform(0,1):
+            if self.__mutation_prob >= self.__rand.uniform(0,1):
                 # Set this bit to either a 0 or 1 randomly
                 # Keep in mind that these are BYTES that we are modifying, not characters
                 # Therefore, we have to set it to either ASCII 0 (48) or ASCII 1 (49), not actual 0 or 1, which represent different characters
@@ -64,14 +100,14 @@ class FileBasedCircuit(Circuit):
                 # 48 = 0, 49 = 1. To flip, just need to do (48+49) - the current value (48+49=97)
                 # This now always flips the bit instead of randomly assigning it every time
                 # Note: If prev != 48 or 49, then we changed the wrong value because it was not a 0 or 1 previously
-                self._log_event(4, "Mutating:", self, "@(", row, ",", col, ") previous was", bit)
+                self.__log_event(4, "Mutating:", self, "@(", row, ",", col, ") previous was", bit)
                 return 97 - bit
-        self._run_at_each_modifiable(mutate_bit)
+        self.__run_at_each_modifiable(mutate_bit)
 
     def randomize_bitstream(self):
         def randomize_bit(*rest):
-            return self._rand.integers(48, 50)
-        self._run_at_each_modifiable(randomize_bit)
+            return self.__rand.integers(48, 50)
+        self.__run_at_each_modifiable(randomize_bit)
 
     def crossover(self, parent, crossover_point: int):
         """
@@ -115,7 +151,7 @@ class FileBasedCircuit(Circuit):
         if src_pop != None:
             self.set_file_attribute("src_population", src_pop)
 
-    def _run_at_each_modifiable(self, lambda_func, hardware_file = None, accessible_columns = None,
+    def __run_at_each_modifiable(self, lambda_func, hardware_file = None, accessible_columns = None,
         routing_type=None):
         """
         Runs the lambda_func at every modifiable position
@@ -193,11 +229,11 @@ class FileBasedCircuit(Circuit):
             # Will return -1 if .logic_tile isn't found, and the while loop will exit
             tile = hardware_file.find(b".logic_tile", tile + 1)
 
-    def _compile(self):
+    def __compile(self):
         """
         Compile circuit ASC file to a BIN file for hardware upload.
         """
-        self._log_event(2, "Compiling", self, "with icepack...")
+        self.__log_event(2, "Compiling", self, "with icepack...")
 
         # Ensure the file backing the mmap is up to date with the latest
         # changes to the mmap.
@@ -205,12 +241,12 @@ class FileBasedCircuit(Circuit):
 
         compile_command = [
             COMPILE_CMD,
-            self._hardware_filepath,
-            self._bitstream_filepath
+            self.__hardware_filepath,
+            self.__bitstream_filepath
         ]
         run(compile_command)
 
-        self._log_event(2, "Finished compiling", self)
+        self.__log_event(2, "Finished compiling", self)
 
     def __tile_is_included(self, hardware_file, pos):
         """
@@ -270,11 +306,11 @@ class FileBasedCircuit(Circuit):
         bitstream = []
         def add_bit(bit, *rest):
             bitstream.append(bit)
-        self._run_at_each_modifiable(add_bit)
+        self.__run_at_each_modifiable(add_bit)
         return bitstream
 
     def get_hardware_file_path(self):
-        return self._hardware_filepath
+        return self.__hardware_filepath
 
     def update_hardware_file(self, pos, length, data):
         """
@@ -415,13 +451,13 @@ class FileBasedCircuit(Circuit):
         value : str
             The value to assign to the attribute
         '''
-        hardware_file = open(self._hardware_filepath, "r+")
+        hardware_file = open(self.__hardware_filepath, "r+")
         FileBasedCircuit.set_file_attribute_st(hardware_file, attribute, value)
         # Re-map our hardware file
         self._hardware_file = mmap(hardware_file.fileno(), 0)
         hardware_file.close()
 
-    def _log_event(self, level, *event):
+    def __log_event(self, level, *event):
         """
         Emit an event-level log. This function is fulfilled through
         the logger.

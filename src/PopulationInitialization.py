@@ -1,8 +1,10 @@
 from pathlib import Path
+from random import Random
 from typing import Protocol
 from BitstreamEvolutionProtocols import Population
 from Circuit.FileBasedCircuit import FileBasedCircuit
 from Directories import Directories
+from Logger import Logger
 from utilities import wipe_folder
 import os
 
@@ -38,20 +40,22 @@ class RandomizationStrategy(Protocol):
     '''Consumes the incoming parameter'''
     def randomize(self, circuits: list[FileBasedCircuit]) -> list[FileBasedCircuit]: ...
 
-class CircuitConstructionStrategy(Protocol):
-    def create(self, index: int, file_name: str, seed_arg: Path | str) -> FileBasedCircuit: ...
-
 class GenerateFileBasedPopulation:
     # force everything to be passed by keyword
-    def __init__(self, *, sz: int, directories: Directories, 
+    def __init__(self, *, sz: int, directories: Directories, logger: Logger,
                  post_construction_strategy: PostConstructionStrategy,
                  randomization_strategy: RandomizationStrategy,
-                 circuit_construction_strategy: CircuitConstructionStrategy):
+                 mutation_prob: float, routing_type: str, accessed_columns: list[int]):
         self.__directories = directories
         self.__sz = sz
         self.__post_construction_strategy = post_construction_strategy
         self.__randomization_strategy = randomization_strategy
-        self.__circuit_construction_strategy = circuit_construction_strategy
+        self.__rand = Random()
+        self.__logger = logger
+
+        self.__mutation_prob = mutation_prob
+        self.__routing_type = routing_type
+        self.__accessed_columns = accessed_columns
         
     def generate(self) -> Population:
         """
@@ -73,9 +77,8 @@ class GenerateFileBasedPopulation:
 
         for index in range(1, self.__sz + 1):
             file_name = "hardware" + str(index)
-            seedArg = template
 
-            ckt = self.__circuit_construction_strategy.create(index, file_name, seedArg)
+            ckt = self.__construct_circuit(index, file_name, template)
             ckt = self.__post_construction_strategy.run(ckt)
 
             circuits.append(ckt)
@@ -83,3 +86,33 @@ class GenerateFileBasedPopulation:
         circuits = self.__randomization_strategy.randomize(circuits)
 
         return Population(circuits, None)
+    
+    def __construct_circuit(self, index, file_name, template: Path) -> FileBasedCircuit:
+        return FileBasedCircuit(
+            index=index, 
+            filename=file_name, 
+            template=template, 
+            rand=self.__rand, 
+            logger=self.__logger,
+            directories=self.__directories,
+            mutation_prob=self.__mutation_prob,
+            routing_type=self.__routing_type,
+            accessed_columns=self.__accessed_columns
+        )
+
+# used for CLONE_SEED
+class NoPostConstructionStrategy:
+    def run(self, ckt: FileBasedCircuit) -> FileBasedCircuit:
+        return ckt
+
+# used for CLONE_SEED_MUTATE
+class MutateOncePostConstructionStrategy:
+    def run(self, ckt: FileBasedCircuit) -> FileBasedCircuit:
+        ckt.mutate()
+        return ckt
+    
+# used for RANDOM
+class RandomizeBitstreamPostConstructionStrategy:
+    def run(self, ckt: FileBasedCircuit) -> FileBasedCircuit:
+        ckt.randomize_bitstream()
+        return ckt
