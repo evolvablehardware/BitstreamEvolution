@@ -111,9 +111,7 @@ class CircuitFactory(Protocol):
         "This takes the population of Individuals and constructs the necessary Circuit from it as requested."
         ...
 
-I = TypeVar("I", bound=Individual)
-
-class Population(Generic[I]):
+class Population:
     """
     This is the Population object used to hold individuals and their fitnesses durring evolution. 
     It starts out with its full list of individuals, and optionally fitnesses.
@@ -124,7 +122,7 @@ class Population(Generic[I]):
     """
 
     # May want specific type variables.
-    def __init__(self,individuals: Iterable[I], fitnesses:Optional[Iterable[Fitness|None]]=None):
+    def __init__(self,individuals: Iterable[Individual], fitnesses:Optional[Iterable[Fitness|None]]=None):
         "Can raise ValueError if Individuals are not unique."
         ind = list(individuals)
 
@@ -134,10 +132,10 @@ class Population(Generic[I]):
         fit_list = list(fitnesses) if fitnesses is not None else [None]*len(ind)
         fit = fit_list if len(fit_list) == len(ind) else [None]*len(ind)
 
-        self.population_list:list[tuple[I,Optional[Fitness]]] = list(zip(ind,fit))
+        self.population_list:list[tuple[Individual, Optional[Fitness]]] = list(zip(ind,fit))
         # = [(Individual, Fitness), (Individual2, Fitness2), ...]
 
-    def __iter__(self)->Iterator[tuple[I,Optional[Fitness]]]:
+    def __iter__(self)->Iterator[tuple[Individual, Optional[Fitness]]]:
         # call iter() to get iterator, then next()
         # If wanted to be safe, return a copy that can't change
         return iter(self.population_list)
@@ -170,11 +168,7 @@ class Population(Generic[I]):
 
 class Reproducer(Protocol):
     "Gets a population and returns another population filled with the children of this generation. (reproduce + mutation)"
-    def __call__(self,population:Population[I])->Population[I]: ...
-
-class GenerateInitialPopulation(Protocol):
-    "Somehow gets you an initial implementation."
-    def __call__(self)->Population: ...
+    def __call__(self,population:Population)->Population: ...
 
 class MeasurementError(Exception):
     ...
