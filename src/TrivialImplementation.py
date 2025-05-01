@@ -1,8 +1,9 @@
 import random
-from BitstreamEvolutionProtocols import Circuit, Individual,FPGA_Compilation_Data, Population, CircuitFactory, Measurement, EvaluatePopulationFitness, GenData, GenDataFactory, GenerateInitialPopulation, GenerateMeasurements, Hardware, Reproducer
+from BitstreamEvolutionProtocols import Circuit, Individual,FPGA_Compilation_Data, Population, CircuitFactory, Measurement, EvaluatePopulationFitness, GenData, GenDataFactory, GenerateInitialPopulation, GenerateMeasurements, Hardware, Reproducer, DataRequest
 from pathlib import Path
 from result import Result, Ok, Err # type: ignore
 import functools as ft
+from collections.abc import Iterable
 
 """
 As discussed in the main meeting (3/28/2025), we are first putting together a trivial implementation of all of the components.
@@ -35,9 +36,14 @@ class TrivialCircuit:
         return Ok("no/compilation/used/../../..")
 
 
-def TrivialCircuitFactory(individuals: list[Individual]) -> list[Circuit]:
+def TrivialCircuitFactory(population: Population[TrivialCircuit]) -> dict[Circuit,list[tuple[Population,Individual]]]:
     # they are the same thing for this implementation
-    return individuals # type: ignore
+    output: dict[Circuit,list[tuple[Population,Individual]]] = dict()
+    for individual,fitness in population:
+        output[individual] = [(population,individual)]
+    return output
+
+    
 
 
 ## --------------------------------------------- Generate & Reproduce Populations --------------------------------------------------
@@ -84,7 +90,53 @@ def TrivialGenerateInitialPopulation(population_size:int,
 
 
 ## ------------------------------------ Generate Measurements --------------------------------------------
+#This is currently basically the same thing as the abstract measurement class
+class Trivial_Meas(Measurement):
+    def record_measurement_result(self, result:int):
+        return super().record_measurement_result(result)
+    # I don't remember why I made Measurement an Abstract Base Class.
+    # Maybe to fix types???
 
+def TrivialGenerateMeasurements(factory: TrivialCircuitFactory, population: Population
+                         ) -> dict[Measurement,list[tuple[Population,Individual]]]:
+    measurement_map:dict[Measurement,list[tuple[Population,Individual]]] = {}
+    
+    circuits:dict[Circuit,list[tuple[Population,Individual]]] = factory(population)
+
+    for circuit in circuits.keys():
+        meas = Trivial_Meas("FPGA_REQUEST_FAKE",
+                            data_request=DataRequest.NONE,
+                            circuit_to_measure=circuit)
+        measurement_map[meas] = circuits[circuit] #dependancies are the same
+
+    return measurement_map
+
+def FakeHardwareTrivialEvaluateMeasurements(measurements: Iterable[Measurement])->None:
+    "perform the measurements and edit them in place. This would normally be done by the H"
+    for meas in measurements:
+        meas.record_FPGA_used("USED_FPGA")
+        meas.record_measurement_result(meas.circuit.inherent_fitness)
+
+def TrivialEvaluatePopulationFitness(population:Population,measurement_dependants:dict[Measurement,list[tuple[Population,Individual]]]):
+    "Turns measurements into fitness values and applies them to the provided population, completely evaluating the population, and only editing that population."
+    for meas in measurement_dependants.keys():
+        for pop, indiv in measurement_dependants[meas]:
+
+            individual_fitness = 0
+            match meas.result:
+                case Ok(fitness):
+                    individual_fitness = fitness
+                case Err(exception):
+                    individual_fitness = 0
+                case _:
+                    individual_fitness = 0
+            
+            #Only change population if it was passed in as argument.
+            if pop in [population]:
+                pop.set_fitness(indiv,individual_fitness)
+    
+    # default fitness for all values with no known fitness value discoverd in the above process.
+    population.set_fitness_of_unevaluated_individuals(0)
 
 
 ## ------------------------------------ Trivial Evolution Object -----------------------------------------

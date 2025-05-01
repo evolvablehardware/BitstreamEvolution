@@ -1,11 +1,12 @@
 from pathlib import Path
 from random import Random
 from BitstreamEvolutionProtocols import FPGA_Compilation_Data, FPGA_Model, Population, GenerateInitialPopulation, GenDataIncrementer
-from TrivialImplementation import TrivialCircuit, TrivialCircuitFactory, TrivialReproduceWithMutation, TrivialGenerateInitialPopulation, FakeMeasuringFitnessTrivialImplemention, TrivialEvolution
+from TrivialImplementation import TrivialCircuit, TrivialCircuitFactory, TrivialReproduceWithMutation, TrivialGenerateInitialPopulation, FakeMeasuringFitnessTrivialImplemention, TrivialEvolution, TrivialGenerateMeasurements
 from result import Result, Ok, Err # type: ignore
 import pytest # type: ignore
 from pytest_mock import MockerFixture
 from collections.abc import Generator,Iterable
+from collections import Counter
 import functools as ft
 
 ## ------------------------------------------------- Mocks & Fixtures -------------------------------------------------
@@ -46,9 +47,21 @@ def test_TrivialCircuit_ImplementsCompile(FPGA_compilation_data:FPGA_Compilation
             assert False, f"This should return a Result, instead was {output}"
 
 def test_TrivialCircuitFatory_ReturnsTheIndividualAsACircuit():
-    individual = TrivialCircuit(34)
-    circuit = TrivialCircuitFactory([individual])[0]
-    assert individual is circuit, "Should return the exact same object"
+    individual1 = TrivialCircuit(34)
+    individual2 = TrivialCircuit(35)
+    population = Population([individual1,individual2],None)
+    circuit = TrivialCircuitFactory(population)
+    assert individual1 in circuit.keys(), "Should return the exact same object as circuits"
+    assert individual2 in circuit.keys(), "Should return the exact same object as circuits"
+
+    assert len(circuit[individual1]) == 1, "Each Circuit should include exactly one dependant individual"
+    assert population in circuit[individual1][0], "Each Circuit should include a population"
+    assert individual1 in circuit[individual1][0], "Each Circuit should have one individual"
+
+    assert len(circuit[individual2]) == 1, "Each Circuit should include exactly one dependant individual"
+    assert population in circuit[individual2][0], "Each Circuit should include a population"
+    assert individual2 in circuit[individual2][0], "Each Circuit should have one individual"
+
 
 ## ----------------------------------------- Generate Initial Population ----------------------------------------------------
 
@@ -201,6 +214,45 @@ def test_FakeMeasuringFitnessTrivialImplemention_EvaluatesTheSamePopulation():
     assert len(list(evaluated_population)) == len(correct_fitnesses), "Verify there are the same number of individuals afterwards"
     assert evaluated_population is unevaluated_population, "Ensure the same object was returned as was provided"
 
+## -------------------------------------------- Testing Measurement Functions --------------------------------------------
+
+def test_TrivialGenerateMeasurements_HasProperlyStructuredFormForReturns():
+    individuals = [TrivialCircuit(0),TrivialCircuit(1),TrivialCircuit(2)]
+    population = Population(individuals,None)
+    circuits = {
+        individuals[0]: [(population,individuals[0])],
+        individuals[1]: [(population,individuals[1])],
+        individuals[2]: [(population,individuals[2])]
+    }
+
+    def mock_circuit_factory(populations:Population)->dict[TrivialCircuit,list[tuple[Population,TrivialCircuit]]]:
+        return circuits
+    
+    measurements = TrivialGenerateMeasurements(mock_circuit_factory,population)
+
+    #Ensure all circuits were turned into measurements
+    assert Counter(individuals) == Counter(map(lambda meas:meas.circuit, measurements.keys()))
+
+    for meas in measurements.keys():
+        assert isinstance(measurements[meas], list), "Should be a list of dependants"
+        assert isinstance(measurements[meas][0], tuple), "The 1st dependant should exist and be a tuple"
+        assert measurements[meas][0][0] == population, "The 1st tuple element should be the population"
+        assert measurements[meas][0][1] == meas.circuit, "The 2nd tuple element should be the circuit, which is the same as the individual, here"
+        assert len(measurements[meas]) == 1, "Each Measuement should only have one dependant"
+
+
+@pytest.mark.skip
+def test_FakeHardwareTrivialEvaluateMeasurements():
+    raise NotImplementedError("Write Tests for this function faking hardware evaluation")
+
+
+@pytest.mark.skip
+def test_TrivialEvaluatePopulationFitness():
+    raise NotImplementedError("Write Tests for TrivialEvaluatePopulationFitness")
+
+
+
+
 
 ## --------------------------------- Test running an Evolutionary Run -------------------------------------------------
 @pytest.mark.short # Haven't verified this time lenth
@@ -226,7 +278,7 @@ def test_TrivialEvolution_InitializeAndRunEvolution():
     evolution.run()
 
 
-class Generate_Initial_Population_OO:
+class Population_Initializer:
     def __init__(self,population_size:int,random:Random,
             min_fitness:int, max_fitness:int ):
         self.population_size = population_size
@@ -234,7 +286,7 @@ class Generate_Initial_Population_OO:
         self.min_fitness = min_fitness
         self.max_fitness = max_fitness
     
-    def generate(self)->Population[TrivialCircuit]:
+    def GenerateInitialPopulation(self)->Population[TrivialCircuit]:
         return TrivialGenerateInitialPopulation(
             population_size         = self.population_size,
             random                  = self.random,
@@ -242,10 +294,10 @@ class Generate_Initial_Population_OO:
             max_fitness             = self.max_fitness
         )
 
-pytest.mark.short # Haven't verified this time lenth
+@pytest.mark.short # Haven't verified this time lenth
 def test_TrivialEvolution_TestUsingOOAndRunEvolution():
     
-    initial_pop = Generate_Initial_Population_OO(
+    initial_pop = Population_Initializer(
                              population_size = 100,
                              random = Random(),
                              min_fitness = 0,
@@ -259,8 +311,8 @@ def test_TrivialEvolution_TestUsingOOAndRunEvolution():
     evolution = TrivialEvolution(
         generation_data_factory     = gen_data_factory,
         reproducer                  = reproducer,
-        generate_intial_population  = initial_pop.generate
+        generate_intial_population  = initial_pop.GenerateInitialPopulation
     )
 
     evolution.run()
-    #Generate_Initial_Population_OO(...).generate()
+    #Population_Initializer(...).GenerateInitialPopulation()
