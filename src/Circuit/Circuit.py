@@ -31,9 +31,16 @@ class Circuit(ABC):
         pass
 
     @abstractmethod
-    def get_bitstream(self) -> list[int]:
+    def get_bitstream(self) -> list[bool]:
         """
         Returns the full bitstream of the circuit
+        """
+        pass
+
+    @abstractmethod
+    def set_bitstream(self, bitstream: list[bool]):
+        """
+        Sets the bitstream of the circuit
         """
         pass
     
@@ -43,33 +50,33 @@ class Circuit(ABC):
     def get_file_attribute(self, attribute) -> str | None:
         return '0' # No default behavior
 
-    @abstractmethod
-    def mutate(self):
-        """
-        Mutates the Circuit's bitstream. Mutation is performed on a per-bit basis
-        """
-        pass
+    # @abstractmethod
+    # def mutate(self):
+    #     """
+    #     Mutates the Circuit's bitstream. Mutation is performed on a per-bit basis
+    #     """
+    #     pass
 
-    @abstractmethod
-    def randomize_bitstream(self):
-        """
-        Randomizes every modifiable bit in this Circuit's bitstream
-        """
-        pass
+    # @abstractmethod
+    # def randomize_bitstream(self):
+    #     """
+    #     Randomizes every modifiable bit in this Circuit's bitstream
+    #     """
+    #     pass
 
-    @abstractmethod
-    def crossover(self, parent, crossover_point: int):
-        """
-        Decide which crossover function to used based on configuration
+    # @abstractmethod
+    # def crossover(self, parent, crossover_point: int):
+    #     """
+    #     Decide which crossover function to used based on configuration
 
-        Parameters
-        ----------
-        parent : Circuit
-            The other circuit the crossover is being performed with
-        corssover_point : int
-            The point in the modifiable bitstream to perform the point crossover.
-        """
-        pass
+    #     Parameters
+    #     ----------
+    #     parent : Circuit
+    #         The other circuit the crossover is being performed with
+    #     corssover_point : int
+    #         The point in the modifiable bitstream to perform the point crossover.
+    #     """
+    #     pass
 
     @abstractmethod
     def copy_from(self, other):
