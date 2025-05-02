@@ -16,6 +16,11 @@ import asyncio
 # - Not 100% sure on the interface for this, it should take in one or more Measurements and compute their results, and take in 
 #   a Circuit?
 
+"""
+TODO: Check if a protocol *populations:Population can be implemented by a function with no such variable.
+i.e. can val(p:int) match the type of vals(p:int, *populations:Population)?
+"""
+
 @dataclass
 class GenData:
     """
@@ -101,17 +106,8 @@ class Circuit(Protocol):
         """
         ...
 
-class CircuitFactory(Protocol):
-    """
-    The most basic Function Protocol for Turning Individuals into Circuits in whatever way best fits your application.
-    How the circuit is built should be fully specified here, and any unique roles the individuals have should be specified here;
-    however, how these individuals are selected and matched to roles is not.
-    """
-    def __call__(self, individuals: list[Individual], **kwds:Any) -> list[Circuit]:
-        "This takes the population of Individuals and constructs the necessary Circuit from it as requested."
-        ...
-
-class Population:
+I = TypeVar('I',bound='Individual')
+class Population(Generic[I]):
     """
     This is the Population object used to hold individuals and their fitnesses durring evolution. 
     It starts out with its full list of individuals, and optionally fitnesses.
@@ -122,7 +118,7 @@ class Population:
     """
 
     # May want specific type variables.
-    def __init__(self,individuals: Iterable[Individual], fitnesses:Optional[Iterable[Fitness|None]]=None):
+    def __init__(self,individuals: Iterable[I], fitnesses:Optional[Iterable[Fitness|None]]=None):
         "Can raise ValueError if Individuals are not unique."
         ind = list(individuals)
 
@@ -132,10 +128,10 @@ class Population:
         fit_list = list(fitnesses) if fitnesses is not None else [None]*len(ind)
         fit = fit_list if len(fit_list) == len(ind) else [None]*len(ind)
 
-        self.population_list:list[tuple[Individual, Optional[Fitness]]] = list(zip(ind,fit))
+        self.population_list:list[tuple[I,Optional[Fitness]]] = list(zip(ind,fit))
         # = [(Individual, Fitness), (Individual2, Fitness2), ...]
 
-    def __iter__(self)->Iterator[tuple[Individual, Optional[Fitness]]]:
+    def __iter__(self)->Iterator[tuple[I,Optional[Fitness]]]:
         # call iter() to get iterator, then next()
         # If wanted to be safe, return a copy that can't change
         return iter(self.population_list)
@@ -166,14 +162,37 @@ class Population:
         except TypeError:
             raise TypeError(f"Population does not have all individual's fitnesses fully specified. {sum([t[1] is None for t in self.population_list])} individuals did not have a fitness assigned.")
 
+
+class CircuitFactory(Protocol):
+    """
+    The most basic Function Protocol for Turning Individuals into Circuits in whatever way best fits your application.
+    How the circuit is built should be fully specified here, and any unique roles the individuals have should be specified here;
+    however, how these individuals are selected and matched to roles is not.
+    """
+    def __call__(self, population: Population,*populations:Population ,**kwds:Any) -> dict[Circuit,list[tuple[Population,Individual]]]:
+        """
+        This takes the population of Individuals and constructs the necessary Circuit from it as requested.
+        It returns the circuits as keys in a dictionary, where the associated values are 
+            a list of tupples for each Individual used to generate the circuit (or all individuals whose fitness is impacted directly by the circuit's fitness)
+            and includes the population the individual was from, and the individual itself.
+        """
+        ...
+
 class Reproducer(Protocol):
     "Gets a population and returns another population filled with the children of this generation. (reproduce + mutation)"
-    def __call__(self,population:Population)->Population: ...
+    def __call__(self,population:Population[I])->Population[I]: ...
+
+class GenerateInitialPopulation(Protocol):
+    "Somehow gets you an initial implementation."
+    def __call__(self)->Population: ...
 
 class MeasurementError(Exception):
     ...
 class MeasurementNotTaken(MeasurementError):
     ...
+
+class DataRequest(Enum):
+    NONE = auto()
 
 class Measurement(ABC):
     "All measurement data, this could even be a class potentially"
@@ -182,7 +201,7 @@ class Measurement(ABC):
     # circuit:Circuit
     # FPGA_used:Optional[str]
     # result = Result[Any,Exception] 
-    def __init__(self, FPGA_request:str, data_request:Enum,circuit_to_measure:Circuit)->None:
+    def __init__(self, FPGA_request:str, data_request:DataRequest,circuit_to_measure:Circuit)->None:
         """
         TODO::
           Figure out the format for an FPGA Request, potentially also changing the type, and adjust that here.
@@ -206,13 +225,13 @@ class Measurement(ABC):
         
 
 class EvaluatePopulationFitness(Protocol):
-    "Fully Evaluates a Population, the fitnesses in the population are fully specified."
-    def __call__(self,population:Population,measurements:list[Measurement])->Population: ...
+    "Fully Evaluates a Population, the fitnesses in the population are fully specified. The populations involved will be edited in place. Any populations not provided will not be edited."
+    def __call__(self,population:Population,measurements:list[Measurement])->None: ...
 
 class GenerateMeasurements(Protocol):
-    "Generate the measurements to take for the given population"
-    # future: maybe change populations to varargs
-    def __call__(self, factory: CircuitFactory, populations: list[Population]) -> list[Measurement]: ...
+    "Generate the measurements to take for the given population. Returns a dict where all new measurements are given, and map to the individuals whose fitnesses they impact and the population the individuals are in."
+    # future: maybe change populations to varargs, should include one or arbitrarily many populations
+    def __call__(self, factory: CircuitFactory, population: Population,*populations:Population) -> dict[Measurement,list[tuple[Population,Individual]]]: ...
 
 class Hardware(Protocol):
     "Used to Evaluate Measurements. Compile hardware would be responsible for compiling the Circuit in the Measurement object passed to it in request_measurement()."
