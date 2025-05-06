@@ -99,7 +99,8 @@ class RandomizeBitstreamPostConstructionStrategy:
         return individual
 
 class IntrinsicCircuitFactory:
-    def __init__(self, logger: Logger, directories: Directories, routing_type: str, accessed_columns: list[int]):
+    def __init__(self, sz: int, logger: Logger, directories: Directories, routing_type: str, accessed_columns: list[int]):
+        self.__sz = sz
         self.__logger = logger
         self.__directories = directories
         self.__routing_type = routing_type
@@ -109,6 +110,8 @@ class IntrinsicCircuitFactory:
         wipe_folder(self.__directories.asc_dir)
         wipe_folder(self.__directories.bin_dir)
         wipe_folder(self.__directories.data_dir)
+
+        # TODO: Make circuits once, then map them to bitstreams later
 
         res: dict[Circuit, list[tuple[Population, Individual]]] = {}
         index = 0
@@ -124,6 +127,8 @@ class IntrinsicCircuitFactory:
                     routing_type=self.__routing_type,
                     accessed_columns=self.__accessed_columns
                 )
+                bitstream: list[bool] = i.get_bitstream() # type: ignore
+                circuit.set_bitstream(bitstream)
                 res[circuit] = [(p, i)]
                 index += 1
 

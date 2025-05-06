@@ -228,9 +228,8 @@ class EvaluatePopulationFitness(Protocol):
     def __call__(self,population:Population,measurements:list[Measurement])->None: ...
 
 class GenerateMeasurements(Protocol):
-    "Generate the measurements to take for the given population. Returns a dict where all new measurements are given, and map to the individuals whose fitnesses they impact and the population the individuals are in."
-    # future: maybe change populations to varargs, should include one or arbitrarily many populations
-    def __call__(self, factory: CircuitFactory, population: Population,*populations:Population) -> dict[Measurement,list[tuple[Population,Individual]]]: ...
+    "Generate the measurements to take for the given populations. Returns a dict where all new measurements are given, and map to the individuals whose fitnesses they impact and the population the individuals are in."
+    def __call__(self, factory: CircuitFactory, populations: list[Population]) -> dict[Measurement,list[tuple[Population,Individual]]]: ...
 
 class Hardware(Protocol):
     "Used to Evaluate Measurements. Compile hardware would be responsible for compiling the Circuit in the Measurement object passed to it in request_measurement()."

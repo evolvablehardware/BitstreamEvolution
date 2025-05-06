@@ -1,6 +1,6 @@
 
 from BitstreamEvolutionProtocols import CircuitFactory, EvaluatePopulationFitness, GenDataFactory, GenerateMeasurements, Hardware, Reproducer
-from PopulationInitialization import GenerateInitialPopulations
+from Population.PopulationInitialization import GenerateInitialPopulations
 
 import asyncio
 
@@ -40,8 +40,7 @@ class Evolution:
             results = asyncio.run( asyncio.gather(*tasks) ) # I added asyncio.run to make sure that the async experiements were run at this point
             # Maybe figure out task groups. See https://docs.python.org/3/library/asyncio-task.html#coroutines-and-tasks
 
-            populations = list(map(lambda p: self.__eval_population_fitness(p, results), populations))
-            populations = list(map(lambda p: self.__reproduce(p), populations))                         # 
-            # population = self.__eval_population_fitness(population, results)
-            # population = self.__reproduce(population)                                                 # Create next population
-            gen_data = self.__gen_data_factory(gen_data)                                                # Decide what to do for next Iteration  
+            for p in populations:
+                self.__eval_population_fitness(p, results)
+            populations = list(map(lambda p: self.__reproduce(p), populations))
+            gen_data = self.__gen_data_factory(gen_data)
