@@ -100,36 +100,38 @@ class RandomizeBitstreamPostConstructionStrategy:
 
 class IntrinsicCircuitFactory:
     def __init__(self, sz: int, logger: Logger, directories: Directories, routing_type: str, accessed_columns: list[int]):
-        self.__sz = sz
         self.__logger = logger
         self.__directories = directories
         self.__routing_type = routing_type
         self.__accessed_columns = accessed_columns
 
-    def create(self, populations: list[Population]) -> dict[Circuit, list[tuple[Population, Individual]]]:
         wipe_folder(self.__directories.asc_dir)
         wipe_folder(self.__directories.bin_dir)
         wipe_folder(self.__directories.data_dir)
 
-        # TODO: Make circuits once, then map them to bitstreams later
+        self.__circuits = []
+        for i in range(sz):
+            circuit = FileBasedCircuit(
+                index=i,
+                filename="hardware" + str(i),
+                template=SEED_HARDWARE_FILEPATH,
+                logger=self.__logger,
+                directories=self.__directories,
+                routing_type=self.__routing_type,
+                accessed_columns=self.__accessed_columns
+            )
+            self.__circuits.append(circuit)
 
+    def create(self, populations: list[Population]) -> dict[Circuit, list[tuple[Population, Individual]]]:
         res: dict[Circuit, list[tuple[Population, Individual]]] = {}
         index = 0
         for p in populations:
             pop = p.population_list
-            for (i, _) in pop:
-                circuit = FileBasedCircuit(
-                    index=index,
-                    filename='',
-                    template=SEED_HARDWARE_FILEPATH,
-                    logger=self.__logger,
-                    directories=self.__directories,
-                    routing_type=self.__routing_type,
-                    accessed_columns=self.__accessed_columns
-                )
+            for (individual, _) in pop:
+                circuit = self.__circuits[index]
                 bitstream: list[bool] = i.get_bitstream() # type: ignore
                 circuit.set_bitstream(bitstream)
-                res[circuit] = [(p, i)]
+                res[circuit] = [(p, individual)]
                 index += 1
 
         return res
