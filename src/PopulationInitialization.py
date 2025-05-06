@@ -1,7 +1,7 @@
 from pathlib import Path
 from random import Random
 from typing import Protocol
-from BitstreamEvolutionProtocols import Population
+from BitstreamEvolutionProtocols import Circuit, Individual, Population
 from Circuit.FileBasedCircuit import FileBasedCircuit
 from Directories import Directories
 from Individual.BitstreamIndividual import BitstreamIndividual
@@ -81,66 +81,6 @@ class GenerateBitstreamPopulation:
 
         return Population(circuits, None)
 
-# class GenerateFileBasedPopulation:
-#     # force everything to be passed by keyword
-#     def __init__(self, *, sz: int, directories: Directories, logger: Logger,
-#                  post_construction_strategy: PostConstructionStrategy,
-#                  randomization_strategy: RandomizationStrategy,
-#                  mutation_prob: float, routing_type: str, accessed_columns: list[int]):
-#         self.__directories = directories
-#         self.__sz = sz
-#         self.__post_construction_strategy = post_construction_strategy
-#         self.__randomization_strategy = randomization_strategy
-#         self.__rand = Random()
-#         self.__logger = logger
-
-#         self.__mutation_prob = mutation_prob
-#         self.__routing_type = routing_type
-#         self.__accessed_columns = accessed_columns
-        
-#     def generate(self) -> Population:
-#         """
-#         Creates initial population based on the config.
-#         1. Clears the files used to keep track of circuit
-#         2. Uses appropriate initialization method specified by config.
-#         3. Handles randomization until condition in config is met.
-#         """
-
-#         # Wipe the current folder, so if we go from 100 circuits in one experiment to 50 in the next,
-#         # we don't still have 100 (with 50 that we use and 50 residual ones)
-#         wipe_folder(self.__directories.asc_dir)
-#         wipe_folder(self.__directories.bin_dir)
-#         wipe_folder(self.__directories.data_dir)
-
-#         circuits = []
-
-#         template = SEED_HARDWARE_FILEPATH
-
-#         for index in range(1, self.__sz + 1):
-#             file_name = "hardware" + str(index)
-
-#             ckt = self.__construct_circuit(index, file_name, template)
-#             ckt = self.__post_construction_strategy.run(ckt)
-
-#             circuits.append(ckt)
-
-#         circuits = self.__randomization_strategy.randomize(circuits)
-
-#         return Population(circuits, None)
-    
-#     def __construct_circuit(self, index, file_name, template: Path) -> FileBasedCircuit:
-#         return FileBasedCircuit(
-#             index=index, 
-#             filename=file_name, 
-#             template=template, 
-#             rand=self.__rand, 
-#             logger=self.__logger,
-#             directories=self.__directories,
-#             mutation_prob=self.__mutation_prob,
-#             routing_type=self.__routing_type,
-#             accessed_columns=self.__accessed_columns
-#         )
-
 # used for CLONE_SEED
 class NoPostConstructionStrategy:
     def run(self, individual: BitstreamIndividual) -> BitstreamIndividual:
@@ -157,5 +97,36 @@ class RandomizeBitstreamPostConstructionStrategy:
     def run(self, individual: BitstreamIndividual) -> BitstreamIndividual:
         individual.randomize()
         return individual
+
+class IntrinsicCircuitFactory:
+    def __init__(self, logger: Logger, directories: Directories, routing_type: str, accessed_columns: list[int]):
+        self.__logger = logger
+        self.__directories = directories
+        self.__routing_type = routing_type
+        self.__accessed_columns = accessed_columns
+
+    def create(self, populations: list[Population]) -> dict[Circuit, list[tuple[Population, Individual]]]:
+        wipe_folder(self.__directories.asc_dir)
+        wipe_folder(self.__directories.bin_dir)
+        wipe_folder(self.__directories.data_dir)
+
+        res: dict[Circuit, list[tuple[Population, Individual]]] = {}
+        index = 0
+        for p in populations:
+            pop = p.population_list
+            for (i, _) in pop:
+                circuit = FileBasedCircuit(
+                    index=index,
+                    filename='',
+                    template=SEED_HARDWARE_FILEPATH,
+                    logger=self.__logger,
+                    directories=self.__directories,
+                    routing_type=self.__routing_type,
+                    accessed_columns=self.__accessed_columns
+                )
+                res[circuit] = [(p, i)]
+                index += 1
+
+        return res
 
 # TODO: to add in randomize_until modes, we need a way to get circuit fitness/measurements AT initialization time

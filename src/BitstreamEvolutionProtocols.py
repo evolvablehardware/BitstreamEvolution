@@ -106,8 +106,7 @@ class Circuit(Protocol):
         """
         ...
 
-I = TypeVar('I',bound='Individual')
-class Population(Generic[I]):
+class Population:
     """
     This is the Population object used to hold individuals and their fitnesses durring evolution. 
     It starts out with its full list of individuals, and optionally fitnesses.
@@ -118,7 +117,7 @@ class Population(Generic[I]):
     """
 
     # May want specific type variables.
-    def __init__(self,individuals: Iterable[I], fitnesses:Optional[Iterable[Fitness|None]]=None):
+    def __init__(self,individuals: Iterable[Individual], fitnesses:Optional[Iterable[Fitness|None]]=None):
         "Can raise ValueError if Individuals are not unique."
         ind = list(individuals)
 
@@ -128,10 +127,10 @@ class Population(Generic[I]):
         fit_list = list(fitnesses) if fitnesses is not None else [None]*len(ind)
         fit = fit_list if len(fit_list) == len(ind) else [None]*len(ind)
 
-        self.population_list:list[tuple[I,Optional[Fitness]]] = list(zip(ind,fit))
+        self.population_list:list[tuple[Individual,Optional[Fitness]]] = list(zip(ind,fit))
         # = [(Individual, Fitness), (Individual2, Fitness2), ...]
 
-    def __iter__(self)->Iterator[tuple[I,Optional[Fitness]]]:
+    def __iter__(self)->Iterator[tuple[Individual,Optional[Fitness]]]:
         # call iter() to get iterator, then next()
         # If wanted to be safe, return a copy that can't change
         return iter(self.population_list)
@@ -139,7 +138,7 @@ class Population(Generic[I]):
     def set_fitness_by_index(self,index:int,fitness:Fitness)->None:
         self.population_list[index] = (self.population_list[index][0],fitness)
 
-    def set_fitness(self, individual:I, fitness:Fitness)->None:
+    def set_fitness(self, individual:Individual, fitness:Fitness)->None:
         "This can return value error if provided individual is not in the population."
         for i,if_tup in enumerate(self.population_list):
             if if_tup[0] == individual:
@@ -165,11 +164,11 @@ class Population(Generic[I]):
 
 class CircuitFactory(Protocol):
     """
-    The most basic Function Protocol for Turning Individuals into Circuits in whatever way best fits your application.
+    The most basic class Protocol for turning Individuals into Circuits in whatever way best fits your application.
     How the circuit is built should be fully specified here, and any unique roles the individuals have should be specified here;
     however, how these individuals are selected and matched to roles is not.
     """
-    def __call__(self, population: Population,*populations:Population ,**kwds:Any) -> dict[Circuit,list[tuple[Population,Individual]]]:
+    def create(self, populations: list[Population]) -> dict[Circuit,list[tuple[Population,Individual]]]:
         """
         This takes the population of Individuals and constructs the necessary Circuit from it as requested.
         It returns the circuits as keys in a dictionary, where the associated values are 
@@ -180,7 +179,7 @@ class CircuitFactory(Protocol):
 
 class Reproducer(Protocol):
     "Gets a population and returns another population filled with the children of this generation. (reproduce + mutation)"
-    def __call__(self,population:Population[I])->Population[I]: ...
+    def __call__(self,population:Population)->Population: ...
 
 class GenerateInitialPopulation(Protocol):
     "Somehow gets you an initial implementation."

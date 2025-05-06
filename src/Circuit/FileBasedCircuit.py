@@ -20,13 +20,9 @@ class FileBasedCircuit(Circuit):
     Provides useful methods for working with hardware files
     """
 
-    def __init__(self, *, index: int, filename: str, template: Path, rand, logger: Logger, directories: Directories,
-                 mutation_prob: float, routing_type: str, accessed_columns: list[int]):
+    def __init__(self, *, index: int, filename: str, template: Path, logger: Logger, directories: Directories,
+                 routing_type: str, accessed_columns: list[int]):
         Circuit.__init__(self, index, filename, logger)
-
-        self.__rand = rand
-
-        self.__mutation_prob = mutation_prob
         self.__routing_type = routing_type
         self.__accessed_columns = accessed_columns
 
