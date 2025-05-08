@@ -97,7 +97,7 @@ class NoRandomizationStrategy:
         return individuals
 
 class FileBasedCircuitFactory:
-    def __init__(self, sz: int, logger: Logger, directories: Directories, routing_type: str, accessed_columns: list[int]):
+    def __init__(self, *, sz: int, logger: Logger, directories: Directories, routing_type: str, accessed_columns: list[int]):
         self.__logger = logger
         self.__directories = directories
         self.__routing_type = routing_type
@@ -127,7 +127,7 @@ class FileBasedCircuitFactory:
             pop = p.population_list
             for (individual, _) in pop:
                 circuit = self.__circuits[index]
-                bitstream: list[bool] = i.get_bitstream() # type: ignore
+                bitstream: list[bool] = individual.get_bitstream() # type: ignore
                 circuit.set_bitstream(bitstream)
                 res[circuit] = [(p, individual)]
                 index += 1
