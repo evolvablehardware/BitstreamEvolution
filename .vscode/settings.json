@@ -6,5 +6,10 @@
     "autoDocstring.guessTypes": true,
     "autoDocstring.includeName": false,
     "autoDocstring.logLevel": "Info",
-    "autoDocstring.quoteStyle": "\"\"\""
+    "autoDocstring.quoteStyle": "\"\"\"",
+    "python.testing.pytestArgs": [
+        "test"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }
