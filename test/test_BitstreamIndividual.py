@@ -5,7 +5,7 @@ from random import Random
 def test_randomize():
     rand = Mock(spec=Random)
     rand.randint.return_value = 0
-    individual = BitstreamIndividual(rand, 0.5)
+    individual = BitstreamIndividual(100, rand, 0.5)
     individual.set_bitstream([True] * 100)
     individual.randomize()
     bitstream = individual.get_bitstream()
@@ -14,7 +14,7 @@ def test_randomize():
 
 def test_mutate():
     rand = Mock(spec=Random)
-    individual = BitstreamIndividual(rand, 0.5)
+    individual = BitstreamIndividual(100, rand, 0.5)
     individual.set_bitstream([True] * 100)
     
     rand.uniform.return_value = 0
@@ -31,10 +31,10 @@ def test_mutate():
 
 def test_crossover():
     rand = Mock(spec=Random)
-    individual1 = BitstreamIndividual(rand, 0.5)
+    individual1 = BitstreamIndividual(100, rand, 0.5)
     individual1.set_bitstream([True] * 100)
 
-    individual2 = BitstreamIndividual(rand, 0.5)
+    individual2 = BitstreamIndividual(100, rand, 0.5)
     individual2.set_bitstream([False] * 100)
 
     individual1.crossover(individual2, 50)

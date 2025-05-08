@@ -135,6 +135,9 @@ class Population:
         # If wanted to be safe, return a copy that can't change
         return iter(self.population_list)
     
+    def __len__(self)->int:
+        return len(self.population_list)
+
     def set_fitness_by_index(self,index:int,fitness:Fitness)->None:
         self.population_list[index] = (self.population_list[index][0],fitness)
 

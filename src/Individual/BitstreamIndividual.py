@@ -1,8 +1,8 @@
 from random import Random
 
 class BitstreamIndividual:
-    def __init__(self, rand: Random, mutation_probability: float):
-        self.__bitstream: list[bool] = []
+    def __init__(self, bitstream_sz: int, rand: Random, mutation_probability: float):
+        self.__bitstream: list[bool] = [False] * bitstream_sz
         self.__rand = rand
         self.__mutation_probability = mutation_probability
 

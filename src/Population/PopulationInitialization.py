@@ -35,23 +35,23 @@ class GenerateSinglePopulationWrapper:
 
 class PostConstructionStrategy(Protocol):
     '''Consumes the incoming parameter'''
-    def run(self, ckt: BitstreamIndividual) -> BitstreamIndividual: ...
+    def run(self, individual: BitstreamIndividual) -> BitstreamIndividual: ...
 
 class RandomizationStrategy(Protocol):
     '''Consumes the incoming parameter'''
-    def randomize(self, circuits: list[BitstreamIndividual]) -> list[BitstreamIndividual]: ...
+    def randomize(self, individuals: list[BitstreamIndividual]) -> list[BitstreamIndividual]: ...
 
 class GenerateBitstreamPopulation:
     # force everything to be passed by keyword
-    def __init__(self, *, sz: int, directories: Directories,
+    def __init__(self, *, sz: int, bitstream_sz: int,
                  post_construction_strategy: PostConstructionStrategy,
                  randomization_strategy: RandomizationStrategy,
-                 mutation_prob: float):
+                 mutation_prob: float, rand: Random):
         self.__sz = sz
+        self.__bitstream_sz = bitstream_sz
         self.__post_construction_strategy = post_construction_strategy
         self.__randomization_strategy = randomization_strategy
-        self.__rand = Random()
-        self.__directories = directories
+        self.__rand = rand
 
         self.__mutation_prob = mutation_prob
         
@@ -66,7 +66,7 @@ class GenerateBitstreamPopulation:
         individuals = []
 
         for index in range(1, self.__sz + 1):
-            individual = BitstreamIndividual(self.__rand, self.__mutation_prob)
+            individual = BitstreamIndividual(self.__bitstream_sz, self.__rand, self.__mutation_prob)
             individual = self.__post_construction_strategy.run(individual)
 
             individuals.append(individual)
@@ -93,8 +93,8 @@ class RandomizeBitstreamPostConstructionStrategy:
         return individual
 
 class NoRandomizationStrategy:
-    def randomize(self, circuits: list[BitstreamIndividual]) -> list[BitstreamIndividual]:
-        return circuits
+    def randomize(self, individuals: list[BitstreamIndividual]) -> list[BitstreamIndividual]:
+        return individuals
 
 class FileBasedCircuitFactory:
     def __init__(self, sz: int, logger: Logger, directories: Directories, routing_type: str, accessed_columns: list[int]):
