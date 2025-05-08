@@ -86,67 +86,6 @@ class FileBasedCircuit(Circuit):
         #     run(cmd_str)
         #     sleep(1)
 
-    # def mutate(self):
-    #     def mutate_bit(bit, row, col, *rest):
-    #         if self.__mutation_prob >= self.__rand.uniform(0,1):
-    #             # Set this bit to either a 0 or 1 randomly
-    #             # Keep in mind that these are BYTES that we are modifying, not characters
-    #             # Therefore, we have to set it to either ASCII 0 (48) or ASCII 1 (49), not actual 0 or 1, which represent different characters
-    #             # and will corrupt the file if we mutate in this way
-    #             # 48 = 0, 49 = 1. To flip, just need to do (48+49) - the current value (48+49=97)
-    #             # This now always flips the bit instead of randomly assigning it every time
-    #             # Note: If prev != 48 or 49, then we changed the wrong value because it was not a 0 or 1 previously
-    #             self.__log_event(4, "Mutating:", self, "@(", row, ",", col, ") previous was", bit)
-    #             return 97 - bit
-    #     self.__run_at_each_modifiable(mutate_bit)
-
-    # def randomize_bitstream(self):
-    #     def randomize_bit(*rest):
-    #         return self.__rand.integers(48, 50)
-    #     self.__run_at_each_modifiable(randomize_bit)
-
-    # def crossover(self, parent, crossover_point: int):
-    #     """
-    #     Copy part of the hardware file from parent into this circuit's hardware file.
-    #     Additionally, need to copy the parent's info line
-
-    #     Parameters
-    #     ----------
-    #     parent : Circuit
-    #         The circuit file this circuit is being crossed with
-    #     crossover_point : int
-    #         The index in the editable bitstream this crossover is occouring at
-    #     """
-    #     # If crossover point is not an int, then we get a weird error about defining __index__
-    #     # further down; fix manually to avoid confusion
-    #     crossover_point = int(crossover_point)
-
-    #     parent_hw_file = parent.get_hardware_file()
-    #     # Need to keep track separately since we can have different-length comments
-    #     parent_tile = parent_hw_file.find(b".logic_tile")
-    #     my_tile = self._hardware_file.find(b".logic_tile")
-    #     while my_tile > 0:
-    #         my_pos = my_tile + len(".logic_tile")
-    #         parent_pos = parent_tile + len(".logic_tile")
-    #         if self.__tile_is_included(self._hardware_file, my_pos):
-    #             line_start = parent_hw_file.find(b"\n", parent_tile) + 1
-    #             line_end = parent_hw_file.find(b"\n", line_start + 1)
-    #             line_size = line_end - line_start + 1
-
-    #             my_pos = my_tile + line_size * (crossover_point - 1)
-    #             parent_pos = parent_tile + line_size * (crossover_point - 1)
-
-    #             data = parent_hw_file[parent_pos:parent_pos + line_size]
-    #             self.update_hardware_file(my_pos, line_size, data)
-
-    #         parent_tile = parent_hw_file.find(b".logic_tile", parent_tile + 1)
-    #         my_tile = self._hardware_file.find(b".logic_tile", my_tile + 1)
-        
-    #     # Need to set our source population to our parent's
-    #     src_pop = parent.get_file_attribute("src_population")
-    #     if src_pop != None:
-    #         self.set_file_attribute("src_population", src_pop)
-
     def __run_at_each_modifiable(self, lambda_func, hardware_file = None, accessible_columns = None,
         routing_type=None):
         """
@@ -295,9 +234,6 @@ class FileBasedCircuit(Circuit):
 
         return is_x_valid and is_y_valid
 
-    def get_hardware_file(self):
-        return self._hardware_file
-
     def get_bitstream(self) -> list[bool]:
         bitstream: list[bool] = []
         def add_bit(bit: int, *rest):
@@ -319,29 +255,6 @@ class FileBasedCircuit(Circuit):
             else:
                 return 48
         self.__run_at_each_modifiable(get_bit)
-
-    def get_hardware_file_path(self):
-        return self.__hardware_filepath
-
-    def update_hardware_file(self, pos, length, data):
-        """
-        Make changes to the hardware file associated with this circuit, updating it
-        with the value in "data"
-
-        .. warning::
-            Pre-existing: Add error checking here
-        
-        
-        Parameters
-        ----------
-        pos : int
-            The position in the hardware file to write data at
-        length : int
-            The length of the data to write
-        data : ReadableBuffer
-            The data to write into the hardware file
-        """
-        self._hardware_file[pos:pos + length] = data
 
     @staticmethod
     def get_file_attribute_st(mmapped_file, attribute):

@@ -193,7 +193,7 @@ class MeasurementNotTaken(MeasurementError):
 class DataRequest(Enum):
     NONE = auto()
 
-class Measurement(ABC):
+class Measurement:
     "All measurement data, this could even be a class potentially"
     # FPGA_request:str
     # data_request:Enum
@@ -220,8 +220,6 @@ class Measurement(ABC):
             self.result = Err(result)
         else:
             self.result = Ok(result)
-
-        
 
 class EvaluatePopulationFitness(Protocol):
     "Fully Evaluates a Population, the fitnesses in the population are fully specified. The populations involved will be edited in place. Any populations not provided will not be edited."

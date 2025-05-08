@@ -63,12 +63,6 @@ class GenerateBitstreamPopulation:
         3. Handles randomization until condition in config is met.
         """
 
-        # Wipe the current folder, so if we go from 100 circuits in one experiment to 50 in the next,
-        # we don't still have 100 (with 50 that we use and 50 residual ones)
-        wipe_folder(self.__directories.asc_dir)
-        wipe_folder(self.__directories.bin_dir)
-        wipe_folder(self.__directories.data_dir)
-
         individuals = []
 
         for index in range(1, self.__sz + 1):
@@ -98,7 +92,11 @@ class RandomizeBitstreamPostConstructionStrategy:
         individual.randomize()
         return individual
 
-class IntrinsicCircuitFactory:
+class NoRandomizationStrategy:
+    def randomize(self, circuits: list[BitstreamIndividual]) -> list[BitstreamIndividual]:
+        return circuits
+
+class FileBasedCircuitFactory:
     def __init__(self, sz: int, logger: Logger, directories: Directories, routing_type: str, accessed_columns: list[int]):
         self.__logger = logger
         self.__directories = directories

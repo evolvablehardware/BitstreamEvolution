@@ -2,7 +2,7 @@ from random import Random
 
 class BitstreamIndividual:
     def __init__(self, rand: Random, mutation_probability: float):
-        self.__bitstream = []
+        self.__bitstream: list[bool] = []
         self.__rand = rand
         self.__mutation_probability = mutation_probability
 
