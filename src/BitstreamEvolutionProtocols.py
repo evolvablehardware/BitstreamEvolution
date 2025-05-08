@@ -194,21 +194,22 @@ class MeasurementNotTaken(MeasurementError):
 class DataRequest(Enum):
     NONE = auto()
 
-class Measurement(ABC):
+C = TypeVar("C",'Circuit')
+class Measurement(ABC, Generic[C]):
     "All measurement data, this could even be a class potentially"
     # FPGA_request:str
     # data_request:Enum
     # circuit:Circuit
     # FPGA_used:Optional[str]
     # result = Result[Any,Exception] 
-    def __init__(self, FPGA_request:str, data_request:DataRequest,circuit_to_measure:Circuit)->None:
+    def __init__(self, FPGA_request:str, data_request:DataRequest,circuit_to_measure:C)->None:
         """
         TODO::
           Figure out the format for an FPGA Request, potentially also changing the type, and adjust that here.
         """
         self.FPGA_request:str = FPGA_request #may want to refine typing here
         self.data_request:Enum = data_request
-        self.circuit:Circuit = circuit_to_measure
+        self.circuit:C = circuit_to_measure
         self.FPGA_used:Optional[str] = None
         self.result: Result[Any,Exception] = Err(MeasurementNotTaken("Initialized Measurement option has not yet been measured."))
                       # The Any should be the measurement data, which we may want to standardize at some point
