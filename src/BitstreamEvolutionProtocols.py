@@ -182,7 +182,7 @@ class CircuitFactory(Protocol):
 
 class Reproducer(Protocol):
     "Gets a population and returns another population filled with the children of this generation. (reproduce + mutation)"
-    def __call__(self,population:Population)->Population: ...
+    def reproduce(self,population:Population)->Population: ...
 
 class GenerateInitialPopulation(Protocol):
     "Somehow gets you an initial implementation."
