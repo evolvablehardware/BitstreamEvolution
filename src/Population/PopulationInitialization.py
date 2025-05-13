@@ -15,11 +15,11 @@ SEED_HARDWARE_FILEPATH = Path("data/seed-hardware.asc")
 
 class GenerateInitialPopulations(Protocol):
     "Somehow gets you an initial implementation."
-    def generate(self) -> list[Population]: ...
+    def __call__(self) -> list[Population]: ...
 
 class GenerateInitialPopulation(Protocol):
     "The special case of GenerateInitialPopulations that constructs only a single population"
-    def generate(self) -> Population: ...
+    def __call__(self) -> Population: ...
 
 class GenerateSinglePopulationWrapper:
     """
@@ -31,7 +31,7 @@ class GenerateSinglePopulationWrapper:
     def __init__(self, gen_func: GenerateInitialPopulation):
         self.__gen_func = gen_func
     def generate(self) -> list[Population]:
-        return [self.__gen_func.generate()]
+        return [self.__gen_func()]
 
 class PostConstructionStrategy(Protocol):
     '''Consumes the incoming parameter'''

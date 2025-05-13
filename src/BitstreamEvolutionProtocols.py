@@ -167,11 +167,11 @@ class Population:
 
 class CircuitFactory(Protocol):
     """
-    The most basic class Protocol for turning Individuals into Circuits in whatever way best fits your application.
+    The most basic Protocol for turning Individuals into Circuits in whatever way best fits your application.
     How the circuit is built should be fully specified here, and any unique roles the individuals have should be specified here;
     however, how these individuals are selected and matched to roles is not.
     """
-    def create(self, populations: list[Population]) -> dict[Circuit,list[tuple[Population,Individual]]]:
+    def __call__(self, populations: list[Population]) -> dict[Circuit,list[tuple[Population,Individual]]]:
         """
         This takes the population of Individuals and constructs the necessary Circuit from it as requested.
         It returns the circuits as keys in a dictionary, where the associated values are 
@@ -182,7 +182,7 @@ class CircuitFactory(Protocol):
 
 class Reproducer(Protocol):
     "Gets a population and returns another population filled with the children of this generation. (reproduce + mutation)"
-    def reproduce(self,population:Population)->Population: ...
+    def __call__(self,population:Population)->Population: ...
 
 class GenerateInitialPopulation(Protocol):
     "Somehow gets you an initial implementation."

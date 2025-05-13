@@ -32,7 +32,7 @@ class Evolution:
         '''
         Runs the desired experiment, based on the protocols provided
         '''
-        populations = self.__gen_init_populations.generate()
+        populations = self.__gen_init_populations()
         gen_data = self.__gen_data_factory(None)
         while gen_data is not None:
             measurements = self.__generate_measurements(self.__circuit_factory, populations)
