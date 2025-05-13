@@ -195,6 +195,8 @@ class MeasurementNotTaken(MeasurementError):
 
 class DataRequest(Enum):
     NONE = auto()
+    WAVEFORM = auto()
+    OSCILLATIONS = auto()
 
 class Measurement:
     "All measurement data, this could even be a class potentially"
