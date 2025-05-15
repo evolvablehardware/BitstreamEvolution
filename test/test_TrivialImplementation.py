@@ -18,7 +18,7 @@ def FPGA_compilation_data()->Generator[FPGA_Compilation_Data,None,None]:
     #Do Cleanup
 
 def Generate_Population_From_Iterable(inherent_fitnesses:Iterable[int],
-                                      fitnesses_discovered:bool)->Population[TrivialCircuit]:
+                                      fitnesses_discovered:bool)->Population:
     """
     Returns a population of circuits with the inherent_fitnesses specified, 
     which is also stored in the population if fitness_discovered==true."
@@ -67,7 +67,7 @@ def test_TrivialCircuitFatory_ReturnsTheIndividualAsACircuit():
 
 @pytest.mark.parametrize("size", [1,2,3,6,10,100,1000])
 def test_TrivialGenerateInitialPopulation_ReturnsCorrectlySizedPopulation(size):
-    population:Population[TrivialCircuit] = TrivialGenerateInitialPopulation(
+    population:Population = TrivialGenerateInitialPopulation(
         population_size= size,
         random= Random(),
         min_fitness= 0,
@@ -286,7 +286,7 @@ class Population_Initializer:
         self.min_fitness = min_fitness
         self.max_fitness = max_fitness
     
-    def GenerateInitialPopulation(self)->Population[TrivialCircuit]:
+    def GenerateInitialPopulation(self)->Population:
         return TrivialGenerateInitialPopulation(
             population_size         = self.population_size,
             random                  = self.random,

@@ -36,7 +36,7 @@ class TrivialCircuit:
         return Ok("no/compilation/used/../../..")
 
 
-def TrivialCircuitFactory(population: Population[TrivialCircuit]) -> dict[Circuit,list[tuple[Population,Individual]]]:
+def TrivialCircuitFactory(population: Population) -> dict[Circuit,list[tuple[Population,Individual]]]:
     # they are the same thing for this implementation
     output: dict[Circuit,list[tuple[Population,Individual]]] = dict()
     for individual,fitness in population:
@@ -47,7 +47,7 @@ def TrivialCircuitFactory(population: Population[TrivialCircuit]) -> dict[Circui
 
 
 ## --------------------------------------------- Generate & Reproduce Populations --------------------------------------------------
-def TrivialReproduceWithMutation (population: Population[TrivialCircuit],random: random.Random) -> Population[TrivialCircuit]:
+def TrivialReproduceWithMutation (population: Population,random: random.Random) -> Population:
     """
     Returns a population where all of the top half of the circuits are included, unchanged, 
         and each will get a child that is mutated randomly, being incremented or decremented.
@@ -73,7 +73,7 @@ def TrivialReproduceWithMutation (population: Population[TrivialCircuit],random:
 
 
 def TrivialGenerateInitialPopulation(population_size:int, 
-                                     random: random.Random, min_fitness:int, max_fitness:int) -> Population[TrivialCircuit]:
+                                     random: random.Random, min_fitness:int, max_fitness:int) -> Population:
     """
     Generates a a list of two populations which have fitnesses numbered from
     zero and population_size sorted in descending order
@@ -141,7 +141,7 @@ def TrivialEvaluatePopulationFitness(population:Population,measurement_dependant
 
 ## ------------------------------------ Trivial Evolution Object -----------------------------------------
 
-def FakeMeasuringFitnessTrivialImplemention(unevaluated_population: Population[TrivialCircuit])->Population[TrivialCircuit]:
+def FakeMeasuringFitnessTrivialImplemention(unevaluated_population: Population)->Population:
     """This is a function that prevents me from having to use async & hardware while testing out TrivialEvolution. 
     This returns the same population, it just evaluates it."""
     
