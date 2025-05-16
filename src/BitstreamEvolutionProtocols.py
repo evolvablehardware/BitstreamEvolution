@@ -97,7 +97,7 @@ class Circuit(Protocol):
     It will if the Individual represents a circuit in its entirety.
     It will not if you are simultaniously evolving multiple sub-sections that need to be combined to make the circuit to be evaluated.
     """
-    def compile(self, fpga: FPGA_Compilation_Data, working_dir:Path) -> Result[Path,Exception]:
+    def compile(self, fpga: FPGA_Compilation_Data) -> Result[None,Exception]:
         """
         This looks at the fpga and compiles the circuit for it if it can. 
         If it can it does all of its work in the working_dir and returns with Ok(Path) for the path to the file/directory containing this data.
@@ -199,7 +199,7 @@ class DataRequest(Enum):
     OSCILLATIONS = auto()
 
 C = TypeVar("C",bound=Circuit) #circuit type used
-M = TypeVar("M", Any) # type of measurement taken
+M = TypeVar("M", bound=Any) # type of measurement taken
 class Measurement(Generic[C,M]):
     "All measurement data, this could even be a class potentially"
     # FPGA_request:str

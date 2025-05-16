@@ -24,7 +24,7 @@ class Circuit(ABC):
         self._logger = logger
 
     @abstractmethod
-    def compile(self, fpga: FPGA_Compilation_Data, working_dir:Path) -> Result[Path,Exception]:
+    def compile(self, fpga: FPGA_Compilation_Data) -> Result[None,Exception]:
         """
         Performs the upload function of this Circuit. Prerequisite to collecting data
         """

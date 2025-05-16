@@ -54,12 +54,11 @@ class FileBasedCircuit(Circuit):
     def copy_from(self, other):
         copyfile(other._hardware_filepath, self.__hardware_filepath)
 
-    def compile(self, fpga: FPGA_Compilation_Data, working_dir: Path) -> Result[Path,Exception]:
+    def compile(self, fpga: FPGA_Compilation_Data) -> Result[None,Exception]:
         """
         Compiles and uploads the compiled circuit and runs it on the FPGA
         """
 
-        # TODO: change to use working_dir parameter rather than using construction parameter for path
         self.__compile()
         
         cmd_str = [
@@ -72,7 +71,7 @@ class FileBasedCircuit(Circuit):
         run(cmd_str)
         sleep(1)
 
-        return Ok(self.__bitstream_filepath)
+        return Ok(None)
 
         # if switching fpgas every sample, need to upload to the second fpga also
         # if self._config.get_transfer_sample():
