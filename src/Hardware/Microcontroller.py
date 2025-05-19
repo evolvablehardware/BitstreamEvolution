@@ -9,7 +9,7 @@ from result import Ok, Err # type: ignore
 class MicrocontrollerConfig:
     usb_path: str
     serial_baud: int
-    read_timeout: int
+    read_timeout: float
 
 class Microcontroller:
     def __init__(self, fpga: str, logger: Logger, config: MicrocontrollerConfig):
