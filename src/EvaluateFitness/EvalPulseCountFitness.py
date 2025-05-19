@@ -9,6 +9,12 @@ class EvalPulseCountFitness:
         self.__target = target
         self.__plot_data_recorder = plot_data_recorder
 
+    def start_eval(self):
+        pass
+
+    def end_eval(self):
+        pass
+
     def calculate_success(self, data: list[int], index: int, src_pop: str) -> float:
         # List is of pulse count measurements
         # Currently, return the min fitness
@@ -24,7 +30,7 @@ class EvalPulseCountFitness:
 
         return fit
     
-    def calculate_err(self, err: Exception, index: int, src_pop: str) -> float:
+    def calculate_error(self, err: Exception, index: int, src_pop: str) -> float:
         self.__plot_data_recorder.record_all_live_data(index, -1, src_pop)
         return 0
     

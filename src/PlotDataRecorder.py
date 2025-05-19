@@ -36,6 +36,11 @@ class PlotDataRecorder:
         with open("workspace/violinlivedata.log", "a") as live_file:
             live_file.write(("{}:{}\n").format(current_epoch, ",".join(fit_strs)))
 
+    def record_waveform_heatmap(self, current_epoch: int, best_waveform: list[int]):
+        best_waveform_str = list(map(lambda x: str(x), best_waveform))
+        with open("workspace/heatmaplivedata.log", "a") as live_file2:
+            live_file2.write(("{}:{}\n").format(current_epoch, ",".join(best_waveform_str)))
+
     def record_all_live_data(self, index: int, reported_value: float, src_population: str):
         # Read in the file contents first
         lines = []

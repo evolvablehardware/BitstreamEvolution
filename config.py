@@ -101,12 +101,13 @@ evolution = Evolution(
         rand=rand
     ).generate
     ).generate,
-    eval_population_fitness=EvaluateFitness(evaluation.calculate_success, evaluation.calculate_err).evaluate,
+    eval_population_fitness=EvaluateFitness(evaluation).evaluate,
     generate_measurements=SimpleGenerateMeasurements(fpga, data_request).generate,
     hardware=Microcontroller(
         fpga=fpga,
         logger=logger,
         config=mcu_config
-    )
+    ),
+    plot_data_recorder=plot_data_recorder
 )
 
