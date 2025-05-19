@@ -37,7 +37,7 @@ def test_TrivialCircuit_SetsInherentFitness():
 
 #This test uses the fixture seen above
 def test_TrivialCircuit_ImplementsCompile(FPGA_compilation_data:FPGA_Compilation_Data):
-    output = TrivialCircuit(23).compile(FPGA_compilation_data, Path("random", "dir"))
+    output = TrivialCircuit(23).compile(FPGA_compilation_data)
     match output:
         case Ok(filepath):
             pass #don't care what this is

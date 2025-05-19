@@ -10,8 +10,6 @@ from shutil import copytree
 from shutil import rmtree
 from datetime import datetime
 
-from src_old.PlotEvolutionLive import FRAME_INTERVAL
-
 # The window dimensions
 LINE_WIDTH = 112
 WIN_DIM="105x29"
