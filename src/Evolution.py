@@ -1,5 +1,6 @@
 
-from BitstreamEvolutionProtocols import CircuitFactory, EvaluatePopulationFitness, GenDataFactory, GenerateMeasurements, Hardware, Reproducer
+from BitstreamEvolutionProtocols import CircuitFactory, EvaluatePopulationFitness, GenDataFactory, GenerateMeasurements, Hardware, Population, Reproducer
+from PlotDataRecorder import PlotDataRecorder
 from Population.PopulationInitialization import GenerateInitialPopulations
 
 import asyncio
@@ -15,7 +16,7 @@ class Evolution:
 
     def __init__(self, gen_data_factory: GenDataFactory, circuit_factory: CircuitFactory, reproduce: Reproducer, 
                  gen_init_populations: GenerateInitialPopulations, eval_population_fitness: EvaluatePopulationFitness,
-                 generate_measurements: GenerateMeasurements, hardware: Hardware):
+                 generate_measurements: GenerateMeasurements, hardware: Hardware, plot_data_recorder: PlotDataRecorder):
         '''
         Initializes the Evolution object with all of the protocols.
         Does not execute any protocols
@@ -27,12 +28,13 @@ class Evolution:
         self.__eval_population_fitness = eval_population_fitness
         self.__generate_measurements = generate_measurements
         self.__hardware = hardware
+        self.__plot_data_recorder = plot_data_recorder
 
     def run(self):
         '''
         Runs the desired experiment, based on the protocols provided
         '''
-        populations = self.__gen_init_populations()
+        populations: list[Population] = self.__gen_init_populations()
         gen_data = self.__gen_data_factory(None)
         while gen_data is not None:
             measurements = self.__generate_measurements(self.__circuit_factory, populations)
@@ -43,4 +45,12 @@ class Evolution:
             for p in populations:
                 self.__eval_population_fitness(p, results)
             populations = list(map(lambda p: self.__reproduce(p), populations))
+
+            fits: list[float] = []
+            for p in populations:
+                for (i, f) in p:
+                    fits.append(f) # type: ignore
+            # TODO: calculate diversity
+            self.__plot_data_recorder.record_generation(fits, gen_data.generation_number, 0)
+
             gen_data = self.__gen_data_factory(gen_data)

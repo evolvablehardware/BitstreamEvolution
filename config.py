@@ -12,6 +12,7 @@ from Evolution import Evolution
 from GenerateMeasurements.GenerateMeasurements import SimpleGenerateMeasurements
 from Hardware.Microcontroller import Microcontroller, MicrocontrollerConfig
 from Logger import Logger, LoggerConfig
+from PlotDataRecorder import PlotDataRecorder
 from Population.PopulationInitialization import FileBasedCircuitFactory, GenerateBitstreamPopulation, GenerateSinglePopulationWrapper, NoPostConstructionStrategy, NoRandomizationStrategy
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -30,8 +31,10 @@ randomization_strategy = NoRandomizationStrategy()
 mutation_prob = 0.0021
 crossover_prob = 0.7
 
+plot_data_recorder = PlotDataRecorder()
+
 data_request = DataRequest.WAVEFORM
-evaluation = EvalVarMaxFitness()
+evaluation = EvalVarMaxFitness(plot_data_recorder)
 
 log_file = Path('workspace', 'log')
 log_level = 0
