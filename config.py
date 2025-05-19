@@ -12,6 +12,7 @@ from Evolution import Evolution
 from GenerateMeasurements.GenerateMeasurements import SimpleGenerateMeasurements
 from Hardware.Microcontroller import Microcontroller, MicrocontrollerConfig
 from Logger import Logger, LoggerConfig
+from PlotConfig import save_plot_config
 from PlotDataRecorder import PlotDataRecorder
 from Population.PopulationInitialization import FileBasedCircuitFactory, GenerateBitstreamPopulation, GenerateSinglePopulationWrapper, NoPostConstructionStrategy, NoRandomizationStrategy
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -55,6 +56,17 @@ bin_dir=Path('workspace', 'experiment_bin')
 data_dir=Path('workspace', 'experiment_data')
 
 ########################################################
+
+save_plot_config(Path('workspace', 'plot_config.ini'), 
+                 pop_sz=population_size,
+                 is_pulse_count=False,
+                 is_td=False,
+                 desired_freq=0,
+                 transfer_interfal=0,
+                 diversity_measure='HAMMING_DIST',
+                 save_plots=True,
+                 plots_dir=str(plots_dir),
+                 uses_init_existing_population=False)
 
 logger_config = LoggerConfig(
     plots_dir=plots_dir,

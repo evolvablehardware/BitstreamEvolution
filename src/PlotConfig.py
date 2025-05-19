@@ -36,3 +36,18 @@ class PlotConfig:
     
     def uses_init_existing_population(self) -> bool:
         return self.__config_parser.getboolean('BASE', 'existing_population')
+    
+def save_plot_config(file_path: Path, *, pop_sz: int, is_pulse_count: bool, is_td: bool, desired_freq: int, 
+                transfer_interfal: int, diversity_measure: str, save_plots: bool,
+                plots_dir: str, uses_init_existing_population: bool) -> None:
+    with open(file_path, 'w') as f:
+        f.write('[BASE]\n')
+        f.write(f'population_size={pop_sz}\n')
+        f.write(f'is_pulse_count={is_pulse_count}\n')
+        f.write(f'is_tone_discriminator={is_td}\n')
+        f.write(f'desired_frequency={desired_freq}\n')
+        f.write(f'transfer_interval={transfer_interfal}\n')
+        f.write(f'diversity_measure={diversity_measure}\n')
+        f.write(f'save_plots={save_plots}\n')
+        f.write(f'plots_dir={plots_dir}\n')
+        f.write(f'existing_population={uses_init_existing_population}\n')
