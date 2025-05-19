@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+from pathlib import Path
 from sys import stdout
 from datetime import datetime
 from subprocess import CalledProcessError, run
@@ -7,6 +9,8 @@ from os import mkdir
 from shutil import copytree
 from shutil import rmtree
 from datetime import datetime
+
+from src_old.PlotEvolutionLive import FRAME_INTERVAL
 
 # The window dimensions
 LINE_WIDTH = 112
@@ -36,38 +40,19 @@ UNDERLINE = '\033[4m'
 
 README_FILE_HEADER = "FPGA/MCU [1] \n"
 
+@dataclass
+class LoggerConfig:
+    plots_dir: Path
+    launch_plots: bool
+    is_sensitivity: bool
+    frame_interval: int
+    log_file: Path
+    log_level: int
+    save_log: bool
+    datetime_format: str
+
 # TODO Utilize Python logging library
 class Logger:
-    def __init_analysis(self):
-        # Make a directory to store data
-        analysis = self.__config.get_analysis_directory()
-        datetime_format = self.__config.get_datetime_format()
-        current_time = str(datetime.now().strftime(datetime_format))
-        current_time = current_time.replace('/', '-')
-        self.__analysis_dir = analysis.joinpath(current_time)
-
-        self.__analysis_a_dir = self.__analysis_dir.joinpath("asc/")
-        self.__analysis_l_dir = self.__analysis_dir.joinpath("log/")
-        self.__analysis_b_dir = self.__analysis_dir.joinpath("best/")
-        self.__analysis_bh_dir = self.__analysis_dir.joinpath("best/html/")
-        self.__analysis_ba_dir = self.__analysis_dir.joinpath("best/asc/")
-        self.__analysis_bl_dir = self.__analysis_dir.joinpath("best/log/")
-
-        if not self.__analysis_dir.exists():
-            self.__analysis_dir.mkdir()
-            self.__analysis_a_dir.mkdir()
-            self.__analysis_l_dir.mkdir()
-            self.__analysis_b_dir.mkdir()
-            self.__analysis_bh_dir.mkdir()
-            self.__analysis_ba_dir.mkdir()
-            self.__analysis_bl_dir.mkdir()
-
-        # Put the readme in the Analysis folder
-        readme_file = open(self.__analysis_dir.joinpath("README.txt"), "w")
-        readme_file.write(README_FILE_HEADER)
-        readme_file.write(str(self.__experiment_explanation))
-        readme_file.close()
-
     def __init_monitor(self):
         # Start the monitor
         # self.log_event(1, "Creating the monitor file...")
@@ -81,7 +66,7 @@ class Logger:
         # self.log_monitor(1, ".\n" * 23)
         self.log_monitor("", str(self.__experiment_explanation))
         self.log_monitor("", "{}".format(DOUBLE_HLINE))
-        self.log_monitor("", self.__config.get_raw_data())
+        # self.log_monitor("", self.__config.get_raw_data())
         self.log_monitor("", "{}".format(DOUBLE_HLINE))
         self.__monitor_file.flush()
 
@@ -94,7 +79,7 @@ class Logger:
         #     self.log_error(1, "An error occured in Monitor.py")
 
         #set up directory for saving files
-        plots_dir = self.__config.get_plots_directory()
+        plots_dir = self.__config.plots_dir
         try:
             rmtree(plots_dir)
         except OSError as error:
@@ -103,11 +88,11 @@ class Logger:
         if not plots_dir.exists():
             plots_dir.mkdir()
 
-        if self.__config.get_launch_plots():
-            if (self.__config.get_simulation_mode() == 'INTRINSIC_SENSITIVITY'):
+        if self.__config.launch_plots:
+            if self.__config.is_sensitivity:
                 args = TERM_CMD + ["python3", "src/PlotSensitivityLive.py"]
             else: 
-                args = TERM_CMD + ["python3", "src/PlotEvolutionLive.py", "--frame-interval", str(self.__config.get_frame_interval())]
+                args = TERM_CMD + ["python3", "src/PlotEvolutionLive.py", "--frame-interval", str(self.__config.frame_interval)]
             
             try:
                 run(args, check=True, capture_output=True)
@@ -117,11 +102,10 @@ class Logger:
                 self.log_error(1, "An error occured in PlotEvolutionLive.py")
                 self.log_error(1, e)
 
-    def __init__(self, config, explanation):
-        self.__config = config
-        self.__config.add_logger(self)
-        self.__monitor_file = open(config.get_log_file(), "w")
+    def __init__(self, explanation: str, logger_config: LoggerConfig):
+        self.__monitor_file = open(logger_config.log_file, "w")
         self.__log_file = stdout
+        self.__config = logger_config
         self.__experiment_explanation = explanation
 
         # Ensure the logs exists and have been cleared. Not happy with
@@ -182,38 +166,37 @@ class Logger:
         self.log_event(2, DOUBLE_HLINE)
 
     def log_monitor(self, prefix,  *msg):
-        if self.__config.get_save_log():
+        if self.__config.save_log:
             now = datetime.now()
             print(now, prefix, *msg, file=self.__monitor_file)
 
     def log_event(self, level, *msg):
-        if self.__config.get_log_level() >= level:
+        if self.__config.log_level >= level:
             print(*msg, file=self.__log_file)
             self.log_monitor("", *msg)
 
     def log_info(self, level, *msg):
-        if self.__config.get_log_level() >= level:
+        if self.__config.log_level >= level:
             print("INFO: ", OKBLUE, *msg, ENDC, file=self.__log_file)
             self.log_monitor("INFO: ", *msg)
 
     def log_warning(self, level, *msg):
-        if self.__config.get_log_level() >= level:
+        if self.__config.log_level >= level:
             print("WARNING: ", WARNING, *msg, ENDC, file=self.__log_file)
             self.log_monitor("WARNING: ", *msg)
 
     def log_error(self, level, *msg):
-        if self.__config.get_log_level() >= level:
+        if self.__config.log_level >= level:
             print("ERROR: ", FAIL, *msg, ENDC, file=self.__log_file)
             self.log_monitor("ERROR: ", *msg)
 
     def log_critical(self, level, *msg):
-        if self.__config.get_log_level() >= level:
+        if self.__config.log_level >= level:
             print("CRITICAL: ", FAIL, *msg, ENDC, file=self.__log_file)
             self.log_monitor("CRITICAL: ", *msg)
 
     def save_workspace(self, directory):
         self.__monitor_file.close()
-        datetime_format = self.__config.get_datetime_format()
-        current_time = str(datetime.now().strftime(datetime_format))
+        current_time = str(datetime.now().strftime(self.__config.datetime_format))
         current_time = current_time.replace('/', '-')
         copytree("./workspace", join(directory, current_time))

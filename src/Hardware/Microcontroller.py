@@ -1,17 +1,15 @@
+from dataclasses import dataclass
 from time import time
 from serial import Serial
 from BitstreamEvolutionProtocols import Circuit, DataRequest, FPGA_Compilation_Data, FPGA_Model, Measurement
 from Logger import Logger
 from result import Ok, Err # type: ignore
 
+@dataclass
 class MicrocontrollerConfig:
     usb_path: str
     serial_baud: int
     read_timeout: int
-    def __init__(self, usb_path: str, serial_baud: int, read_timeout: int):
-        self.usb_path = usb_path
-        self.serial_baud = serial_baud
-        self.read_timeout = read_timeout
 
 class Microcontroller:
     def __init__(self, fpga: str, logger: Logger, config: MicrocontrollerConfig):
