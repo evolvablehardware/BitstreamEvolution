@@ -31,9 +31,11 @@ post_construction_strategy = NoPostConstructionStrategy()
 randomization_strategy = NoRandomizationStrategy()
 mutation_prob = 0.0021
 crossover_prob = 0.7
+uses_init_existing_population = False
 
 plot_data_recorder = PlotDataRecorder()
 
+desired_frequency = 0
 data_request = DataRequest.WAVEFORM
 evaluation = EvalVarMaxFitness(plot_data_recorder)
 
@@ -43,6 +45,7 @@ save_log = False
 
 plots_dir = Path('workspace', 'plots')
 launch_plots = True
+save_plots = True
 frame_interval = 100
 
 usb_path = '/dev/ttyUSB0'
@@ -55,18 +58,24 @@ asc_dir=Path('workspace', 'experiment_asc')
 bin_dir=Path('workspace', 'experiment_bin')
 data_dir=Path('workspace', 'experiment_data')
 
+is_pulse_count = False
+is_tone_discriminator = False
+
+transfer_interval = 0
+diversity_measure = 'HAMMING_DIST'
+
 ########################################################
 
 save_plot_config(Path('workspace', 'plot_config.ini'), 
                  pop_sz=population_size,
-                 is_pulse_count=False,
-                 is_td=False,
-                 desired_freq=0,
-                 transfer_interfal=0,
-                 diversity_measure='HAMMING_DIST',
-                 save_plots=True,
+                 is_pulse_count=is_pulse_count,
+                 is_td=is_tone_discriminator,
+                 desired_freq=desired_frequency,
+                 transfer_interval=transfer_interval,
+                 diversity_measure=diversity_measure,
+                 save_plots=save_plots,
                  plots_dir=str(plots_dir),
-                 uses_init_existing_population=False)
+                 uses_init_existing_population=uses_init_existing_population)
 
 logger_config = LoggerConfig(
     plots_dir=plots_dir,
