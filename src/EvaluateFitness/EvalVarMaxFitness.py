@@ -8,7 +8,7 @@ class EvalVarMaxFitness:
     def __init__(self, plot_data_recorder: PlotDataRecorder):
         self.__plot_data_recorder = plot_data_recorder
 
-    def calculate_success(self, data: list[int]) -> float:
+    def calculate_success(self, data: list[int], index: int, src_pop: str) -> float:
         waveform = data
         variance_sum = 0
         total_samples = 500
@@ -28,8 +28,10 @@ class EvalVarMaxFitness:
         fitness = variance_sum / total_samples
 
         self.__plot_data_recorder.record_waveform(waveform)
+        self.__plot_data_recorder.record_all_live_data(index, fitness, src_pop)
 
         return fitness
     
-    def calculate_err(self, err: Exception) -> float:
+    def calculate_err(self, err: Exception, index: int, src_pop: str) -> float:
+        self.__plot_data_recorder.record_all_live_data(index, 0, src_pop)
         return 0

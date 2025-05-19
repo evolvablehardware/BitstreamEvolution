@@ -35,3 +35,24 @@ class PlotDataRecorder:
         fit_strs = list(map(lambda x: str(x), fits))
         with open("workspace/violinlivedata.log", "a") as live_file:
             live_file.write(("{}:{}\n").format(current_epoch, ",".join(fit_strs)))
+
+    def record_all_live_data(self, index: int, reported_value: float, src_population: str):
+        # Read in the file contents first
+        lines = []
+        with open("workspace/alllivedata.log", "r") as allLive:
+            lines = allLive.readlines()
+
+        # Modify the content internally
+        if len(lines) <= index:
+            for i in range(index - len(lines) + 1):
+                lines.append("\n")
+
+        lines[index] = "{},{},{}\n".format(
+            str(index),
+            str(reported_value),
+            src_population
+        )
+
+        # Write these new lines to the file
+        with open("workspace/alllivedata.log", "w+") as allLive:
+            allLive.writelines(lines)

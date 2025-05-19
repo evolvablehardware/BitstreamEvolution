@@ -1,20 +1,31 @@
 # For use with EvaluateFitness: 
 # eval_oscillator = EvalPulseCountFitness()
 # EvaluateFitness(eval_oscillator.calculate_success, eval_oscillator.calculate_err)
-class EvalPulseCountFitness:
-    def __init__(self, target: int):
-        self.__target = target
+from PlotDataRecorder import PlotDataRecorder
 
-    def calculate_success(self, data: list[int]) -> float:
+
+class EvalPulseCountFitness:
+    def __init__(self, target: int, plot_data_recorder: PlotDataRecorder):
+        self.__target = target
+        self.__plot_data_recorder = plot_data_recorder
+
+    def calculate_success(self, data: list[int], index: int, src_pop: str) -> float:
         # List is of pulse count measurements
-        # Currently, return the average fitness
-        acc = 0
+        # Currently, return the min fitness
+        acc: list[float] = []
         for p in data:
-            acc += self.__calculate_individual(p)
-        fit = acc / len(data)
+            acc.append(self.__calculate_individual(p))
+        fit = min(acc)
+
+        min_idx = acc.index(fit)
+        pulses_at_min = data[min_idx]
+
+        self.__plot_data_recorder.record_all_live_data(index, pulses_at_min, src_pop)
+
         return fit
     
-    def calculate_err(self, err: Exception) -> float:
+    def calculate_err(self, err: Exception, index: int, src_pop: str) -> float:
+        self.__plot_data_recorder.record_all_live_data(index, -1, src_pop)
         return 0
     
     def __calculate_individual(self, pulses: int) -> float:
