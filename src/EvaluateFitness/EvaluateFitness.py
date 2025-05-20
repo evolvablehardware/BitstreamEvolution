@@ -24,11 +24,11 @@ class EvaluateFitness:
         for i in range(len(measurements)):
             m = measurements[i]
             if is_ok(m.result):
-                data = m.ok_value # type: ignore
+                data = m.result.ok_value # type: ignore
                 fit = self.__evaluator.calculate_success(data, i, '')
                 population.set_fitness_by_index(i, fit)
             else:
-                err = m.err_value # type: ignore
+                err = m.result.err_value # type: ignore
                 fit = self.__evaluator.calculate_error(err, i, '')
                 population.set_fitness_by_index(i, fit)
         self.__evaluator.end_eval()

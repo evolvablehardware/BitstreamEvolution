@@ -22,7 +22,7 @@ class EvalVarMaxFitness:
     def calculate_success(self, data: list[int], index: int, src_pop: str) -> float:
         waveform = data
         variance_sum = 0
-        total_samples = 500
+        total_samples = len(waveform)
         for i in range(len(waveform)-1):
             # NOTE Signal Variance is calculated by summing the absolute difference of
             # sequential voltage samples from the microcontroller.

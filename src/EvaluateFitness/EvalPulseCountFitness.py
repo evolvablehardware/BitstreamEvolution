@@ -40,4 +40,4 @@ class EvalPulseCountFitness:
         elif pulses == 0:
             return 0
         else:
-            return 1.0 - abs(self.__target - pulses)
+            return 1.0 / abs(self.__target - pulses)
