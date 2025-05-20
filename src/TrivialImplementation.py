@@ -106,7 +106,8 @@ def TrivialGenerateMeasurements(factory: TrivialCircuitFactory, population: Popu
     for circuit in circuits.keys():
         meas = Trivial_Meas("FPGA_REQUEST_FAKE",
                             data_request=DataRequest.NONE,
-                            circuit_to_measure=circuit)
+                            circuit_to_measure=circuit,
+                            num_samples=1)
         measurement_map[meas] = circuits[circuit] #dependancies are the same
 
     return measurement_map

@@ -207,7 +207,8 @@ class Measurement(Generic[C,M]):
     # circuit:Circuit
     # FPGA_used:Optional[str]
     # result = Result[Any,Exception] 
-    def __init__(self, FPGA_request:str, data_request:DataRequest,circuit_to_measure:C)->None:
+    # argument = Any
+    def __init__(self, FPGA_request:str, data_request:DataRequest,circuit_to_measure:C, num_samples: int)->None:
         """
         TODO::
           Figure out the format for an FPGA Request, potentially also changing the type, and adjust that here.
@@ -218,6 +219,7 @@ class Measurement(Generic[C,M]):
         self.FPGA_used:Optional[str] = None
         self.result: Result[M,Exception] = Err(MeasurementNotTaken("Initialized Measurement option has not yet been measured."))
                       # The Any should be the measurement data, which we may want to standardize at some point
+        self.num_samples = num_samples
     
     def record_FPGA_used(self,FPGA:str)->None:
         self.FPGA_used = FPGA

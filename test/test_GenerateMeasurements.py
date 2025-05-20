@@ -23,7 +23,7 @@ class MockCircuitFactory:
         return result
 
 def test_simple_generate_measurements():
-    gen_meas = SimpleGenerateMeasurements('fake-fpga', DataRequest.WAVEFORM)
+    gen_meas = SimpleGenerateMeasurements('fake-fpga', DataRequest.WAVEFORM, 0)
     factory = MockCircuitFactory()
     pop = Population([MockIndividual(1)], None)
     measurements = gen_meas.generate(factory.generate, [pop])

@@ -32,6 +32,7 @@ randomization_strategy = NoRandomizationStrategy()
 mutation_prob = 0.0021
 crossover_prob = 0.7
 uses_init_existing_population = False
+num_samples = 1
 
 plot_data_recorder = PlotDataRecorder()
 
@@ -123,7 +124,7 @@ evolution = Evolution(
     ).generate
     ).generate,
     eval_population_fitness=EvaluateFitness(evaluation).evaluate,
-    generate_measurements=SimpleGenerateMeasurements(fpga, data_request).generate,
+    generate_measurements=SimpleGenerateMeasurements(fpga, data_request, num_samples).generate,
     hardware=Microcontroller(
         fpga=fpga,
         logger=logger,

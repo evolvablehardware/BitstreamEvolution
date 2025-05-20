@@ -34,6 +34,13 @@ class Microcontroller:
                 measurement.result = Ok(waveform)
             except Exception as e:
                 measurement.result = Err(e)
+        elif measurement.data_request == DataRequest.OSCILLATIONS:
+            ckt.compile(fpga_data)
+            try:
+                data = await self.measure_pulses(measurement.num_samples)
+                measurement.result = Ok(data)
+            except Exception as e:
+                measurement.result = Err(e)
         # TODO: elif cases for other measurement types...
         return measurement
 
@@ -81,4 +88,60 @@ class Microcontroller:
 
         self.__logger.log_event(2, "Completed reading waveform")
         return waveform
+
+    async def measure_pulses(self, samples: int) -> list[int]:
+        result = []
+        for i in range(samples):
+            result.extend(await self.measure_pulses_once())
+        return result
+
+    async def measure_pulses_once(self) -> list[int]:
+        buf = []
+        # Poll serial line until START signal
+        self.__logger.log_event(3, f"Starting loop for reading")
+        
+        self.__serial.reset_input_buffer()
+        self.__serial.reset_output_buffer()
+        # NOTE The MCU is expecting a string '1' if fitness isn't measured this may be why
+        self.__serial.write(b'1') 
+        start = time()
+        self.__logger.log_event(3, f"Starting MCU loop...")
+
+        max_attempts = 5
+        attempts = 0
+        while True:
+            attempts = attempts + 1
+            self.__logger.log_event(3, f"Serial reading...")
+            p = self.__serial.read_until()
+            self.__logger.log_event(3, f"Serial read done")
+            if (time() - start) >= self.__config.read_timeout:
+                self.__logger.log_warning(1, f"Time Exceeded")
+                if attempts >= max_attempts:
+                    self.__logger.log_warning(3, f"Exceeded max attempts ({max_attempts}). Halting MCU reading")
+                    buf.append(-1)
+                    break
+            # TODO We should be able to do whatever this line does better
+            # This is currently doing a poor job at REGEXing the MCU serial return - can be done better
+            # It's supposed to handle exceptions from transmission loss (i.e. dropped or additional spaces, shifted colons, etc)
+            self.__logger.log_event(3, "Pulled", p, f"from MCU")
+            if (p != b"" and b":" not in p and b"START" not in p and b"FINISH" not in p and b" " not in p):
+                p = p.translate(None, b"\r\n")
+                buf.append(p)
+                break
+
+        end = time() - start
+
+        self.__logger.log_event(2, 'Length of buffer:', len(buf))
+        if len(buf) == 0:
+            buf.append(-1000) # This should never happen
+
+        result = []
+        for i in range(len(buf)):
+            self.__logger.log_event(2, f'Buffer entry {i}:', buf[i])
+            try:
+                result.append(int(buf[i]))
+            except ValueError:
+                result.append(-2)
+        
+        return result
 
