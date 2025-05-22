@@ -51,6 +51,7 @@ BitstreamEvolution requires Python version 3.7 or higher.
 BistreamEvolution requires the following libraries and packages:
   * build-essential
   * clang
+  * lld
   * bison
   * flex
   * libreadline-dev
@@ -68,6 +69,7 @@ BistreamEvolution requires the following libraries and packages:
   * libboost-all-dev
   * cmake
   * make
+  * zlib1g-dev
 
 BitstreamEvolution alse requires the following Python libraries:
   * pyserial
@@ -84,8 +86,8 @@ the packages can all be installed at once with the following commands:
 
 ```bash
 sudo apt update && sudo apt upgrade  # Optional, but recommended 
-sudo apt install build-essential clang bison flex libreadline-dev gawk tcl-dev libffi-dev libftdi-dev mercurial graphviz xdot \ 
-pkg-config python3 python3-pip libboost-all-dev cmake make yosys arachne-pnr
+sudo apt install build-essential clang lld bison flex libreadline-dev gawk tcl-dev libffi-dev libftdi-dev mercurial graphviz xdot \ 
+pkg-config python3 python3-pip libboost-all-dev zlib1g-dev cmake make yosys arachne-pnr
 ```
 The Python libraries can be installed in one command in any Linux
 distribution as follows:

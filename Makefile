@@ -64,5 +64,6 @@ tools/yosys: tools
 	cd tools
 	git clone https://github.com/cliffordwolf/yosys.git yosys;\
 	cd yosys
+	git submodule update --init --recursive
 	make -j$(nproc)
 	make install
