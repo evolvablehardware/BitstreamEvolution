@@ -29,4 +29,7 @@ class BitstreamIndividual:
                 self.__bitstream[i] = False
             else:
                 self.__bitstream[i] = True
+
+    def copy_from(self, other: 'BitstreamIndividual'):
+        self.__bitstream = other.__bitstream.copy()
     
