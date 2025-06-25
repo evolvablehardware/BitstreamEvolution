@@ -1,0 +1,933 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Config.py &#8212; Bitstream Evolution Develop Branch 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'old_code/Config';</script>
+    <link rel="icon" href="https://evolvablehardware.org/images/setup_tutorial_2.jpg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ConfigBuilder.py" href="ConfigBuilder.html" />
+    <link rel="prev" title="config_builder.py" href="config_builder.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="https://evolvablehardware.org/images/setup_tutorial_2.jpg" class="logo__image only-light" alt="Bitstream Evolution Develop Branch 0.1.0 documentation - Home"/>
+    <script>document.write(`<img src="https://evolvablehardware.org/images/setup_tutorial_2.jpg" class="logo__image only-dark" alt="Bitstream Evolution Develop Branch 0.1.0 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">dev index</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../interface/index.html">Interfaces Being Developed</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../interface/initial_ideas/index.html">1. Initial Ideas for Interfaces</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../interface/initial_ideas/isaac/index.html">1.1. Isaac’s Ideas for Interfaces</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../interface/initial_ideas/isaac/evolution_runner.html">1.1.1. Evolution Runner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../interface/initial_ideas/isaac/validation.html">1.1.2. Validation Tester</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../code/BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Old Code Documentation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="arg_parse_utils.html">arg_parse_utils.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ascTemplateBuilder.html">ascTemplateBuilder.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Circuit.html">Circuit.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CircuitPopulation.html">CircuitPopulation.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_builder.html">config_builder.py</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Config.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ConfigBuilder.html">ConfigBuilder.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ConfigValue.html">ConfigValue.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Evolution.html">Evolution.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evolve.html">evolve.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="init.html">init.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Logger.html">Logger.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Microcontroller.html">Microcontroller.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Monitor.html">Monitor.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi_evolve.html">multi_evolve.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PlotEvolutionLive.html">PlotEvolutionLive.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilities.html">utilities.py</a></li>
+</ul>
+</details></li>
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/old_code/Config.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Config.py</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Config.py</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config"><code class="docutils literal notranslate"><span class="pre">Config</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.__init__"><code class="docutils literal notranslate"><span class="pre">Config.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.__log_error"><code class="docutils literal notranslate"><span class="pre">Config.__log_error()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.__log_event"><code class="docutils literal notranslate"><span class="pre">Config.__log_event()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.__log_info"><code class="docutils literal notranslate"><span class="pre">Config.__log_info()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.__log_warning"><code class="docutils literal notranslate"><span class="pre">Config.__log_warning()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.add_logger"><code class="docutils literal notranslate"><span class="pre">Config.add_logger()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_combined_mode"><code class="docutils literal notranslate"><span class="pre">Config.get_combined_mode()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_desired_frequency"><code class="docutils literal notranslate"><span class="pre">Config.get_desired_frequency()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_fitness_func"><code class="docutils literal notranslate"><span class="pre">Config.get_fitness_func()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_fitness_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_fitness_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_ga_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_ga_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_hardware_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_hardware_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_init_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_init_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_logging_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_logging_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_num_samples"><code class="docutils literal notranslate"><span class="pre">Config.get_num_samples()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_plotting_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_plotting_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_pulse_weight"><code class="docutils literal notranslate"><span class="pre">Config.get_pulse_weight()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_sensitivity_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_sensitivity_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_simulation_mode"><code class="docutils literal notranslate"><span class="pre">Config.get_simulation_mode()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_stop_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_stop_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_system_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_system_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_top_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_top_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_transfer_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_transfer_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_var_weight"><code class="docutils literal notranslate"><span class="pre">Config.get_var_weight()</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-Config">
+<span id="config-py"></span><h1>Config.py<a class="headerlink" href="#module-Config" title="Link to this heading">#</a></h1>
+<section id="id1">
+<h2>Config.py<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>This class is instantiated to aquire values from the config file.</p>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="Config.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Config.</span></span><span class="sig-name descname"><span class="pre">Config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config" title="Link to this definition">#</a></dt>
+<dd><p>This class is instantiated to aquire values from the config file for the evolutionary run.
+This object is given to other objects so they can access value sin the config.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Preexisting todo: Add handling for missing values. This does fail gracefully at missing values currently.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Provide the file to be interpreted by the config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The file path of the configuration file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.__log_error">
+<span class="sig-name descname"><span class="pre">__log_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">error</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Config.Config.__log_error" title="Link to this definition">#</a></dt>
+<dd><p>Emit an error-level log. This function is fulfilled through
+the logger.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.__log_event">
+<span class="sig-name descname"><span class="pre">__log_event</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Config.Config.__log_event" title="Link to this definition">#</a></dt>
+<dd><p>Emit an event-level log. This function is fulfilled through
+the logger.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.__log_info">
+<span class="sig-name descname"><span class="pre">__log_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Config.Config.__log_info" title="Link to this definition">#</a></dt>
+<dd><p>Emit an info-level log. This function is fulfilled through
+the logger.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.__log_warning">
+<span class="sig-name descname"><span class="pre">__log_warning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">warning</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Config.Config.__log_warning" title="Link to this definition">#</a></dt>
+<dd><p>Emit a warning-level log. This function is fulfilled through
+the logger.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.add_logger">
+<span class="sig-name descname"><span class="pre">add_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.add_logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.add_logger" title="Link to this definition">#</a></dt>
+<dd><p>Adds logger to the Configuration actions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>logger</strong> (<em>Logger</em>) – The logger object to log Configuration actions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.get_combined_mode">
+<span class="sig-name descname"><span class="pre">get_combined_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.get_combined_mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.get_combined_mode" title="Link to this definition">#</a></dt>
+<dd><blockquote>
+<div><p>Selects the current Combined Mode Evolution will be using.
+These modes are listed below.
+We verify that only one of the following modes can be returned.</p>
+<dl class="simple">
+<dt><strong>ADD</strong></dt><dd><p>Multiplies weights by fitnesses, then adds the resulting terms to get
+overall fitness</p>
+</dd>
+<dt><strong>MULT</strong></dt><dd><p>Raises fitnesses to the power of their weights, then multiplies the
+resulting terms to get overall fitness</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The config’s selected combined mode from the list of possible modes.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.get_desired_frequency">
+<span class="sig-name descname"><span class="pre">get_desired_frequency</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.get_desired_frequency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.get_desired_frequency" title="Link to this definition">#</a></dt>
+<dd><p>This returns the desired frequency from the config file. It is
+automatically converted into an integer.
+If the desired frequency is negitive, this will exit the running program.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The desired frequency. Garunteed non-negitive.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.get_fitness_func">
+<span class="sig-name descname"><span class="pre">get_fitness_func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.get_fitness_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.get_fitness_func" title="Link to this definition">#</a></dt>
+<dd><blockquote>
+<div><p>Selects the current Fitness Function Evolution will be using. These modes are listed below
+We verify that only one of the following modes can be returned.</p>
+<dl class="simple">
+<dt><strong>VARIANCE</strong></dt><dd><p>Variance maximization fitness function. The fitness is the absolute difference
+of voltage readings from consecutive time steps. Selects for Noise.</p>
+</dd>
+<dt><strong>PULSE_COUNT</strong></dt><dd><p>Left in for backwards-compatability. Refers to SENSITIVE_PULSE_COUNT.</p>
+</dd>
+<dt><strong>TOLERANT_PULSE_COUNT</strong></dt><dd><p>This uses the number of pulses to generate a fitness. To do this, it compares
+the calculated frequency from the number of pulses in a second to the target frequency.
+The closer to the target, the higher the fitness. This fitness function is more ‘tolerant’
+of errors, meaning it assigns greater fitness values to circuits that only have slight errors.</p>
+</dd>
+<dt><strong>SENSITIVE_PULSE_COUNT</strong></dt><dd><p>This uses the number of pulses to generate a fitness. To do this, it compares
+the calculated frequency from the number of pulses in a second to the target frequency.
+The closer to the target, the higher the fitness. This fitness function is more ‘sensitive’
+of errors, meaning it has an abrupt drop-off in fitness scores even for slight errors.</p>
+</dd>
+<dt><strong>TONE_DISCRIMINATOR</strong></dt><dd><p>This randomly alternates between a 1kHz and 10kHz signal sent to the FPGA, and
+reads in a high/low output from the FGPA to get the predicted frequency.</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The config’s selected fitness function from the list of possible modes.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.get_fitness_parameters">
+<span class="sig-name descname"><span class="pre">get_fitness_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.get_fitness_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.get_fitness_parameters" title="Link to this definition">#</a></dt>
+<dd><p>Returns the value of a parameter from the “FITNESS PARAMETERS”
+section of the config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the parameter to return</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the parameter</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.get_ga_parameters">
+<span class="sig-name descname"><span class="pre">get_ga_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.get_ga_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.get_ga_parameters" title="Link to this definition">#</a></dt>
+<dd><p>Returns the value of a parameter from the “GA PARAMETERS”
+section of the config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the parameter to return</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the parameter</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.get_hardware_parameters">
+<span class="sig-name descname"><span class="pre">get_hardware_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.get_hardware_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.get_hardware_parameters" title="Link to this definition">#</a></dt>
+<dd><p>Returns the value of a parameter from the “HARDWARE PARAMETERS”
+section of the config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the parameter to return</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the parameter</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.get_init_parameters">
+<span class="sig-name descname"><span class="pre">get_init_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.get_init_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.get_init_parameters" title="Link to this definition">#</a></dt>
+<dd><p>Returns the value of a parameter from the “INITIALIZATION PARAMETERS”
+section of the config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the parameter to return</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the parameter</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.get_logging_parameters">
+<span class="sig-name descname"><span class="pre">get_logging_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.get_logging_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.get_logging_parameters" title="Link to this definition">#</a></dt>
+<dd><p>Returns the value of a parameter from the “LOGGING PARAMETERS”
+section of the config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the parameter to return</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the parameter</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.get_num_samples">
+<span class="sig-name descname"><span class="pre">get_num_samples</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.get_num_samples"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.get_num_samples" title="Link to this definition">#</a></dt>
+<dd><p>This returns the number of samples from the config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The Number of samples from “NUM_SAMPLES”</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.get_plotting_parameters">
+<span class="sig-name descname"><span class="pre">get_plotting_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.get_plotting_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.get_plotting_parameters" title="Link to this definition">#</a></dt>
+<dd><p>Returns the value of a parameter from the “PLOTTING PARAMETERS”
+section of the config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the parameter to return</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the parameter</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.get_pulse_weight">
+<span class="sig-name descname"><span class="pre">get_pulse_weight</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.get_pulse_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.get_pulse_weight" title="Link to this definition">#</a></dt>
+<dd><p>This returns the pulse weight from the config file.
+This is the pulse weight used in the combined_mode operation specified previously.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The pulse weight.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.get_sensitivity_parameters">
+<span class="sig-name descname"><span class="pre">get_sensitivity_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.get_sensitivity_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.get_sensitivity_parameters" title="Link to this definition">#</a></dt>
+<dd><p>Returns the value of a parameter from the “FITNESS SENSITIVITY PARAMETERS”
+section of the config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the parameter to return</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the parameter</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.get_simulation_mode">
+<span class="sig-name descname"><span class="pre">get_simulation_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.get_simulation_mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.get_simulation_mode" title="Link to this definition">#</a></dt>
+<dd><blockquote>
+<div><p>Selects the current mode the simulation will run in. These modes are listed below.
+We verify that only one of the following modes can be returned.</p>
+<dl class="simple">
+<dt><strong>FULLY_INTRINSIC</strong></dt><dd><p>Runs the experiment on the actual hardware. Full normal experiment setup required.</p>
+</dd>
+<dt><strong>INTRINSIC_SENSITIVITY</strong></dt><dd><p>Performs Sensitivity analysis. This is done intrensically, but it runs one circuit
+many times instead of performing evolution on it.</p>
+</dd>
+<dt><strong>SIM_HARDWARE</strong></dt><dd><p>Simulation mode. This uses an arbitrary function operating on the compiled binary files
+that are used to specify the hardware configuration.</p>
+</dd>
+<dt><strong>FULLY_SIM</strong></dt><dd><p>Simulation mode. Operates on a small array of arbitrary bit values.</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The config’s selected simulation mode from the list of possible modes.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.get_stop_parameters">
+<span class="sig-name descname"><span class="pre">get_stop_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.get_stop_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.get_stop_parameters" title="Link to this definition">#</a></dt>
+<dd><p>Returns the value of a parameter from the “STOPPING CONDITION PARAMETERS”
+section of the config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the parameter to return</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the parameter</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.get_system_parameters">
+<span class="sig-name descname"><span class="pre">get_system_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.get_system_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.get_system_parameters" title="Link to this definition">#</a></dt>
+<dd><p>Returns the value of a parameter from the “SYSTEM PARAMETERS”
+section of the config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the parameter to return</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the parameter</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.get_top_parameters">
+<span class="sig-name descname"><span class="pre">get_top_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.get_top_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.get_top_parameters" title="Link to this definition">#</a></dt>
+<dd><p>Returns the value of a parameter from the “TOP-LEVEL PARAMETERS”
+section of the config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the parameter to return</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the parameter</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.get_transfer_parameters">
+<span class="sig-name descname"><span class="pre">get_transfer_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.get_transfer_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.get_transfer_parameters" title="Link to this definition">#</a></dt>
+<dd><p>Returns the value of a parameter from the “TRANSFERABILITY PARAMETERS”
+section of the config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the parameter to return</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the parameter</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Config.Config.get_var_weight">
+<span class="sig-name descname"><span class="pre">get_var_weight</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Config.html#Config.get_var_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Config.Config.get_var_weight" title="Link to this definition">#</a></dt>
+<dd><p>This returns the variability weight from the config file.
+This is the variability weight used in the combined_mode operation specified previously.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The variability weight.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="config_builder.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">config_builder.py</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="ConfigBuilder.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">ConfigBuilder.py</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Config.py</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config"><code class="docutils literal notranslate"><span class="pre">Config</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.__init__"><code class="docutils literal notranslate"><span class="pre">Config.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.__log_error"><code class="docutils literal notranslate"><span class="pre">Config.__log_error()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.__log_event"><code class="docutils literal notranslate"><span class="pre">Config.__log_event()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.__log_info"><code class="docutils literal notranslate"><span class="pre">Config.__log_info()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.__log_warning"><code class="docutils literal notranslate"><span class="pre">Config.__log_warning()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.add_logger"><code class="docutils literal notranslate"><span class="pre">Config.add_logger()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_combined_mode"><code class="docutils literal notranslate"><span class="pre">Config.get_combined_mode()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_desired_frequency"><code class="docutils literal notranslate"><span class="pre">Config.get_desired_frequency()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_fitness_func"><code class="docutils literal notranslate"><span class="pre">Config.get_fitness_func()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_fitness_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_fitness_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_ga_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_ga_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_hardware_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_hardware_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_init_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_init_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_logging_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_logging_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_num_samples"><code class="docutils literal notranslate"><span class="pre">Config.get_num_samples()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_plotting_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_plotting_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_pulse_weight"><code class="docutils literal notranslate"><span class="pre">Config.get_pulse_weight()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_sensitivity_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_sensitivity_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_simulation_mode"><code class="docutils literal notranslate"><span class="pre">Config.get_simulation_mode()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_stop_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_stop_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_system_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_system_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_top_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_top_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_transfer_parameters"><code class="docutils literal notranslate"><span class="pre">Config.get_transfer_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Config.Config.get_var_weight"><code class="docutils literal notranslate"><span class="pre">Config.get_var_weight()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Evolvable Hardware
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Evolvable Hardware.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

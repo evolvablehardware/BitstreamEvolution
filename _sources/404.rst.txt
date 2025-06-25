@@ -1,0 +1,24 @@
+
+.. This is a page that is used for the 404 page on the website.
+    This page will be converted to "404.html" which github will automatically render when an invalid page is requested.
+    https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site
+
+---------
+404 Error
+---------
+
+========================================
+Oops... We can't find the URL requested. 
+========================================
+
+Isn't this interesting. We are usually are able to find all of the pages we have available.
+
+.. warning ::
+    Look for something that exists next time.
+
+
+.. todo ::
+    For some reason when you look for a page not in the main directory, when this 404 page appears, there is no formatting.
+    The whole page pops up properly except for the formatting. If I were to guess it is likely because of how Sphinx builds 
+    the html and how github is grabbing the html file for use. It might make sense to build a custom 404 file in html that links 
+    outward instead of dealing with this, and just figure out how to put it in the gh-pages repository.
