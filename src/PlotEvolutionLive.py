@@ -408,7 +408,7 @@ def run():
                         collections.append(float(pt)*3.3/715)
                 
         ax8.clear()                         
-        ax8.hist2d(gens,collections,bins=HEATMAP_BINS)
+        ax8.hist2d(gens,collections,bins=HEATMAP_BINS,cmap=heatmap_color)
 
         if config.is_pulse_func():
             ax8.set(xlabel='Generation', ylabel='Pulses', title='Pulse Count Histogram')
