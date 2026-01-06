@@ -1,0 +1,107 @@
+Explain this experiment: ERROR:  [91m An error occured in PlotEvolutionLive.py [0m
+ERROR:  [91m Command '['gnome-terminal', '--geometry=105x29', '--', 'python3', 'src/PlotEvolutionLive.py', '--frame-interval', '10000']' returned non-zero exit status 127. [0m
+WARNING:  [93m Non-int user input for target fitness. Program will not terminate based on fitness [0m
+MCU SETTINGS ================================ /dev/ttyACM1 115200
+Created circuit: hardware1
+Created circuit: hardware2
+Created circuit: hardware3
+Created circuit: hardware4
+Created circuit: hardware5
+Created circuit: hardware6
+Created circuit: hardware7
+Created circuit: hardware8
+Created circuit: hardware9
+Created circuit: hardware10
+Created circuit: hardware11
+Created circuit: hardware12
+Created circuit: hardware13
+Created circuit: hardware14
+Created circuit: hardware15
+Created circuit: hardware16
+Created circuit: hardware17
+Created circuit: hardware18
+Created circuit: hardware19
+Created circuit: hardware20
+Created circuit: hardware21
+Created circuit: hardware22
+Created circuit: hardware23
+Created circuit: hardware24
+Created circuit: hardware25
+Created circuit: hardware26
+Created circuit: hardware27
+Created circuit: hardware28
+Created circuit: hardware29
+Created circuit: hardware30
+Created circuit: hardware31
+Created circuit: hardware32
+Created circuit: hardware33
+Created circuit: hardware34
+Created circuit: hardware35
+Created circuit: hardware36
+Created circuit: hardware37
+Created circuit: hardware38
+Created circuit: hardware39
+Created circuit: hardware40
+Created circuit: hardware41
+Created circuit: hardware42
+Created circuit: hardware43
+Created circuit: hardware44
+Created circuit: hardware45
+Created circuit: hardware46
+Created circuit: hardware47
+Created circuit: hardware48
+Created circuit: hardware49
+Created circuit: hardware50
+INFO:  [94m NO randomization mode selected. [0m
+Starting Hamming Distance Calculation
+HDIST - Entering loop
+HDIST - Final value 0.0
+Compiling hardware22 with icepack...
+Finished compiling hardware22
+File size: 104090 bytes
+Reading microcontroller.
+WARNING:  [93m Did not read START from MCU [0m
+WARNING:  [93m Time Exceeded. Halting MCU Reading. [0m
+WARNING:  [93m Time Exceeded. Halting MCU Reading. [0m
+Finished reading microcontroller. Logging data to file.
+Completed writing to data file
+Compiling hardware50 with icepack...
+Finished compiling hardware50
+File size: 104090 bytes
+Reading microcontroller.
+WARNING:  [93m Did not read START from MCU [0m
+WARNING:  [93m Time Exceeded. Halting MCU Reading. [0m
+WARNING:  [93m Time Exceeded. Halting MCU Reading. [0m
+Finished reading microcontroller. Logging data to file.
+Completed writing to data file
+Compiling hardware12 with icepack...
+Finished compiling hardware12
+File size: 104090 bytes
+Reading microcontroller.
+WARNING:  [93m Did not read START from MCU [0m
+WARNING:  [93m Time Exceeded. Halting MCU Reading. [0m
+WARNING:  [93m Time Exceeded. Halting MCU Reading. [0m
+Finished reading microcontroller. Logging data to file.
+Completed writing to data file
+Compiling hardware44 with icepack...
+Finished compiling hardware44
+File size: 104090 bytes
+Reading microcontroller.
+WARNING:  [93m Did not read START from MCU [0m
+WARNING:  [93m Time Exceeded. Halting MCU Reading. [0m
+WARNING:  [93m Time Exceeded. Halting MCU Reading. [0m
+Finished reading microcontroller. Logging data to file.
+Completed writing to data file
+Compiling hardware25 with icepack...
+Finished compiling hardware25
+File size: 104090 bytes
+Reading microcontroller.
+WARNING:  [93m Did not read START from MCU [0m
+WARNING:  [93m Time Exceeded. Halting MCU Reading. [0m
+WARNING:  [93m Time Exceeded. Halting MCU Reading. [0m
+Finished reading microcontroller. Logging data to file.
+Completed writing to data file
+Compiling hardware28 with icepack...
+Finished compiling hardware28
+File size: 104090 bytes
+Reading microcontroller.

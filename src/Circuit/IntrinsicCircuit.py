@@ -1,6 +1,7 @@
 from pathlib import Path
 from Circuit.FileBasedCircuit import FileBasedCircuit
 from Circuit.FitnessFunction import FitnessFunction
+from Circuit.bitstream_transfer_test import flash_bitstream
 from time import sleep
 from subprocess import run
 import Config
@@ -9,6 +10,8 @@ import Logger
 
 RUN_CMD = "iceprog"
 COMPILE_CMD = "icepack"
+PORT = "/dev/ttyACM0"   # Change to COMx on Windows
+
 
 class IntrinsicCircuit(FileBasedCircuit):
     """
@@ -47,24 +50,26 @@ class IntrinsicCircuit(FileBasedCircuit):
         """
         self._compile()
         
-        cmd_str = [
-            RUN_CMD,
-            self._bitstream_filepath,
-            "-d",
-            self._config.get_fpga()
-        ]
-        print(cmd_str)
-        run(cmd_str)
-        sleep(1)
+        flash_bitstream(PORT, self._bitstream_filepath)
+        
+        # cmd_str = [
+        #     RUN_CMD,
+        #     self._bitstream_filepath,
+        #     "-d",
+        #     self._config.get_fpga()
+        # ]
+        # print(cmd_str)
+        # run(cmd_str)
+        # sleep(1)
 
-        # if switching fpgas every sample, need to upload to the second fpga also
-        if self._config.get_transfer_sample():
-            cmd_str = [
-                RUN_CMD,
-                self._bitstream_filepath,
-                "-d",
-                self._config.get_fpga2()
-            ]
-            print(cmd_str)
-            run(cmd_str)
-            sleep(1)
+        # # if switching fpgas every sample, need to upload to the second fpga also
+        # if self._config.get_transfer_sample():
+        #     cmd_str = [
+        #         RUN_CMD,
+        #         self._bitstream_filepath,
+        #         "-d",
+        #         self._config.get_fpga2()
+        #     ]
+        #     print(cmd_str)
+        #     run(cmd_str)
+        #     sleep(1)
