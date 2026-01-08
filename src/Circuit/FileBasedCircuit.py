@@ -1,13 +1,15 @@
+import os
 from mmap import mmap
 from pathlib import Path
 from shutil import copyfile
 from subprocess import run
-import os
-from Circuit.Circuit import Circuit
+
 import Config
 import Logger
+from Circuit.Circuit import Circuit
 
 COMPILE_CMD = "icepack"
+
 
 class FileBasedCircuit(Circuit):
     """
@@ -17,7 +19,9 @@ class FileBasedCircuit(Circuit):
     Provides useful methods for working with hardware files
     """
 
-    def __init__(self, index: int, filename: str, config: Config, template: Path, rand, logger: Logger):
+    def __init__(
+        self, index: int, filename: str, config: Config, template: Path, rand, logger: Logger
+    ):
         Circuit.__init__(self, index, filename, config)
 
         self._rand = rand
@@ -53,7 +57,7 @@ class FileBasedCircuit(Circuit):
 
     def mutate(self):
         def mutate_bit(bit, row, col, *rest):
-            if self._config.get_mutation_probability() >= self._rand.uniform(0,1):
+            if self._config.get_mutation_probability() >= self._rand.uniform(0, 1):
                 # Set this bit to either a 0 or 1 randomly
                 # Keep in mind that these are BYTES that we are modifying, not characters
                 # Therefore, we have to set it to either ASCII 0 (48) or ASCII 1 (49), not actual 0 or 1, which represent different characters
@@ -63,11 +67,13 @@ class FileBasedCircuit(Circuit):
                 # Note: If prev != 48 or 49, then we changed the wrong value because it was not a 0 or 1 previously
                 self._log_event(4, "Mutating:", self, "@(", row, ",", col, ") previous was", bit)
                 return 97 - bit
+
         self._run_at_each_modifiable(mutate_bit)
 
     def randomize_bitstream(self):
         def randomize_bit(*rest):
             return self._rand.integers(48, 50)
+
         self._run_at_each_modifiable(randomize_bit)
 
     def crossover(self, parent, crossover_point: int):
@@ -101,19 +107,20 @@ class FileBasedCircuit(Circuit):
                 my_pos = my_tile + line_size * (crossover_point - 1)
                 parent_pos = parent_tile + line_size * (crossover_point - 1)
 
-                data = parent_hw_file[parent_pos:parent_pos + line_size]
+                data = parent_hw_file[parent_pos : parent_pos + line_size]
                 self.update_hardware_file(my_pos, line_size, data)
 
             parent_tile = parent_hw_file.find(b".logic_tile", parent_tile + 1)
             my_tile = self._hardware_file.find(b".logic_tile", my_tile + 1)
-        
+
         # Need to set our source population to our parent's
         src_pop = parent.get_file_attribute("src_population")
-        if src_pop != None:
+        if src_pop is not None:
             self.set_file_attribute("src_population", src_pop)
 
-    def _run_at_each_modifiable(self, lambda_func, hardware_file = None, accessible_columns = None,
-        routing_type=None):
+    def _run_at_each_modifiable(
+        self, lambda_func, hardware_file=None, accessible_columns=None, routing_type=None
+    ):
         """
         Runs the lambda_func at every modifiable position
         Args passed to lambda_func: value of bit (as a byte), row, col
@@ -122,7 +129,7 @@ class FileBasedCircuit(Circuit):
         Keep in mind the bytes are the ASCII codes, so for example 49 = 1
 
         .. todo::
-            Go over this with someone who can clarify what all of the data types are. 
+            Go over this with someone who can clarify what all of the data types are.
 
         Parameters
         ----------
@@ -151,11 +158,11 @@ class FileBasedCircuit(Circuit):
         # The b prefix makes the string an instance of the "bytes" type
         # The .logic_tile header indicates that there is a tile, so the "tile" variable stores the starting point of the current tile
         tile = hardware_file.find(b".logic_tile")
-        
+
         while tile > 0:
             # Set pos to the position of this tile, but with the length of ".logic_tile" added so it is in front of where we have the x/y coords
             pos = tile + len(".logic_tile")
-            
+
             # Check if the position is legal to modify
             if self.__tile_is_included(hardware_file, pos):
                 # Find the start and end of the line; the positions of the \n newline just before and at the end of this line
@@ -199,11 +206,7 @@ class FileBasedCircuit(Circuit):
         # changes to the mmap.
         self._hardware_file.flush()
 
-        compile_command = [
-            COMPILE_CMD,
-            self._hardware_filepath,
-            self._bitstream_filepath
-        ]
+        compile_command = [COMPILE_CMD, self._hardware_filepath, self._bitstream_filepath]
         run(compile_command)
 
         self._log_event(2, "Finished compiling", self)
@@ -214,7 +217,7 @@ class FileBasedCircuit(Circuit):
         NOTE: Tile = the .logic_tile in the asc file.
 
         .. todo::
-            Preexisting todo: Replace magic values with a more generalized solution. 
+            Preexisting todo: Replace magic values with a more generalized solution.
             These magic values are indicative of the underlying hardware (ice40kh1k)
 
         Parameters
@@ -239,10 +242,10 @@ class FileBasedCircuit(Circuit):
         # tiles while scraping the asc files
         # This is in the actual asc file; this is why we can simply pull from "pos"
         # i.e. you'll see the header ".logic_file 1 1" - x=1, y=1
-        
+
         # This is where we had a fundamental issue before: The value in the hardware at this position is going to be an ASCII char value, not the actual
         # number. Here, we parse the byte as an integer, then to a char, then back to an integer
-        
+
         # However, we have a great problem now: what about multi-digit numbers?
         # Find the space that separates the x and y, and find the end of the line
         # Then, grab the bytes for x, grab the bytes for y, convert to strings, and parse those strings
@@ -264,8 +267,10 @@ class FileBasedCircuit(Circuit):
 
     def get_bitstream(self):
         bitstream = []
+
         def add_bit(bit, *rest):
             bitstream.append(bit)
+
         self._run_at_each_modifiable(add_bit)
         return bitstream
 
@@ -279,8 +284,8 @@ class FileBasedCircuit(Circuit):
 
         .. todo::
             Pre-existing: Add error checking here
-        
-        
+
+
         Parameters
         ----------
         pos : int
@@ -290,11 +295,11 @@ class FileBasedCircuit(Circuit):
         data : ReadableBuffer
             The data to write into the hardware file
         """
-        self._hardware_file[pos:pos + length] = data
+        self._hardware_file[pos : pos + length] = data
 
     @staticmethod
     def get_file_attribute_st(mmapped_file, attribute):
-        '''
+        """
         Returns the value of the stored attribute from the hardware file.
         Circuits are capable of storing string name-value pairs in their hardware file, for purposes such as
         tracking most recently-evaluated fitness of a Circuit
@@ -311,24 +316,24 @@ class FileBasedCircuit(Circuit):
         -------
         str
             File attribute value
-        '''
+        """
         index = mmapped_file.find(b".comment FILE_ATTRIBUTES")
         if index < 0:
-            return '0'
+            return "0"
         else:
-            newline_index = mmapped_file.find(b'\n', index)
+            newline_index = mmapped_file.find(b"\n", index)
             searchable_area = mmapped_file[index:newline_index]
-            attr_index = searchable_area.find(bytes(attribute + '={', 'utf-8'))
-            if attr_index < 0: # Value doesn't exist yet
-                return '0'
+            attr_index = searchable_area.find(bytes(attribute + "={", "utf-8"))
+            if attr_index < 0:  # Value doesn't exist yet
+                return "0"
             attr_index = attr_index + len(attribute + "={")
-            end_index = searchable_area.find(b'}', attr_index)
+            end_index = searchable_area.find(b"}", attr_index)
             value_bytes = searchable_area[attr_index:end_index]
-            return str(value_bytes, 'utf-8')
+            return str(value_bytes, "utf-8")
 
     @staticmethod
     def set_file_attribute_st(hardware_file, attribute, value):
-        '''
+        """
         Sets a Circuit's file attribute to the specified value
         Circuits are capable of storing string name-value pairs in their hardware file, for purposes such as
         tracking most recently-evaluated fitness of a Circuit
@@ -342,26 +347,26 @@ class FileBasedCircuit(Circuit):
             The name of the attribute to modify
         value : str
             The value to assign to the attribute
-        '''
+        """
         # Check if the comment exists
-        #hardware_file = open(file_path, "r+")
+        # hardware_file = open(file_path, "r+")
         mmapped_file = mmap(hardware_file.fileno(), 0)
         index = mmapped_file.find(b".comment FILE_ATTRIBUTES")
         if index < 0:
             # Create the comment
             comment_line = ".comment FILE_ATTRIBUTES " + attribute + "={" + value + "}\n"
             # This requires re-mapping the self._hardware_file
-            #hardware_file = open(file_path, "r+")
+            # hardware_file = open(file_path, "r+")
             content = hardware_file.read()
             hardware_file.seek(0, 0)
             hardware_file.write(comment_line + content)
         else:
             # Check if the attribute exists
-            end_index = mmapped_file.find(b'\n', index)
-            line = str(mmapped_file[index:end_index], 'utf-8')
+            end_index = mmapped_file.find(b"\n", index)
+            line = str(mmapped_file[index:end_index], "utf-8")
             attr_index = line.find(attribute + "={")
             lines = hardware_file.readlines()
-            line_index = 0 # Index of the line that contains the attribute comment
+            line_index = 0  # Index of the line that contains the attribute comment
             for l in lines:
                 if l.find(".comment FILE_ATTRIBUTES") >= 0:
                     break
@@ -371,17 +376,17 @@ class FileBasedCircuit(Circuit):
                 # Attribute doesn't exist yet
                 line = line + " " + attribute + "={" + value + "}\n"
             else:
-                attr_end_index = line.find('}', attr_index) + 2
+                attr_end_index = line.find("}", attr_index) + 2
                 before_attr = line[:attr_index]
                 after_attr = line[attr_end_index:]
-                line = before_attr + attribute + "={" + value + "} " + after_attr + '\n'
+                line = before_attr + attribute + "={" + value + "} " + after_attr + "\n"
             lines[line_index] = line
             hardware_file.truncate(0)
             hardware_file.seek(0)
             hardware_file.writelines(lines)
 
     def get_file_attribute(self, attribute):
-        '''
+        """
         Returns the value of the stored attribute for this Circuit
         Circuits are capable of storing string name-value pairs in their hardware file, for purposes such as
         tracking most recently-evaluated fitness of a Circuit
@@ -395,11 +400,11 @@ class FileBasedCircuit(Circuit):
         -------
         str
             The value of the attribute
-        '''
+        """
         return FileBasedCircuit.get_file_attribute_st(self._hardware_file, attribute)
-    
+
     def set_file_attribute(self, attribute, value):
-        '''
+        """
         Sets this Circuit's file attribute to the specified value
         Circuits are capable of storing string name-value pairs in their hardware file, for purposes such as
         tracking most recently-evaluated fitness of a Circuit
@@ -410,7 +415,7 @@ class FileBasedCircuit(Circuit):
             The name of the attribute to modify
         value : str
             The value to assign to the attribute
-        '''
+        """
         hardware_file = open(self._hardware_filepath, "r+")
         FileBasedCircuit.set_file_attribute_st(hardware_file, attribute, value)
         # Re-map our hardware file

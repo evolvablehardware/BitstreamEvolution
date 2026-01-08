@@ -1,32 +1,34 @@
 """
 Circuit.py
 ----------
-This file holds a class thet contains information needed to 
+This file holds a class thet contains information needed to
 
 """
-from __future__ import annotations
-from subprocess import run
-from time import time, sleep
-from shutil import copyfile
-from mmap import mmap
-from io import SEEK_CUR
-from statistics import stdev
-import math
-import numpy as np
-import re
 
+from __future__ import annotations
+
+import math
+import re
 import typing
+from mmap import mmap
+from shutil import copyfile
+from statistics import stdev
+from subprocess import run
+from time import sleep, time
+
+import numpy as np
 
 # Ugly way to avoid circular imports
 # Will only import these at type-checking time, not at runtime
 if typing.TYPE_CHECKING:
-    from Microcontroller import Microcontroller
-    from Logger import Logger
     from Config import Config
+    from Logger import Logger
+    from Microcontroller import Microcontroller
 
 # TODO Integrate globals in a more elegant manner.
 RUN_CMD = "iceprog"
 COMPILE_CMD = "icepack"
+
 
 def is_pulse_func(config):
     """
@@ -45,8 +47,13 @@ def is_pulse_func(config):
     bool
         True if it is any type of oscilator (uses count pulses), False otherwise.
     """
-    return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
-            or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT' or config.get_fitness_func() == 'PULSE_CONSISTENCY')
+    return (
+        config.get_fitness_func() == "PULSE_COUNT"
+        or config.get_fitness_func() == "TOLERANT_PULSE_COUNT"
+        or config.get_fitness_func() == "SENSITIVE_PULSE_COUNT"
+        or config.get_fitness_func() == "PULSE_CONSISTENCY"
+    )
+
 
 class CircuitLegacy:
     """
@@ -70,8 +77,17 @@ class CircuitLegacy:
         """
         return self.__filename
 
-    def __init__(self, index: int, filename: str, template, mcu: Microcontroller, 
-            logger: Logger, config: Config, rand, sine_funcs):
+    def __init__(
+        self,
+        index: int,
+        filename: str,
+        template,
+        mcu: Microcontroller,
+        logger: Logger,
+        config: Config,
+        rand,
+        sine_funcs,
+    ):
         """
         Creates a circuit object.
 
@@ -102,9 +118,9 @@ class CircuitLegacy:
         self.__logger = logger
         self.__rand = rand
         self.__fitness = 0
-        self.__mean_voltage = 0 #needed for combined fitness func
-        self.__pulses = 0 # Used to get pulses counted outside of circuit
-        self.__data = [] # Used when taking multiple samples in a single generation. Stores the fitnesses
+        self.__mean_voltage = 0  # needed for combined fitness func
+        self.__pulses = 0  # Used to get pulses counted outside of circuit
+        self.__data = []  # Used when taking multiple samples in a single generation. Stores the fitnesses
 
         # SECTION Build the relevant paths
         asc_dir = config.get_asc_directory()
@@ -129,7 +145,7 @@ class CircuitLegacy:
         hardware_file = open(self.__hardware_filepath, "r+")
         self.__hardware_file = mmap(hardware_file.fileno(), 0)
         hardware_file.close()
-        
+
         # Used for the sine simulation mode; up to 100 sine waves
         self.__src_sine_funcs = sine_funcs
         self.__simulation_bitstream = [0] * 100
@@ -140,7 +156,7 @@ class CircuitLegacy:
 
     @staticmethod
     def get_file_attribute_st(mmapped_file, attribute):
-        '''
+        """
         Returns the value of the stored attribute from the hardware file.
         Circuits are capable of storing string name-value pairs in their hardware file, for purposes such as
         tracking most recently-evaluated fitness of a Circuit
@@ -157,24 +173,24 @@ class CircuitLegacy:
         -------
         str
             File attribute value
-        '''
+        """
         index = mmapped_file.find(b".comment FILE_ATTRIBUTES")
         if index < 0:
-            return '0'
+            return "0"
         else:
-            newline_index = mmapped_file.find(b'\n', index)
+            newline_index = mmapped_file.find(b"\n", index)
             searchable_area = mmapped_file[index:newline_index]
-            attr_index = searchable_area.find(bytes(attribute + '={', 'utf-8'))
-            if attr_index < 0: # Value doesn't exist yet
-                return '0'
+            attr_index = searchable_area.find(bytes(attribute + "={", "utf-8"))
+            if attr_index < 0:  # Value doesn't exist yet
+                return "0"
             attr_index = attr_index + len(attribute + "={")
-            end_index = searchable_area.find(b'}', attr_index)
+            end_index = searchable_area.find(b"}", attr_index)
             value_bytes = searchable_area[attr_index:end_index]
-            return str(value_bytes, 'utf-8')
+            return str(value_bytes, "utf-8")
 
     @staticmethod
     def set_file_attribute_st(hardware_file, attribute, value):
-        '''
+        """
         Sets a Circuit's file attribute to the specified value
         Circuits are capable of storing string name-value pairs in their hardware file, for purposes such as
         tracking most recently-evaluated fitness of a Circuit
@@ -188,26 +204,26 @@ class CircuitLegacy:
             The name of the attribute to modify
         value : str
             The value to assign to the attribute
-        '''
+        """
         # Check if the comment exists
-        #hardware_file = open(file_path, "r+")
+        # hardware_file = open(file_path, "r+")
         mmapped_file = mmap(hardware_file.fileno(), 0)
         index = mmapped_file.find(b".comment FILE_ATTRIBUTES")
         if index < 0:
             # Create the comment
             comment_line = ".comment FILE_ATTRIBUTES " + attribute + "={" + value + "}\n"
             # This requires re-mapping the self.__hardware_file
-            #hardware_file = open(file_path, "r+")
+            # hardware_file = open(file_path, "r+")
             content = hardware_file.read()
             hardware_file.seek(0, 0)
             hardware_file.write(comment_line + content)
         else:
             # Check if the attribute exists
-            end_index = mmapped_file.find(b'\n', index)
-            line = str(mmapped_file[index:end_index], 'utf-8')
+            end_index = mmapped_file.find(b"\n", index)
+            line = str(mmapped_file[index:end_index], "utf-8")
             attr_index = line.find(attribute + "={")
             lines = hardware_file.readlines()
-            line_index = 0 # Index of the line that contains the attribute comment
+            line_index = 0  # Index of the line that contains the attribute comment
             for l in lines:
                 if l.find(".comment FILE_ATTRIBUTES") >= 0:
                     break
@@ -217,17 +233,17 @@ class CircuitLegacy:
                 # Attribute doesn't exist yet
                 line = line + " " + attribute + "={" + value + "}\n"
             else:
-                attr_end_index = line.find('}', attr_index) + 2
+                attr_end_index = line.find("}", attr_index) + 2
                 before_attr = line[:attr_index]
                 after_attr = line[attr_end_index:]
-                line = before_attr + attribute + "={" + value + "} " + after_attr + '\n'
+                line = before_attr + attribute + "={" + value + "} " + after_attr + "\n"
             lines[line_index] = line
             hardware_file.truncate(0)
             hardware_file.seek(0)
             hardware_file.writelines(lines)
 
     def get_file_attribute(self, attribute):
-        '''
+        """
         Returns the value of the stored attribute for this Circuit
         Circuits are capable of storing string name-value pairs in their hardware file, for purposes such as
         tracking most recently-evaluated fitness of a Circuit
@@ -241,11 +257,11 @@ class CircuitLegacy:
         -------
         str
             The value of the attribute
-        '''
+        """
         return CircuitLegacy.get_file_attribute_st(self.__hardware_file, attribute)
-    
+
     def set_file_attribute(self, attribute, value):
-        '''
+        """
         Sets this Circuit's file attribute to the specified value
         Circuits are capable of storing string name-value pairs in their hardware file, for purposes such as
         tracking most recently-evaluated fitness of a Circuit
@@ -256,7 +272,7 @@ class CircuitLegacy:
             The name of the attribute to modify
         value : str
             The value to assign to the attribute
-        '''
+        """
         hardware_file = open(self.__hardware_filepath, "r+")
         CircuitLegacy.set_file_attribute_st(hardware_file, attribute, value)
         # Re-map our hardware file
@@ -282,11 +298,7 @@ class CircuitLegacy:
         # changes to the mmap.
         self.write_hardware_changes()
 
-        compile_command = [
-            COMPILE_CMD,
-            self.__hardware_filepath,
-            self.__bitstream_filepath
-        ]
+        compile_command = [COMPILE_CMD, self.__hardware_filepath, self.__bitstream_filepath]
         run(compile_command)
 
         self.__log_event(2, "Finished compiling", self)
@@ -323,11 +335,11 @@ class CircuitLegacy:
             There was the following TODO statement at the bottom of the code:
             TODO Evaluate based on a fitness function defined in the config file
             while still utilizing the existing or newly added evaluate functions in this class::
-            
+
                 def evaluate(self):
                     return
-             
-        
+
+
         Returns
         -------
         float
@@ -370,12 +382,12 @@ class CircuitLegacy:
     # TODO Evaluate based on a fitness function defined in the config file
     # while still utilizing the existing or newly added evaluate functions in this class
     # def evaluate(self):
-    #     return 
-    
+    #     return
+
     def evaluate_sim(self, is_combined):
         """
         Just evaluate the simulation bitstream (use sine function combinations, with variance formula)
-        
+
         Parameters
         ----------
         is_combined : bool
@@ -386,7 +398,7 @@ class CircuitLegacy:
         float
             True if it is any type of oscilator (uses count pulses), False otherwise.
         """
-        
+
         # Need to sum up the waveforms of every 1 that appears in our bitstream
         sine_funcs = []
         for pos in range(len(self.__simulation_bitstream)):
@@ -408,7 +420,7 @@ class CircuitLegacy:
                 sum = sum + func(i)
             # Taking the average keeps it within the drawable range
             waveform.append(sum / len(sine_funcs))
-        
+
         if is_combined:
             fitness = self.__measure_combined_fitness(waveform)
         else:
@@ -426,23 +438,23 @@ class CircuitLegacy:
         int
             The fitness of the sim hardware. (sum of all bytes in compiled binary file)
         """
-        
+
         self.__compile()
-        
+
         self.__fitness = 0
         with open(self.__bitstream_filepath, "rb") as f:
             byte = f.read(1)
             while byte != b"":
                 self.__fitness = self.__fitness + int.from_bytes(byte, "big")
                 byte = f.read(1)
-        
+
         self.__log_event(3, "Fitness: ", self.__fitness)
 
         self.__update_all_live_data()
 
         return self.__fitness
 
-    def evaluate_variance(self, record_data = False):
+    def evaluate_variance(self, record_data=False):
         """
         Upload and run this Circuit on the FPGA and analyze its
         performance.
@@ -466,10 +478,7 @@ class CircuitLegacy:
         self.__microcontroller.measure_signal(self.get_data_filepath())
 
         elapsed = time() - start
-        self.__log_event(1,
-            "TIME TAKEN RUNNING AND LOGGING ---------------------- ",
-            elapsed
-        )
+        self.__log_event(1, "TIME TAKEN RUNNING AND LOGGING ---------------------- ", elapsed)
 
         waveform = self.__read_variance_data()
         fitness = self.__measure_variance_fitness(waveform)
@@ -482,7 +491,7 @@ class CircuitLegacy:
 
         return fitness
 
-    def evaluate_tonedisc(self, record_data = False):
+    def evaluate_tonedisc(self, record_data=False):
         """
         Upload and run this tone discriminator Circuit on the FPGA and analyze its
         performance.
@@ -508,16 +517,13 @@ class CircuitLegacy:
         self.__microcontroller.measure_signal_td(self)
 
         elapsed = time() - start
-        self.__log_event(1,
-            "TIME TAKEN RUNNING AND LOGGING ---------------------- ",
-            elapsed
-        )
+        self.__log_event(1, "TIME TAKEN RUNNING AND LOGGING ---------------------- ", elapsed)
 
         # Save off the following:
         # (1) the waveform data (i.e., the actual ADC readings) read by Nano from FPGA
         # (2) the state data (i.e., whether the Nano was generating a LOW (State = 0) or HIGH (State = 1) frequency)
         # (3) the resulting fitness of the circuit based on the waveform and state data
-        
+
         waveform = self.__read_variance_data_td()[0]
         state = self.__read_variance_data_td()[1]
         fitness = self.__measure_tonedisc_fitness(waveform, state)
@@ -530,7 +536,7 @@ class CircuitLegacy:
 
         return fitness
 
-    def evaluate_pulse_count(self, record_data = False):
+    def evaluate_pulse_count(self, record_data=False):
         """
         Upload and run this circuit and count the number of pulses it
         generates.
@@ -551,16 +557,15 @@ class CircuitLegacy:
         """
         start = time()
         self.__run()
-        #self.__microcontroller.measure_pulses(self)
-        self.__microcontroller.simple_measure_pulses(self.get_data_filepath(), self.__config.get_num_samples())
-
-        elapsed = time() - start
-        self.__log_event(1,
-            "TIME TAKEN RUNNING AND LOGGING ---------------------- ",
-            elapsed
+        # self.__microcontroller.measure_pulses(self)
+        self.__microcontroller.simple_measure_pulses(
+            self.get_data_filepath(), self.__config.get_num_samples()
         )
 
-        measure_result = self.__measure_pulse_fitness(record_data = record_data)
+        elapsed = time() - start
+        self.__log_event(1, "TIME TAKEN RUNNING AND LOGGING ---------------------- ", elapsed)
+
+        measure_result = self.__measure_pulse_fitness(record_data=record_data)
 
         if record_data:
             # We will update all live data when all samples have been taken
@@ -571,7 +576,7 @@ class CircuitLegacy:
         # This is either the fitness or the list of pulses counted
         return measure_result
 
-    def evaluate_combined(self, record_data = False):
+    def evaluate_combined(self, record_data=False):
         """
         Upload and run this circuit and take a combined measure of fitness
 
@@ -590,14 +595,11 @@ class CircuitLegacy:
         self.__microcontroller.measure_signal(self)
 
         elapsed = time() - start
-        self.__log_event(1,
-            "TIME TAKEN RUNNING AND LOGGING ---------------------- ",
-            elapsed
-        )
+        self.__log_event(1, "TIME TAKEN RUNNING AND LOGGING ---------------------- ", elapsed)
 
         waveform = self.__read_variance_data()
         fitness = self.__measure_combined_fitness(waveform)
-        
+
         if record_data:
             # We will update all live data when all samples have been taken
             self.__data.append(fitness)
@@ -620,10 +622,7 @@ class CircuitLegacy:
         self.__microcontroller.measure_signal(self)
 
         elapsed = time() - start
-        self.__log_event(1,
-            "TIME TAKEN RUNNING AND LOGGING ---------------------- ",
-            elapsed
-        )
+        self.__log_event(1, "TIME TAKEN RUNNING AND LOGGING ---------------------- ", elapsed)
 
         waveform = self.__read_variance_data()
         return self.__measure_mean_voltage(waveform)
@@ -633,25 +632,15 @@ class CircuitLegacy:
         Compiles this Circuit, uploads it, and runs it on the FPGA
         """
         self.__compile()
-        
-        cmd_str = [
-            RUN_CMD,
-            self.__bitstream_filepath,
-            "-d",
-            self.__microcontroller.get_fpga()
-        ]
+
+        cmd_str = [RUN_CMD, self.__bitstream_filepath, "-d", self.__microcontroller.get_fpga()]
         print(cmd_str)
         run(cmd_str)
         sleep(1)
 
         # if switching fpgas every sample, need to upload to the second fpga also
         if self.__config.get_transfer_sample():
-            cmd_str = [
-                RUN_CMD,
-                self.__bitstream_filepath,
-                "-d",
-                self.__config.get_fpga2()
-            ]
+            cmd_str = [RUN_CMD, self.__bitstream_filepath, "-d", self.__config.get_fpga2()]
             print(cmd_str)
             run(cmd_str)
             sleep(1)
@@ -669,28 +658,25 @@ class CircuitLegacy:
         data = data_file.readlines()
         total_samples = 500
         waveform = []
-        for i in range(total_samples-1):
+        for i in range(total_samples - 1):
             try:
                 x = int(data[i].strip().split(b": ", 1)[1])
                 waveform.append(x)
             except:
-                self.__log_error(1, "FAILED TO READ {} AT LINE {} -> ZEROIZING LINE".format(
-                    self,
-                    i
-                ))
+                self.__log_error(1, f"FAILED TO READ {self} AT LINE {i} -> ZEROIZING LINE")
                 waveform.append(0)
 
-        self.__log_event(5, "Waveform: ", waveform) 
+        self.__log_event(5, "Waveform: ", waveform)
         return waveform
 
     def __read_variance_data_td(self):
         """
-        Reads tone discriminator data from the Circuit data file, 
-        which contains readings from the Microcontroller. Data includes waveform (ADC) AND 
+        Reads tone discriminator data from the Circuit data file,
+        which contains readings from the Microcontroller. Data includes waveform (ADC) AND
         state (input frequency) information.
 
         .. todo::
-            Check the condition of the for loop. Why the -1? 
+            Check the condition of the for loop. Why the -1?
 
         Returns
         -------
@@ -709,11 +695,11 @@ class CircuitLegacy:
         state = []
 
         # Append each data point to the appropriate array
-        for i in range(total_samples-1):
+        for i in range(total_samples - 1):
             try:
                 # If the reading of the data suceeds, split into the waveform and state readings
                 dataPoint = data[i].decode("utf-8")
-                
+
                 x = int(re.split(" ", dataPoint)[1])
                 y = int(re.split(" ", dataPoint)[2])
 
@@ -722,15 +708,14 @@ class CircuitLegacy:
                 state.append(y)
             except:
                 # If the reading of the data fails, just record the data as 0s
-                self.__log_error(1, "TONE_DISC FAILED TO READ {} AT LINE {} -> ZEROIZING LINE".format(
-                    self,
-                    i
-                ))
+                self.__log_error(
+                    1, f"TONE_DISC FAILED TO READ {self} AT LINE {i} -> ZEROIZING LINE"
+                )
                 waveform.append(0)
                 state.append(0)
 
         self.__log_event(5, "Waveform: ", waveform)
-        self.__log_event(5, "State: ", state) 
+        self.__log_event(5, "State: ", state)
 
         # Return the populated arrays
         return [waveform, state]
@@ -787,7 +772,7 @@ class CircuitLegacy:
         """
         Measure the fitness of this circuit using the variance-maximization fitness
         function
-        
+
         Parameters
         ----------
         waveform : list[int]
@@ -805,18 +790,18 @@ class CircuitLegacy:
         # Reset high/low vals to min/max respectively
         self.__low_val = 1024
         self.__high_val = 0
-        for i in range(len(waveform)-1):
+        for i in range(len(waveform) - 1):
             # NOTE Signal Variance is calculated by summing the absolute difference of
             # sequential voltage samples from the microcontroller.
             # Capture the next point in the data file to a variable
-            initial1 = waveform[i] #int(data[i].strip().split(b": ", 1)[1])
+            initial1 = waveform[i]  # int(data[i].strip().split(b": ", 1)[1])
             # Capture the next point + 1 in the data file to a variable
-            initial2 = waveform[i+1] #int(data[i + 1].strip().split(b": ", 1)[1])
+            initial2 = waveform[i + 1]  # int(data[i + 1].strip().split(b": ", 1)[1])
             # Take the absolute difference of the two points and store to a variable
             variance = abs(initial2 - initial1)
             # Append the variance to the waveform list
             # Removed since we do this already
-            #waveform.append(initial1)
+            # waveform.append(initial1)
 
             if initial1 < self.__low_val:
                 self.__low_val = initial1
@@ -830,7 +815,7 @@ class CircuitLegacy:
             # NOTE: This encourages frequencies that match the sampling rate
             variances.append(variance)
 
-            if initial1 != None and initial1 < 1000:
+            if initial1 is not None and initial1 < 1000:
                 variance_sum += variance
 
         with open("workspace/waveformlivedata.log", "w+") as waveLive:
@@ -841,15 +826,15 @@ class CircuitLegacy:
 
         var_max_fitness = variance_sum / total_samples
         self.__fitness = var_max_fitness
-        self.__mean_voltage = sum(waveform) / len(waveform) #used by combined fitness func
+        self.__mean_voltage = sum(waveform) / len(waveform)  # used by combined fitness func
 
         return self.__fitness
-    
+
     def __measure_tonedisc_fitness(self, waveform, state):
         """
         Measure the fitness of this circuit using the tone discriminator fitness
-        function. 
-        
+        function.
+
         Parameters
         ----------
         waveform : list[int]
@@ -866,19 +851,19 @@ class CircuitLegacy:
         # Note: operating voltage of the Arduino Nano is 5 V, while that of the FPGA is 3.3 V
         # According to the ice40 datasheet, 3.6 V is the absolute maximum output voltage of FPGA
         # Thus, each ADC reading can range from 0 (0 V) to 737 (3.6 V = 5 V * (737 / 1024))
-        
+
         # There are 2 acceptable cases to produce a perfect fitness of 1:
-            # (1): The circuit outputs 0 V for low frequencies (State = 0) and 3.6 V for high frequencies (State = 1)
-            # (2): The circuit outputs 0 V for high frequencies (State = 1) and 3.6 V for low frequencies (State = 0)
+        # (1): The circuit outputs 0 V for low frequencies (State = 0) and 3.6 V for high frequencies (State = 1)
+        # (2): The circuit outputs 0 V for high frequencies (State = 1) and 3.6 V for low frequencies (State = 0)
 
         # waveform_diffs holds two values that correspond to the 2 cases outlined above
-            # (1): The first value holds the sum of absolute differences between the FPGA's waveform samples and an ideal, fitness = 1 waveform satisfying (1) above
-            # (2): The second value holds the sum of absolute differences between the FPGA's waveform samples and an ideal, fitness = 1 waveform satisfying (2) above
+        # (1): The first value holds the sum of absolute differences between the FPGA's waveform samples and an ideal, fitness = 1 waveform satisfying (1) above
+        # (2): The second value holds the sum of absolute differences between the FPGA's waveform samples and an ideal, fitness = 1 waveform satisfying (2) above
         # waveform_diffs is ONLY used to check if the circuit is a perfect one, so this function can be rewritten to exclude it
 
         # waveform_sums holds two values that correspond to:
-            # (1): The sum of the ADC waveform readings for when State = 0
-            # (2): The sum of the ADC waveform readings for when State = 1
+        # (1): The sum of the ADC waveform readings for when State = 0
+        # (2): The sum of the ADC waveform readings for when State = 1
         # These sums are crucial to compute the fitness
         # The sums are used to compute the AVERAGE FPGA voltage for when State = 0 and the AVERAGE FPGA voltage for when State = 1
         # The higher the absolute difference between these averages, the better the circuit has done to "discriminate" the frequencies
@@ -908,19 +893,19 @@ class CircuitLegacy:
                 self.__high_val = waveformPoint
 
             # If we have a valid reading, check if the State was 0 (low frequency) or 1 (high frequency)
-            if waveformPoint != None and waveformPoint < 1000:
+            if waveformPoint is not None and waveformPoint < 1000:
                 # Update the correct arrays based on the state
                 if state[i] == 0:
                     stateZeroCount += 1
                     waveform_diffs[0] += waveformPoint
-                    waveform_diffs[1] += (737 - waveformPoint)
+                    waveform_diffs[1] += 737 - waveformPoint
                     waveform_sums[0] += waveformPoint
                 else:
                     stateOneCount += 1
-                    waveform_diffs[0] += (737 - waveformPoint)
+                    waveform_diffs[0] += 737 - waveformPoint
                     waveform_diffs[1] += waveformPoint
                     waveform_sums[1] += waveformPoint
-        
+
         # Write waveform data to file
         with open("workspace/waveformlivedata.log", "w+") as waveLive:
             i = 1
@@ -944,17 +929,23 @@ class CircuitLegacy:
         # Most common case below: fitness is proportional to the absolute different in mean voltage between States 0 and 1
         # A perfect fitness of 1 means the difference was a perfect 3.6 V, meaning perfect discrimination.
         else:
-            stateZeroAve = (waveform_sums[0] / stateZeroCount)
-            stateOneAve = (waveform_sums[1] / stateOneCount)
-            self.__fitness = (abs(stateZeroAve - stateOneAve) / 737.0)
-            self.__log_event(1,
-            "State 0 Average = ",
-            stateZeroAve, " --- State 0 Count = ", stateZeroCount,
-              " ----- State 1 Average = ", stateOneAve,
-              " State 1 Count = ", stateOneCount)
-        
+            stateZeroAve = waveform_sums[0] / stateZeroCount
+            stateOneAve = waveform_sums[1] / stateOneCount
+            self.__fitness = abs(stateZeroAve - stateOneAve) / 737.0
+            self.__log_event(
+                1,
+                "State 0 Average = ",
+                stateZeroAve,
+                " --- State 0 Count = ",
+                stateZeroCount,
+                " ----- State 1 Average = ",
+                stateOneAve,
+                " State 1 Count = ",
+                stateOneCount,
+            )
+
         # Compute mean voltage
-        self.__mean_voltage = sum(waveform) / len(waveform) #used by combined fitness func
+        self.__mean_voltage = sum(waveform) / len(waveform)  # used by combined fitness func
 
         return self.__fitness
 
@@ -967,10 +958,10 @@ class CircuitLegacy:
         bool
             True if Tolerant Pulse Count fitness function, otherwise false.
         """
-        return self.__config.get_fitness_func() == 'TOLERANT_PULSE_COUNT'
+        return self.__config.get_fitness_func() == "TOLERANT_PULSE_COUNT"
 
     # NOTE Using log files instead of a data buffer in the event of premature termination
-    def __measure_pulse_fitness(self, record_data = False):
+    def __measure_pulse_fitness(self, record_data=False):
         """
         Measures the fitness of this circuit using the pulse-count
         fitness function
@@ -979,7 +970,7 @@ class CircuitLegacy:
 
         .. todo::
             Preexisting comment: ``TODO: Refactor``
-        
+
         .. todo::
             Preexisting comments in this area suggest we use log files instead of data buffer in the event of a premature termination.
 
@@ -995,7 +986,7 @@ class CircuitLegacy:
         list[int]
             Total Pulse Counts (if record_data is true)
         """
-        data_file = open(self.__data_filepath, "r")
+        data_file = open(self.__data_filepath)
         data = data_file.readlines()
 
         # Extract the integer value from the log file indicating the pulses counted from
@@ -1004,10 +995,10 @@ class CircuitLegacy:
         pulse_counts = []
         for i in range(len(data)):
             pulse_counts.append(int(data[i]))
-        
+
         if record_data:
             return pulse_counts
-        
+
         # Set pulse_count to whichever one is furthest away
         dist = 0
         for pc in pulse_counts:
@@ -1015,15 +1006,15 @@ class CircuitLegacy:
             if this_dist >= dist:
                 dist = this_dist
                 pulse_count = pc
-        
-        self.__log_event(3, "Pulses counted: {}".format(pulse_count))
+
+        self.__log_event(3, f"Pulses counted: {pulse_count}")
         self.__pulses = pulse_count
 
         if len(pulse_counts) == 0:
             self.__log_event(2, "NULL DATA FILE. ZEROIZING")
 
         self.__fitness = self.__calc_pulse_fitness(pulse_count)
-        
+
         return self.__fitness
 
     def __calc_pulse_fitness(self, pulses):
@@ -1045,22 +1036,22 @@ class CircuitLegacy:
         if self.__is_tolerant_pulse_count():
             # Build a normal-ish distribution function where the "mean" is desired_freq,
             # and the "standard deviation" is of our choosing (here we select 0.025*freq)
-            deviation = 0.025 * desired_freq # 25 for 1,000 Hz, 250 for 10,000 Hz
+            deviation = 0.025 * desired_freq  # 25 for 1,000 Hz, 250 for 10,000 Hz
             # No need to check for this because it's included in the function
             # Note: Fitness is still from 0-1
             fitness = math.exp(-0.5 * math.pow((pulses - desired_freq) / deviation, 2))
         else:
             if pulses == desired_freq:
-                self.__log_event(1, "Unity achieved: {}".format(self))
+                self.__log_event(1, f"Unity achieved: {self}")
                 fitness = 1
             elif pulses == 0:
                 fitness = 0
             else:
                 fitness = 1.0 / abs(desired_freq - pulses)
 
-        #if pulses > 0:
-            # Give fitness bonus for getting above 0 pulses
-            #fitness = fitness + 1
+        # if pulses > 0:
+        # Give fitness bonus for getting above 0 pulses
+        # fitness = fitness + 1
         # anything with 0 pulses gets an automatic 0 for fitness
         if pulses <= 0:
             fitness = 0
@@ -1088,7 +1079,7 @@ class CircuitLegacy:
         # Using the different between average and threshhold voltage since pulse count is normally 0
         # pulseFitness = self.__measure_pulse_fitness()
         # Add 1 to it so that it is a whole number, and raising to a power will increase the value
-        #pulseFitness = 1 / (abs(self.__mean_voltage - 341) + 1) + 1
+        # pulseFitness = 1 / (abs(self.__mean_voltage - 341) + 1) + 1
         # Issue with old approach is graph was mostly a straight line with a spike at the target voltage
         # We've changed to a somewhat normal distribution-like function to provide better encouragement
         # Constants:
@@ -1102,13 +1093,13 @@ class CircuitLegacy:
 
         if self.__config.get_combined_mode() == "ADD":
             self.__fitness = (pulseWeight * pulseFitness) + (varWeight * varFitness)
-        else: #MULT
+        else:  # MULT
             self.__fitness = pow(pulseFitness, pulseWeight) * pow(varFitness, varWeight)
 
         self.__log_event(3, "Combined Fitness: ", self.__fitness)
-        
+
         return self.__fitness
- 
+
     def __measure_mean_voltage(self, waveform):
         """
         Measures mean voltage. (Just calls __measure_variance_fitness())
@@ -1127,18 +1118,18 @@ class CircuitLegacy:
         return self.__mean_voltage
 
     def __update_all_live_data(self):
-        '''
+        """
         Updates this circuit's entry in alllivedata.log (the circuit's fitness and source population)
-        '''
+        """
         # Read in the file contents first
         lines = []
-        with open("workspace/alllivedata.log", "r") as allLive:
+        with open("workspace/alllivedata.log") as allLive:
             lines = allLive.readlines()
 
         # Modify the content internally
         index = self.__index - 1
         if len(lines) <= index:
-            for i in range(index - len(lines) + 1):
+            for _i in range(index - len(lines) + 1):
                 lines.append("\n")
 
         # Shows pulse count in this chart if in PULSE_COUNT fitness func, and fitness otherwise
@@ -1153,9 +1144,7 @@ class CircuitLegacy:
                 value = [str(self.__fitness)]
 
         lines[index] = "{},{},{}\n".format(
-            self.__index, 
-            ';'.join(value),
-            self.get_file_attribute('src_population')
+            self.__index, ";".join(value), self.get_file_attribute("src_population")
         )
 
         # Write these new lines to the file
@@ -1163,7 +1152,7 @@ class CircuitLegacy:
             allLive.writelines(lines)
 
     # SECTION Genetic Algorithm related functions
-    
+
     def mutate(self):
         """
         Decide which mutation function to used based on configuration
@@ -1173,7 +1162,7 @@ class CircuitLegacy:
             self.__mutate_simulation(False)
         else:
             self.__mutate_actual(False)
-    
+
     def __mutate_simulation(self, all_random):
         """
         Mutate the simulation mode circuit
@@ -1184,14 +1173,14 @@ class CircuitLegacy:
             if all_random:
                 self.__simulation_bitstream[i] = self.__rand.integers(0, 2)
             else:
-                if self.__config.get_mutation_probability() >= self.__rand.uniform(0,1):
+                if self.__config.get_mutation_probability() >= self.__rand.uniform(0, 1):
                     # Mutate this bit
                     self.__simulation_bitstream[i] = 1 - self.__simulation_bitstream[i]
 
     def __mutate_actual(self, all_random):
         """
         Mutate this circuit.
-        Can either completely randomize all modifiable bits, or evalute mutation 
+        Can either completely randomize all modifiable bits, or evalute mutation
         chance per-bit and flip bits if mutation succeeds.
 
         Parameters
@@ -1202,7 +1191,7 @@ class CircuitLegacy:
         """
 
         def mutate_bit(bit, row, col, *rest):
-            if self.__config.get_mutation_probability() >= self.__rand.uniform(0,1):
+            if self.__config.get_mutation_probability() >= self.__rand.uniform(0, 1):
                 # Set this bit to either a 0 or 1 randomly
                 # Keep in mind that these are BYTES that we are modifying, not characters
                 # Therefore, we have to set it to either ASCII 0 (48) or ASCII 1 (49), not actual 0 or 1, which represent different characters
@@ -1212,7 +1201,7 @@ class CircuitLegacy:
                 # Note: If prev != 48 or 49, then we changed the wrong value because it was not a 0 or 1 previously
                 self.__log_event(4, "Mutating:", self, "@(", row, ",", col, ") previous was", bit)
                 return 97 - bit
-        
+
         def randomize_bit(*rest):
             return self.__rand.integers(48, 50)
 
@@ -1221,8 +1210,9 @@ class CircuitLegacy:
         else:
             self.__run_at_each_modifiable(mutate_bit)
 
-    def __run_at_each_modifiable(self, lambda_func, hardware_file = None, accessible_columns = None,
-        routing_type=None):
+    def __run_at_each_modifiable(
+        self, lambda_func, hardware_file=None, accessible_columns=None, routing_type=None
+    ):
         """
         Runs the lambda_func at every modifiable position
         Args passed to lambda_func: value of bit (as a byte), row, col
@@ -1231,7 +1221,7 @@ class CircuitLegacy:
         Keep in mind the bytes are the ASCII codes, so for example 49 = 1
 
         .. todo::
-            Go over this with someone who can clarify what all of the data types are. 
+            Go over this with someone who can clarify what all of the data types are.
 
         Parameters
         ----------
@@ -1260,11 +1250,11 @@ class CircuitLegacy:
         # The b prefix makes the string an instance of the "bytes" type
         # The .logic_tile header indicates that there is a tile, so the "tile" variable stores the starting point of the current tile
         tile = hardware_file.find(b".logic_tile")
-        
+
         while tile > 0:
             # Set pos to the position of this tile, but with the length of ".logic_tile" added so it is in front of where we have the x/y coords
             pos = tile + len(".logic_tile")
-            
+
             # Check if the position is legal to modify
             if self.__tile_is_included(hardware_file, pos):
                 # Find the start and end of the line; the positions of the \n newline just before and at the end of this line
@@ -1315,10 +1305,11 @@ class CircuitLegacy:
             Returns the bits of the modifiable bitstream in the project.
         """
         bitstream = []
+
         def handle_bit(bit, *rest):
             bitstream.append(bit)
             return None
-        
+
         self.__run_at_each_modifiable(handle_bit, hardware_file)
 
         return bitstream
@@ -1347,7 +1338,7 @@ class CircuitLegacy:
         """
         old_list = self.get_file_intrinsic_modifiable_bitstream(self.__hardware_file)
         return np.array([x - 48 for x in old_list])
-    
+
     def reconstruct_from_bistream(self, bitstream, accessible_columns, routing_type):
         """
         Takes this circuit, and replaces all of its modifiable bits with those in
@@ -1366,12 +1357,16 @@ class CircuitLegacy:
             ??
         """
         i = 0
+
         def handle_bit(*rest):
             nonlocal i
             new_bit = bitstream[i]
             i += 1
             return new_bit
-        self.__run_at_each_modifiable(handle_bit, accessible_columns=accessible_columns, routing_type=routing_type)
+
+        self.__run_at_each_modifiable(
+            handle_bit, accessible_columns=accessible_columns, routing_type=routing_type
+        )
 
     def copy_genes_from(self, parent, crossover_point):
         """
@@ -1391,11 +1386,11 @@ class CircuitLegacy:
             self.__crossover_sim(parent, crossover_point)
         else:
             self.__crossover_actual(parent, crossover_point)
-        
+
     def __crossover_sim(self, parent, crossover_point):
         """
         Simulated crossover, pulls first n bits from parent and remaining from self
-        
+
         Parameters
         ----------
         parent : Circuit
@@ -1406,7 +1401,7 @@ class CircuitLegacy:
         for i in range(0, crossover_point):
             self.__simulation_bitstream[i] = parent.__simulation_bitstream[i]
         # Remaining bits left unchanged
-        
+
     def __crossover_actual(self, parent, crossover_point):
         """
         Copy part of the hardware file from parent into this circuit's hardware file.
@@ -1434,15 +1429,15 @@ class CircuitLegacy:
                 my_pos = my_tile + line_size * (crossover_point - 1)
                 parent_pos = parent_tile + line_size * (crossover_point - 1)
 
-                data = parent_hw_file[parent_pos:parent_pos + line_size]
+                data = parent_hw_file[parent_pos : parent_pos + line_size]
                 self.update_hardware_file(my_pos, line_size, data)
 
             parent_tile = parent_hw_file.find(b".logic_tile", parent_tile + 1)
             my_tile = self.__hardware_file.find(b".logic_tile", my_tile + 1)
-        
+
         # Need to set our source population to our parent's
         src_pop = parent.get_file_attribute("src_population")
-        if src_pop != None:
+        if src_pop is not None:
             self.set_file_attribute("src_population", src_pop)
 
     def copy_sim(self, src):
@@ -1475,8 +1470,8 @@ class CircuitLegacy:
 
         .. todo::
             Pre-existing TODO: Add error checking here
-        
-        
+
+
         Parameters
         ----------
         pos : int
@@ -1486,7 +1481,7 @@ class CircuitLegacy:
         data : ReadableBuffer
             The data to write into the hardware file
         """
-        self.__hardware_file[pos:pos + length] = data
+        self.__hardware_file[pos : pos + length] = data
 
     def write_hardware_changes(self):
         """
@@ -1515,7 +1510,7 @@ class CircuitLegacy:
     def copy_hardware_from(self, source):
         """
         Copy the hardware from a source circuit to this circuit.
-        
+
         Parameters
         ----------
         source : Circuit
@@ -1572,7 +1567,7 @@ class CircuitLegacy:
     def get_hardware_file(self):
         """
         Returns the hardware file of this circuit
-        
+
         Returns
         -------
         mmap
@@ -1636,7 +1631,7 @@ class CircuitLegacy:
         NOTE: Tile = the .logic_tile in the asc file.
 
         .. todo::
-            Preexisting todo: Replace magic values with a more generalized solution. 
+            Preexisting todo: Replace magic values with a more generalized solution.
             These magic values are indicative of the underlying hardware (ice40kh1k)
 
         Parameters
@@ -1661,10 +1656,10 @@ class CircuitLegacy:
         # tiles while scraping the asc files
         # This is in the actual asc file; this is why we can simply pull from "pos"
         # i.e. you'll see the header ".logic_file 1 1" - x=1, y=1
-        
+
         # This is where we had a fundamental issue before: The value in the hardware at this position is going to be an ASCII char value, not the actual
         # number. Here, we parse the byte as an integer, then to a char, then back to an integer
-        
+
         # However, we have a great problem now: what about multi-digit numbers?
         # Find the space that separates the x and y, and find the end of the line
         # Then, grab the bytes for x, grab the bytes for y, convert to strings, and parse those strings
@@ -1690,6 +1685,7 @@ class CircuitLegacy:
             Low Value for MAP elites
         """
         return self.__low_val
+
     def get_high_value(self):
         """
         Returns

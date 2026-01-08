@@ -1,25 +1,28 @@
-""" 
+"""
 Circuit Population
 ------------------
 
 This class was reviewed, and should be fully documented at a basic level.
 
 """
-import os
-import numpy as np
-from typing import NamedTuple
-from shutil import copyfile
-from sortedcontainers import SortedKeyList
-from math import ceil
-from numpy.random import default_rng
-from pathlib import Path
-from itertools import zip_longest
-from collections import namedtuple
-from time import time
-from subprocess import run
-import random
+
 import math
+import os
+import random
+from collections import namedtuple
+from datetime import datetime
+from itertools import zip_longest
+from math import ceil
 from mmap import mmap
+from pathlib import Path
+from shutil import copyfile
+from time import time
+
+import numpy as np
+from numpy.random import default_rng
+from sortedcontainers import SortedKeyList
+
+from ascTemplateBuilder import ascTemplateBuilder
 from Circuit.FileBasedCircuit import FileBasedCircuit
 from Circuit.FullySimCircuit import FullySimCircuit
 from Circuit.IntrinsicCircuit import IntrinsicCircuit
@@ -28,15 +31,13 @@ from Circuit.SimHardwareCircuit import SimHardwareCircuit
 from Circuit.ToneDiscriminatorFitnessFunction import ToneDiscriminatorFitnessFunction
 from Circuit.VarMaxFitnessFunction import VarMaxFitnessFunction
 from Config import Config
-from ascTemplateBuilder import ascTemplateBuilder
 from utilities import wipe_folder
-from datetime import datetime
 
-RANDOMIZE_UNTIL_NOT_SET_ERR_MSG = '''\
-RANDOMIZE_UNTIL not set in config.ini, continuing without randomization'''
+RANDOMIZE_UNTIL_NOT_SET_ERR_MSG = """\
+RANDOMIZE_UNTIL not set in config.ini, continuing without randomization"""
 
-INVALID_VARIANCE_ERR_MSG = '''\
-VARIANCE_THRESHOLD <= 0 as set in config.ini, continuing without randomization'''
+INVALID_VARIANCE_ERR_MSG = """\
+VARIANCE_THRESHOLD <= 0 as set in config.ini, continuing without randomization"""
 
 # SEED_HARDWARE is the hardware file used as an initial template for the Circuits
 # NOTE The Seed file is provided as a way to kickstart the evolutionary process
@@ -61,6 +62,7 @@ CircuitPathInfo = namedtuple("CircuitPathInfo", ["path", "fitness"])
 ELITE_MAP_SCALE_FACTOR = 50
 PULSE_ELITE_MAP_SCALE_FACTOR = 5000
 
+
 def is_pulse_func(config):
     """
     Used in multiple places, will be removed soon.
@@ -78,16 +80,22 @@ def is_pulse_func(config):
     bool
         True if it is any type of oscilator (uses count pulses), False otherwise.
     """
-    return (config.get_fitness_func() == 'PULSE_COUNT' or config.get_fitness_func() == 'TOLERANT_PULSE_COUNT' 
-            or config.get_fitness_func() == 'SENSITIVE_PULSE_COUNT' or config.get_fitness_func() == 'PULSE_CONSISTENCY')
+    return (
+        config.get_fitness_func() == "PULSE_COUNT"
+        or config.get_fitness_func() == "TOLERANT_PULSE_COUNT"
+        or config.get_fitness_func() == "SENSITIVE_PULSE_COUNT"
+        or config.get_fitness_func() == "PULSE_CONSISTENCY"
+    )
+
 
 class CircuitPopulation:
     """Manages the initializing the population of circuits,
     updating and recording information about the population throughout evolution,
     and deciding when to stop evolution"""
+
     # SECTION Initialization functions
     def __init__(self, mcu, config: Config, logger):
-        """ 
+        """
         Generates the initial population of circuits with the following arguments
 
         Parameters
@@ -113,10 +121,10 @@ class CircuitPopulation:
         self.__current_epoch = 0
         self.__best_epoch = 0
         num_rows = 3
-        if(config.get_routing_type == "NEWSE"):
+        if config.get_routing_type == "NEWSE":
             num_rows = 2
         num_cols = len(config.get_accessed_columns())
-        self.__population_bistream_sum = np.zeros(16*6*num_rows*num_cols)
+        self.__population_bistream_sum = np.zeros(16 * 6 * num_rows * num_cols)
 
         # Set the selection type here since the selection type should
         # not change during a run. This way we don't have to branch each
@@ -134,26 +142,22 @@ class CircuitPopulation:
         elif config.get_selection_type() == "MAP_ELITES":
             self.__run_selection = self.__run_map_elites_selection
         else:
-            self.__log_error(
-                1, "Invalid Selection method in config.ini. Exiting...")
+            self.__log_error(1, "Invalid Selection method in config.ini. Exiting...")
             exit()
 
         elitism_fraction = config.get_elitism_fraction()
         population_size = config.get_population_size()
-        self.__n_elites = int(ceil(elitism_fraction * population_size))
+        self.__n_elites = ceil(elitism_fraction * population_size)
 
     def run_fitness_sensitity(self):
         """
         Gets the same circuit, runs it repeatedly and reports each fitness.
         Internally has a while loop to determine how many times to run.
         """
-        #create circuit object
+        # create circuit object
         self.__log_info(1, "Creating circuit object for fitness sensitivity experiment")
         ckt = self.__construct_circuit(
-            1,
-            "hardware1",
-            self.__config.get_test_circuit(),
-            self.__generate_sine_funcs()
+            1, "hardware1", self.__config.get_test_circuit(), self.__generate_sine_funcs()
         )
 
         using_time = self.__config.using_sensitivity_time()
@@ -163,8 +167,8 @@ class CircuitPopulation:
         using_trials = self.__config.using_sensitivity_trials()
         cur_trial = 0
         num_trials = self.__config.get_sensitivity_trials()
-        
-        #loop through trials and log fitness
+
+        # loop through trials and log fitness
         should_continue = True
         while should_continue:
             self.__eval_circuit_once(ckt)
@@ -172,28 +176,36 @@ class CircuitPopulation:
 
             with open("workspace/fitnesssensitivity.log", "a") as live_file:
                 if self.__config.is_pulse_func():
-                    data2 = ckt.get_extra_data('pulses')
+                    data2 = ckt.get_extra_data("pulses")
                 else:
-                    data2 = ckt.get_extra_data('mean_voltage')
+                    data2 = ckt.get_extra_data("mean_voltage")
 
-                #get temp and humidity reading
+                # get temp and humidity reading
                 t = 0
                 h = 0
-                if(self.__config.reading_temp_humidity()):
+                if self.__config.reading_temp_humidity():
                     t = self.__microcontroller.measure_temp()
                     h = self.__microcontroller.measure_humidity()
-                    self.__log_event(4, "Recorded temperature: " + str(t) + ". Recorded humidity: " + str(h))
+                    self.__log_event(
+                        4, "Recorded temperature: " + str(t) + ". Recorded humidity: " + str(h)
+                    )
 
-                
                 now = datetime.now()
                 timestamp = now.strftime("%H.%M.%S")
 
-                live_file.write(("{}:{},{},{},{},{}\n").format(str(cur_trial), fitness, data2, t, h, timestamp))
-            self.__log_event(2, "Trial " + str(cur_trial) + " done. Fitness recorded and logged to file: " + str(fitness))
+                live_file.write(f"{cur_trial!s}:{fitness},{data2},{t},{h},{timestamp}\n")
+            self.__log_event(
+                2,
+                "Trial "
+                + str(cur_trial)
+                + " done. Fitness recorded and logged to file: "
+                + str(fitness),
+            )
 
             cur_trial += 1
-            should_continue = ((not using_time) or (time() - start_time < stop_time)) and \
-                              ((not using_trials) or (cur_trial < num_trials))
+            should_continue = ((not using_time) or (time() - start_time < stop_time)) and (
+                (not using_trials) or (cur_trial < num_trials)
+            )
 
         self.__log_event(1, "Fitness sensitivity trails done.")
 
@@ -220,26 +232,52 @@ class CircuitPopulation:
             # This works because the variable values are then *evaluated* as the lambda (closure) is constructed
             # Before this fix, we had a bug where every single sine function would be exactly the same;
             # all holding a/b/c/d values from the very last function to be generated
-            sine_funcs.append((lambda x,a=a,b=b,c=c,d=d: a * math.sin(b * (x + c)) + d))
-            sine_str = "Sine function: " + str(i) + " | y = " + str(a) + " * sin(" + str(b) + " * (x + " + str(c) + ")) + " + str(d)
+            sine_funcs.append((lambda x, a=a, b=b, c=c, d=d: a * math.sin(b * (x + c)) + d))
+            sine_str = (
+                "Sine function: "
+                + str(i)
+                + " | y = "
+                + str(a)
+                + " * sin("
+                + str(b)
+                + " * (x + "
+                + str(c)
+                + ")) + "
+                + str(d)
+            )
             self.__sine_strs.append(sine_str)
         return sine_funcs
 
     def __construct_circuit(self, index, file_name, seed_arg, sine_funcs):
-        if self.__config.get_simulation_mode() == 'FULLY_SIM':
+        if self.__config.get_simulation_mode() == "FULLY_SIM":
             return FullySimCircuit(index, file_name, self.__config, sine_funcs, self.__rand)
-        elif self.__config.get_simulation_mode() == 'SIM_HARDWARE':
-            return SimHardwareCircuit(index, file_name, self.__config, seed_arg, self.__logger, self.__rand)
+        elif self.__config.get_simulation_mode() == "SIM_HARDWARE":
+            return SimHardwareCircuit(
+                index, file_name, self.__config, seed_arg, self.__logger, self.__rand
+            )
         else:
             fit_func = None
-            if self.__config.get_fitness_func() == 'VARIANCE':
+            if self.__config.get_fitness_func() == "VARIANCE":
                 fit_func = VarMaxFitnessFunction(500)
-            elif self.__config.get_fitness_func() in ['PULSE_COUNT', 'SENSITIVE_PULSE_COUNT', 'TOLERANT_PULSE_COUNT']:
+            elif self.__config.get_fitness_func() in [
+                "PULSE_COUNT",
+                "SENSITIVE_PULSE_COUNT",
+                "TOLERANT_PULSE_COUNT",
+            ]:
                 fit_func = PulseCountFitnessFunction()
-            elif self.__config.get_fitness_func() == 'TONE_DISCRIMINATOR':
+            elif self.__config.get_fitness_func() == "TONE_DISCRIMINATOR":
                 fit_func = ToneDiscriminatorFitnessFunction()
 
-            return IntrinsicCircuit(index, file_name, self.__config, seed_arg, self.__rand, self.__logger, self.__microcontroller, fit_func)
+            return IntrinsicCircuit(
+                index,
+                file_name,
+                self.__config,
+                seed_arg,
+                self.__rand,
+                self.__logger,
+                self.__microcontroller,
+                fit_func,
+            )
 
     def populate(self):
         """
@@ -264,7 +302,12 @@ class CircuitPopulation:
             # Need to assign where each circuit gets its source from
             # Get number of subpopulations, then grab random circuits from each
             subdirectories = next(os.walk(self.__config.get_src_pops_dir()))[1]
-            subdirectory_files = list(map(lambda dir: next(os.walk(self.__config.get_src_pops_dir().joinpath(dir)))[2], subdirectories))
+            subdirectory_files = list(
+                map(
+                    lambda dir: next(os.walk(self.__config.get_src_pops_dir().joinpath(dir)))[2],
+                    subdirectories,
+                )
+            )
             self.__num_subpops = len(subdirectories)
             self.__multiple_populations = True
             # Existing population setting, load in all circuits from each population and get the ones with the highest fitness
@@ -273,16 +316,16 @@ class CircuitPopulation:
             all_subdir_circuits = []
             for i in range(len(subdirectories)):
                 # Load every circuit
-                subdir_circuits = SortedKeyList(
-                    key=lambda ckt: -ckt.fitness
-                )
+                subdir_circuits = SortedKeyList(key=lambda ckt: -ckt.fitness)
                 for file in subdirectory_files[i]:
-                    path = self.__config.get_src_pops_dir().joinpath(subdirectories[i]).joinpath(file)
+                    path = (
+                        self.__config.get_src_pops_dir().joinpath(subdirectories[i]).joinpath(file)
+                    )
                     hw_file = open(path, "r+")
                     mmapped_file = mmap(hw_file.fileno(), 0)
                     hw_file.close()
                     fitness = float(FileBasedCircuit.get_file_attribute_st(mmapped_file, "fitness"))
-                    if fitness == None:
+                    if fitness is None:
                         fitness = 0
                     subdir_circuits.add(CircuitPathInfo(path, fitness))
 
@@ -316,13 +359,13 @@ class CircuitPopulation:
                 ckt.mutate()
             elif self.__config.get_init_mode() == "EXISTING_POPULATION":
                 # Make sure the circuit puts a line at the top of its .asc file denoting the source population
-                ckt.set_file_attribute('src_population', str(subdirectory_index))
+                ckt.set_file_attribute("src_population", str(subdirectory_index))
 
             self.__circuits.add(ckt)
-            self.__log_event(3, "Created circuit: {0}".format(ckt))
+            self.__log_event(3, f"Created circuit: {ckt}")
 
         # If map-elites selection method selected, then randomly generate until we fill up 25% of the map
-        '''if self.__config.get_selection_type() == 'MAP_ELITES':
+        """if self.__config.get_selection_type() == 'MAP_ELITES':
             self.__log_event(1, 'Randomizing until map is 25% full...')
             elites = list(filter(lambda x: x != 0, [j for sub in self.__generate_map() for j in sub]))
             elite_count = len(elites)
@@ -339,12 +382,12 @@ class CircuitPopulation:
                 elite_map = self.__generate_map()
                 elites = list(filter(lambda x: x != 0, [j for sub in elite_map for j in sub]))
                 elite_count = len(elites)
-                self.__output_map_file(elite_map)'''
+                self.__output_map_file(elite_map)"""
 
         # Randomize initial circuits until waveform variance or
         # pulses are found
         if self.__config.get_simulation_mode() != "FULLY_INTRINSIC":
-            pass # No randomization implemented for simulation mode
+            pass  # No randomization implemented for simulation mode
         elif self.__config.get_randomization_type() == "PULSE":
             self.__log_info(1, "PULSE randomization mode selected.")
             self.__randomize_until_pulses()
@@ -376,19 +419,21 @@ class CircuitPopulation:
             # not revert to the original seed-hardware until restarting
             self.__log_event(3, "Randomizing to generate pulses")
             for circuit in self.__circuits:
-                if self.__config.get_randomize_mode() == 'RANDOM':
+                if self.__config.get_randomize_mode() == "RANDOM":
                     circuit.randomize_bitstream()
                 else:
                     circuit.mutate()
 
                 circuit.evaluate_once()
-                pulses = circuit.get_extra_data('pulses')
+                pulses = circuit.get_extra_data("pulses")
                 th = self.__config.get_randomize_threshold()
-                if (pulses > th):
+                if pulses > th:
                     no_pulses_generated = False
-                    self.__log_info(1, "Pulse generated! Exiting randomization. Pulses recorded:", pulses)
+                    self.__log_info(
+                        1, "Pulse generated! Exiting randomization. Pulses recorded:", pulses
+                    )
                     break
-    
+
     def __randomize_until_voltage(self):
         """
         Randomizes population until a mean voltage is found near the desired value
@@ -398,15 +443,17 @@ class CircuitPopulation:
         while True:
             self.__log_event(3, "Randomizing to get voltage")
             for circuit in self.__circuits:
-                if self.__config.get_randomize_mode() == 'RANDOM':
+                if self.__config.get_randomize_mode() == "RANDOM":
                     circuit.randomize_bitstream()
                 else:
                     circuit.mutate()
 
                 circuit.evaluate_once()
-                mean_voltage = circuit.get_extra_data('mean_voltage')
-                if (abs(mean_voltage - 341) < 10):
-                    self.__log_info(1, "Voltage Achieved! Exiting randomization. Voltage:", mean_voltage)
+                mean_voltage = circuit.get_extra_data("mean_voltage")
+                if abs(mean_voltage - 341) < 10:
+                    self.__log_info(
+                        1, "Voltage Achieved! Exiting randomization. Voltage:", mean_voltage
+                    )
                     break
 
     # NOTE This is whole function going to be upgraded to handle a from-scratch circuit seeding process.
@@ -458,19 +505,23 @@ class CircuitPopulation:
             True if evolution should continue, False otherwise.
         """
         should_continue = True
-        if self.__config.using_n_generations():
-            if self.get_current_epoch() >= self.__config.get_n_generations():
-                should_continue = False
-        if self.__config.using_target_fitness():
-            if self.__overall_best_circuit_info.fitness >= self.__config.get_target_fitness():
-                should_continue = False
+        if (
+            self.__config.using_n_generations()
+            and self.get_current_epoch() >= self.__config.get_n_generations()
+        ):
+            should_continue = False
+        if (
+            self.__config.using_target_fitness()
+            and self.__overall_best_circuit_info.fitness >= self.__config.get_target_fitness()
+        ):
+            should_continue = False
         return should_continue
 
     def __eval_circuit_once(self, circuit):
         circuit.clear_data()
         if isinstance(circuit, FileBasedCircuit):
             circuit.upload()
-        for i in range(self.__config.get_num_samples()):
+        for _i in range(self.__config.get_num_samples()):
             circuit.collect_data_once()
 
         circuit.calculate_fitness()
@@ -481,44 +532,41 @@ class CircuitPopulation:
         while also storing statistics in a file for the plot to access.
         """
         if len(self.__circuits) == 0:
-            self.__log_error(
-                1, "Attempting to evolve with empty population. Exiting...")
+            self.__log_error(1, "Attempting to evolve with empty population. Exiting...")
             exit()
 
         # Set initial values for 'best' data
         self.__overall_best_circuit_info = CircuitInfo(
-            str(self.__circuits[0]),
-            self.__circuits[0].get_fitness()
+            str(self.__circuits[0]), self.__circuits[0].get_fitness()
         )
         self.__best_epoch = 0
         self.__next_epoch()
 
-        while(self.__should_continue_evo()): #self.get_current_epoch() < self.__config.get_n_generations()):
-
-            #self.__log_event(3, "Starting evo cycle", self.get_current_epoch(
-            #), "<", self.__config.get_n_generations(), "?")
+        while (
+            self.__should_continue_evo()
+        ):  # self.get_current_epoch() < self.__config.get_n_generations()):
+            # self.__log_event(3, "Starting evo cycle", self.get_current_epoch(
+            # ), "<", self.__config.get_n_generations(), "?")
 
             # Since sortedcontainers don't update when the value by
             # which an item is sorted gets updated, we have to add the
             # Circuits to a new list after we evaluate them and then
             # make the new list the working Circuit list.
-            reevaulated_circuits = SortedKeyList(
-                key=lambda ckt: -ckt.get_fitness()
-            )
+            reevaulated_circuits = SortedKeyList(key=lambda ckt: -ckt.get_fitness())
 
             # Evaluate all the Circuits in this CircuitPopulation.
             start = time()
 
             for circuit in self.__circuits:
                 circuit.clear_data()
-                
-            for i in range(self.__config.get_num_passes()):
+
+            for _ in range(self.__config.get_num_passes()):
                 # Shuffle the circuits each time
                 circuits = np.random.permutation(self.__circuits)
                 for circuit in circuits:
                     if isinstance(circuit, FileBasedCircuit):
                         circuit.upload()
-                    for i in range(self.__config.get_num_samples()):
+                    for _ in range(self.__config.get_num_samples()):
                         circuit.collect_data_once()
 
             for circuit in self.__circuits:
@@ -533,20 +581,22 @@ class CircuitPopulation:
                 fitness = circuit.get_fitness()
 
                 # Save off various circuit metrics
-                if self.__config.get_simulation_mode() != 'FULLY_SIM':
+                if self.__config.get_simulation_mode() != "FULLY_SIM":
                     circuit.set_file_attribute("fitness", str(fitness))
                     if self.__config.is_pulse_count():
-                        circuit.set_file_attribute("pulse_count", str(circuit.get_extra_data('pulses')))
+                        circuit.set_file_attribute(
+                            "pulse_count", str(circuit.get_extra_data("pulses"))
+                        )
 
                 # Commented out for now while we test
                 # Pretty sure this was originally for pulse count only, leaving it commented out since things are working right now
-                '''if fitness > self.__config.get_randomize_threshold():
+                """if fitness > self.__config.get_randomize_threshold():
                     self.__log_event(1, "{} fitness: {}".format(circuit, fitness))
-                    return'''
+                    return"""
                 reevaulated_circuits.add(circuit)
 
-                #add the circuit's bistream to our population sum - for diversity calculation and visualization
-                if self.__config.get_simulation_mode() != 'FULLY_SIM':
+                # add the circuit's bistream to our population sum - for diversity calculation and visualization
+                if self.__config.get_simulation_mode() != "FULLY_SIM":
                     self.__population_bistream_sum += circuit.get_bitstream()
 
             epoch_time = time() - start
@@ -556,29 +606,41 @@ class CircuitPopulation:
             # recorded best, make it the recorded best.
             best_circuit_info = self.get_overall_best_circuit_info()
             self.__log_event(2, "Best circuit info", best_circuit_info.fitness)
-            self.__log_event(2, "Circuit 0 info",
-                             self.__circuits[0].get_fitness())
+            self.__log_event(2, "Circuit 0 info", self.__circuits[0].get_fitness())
             if self.__circuits[0].get_fitness() > best_circuit_info.fitness:
                 self.__overall_best_circuit_info = CircuitInfo(
-                    str(self.__circuits[0]),
-                    self.__circuits[0].get_fitness()
+                    str(self.__circuits[0]), self.__circuits[0].get_fitness()
                 )
                 self.__best_epoch = self.get_current_epoch()
                 # Copy this circuit to the best file
                 if isinstance(self.__circuits[0], FileBasedCircuit):
-                    copyfile(self.__circuits[0].get_hardware_file_path(), self.__config.get_best_file())
+                    copyfile(
+                        self.__circuits[0].get_hardware_file_path(), self.__config.get_best_file()
+                    )
 
                 # For tone discriminator experiments, update the best waveform and best state data
                 # Each file will contain all sampled data points from the new best circuit
-                if (self.__config.get_fitness_func() == "TONE_DISCRIMINATOR"):
+                if self.__config.get_fitness_func() == "TONE_DISCRIMINATOR":
                     with open("workspace/bestwaveformlivedata.log", "w+") as waveLive:
-                        waveLive.write("NEW BEST BELOW: " + str(self.__circuits[0]) + " in gen " + str(self.get_current_epoch()) + "\n")
+                        waveLive.write(
+                            "NEW BEST BELOW: "
+                            + str(self.__circuits[0])
+                            + " in gen "
+                            + str(self.get_current_epoch())
+                            + "\n"
+                        )
                         i = 1
                         for points in self.__circuits[0].get_waveform_td():
                             waveLive.write(str(i) + ", " + str(points) + "\n")
                             i += 1
                     with open("workspace/beststatelivedata.log", "w+") as stateLive:
-                        stateLive.write("NEW BEST BELOW: " + str(self.__circuits[0]) + " in gen " + str(self.get_current_epoch()) + "\n")
+                        stateLive.write(
+                            "NEW BEST BELOW: "
+                            + str(self.__circuits[0])
+                            + " in gen "
+                            + str(self.get_current_epoch())
+                            + "\n"
+                        )
                         i = 1
                         for points in self.__circuits[0].get_state_td():
                             stateLive.write(str(i) + ", " + str(points) + "\n")
@@ -593,7 +655,9 @@ class CircuitPopulation:
             # Remove bottom X% of population to replace with random circuits
             # (just randomize bitstream of the bottom X%)
             if self.__config.get_random_injection() > 0:
-                amt = int(self.__config.get_random_injection() * self.__config.get_population_size())
+                amt = int(
+                    self.__config.get_random_injection() * self.__config.get_population_size()
+                )
                 circuits_to_randomize = self.__circuits[-amt:]
                 for ckt in circuits_to_randomize:
                     if ckt not in self.__protected_elites:
@@ -602,9 +666,11 @@ class CircuitPopulation:
             self.__write_to_livedata()
             self.__next_epoch()
 
-            if self.__config.using_transfer_interval():
-                if self.__current_epoch % self.__config.get_transfer_interval() == 0:
-                    self.__microcontroller.switch_fpga()
+            if (
+                self.__config.using_transfer_interval()
+                and self.__current_epoch % self.__config.get_transfer_interval() == 0
+            ):
+                self.__microcontroller.switch_fpga()
 
         # We have finished evolution! Lets quickly re-evaluate the top circuit, since it
         # will then output its waveform
@@ -636,57 +702,54 @@ class CircuitPopulation:
             with open("workspace/bestlivedata.log", "a") as liveFile:
                 avg = fitness_sum / self.__config.get_population_size()
                 # Format: Epoch, Best Fitness, Worst Fitness, Average Fitness, Ovr Best Fitness, Diversity Measure
-                liveFile.write("{}, {}, {}, {}, {}, {}\n".format(
-                    str(self.get_current_epoch()),
-                    str(self.__circuits[0].get_fitness()),
-                    str(self.__circuits[-1].get_fitness()),
-                    str(avg),
-                    str(self.get_overall_best_circuit_info().fitness),
-                    diversity
-                ))
-        
+                liveFile.write(
+                    f"{self.get_current_epoch()!s}, {self.__circuits[0].get_fitness()!s}, {self.__circuits[-1].get_fitness()!s}, {avg!s}, {self.get_overall_best_circuit_info().fitness!s}, {diversity}\n"
+                )
+
         if self.__multiple_populations:
             # Write the population counts to file (i.e. count of circuits from each source population)
             with open("workspace/poplivedata.log", "a") as live_file:
                 counts = [0] * self.__num_subpops
                 for ckt in self.__circuits:
-                    population = int(ckt.get_file_attribute('src_population'))
+                    population = int(ckt.get_file_attribute("src_population"))
                     counts[population] = counts[population] + 1
                 live_file.write(("{} " * self.__num_subpops + "\n").format(*counts))
 
-        if (self.__current_epoch > 0):
+        if self.__current_epoch > 0:
             with open("workspace/violinlivedata.log", "a") as live_file:
                 fits = []
                 for ckt in self.__circuits:
                     fits.append(str(ckt.get_fitness()))
                 live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(fits)))
-            
+
             if self.__config.get_simulation_mode() == "FULLY_INTRINSIC":
                 if not self.__config.is_pulse_func():
                     with open("workspace/heatmaplivedata.log", "a") as live_file2:
                         best = self.__circuits[0]
-                        if (self.__config.get_fitness_func() == "TONE_DISCRIMINATOR"):
+                        if self.__config.get_fitness_func() == "TONE_DISCRIMINATOR":
                             # Need a slightly different function for tone discriminator waveform
-                            data  = best.get_waveform_td()
+                            data = best.get_waveform_td()
                         else:
                             data = best.get_waveform()
                         live_file2.write(("{}:{}\n").format(self.__current_epoch, ",".join(data)))
                 else:
                     with open("workspace/pulselivedata.log", "a") as live_file3:
-                        data = []    
+                        data = []
                         for ckt in self.__circuits:
-                            data.append(str(ckt.get_extra_data('pulses')))
+                            data.append(str(ckt.get_extra_data("pulses")))
                         live_file3.write(("{}:{}\n").format(self.__current_epoch, ",".join(data)))
 
-            if self.__config.saving_population_bistream():
-                if(self.__current_epoch %
-                    self.__config.get_population_bistream_save_interval() == 0):
-                    with open("workspace/bitstream_avg.log", "a") as live_file4:
-                        data = self.get_differing_bits_str()
-                        live_file4.write(("{}:{}\n").format(self.__current_epoch, data))
+            if (
+                self.__config.saving_population_bistream()
+                and self.__current_epoch % self.__config.get_population_bistream_save_interval()
+                == 0
+            ):
+                with open("workspace/bitstream_avg.log", "a") as live_file4:
+                    data = self.get_differing_bits_str()
+                    live_file4.write(f"{self.__current_epoch}:{data}\n")
 
             # TODO: Re-enable this. Temporarily disabled in case files get too large
-            #self.__save_generation()
+            # self.__save_generation()
 
     def __save_generation(self):
         """
@@ -700,32 +763,36 @@ class CircuitPopulation:
         gen_lines = []
         # At the top, add the necessary config params such as routing and accessed columns
         gen_lines.append(self.__config.get_routing_type())
-        gen_lines.append(','.join(self.__config.get_accessed_columns()))
+        gen_lines.append(",".join(self.__config.get_accessed_columns()))
         # Now, add the bitstream for each circuit on its own line
         # We want the circuits in number order though
-        sorted_by_index = SortedKeyList(
-            key=lambda ckt: ckt.get_index()
-        )
+        sorted_by_index = SortedKeyList(key=lambda ckt: ckt.get_index())
         for ckt in self.__circuits:
             sorted_by_index.add(ckt)
         # Now add each circuit
         for ckt in sorted_by_index:
             bitstream = ckt.get_intrinsic_modifiable_bitstream()
-            bitstring = ''.join(bitstream)
+            bitstring = "".join(bitstream)
             gen_lines.add(bitstring)
         # Now actually write the file
-        path = self.__config.get_generations_directory().joinpath('gen' + str(self.__current_epoch) + '.log')
-        with open(path, 'w') as f:
+        path = self.__config.get_generations_directory().joinpath(
+            "gen" + str(self.__current_epoch) + ".log"
+        )
+        with open(path, "w") as f:
             f.writelines(gen_lines)
 
-        if (self.__current_epoch > 0):
+        if self.__current_epoch > 0:
             with open("workspace/heatmaplivedata.log", "a") as live_file:
                 best = self.__circuits[0]
-                if (self.__config.get_fitness_func() == "TONE_DISCRIMINATOR"):
+                if self.__config.get_fitness_func() == "TONE_DISCRIMINATOR":
                     # Need a slightly different function for tone discriminator waveform
-                    live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(best.get_waveform_td())))
+                    live_file.write(
+                        ("{}:{}\n").format(self.__current_epoch, ",".join(best.get_waveform_td()))
+                    )
                 else:
-                    live_file.write(("{}:{}\n").format(self.__current_epoch, ",".join(best.get_waveform())))
+                    live_file.write(
+                        ("{}:{}\n").format(self.__current_epoch, ",".join(best.get_waveform()))
+                    )
 
     # SECTION Selection algorithms.
     def __run_classic_tournament(self):
@@ -747,13 +814,10 @@ class CircuitPopulation:
                 winner = ckt2
                 loser = ckt1
 
-            self.__log_event(3,
-                            "Fitness {}: {} < Fitness {}: {}".format(
-                                loser,
-                                loser.get_fitness(),
-                                winner,
-                                winner.get_fitness()
-                            ))
+            self.__log_event(
+                3,
+                f"Fitness {loser}: {loser.get_fitness()} < Fitness {winner}: {winner.get_fitness()}",
+            )
 
             if self.__rand.uniform(0, 1) <= self.__config.get_crossover_probability():
                 self.__single_point_crossover(winner, loser)
@@ -767,8 +831,7 @@ class CircuitPopulation:
         """
         Selection Algorithm that mutates the hardware of every circuit that is not the current best circuit
         """
-        self.__log_event(3, "Tournament Number: {}".format(
-            str(self.get_current_epoch())))
+        self.__log_event(3, f"Tournament Number: {self.get_current_epoch()!s}")
 
         best = self.__circuits[0]
         self.__protected_elites.append(best)
@@ -798,10 +861,10 @@ class CircuitPopulation:
             elites[self.__circuits[i]] = 0
             elite_sum += self.__circuits[i].get_fitness()
         if elite_sum > 0:
-            for elite in elites.keys():
+            for elite in elites:
                 elites[elite] = elite.get_fitness() / elite_sum
         elif elite_sum == 0:
-            for elite in elites.keys():
+            for elite in elites:
                 elites[elite] = 1 / self.__n_elites
         else:
             # elite_sum is negative. This should not be possible.
@@ -823,9 +886,7 @@ class CircuitPopulation:
             if self.__n_elites != 0:
                 if elite_prob_sum > 0:
                     rand_elite = self.__rand.choice(
-                        list(elites.keys()),
-                        self.__n_elites,
-                        p=list(elites.values())
+                        list(elites.keys()), self.__n_elites, p=list(elites.values())
                     )[0]
                 else:  # If fitness isn't negative, this should never happen
                     rand_elite = self.__rand.choice(list(elites.keys()))[0]
@@ -834,7 +895,11 @@ class CircuitPopulation:
 
             self.__log_event(4, "Elite", rand_elite)
 
-            if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite and ckt not in elites:
+            if (
+                ckt.get_fitness() <= rand_elite.get_fitness()
+                and ckt != rand_elite
+                and ckt not in elites
+            ):
                 # if self.__config.get_crossover_probability() == 0:
                 # 	self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
                 # 	ckt.copy_from(rand_elite)
@@ -848,10 +913,10 @@ class CircuitPopulation:
                 ckt.mutate()
 
     def __run_rank_proportional_selection(self):
-        '''
+        """
         Selection algorithm that compares every circuit in the population to a random elite (chosen proportionally based on each elite's rank).
         If circuit has a lower fitness, crossover or mutate the circuit
-        '''
+        """
         self.__log_event(2, "Number of Elites:", self.__n_elites)
         self.__log_event(2, "Ranked Fitness:", self.__circuits)
 
@@ -861,7 +926,7 @@ class CircuitPopulation:
         elites = {}
         # can use summation formula since sum of ranks is the sum of natural numbers
         elite_sum = (self.__n_elites) * (self.__n_elites + 1) / 2
-        if (elite_sum > 0):
+        if elite_sum > 0:
             for i in range(self.__n_elites):
                 # Using (self.__n_elites - i) since highest ranked indiviual is at self.__circuits[0]
                 elites[self.__circuits[i]] = (self.__n_elites - i) / elite_sum
@@ -873,7 +938,7 @@ class CircuitPopulation:
         self.__log_event(3, "Elite Group:", elites.keys())
         self.__log_event(3, "Elite Probabilites:", elites.values())
         self.__protected_elites = elites.keys()
-        #self.__log_event(3, "Elite", rand_elite)
+        # self.__log_event(3, "Elite", rand_elite)
 
         # For all Circuits in this CircuitPopulation, choose a random
         # elite (based on the associated probabilities calculated above)
@@ -886,16 +951,18 @@ class CircuitPopulation:
             if self.__n_elites != 0:
                 if elite_prob_sum > 0:
                     rand_elite = self.__rand.choice(
-                        list(elites.keys()),
-                        self.__n_elites,
-                        p=list(elites.values())
+                        list(elites.keys()), self.__n_elites, p=list(elites.values())
                     )[0]
                 else:  # If fitness isn't negative, this should never happen
                     rand_elite = self.__rand.choice(list(elites.keys()))[0]
             else:
                 rand_elite = self.__rand.choice(self.__circuits)
 
-            if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite and ckt not in elites:
+            if (
+                ckt.get_fitness() <= rand_elite.get_fitness()
+                and ckt != rand_elite
+                and ckt not in elites
+            ):
                 # if self.__config.get_crossover_probability() == 0:
                 #     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
                 #     ckt.copy_from(rand_elite)
@@ -931,7 +998,11 @@ class CircuitPopulation:
         self.__protected_elites = elite_group
         for ckt in self.__circuits:
             rand_elite = self.__rand.choice(elite_group)
-            if ckt.get_fitness() <= rand_elite.get_fitness() and ckt != rand_elite and ckt not in elite_group:
+            if (
+                ckt.get_fitness() <= rand_elite.get_fitness()
+                and ckt != rand_elite
+                and ckt not in elite_group
+            ):
                 # if self.__config.crossover_probability  == 0:
                 #     self.__log_event(3, "Cloning:", rand_elite, " ---> ", ckt)
                 #     ckt.replace_hardware_file(rand_elite.get_hardware_filepath)
@@ -969,7 +1040,7 @@ class CircuitPopulation:
                 rand_elite = self.__rand.choice(elites)
                 ckt.copy_from(rand_elite)
                 ckt.mutate()
-        
+
         self.__output_map_file(elite_map)
 
     def __output_map_file(self, elite_map):
@@ -983,13 +1054,13 @@ class CircuitPopulation:
         """
         with open("workspace/maplivedata.log", "w+") as liveFile:
             # First line describes granularity/scale factor
-            liveFile.write("{}\n".format(str(ELITE_MAP_SCALE_FACTOR)))
+            liveFile.write(f"{ELITE_MAP_SCALE_FACTOR!s}\n")
             # If square is empty, write a "blank" to that line
             if self.__config.get_map_elites_dimension() == 1:
                 for c in range(len(elite_map)):
                     ckt = elite_map[c]
                     if ckt != 0:
-                        liveFile.write("{} {}\n".format(c, ckt.get_fitness()))
+                        liveFile.write(f"{c} {ckt.get_fitness()}\n")
             else:
                 for r in range(len(elite_map)):
                     sl = elite_map[r]
@@ -998,12 +1069,12 @@ class CircuitPopulation:
                         to_write = ""
                         if ckt != 0:
                             to_write = str(ckt.get_fitness())
-                        liveFile.write("{} {} {}\n".format(r, c, to_write))
+                        liveFile.write(f"{r} {c} {to_write}\n")
 
     def __generate_map(self):
         """
         Generates the elite map for this generation based on variance.
-        
+
         Returns
         -------
         list(list(Circuit))
@@ -1013,8 +1084,8 @@ class CircuitPopulation:
         # Go up to 21 since upper bound is 1024
         # Can't do [[0]*21]*21 because this will make all the sub-arrays point to same memory location
         elite_map = []
-        for i in range(22):
-            elite_map.append([0]*21)
+        for _i in range(22):
+            elite_map.append([0] * 21)
         # Evaluate each circuit's fitness and where it falls on the elite map
         # Populate elite map first
         for ckt in self.__circuits:
@@ -1023,7 +1094,7 @@ class CircuitPopulation:
             if elite_map[row][col] == 0 or ckt.get_fitness() > elite_map[row][col].get_fitness():
                 elite_map[row][col] = ckt
         return elite_map
-   
+
     def __generate_pulse_map(self):
         """
         Generates the elite map for this generation based on pulse count.
@@ -1035,7 +1106,7 @@ class CircuitPopulation:
         """
 
         elite_map = []
-        for i in range((150_000 - 1_000) / PULSE_ELITE_MAP_SCALE_FACTOR):
+        for _i in range((150_000 - 1_000) / PULSE_ELITE_MAP_SCALE_FACTOR):
             elite_map.append(0)
         for ckt in self.__circuits:
             col = math.floor(ckt.get_mean_frequency() / PULSE_ELITE_MAP_SCALE_FACTOR)
@@ -1057,7 +1128,7 @@ class CircuitPopulation:
 
     def get_overall_best_circuit_info(self):
         """
-        Returns the information of the circuit with the highest fitness throughout the run 
+        Returns the information of the circuit with the highest fitness throughout the run
 
         Returns
         -------
@@ -1104,15 +1175,13 @@ class CircuitPopulation:
 
         # Replace magic values with more generalized solutions
         if self.__config.get_simulation_mode() == "FULLY_SIM":
-            crossover_point = self.__rand.integers(
-                1, len(self.__circuits[0].get_bitstream()) - 1)
+            crossover_point = self.__rand.integers(1, len(self.__circuits[0].get_bitstream()) - 1)
         elif self.__config.get_routing_type() == "MOORE":
             crossover_point = self.__rand.integers(1, 3)
         elif self.__config.get_routing_type() == "NWSE":
             crossover_point = self.__rand.integers(13, 15)
         else:
-            self.__log_error(
-                1, "Invalid routing type specified in config.ini. Exiting...")
+            self.__log_error(1, "Invalid routing type specified in config.ini. Exiting...")
             exit()
         dest.crossover(source, crossover_point)
 
@@ -1127,7 +1196,7 @@ class CircuitPopulation:
         """
         running_total = 0
         n = len(self.__circuits)
-        num_pairs = n * (n-1) / 2
+        num_pairs = n * (n - 1) / 2
 
         self.__log_event(4, "Starting Hamming Distance Calculation")
         bitstreams = list(map(lambda c: c.get_bitstream(), self.__circuits))
@@ -1137,7 +1206,7 @@ class CircuitPopulation:
         # Divide that by # of pairs at the end (calculation shown below)
         running_total = 0
         n = len(self.__circuits)
-        num_pairs = n * (n-1) / 2
+        num_pairs = n * (n - 1) / 2
         self.__log_event(4, "HDIST - Entering loop")
         for i in range(len(bitstreams[0])):
             ones_count = 0
@@ -1161,26 +1230,26 @@ class CircuitPopulation:
         -------
         int
             Number of unique circuits in the population
-        
+
         """
         if self.__config.get_simulation_mode() == "FULLY_SIM":
             bitstreams = []
             for ckt in self.__circuits:
                 bitstreams.append(ckt.get_sim_bitstream())
             bitstreams = self.__unique(bitstreams)
-            self.__log_event(
-                2, "Number of Unique Individuals:", len(bitstreams))
+            self.__log_event(2, "Number of Unique Individuals:", len(bitstreams))
             return len(bitstreams)
 
         # If not FULLY_SIM, then run this
         # TODO: Optimize
         bin_dir = self.__config.get_bin_directory()
         dir_list = os.listdir(bin_dir)
-        files = [f for f in dir_list if os.path.isfile(
-            str(bin_dir)+'/'+f)]  # Filter out non-files
+        files = [
+            f for f in dir_list if os.path.isfile(str(bin_dir) + "/" + f)
+        ]  # Filter out non-files
         unique_file_paths = []
         for file in files:
-            full_path = str(bin_dir) + '/' + file
+            full_path = str(bin_dir) + "/" + file
             not_unique = False
             for u in unique_file_paths:
                 if self.__files_eq(full_path, u):
@@ -1188,8 +1257,7 @@ class CircuitPopulation:
                     break
             if not not_unique:
                 unique_file_paths.append(full_path)
-        self.__log_event(2, "Number of Unique Individuals:",
-                         len(unique_file_paths))
+        self.__log_event(2, "Number of Unique Individuals:", len(unique_file_paths))
         return len(unique_file_paths)
 
     def __unique(self, arrays):
@@ -1217,7 +1285,7 @@ class CircuitPopulation:
             if shouldAdd:
                 soln.append(a)
         return soln
-    
+
     def count_differing_bits(self):
         """
         Returns the number of bits in the bistream where 2 circuits have different values
@@ -1226,7 +1294,7 @@ class CircuitPopulation:
         -------
         int
             Number of bits in the bistream where 2 circuits have different values
-        
+
         """
         if self.__config.get_simulation_mode() == "FULLY_SIM":
             bitstream_sums = np.zeros[len(self.__circuits[0].get_sim_bitstream())]
@@ -1239,8 +1307,7 @@ class CircuitPopulation:
         for bit_sum in bitstream_sums:
             if bit_sum != 0 and bit_sum != len(self.__circuits):
                 count += 1
-        self.__log_event(
-                2, "Number of differing bits:", count)
+        self.__log_event(2, "Number of differing bits:", count)
         return count
 
     def get_differing_bits_str(self):
@@ -1250,12 +1317,12 @@ class CircuitPopulation:
         -------
         str
             The number of circuits with a 1 at each bit in the bitstream
-        
+
         """
         s = ""
         for bit in self.__population_bistream_sum:
-            s += chr(int(bit)+32)
-        return s 
+            s += chr(int(bit) + 32)
+        return s
 
     def __arr_eq(self, ar1, ar2):
         """
@@ -1299,9 +1366,9 @@ class CircuitPopulation:
         """
         content1 = []
         content2 = []
-        with open(fp1, 'rb') as content:
+        with open(fp1, "rb") as content:
             content1 = content.read()
-        with open(fp2, 'rb') as content:
+        with open(fp2, "rb") as content:
             content2 = content.read()
         return list(content1) == list(content2)
 
@@ -1312,7 +1379,7 @@ class CircuitPopulation:
         .. todo::
             Take a closer look at this function. Not sure why, but a comment here told me to.
             Also, further document what this function is I couldn't tell.
-        
+
         Collect data into fixed-length chunks or blocks
         #grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
         Taken from python recipes.

@@ -1,19 +1,31 @@
 from abc import ABC, abstractmethod
-import Microcontroller
+
 import Config
+import Microcontroller
+
 
 class FitnessFunction(ABC):
     """
     Represents a method of evaluating fitness intrinsically (strategy pattern)
     For example, we can create pulse count and variance maximization strategies
-    For combined fitness, we could create a concrete implementation that 
+    For combined fitness, we could create a concrete implementation that
     combines two fitness strategies together
     """
 
     def __init__(self):
-        pass
+        """Initialize the fitness function. Call attach() to configure before use."""
+        self._data_filepath = None
+        self._microcontroller = None
+        self._config = None
+        self._extra_data = None
 
-    def attach(self, data_filepath, microcontroller: Microcontroller, config: Config, extra_data: dict[str, float]):
+    def attach(
+        self,
+        data_filepath,
+        microcontroller: Microcontroller,
+        config: Config,
+        extra_data: dict[str, float],
+    ):
         self._data_filepath = data_filepath
         self._microcontroller = microcontroller
         self._config = config

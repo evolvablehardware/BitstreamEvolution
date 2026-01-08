@@ -1,21 +1,18 @@
-from sys import stdout
 from datetime import datetime
-from subprocess import CalledProcessError, run
-from os.path import exists
-from os.path import join
 from os import mkdir
-from shutil import copytree
-from shutil import rmtree
-from datetime import datetime
+from os.path import exists, join
+from shutil import copytree, rmtree
+from subprocess import CalledProcessError, run
+from sys import stdout
 
 # The window dimensions
 LINE_WIDTH = 112
-WIN_DIM="105x29"
+WIN_DIM = "105x29"
 DOUBLE_HLINE = "=" * LINE_WIDTH
 
 MONITOR_FILE = None
 
-TERM_CMD=["gnome-terminal", "--geometry={}".format(WIN_DIM), "--"]
+TERM_CMD = ["gnome-terminal", f"--geometry={WIN_DIM}", "--"]
 
 # The time between animation frames in milliseconds
 FRAME_DELAY = 200
@@ -25,16 +22,17 @@ FRAME_DELAY = 200
 SUBPLOT_SPACING = 0.5
 
 # Formatting constants
-HEADER = '\033[95m'
-OKBLUE = '\033[94m'
-OKGREEN = '\033[92m'
-WARNING = '\033[93m'
-FAIL = '\033[91m'
-ENDC = '\033[0m'
-BOLD = '\033[1m'
-UNDERLINE = '\033[4m'
+HEADER = "\033[95m"
+OKBLUE = "\033[94m"
+OKGREEN = "\033[92m"
+WARNING = "\033[93m"
+FAIL = "\033[91m"
+ENDC = "\033[0m"
+BOLD = "\033[1m"
+UNDERLINE = "\033[4m"
 
 README_FILE_HEADER = "FPGA/MCU [1] \n"
+
 
 # TODO Utilize Python logging library
 class Logger:
@@ -43,7 +41,7 @@ class Logger:
         analysis = self.__config.get_analysis_directory()
         datetime_format = self.__config.get_datetime_format()
         current_time = str(datetime.now().strftime(datetime_format))
-        current_time = current_time.replace('/', '-')
+        current_time = current_time.replace("/", "-")
         self.__analysis_dir = analysis.joinpath(current_time)
 
         self.__analysis_a_dir = self.__analysis_dir.joinpath("asc/")
@@ -72,17 +70,16 @@ class Logger:
         # Start the monitor
         # self.log_event(1, "Creating the monitor file...")
 
-        self.log_monitor(1, "{}{}".format(
-            "Evolutionary Experiment Monitor".center(LINE_WIDTH),
-            "\n"
-        ))
-        self.log_monitor("", "{}".format(DOUBLE_HLINE))
+        self.log_monitor(
+            1, "{}{}".format("Evolutionary Experiment Monitor".center(LINE_WIDTH), "\n")
+        )
+        self.log_monitor("", f"{DOUBLE_HLINE}")
         # self.log_monitor(1, "Parameters and updates load during circuit evaluation")
         # self.log_monitor(1, ".\n" * 23)
         self.log_monitor("", str(self.__experiment_explanation))
-        self.log_monitor("", "{}".format(DOUBLE_HLINE))
+        self.log_monitor("", f"{DOUBLE_HLINE}")
         self.log_monitor("", self.__config.get_raw_data())
-        self.log_monitor("", "{}".format(DOUBLE_HLINE))
+        self.log_monitor("", f"{DOUBLE_HLINE}")
         self.__monitor_file.flush()
 
         # args = TERM_CMD + ["python3", "src/Monitor.py"]
@@ -93,7 +90,7 @@ class Logger:
         # except CalledProcessError as e:
         #     self.log_error(1, "An error occured in Monitor.py")
 
-        #set up directory for saving files
+        # set up directory for saving files
         plots_dir = self.__config.get_plots_directory()
         try:
             rmtree(plots_dir)
@@ -104,14 +101,19 @@ class Logger:
             plots_dir.mkdir()
 
         if self.__config.get_launch_plots():
-            if (self.__config.get_simulation_mode() == 'INTRINSIC_SENSITIVITY'):
+            if self.__config.get_simulation_mode() == "INTRINSIC_SENSITIVITY":
                 args = TERM_CMD + ["python3", "src/PlotSensitivityLive.py"]
-            else: 
-                args = TERM_CMD + ["python3", "src/PlotEvolutionLive.py", "--frame-interval", str(self.__config.get_frame_interval())]
-            
+            else:
+                args = TERM_CMD + [
+                    "python3",
+                    "src/PlotEvolutionLive.py",
+                    "--frame-interval",
+                    str(self.__config.get_frame_interval()),
+                ]
+
             try:
                 run(args, check=True, capture_output=True)
-            except OSError as e:
+            except OSError:
                 self.log_error(1, "An error occured while launching PlotEvolutionLive.py")
             except CalledProcessError as e:
                 self.log_error(1, "An error occured in PlotEvolutionLive.py")
@@ -164,24 +166,21 @@ class Logger:
         current_best_circuit = population.get_current_best_circuit()
         overall_best_circuit = population.get_overall_best_circuit_info()
 
-        self.log_event(2, "CURRENT BEST: {} : EPOCH {} : FITNESS {}".format(
-            str(overall_best_circuit.name),
-            str(population.get_best_epoch()),
-            str(overall_best_circuit.fitness)
-        ))
+        self.log_event(
+            2,
+            f"CURRENT BEST: {overall_best_circuit.name!s} : EPOCH {population.get_best_epoch()!s} : FITNESS {overall_best_circuit.fitness!s}",
+        )
 
-        self.log_event(2, "HIGHEST FITNESS OF EPOCH {} IS: {} = {} over {} seconds".format(
-            str(population.get_current_epoch()),
-            str(current_best_circuit),
-            str(current_best_circuit.get_fitness()),
-            str(epoch_time)
-        ))
+        self.log_event(
+            2,
+            f"HIGHEST FITNESS OF EPOCH {population.get_current_epoch()!s} IS: {current_best_circuit!s} = {current_best_circuit.get_fitness()!s} over {epoch_time!s} seconds",
+        )
 
         self.log_event(2, DOUBLE_HLINE)
         self.log_event(2, DOUBLE_HLINE)
         self.log_event(2, DOUBLE_HLINE)
 
-    def log_monitor(self, prefix,  *msg):
+    def log_monitor(self, prefix, *msg):
         if self.__config.get_save_log():
             now = datetime.now()
             print(now, prefix, *msg, file=self.__monitor_file)
@@ -215,5 +214,5 @@ class Logger:
         self.__monitor_file.close()
         datetime_format = self.__config.get_datetime_format()
         current_time = str(datetime.now().strftime(datetime_format))
-        current_time = current_time.replace('/', '-')
+        current_time = current_time.replace("/", "-")
         copytree("./workspace", join(directory, current_time))

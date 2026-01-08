@@ -1,5 +1,6 @@
-from Circuit.Circuit import Circuit
 import Config
+from Circuit.Circuit import Circuit
+
 
 class FullySimCircuit(Circuit):
     """
@@ -19,7 +20,7 @@ class FullySimCircuit(Circuit):
         Mutate the simulation mode circuit
         """
         for i in range(0, len(self.__simulation_bitstream)):
-            if self._config.get_mutation_probability() >= self._rand.uniform(0,1):
+            if self._config.get_mutation_probability() >= self._rand.uniform(0, 1):
                 # Mutate this bit
                 self.__simulation_bitstream[i] = 1 - self.__simulation_bitstream[i]
 
@@ -33,7 +34,7 @@ class FullySimCircuit(Circuit):
     def crossover(self, parent, crossover_point: int):
         """
         Simulated crossover, pulls first n bits from parent and remaining from self
-        
+
         Parameters
         ----------
         parent : Circuit
@@ -57,7 +58,7 @@ class FullySimCircuit(Circuit):
         """
         Evaluate the simulation bitstream (use sine function combinations, with variance formula)
         """
-        
+
         # Need to sum up the waveforms of every 1 that appears in our bitstream
         sine_funcs = []
         for pos in range(len(self.__simulation_bitstream)):
@@ -84,10 +85,10 @@ class FullySimCircuit(Circuit):
             for points in waveform:
                 waveLive.write(str(i) + ", " + str(points) + "\n")
                 i += 1
-        
+
         fitness = Circuit._calculate_variance_fitness(waveform)
         return [fitness]
-    
+
     def _calculate_fitness(self) -> float:
         # Calculate based on stored data
         # For sim mode, just take an average
@@ -95,7 +96,7 @@ class FullySimCircuit(Circuit):
 
     def get_bitstream(self) -> list[int]:
         return self.__simulation_bitstream
-    
+
     def inject_bitstream(self, bitstream: list[int]):
         self.__simulation_bitstream = bitstream
 

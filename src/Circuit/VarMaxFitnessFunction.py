@@ -1,5 +1,6 @@
 from Circuit.FitnessFunction import FitnessFunction
 
+
 class VarMaxFitnessFunction(FitnessFunction):
     def __init__(self, total_samples: int):
         FitnessFunction.__init__(self)
@@ -30,10 +31,10 @@ class VarMaxFitnessFunction(FitnessFunction):
         list[int]
             waveform
         """
-        data_file = open(self._data_filepath, "rb")
-        data = data_file.readlines()
+        with open(self._data_filepath, "rb") as data_file:
+            data = data_file.readlines()
         waveform = []
-        for i in range(self.__total_samples-1):
+        for i in range(self.__total_samples - 1):
             try:
                 x = int(data[i].strip().split(b": ", 1)[1])
                 waveform.append(x)
@@ -44,14 +45,14 @@ class VarMaxFitnessFunction(FitnessFunction):
                 # ))
                 waveform.append(0)
 
-        # self.__log_event(5, "Waveform: ", waveform) 
+        # self.__log_event(5, "Waveform: ", waveform)
         return waveform
 
     def __measure_variance_fitness(self, waveform):
         """
         Measure the fitness of this circuit using the variance-maximization fitness
         function
-        
+
         Parameters
         ----------
         waveform : list[int]
@@ -68,18 +69,18 @@ class VarMaxFitnessFunction(FitnessFunction):
         # Reset high/low vals to min/max respectively
         low_val = 1024
         high_val = 0
-        for i in range(len(waveform)-1):
+        for i in range(len(waveform) - 1):
             # NOTE Signal Variance is calculated by summing the absolute difference of
             # sequential voltage samples from the microcontroller.
             # Capture the next point in the data file to a variable
-            initial1 = waveform[i] #int(data[i].strip().split(b": ", 1)[1])
+            initial1 = waveform[i]  # int(data[i].strip().split(b": ", 1)[1])
             # Capture the next point + 1 in the data file to a variable
-            initial2 = waveform[i+1] #int(data[i + 1].strip().split(b": ", 1)[1])
+            initial2 = waveform[i + 1]  # int(data[i + 1].strip().split(b": ", 1)[1])
             # Take the absolute difference of the two points and store to a variable
             variance = abs(initial2 - initial1)
             # Append the variance to the waveform list
             # Removed since we do this already
-            #waveform.append(initial1)
+            # waveform.append(initial1)
 
             if initial1 < low_val:
                 low_val = initial1
@@ -93,7 +94,7 @@ class VarMaxFitnessFunction(FitnessFunction):
             # NOTE: This encourages frequencies that match the sampling rate
             variances.append(variance)
 
-            if initial1 != None and initial1 < 1000:
+            if initial1 is not None and initial1 < 1000:
                 variance_sum += variance
 
         with open("workspace/waveformlivedata.log", "w+") as waveLive:
@@ -103,10 +104,10 @@ class VarMaxFitnessFunction(FitnessFunction):
                 i += 1
 
         var_max_fitness = variance_sum / len(waveform)
-        mean_voltage = sum(waveform) / len(waveform) #used by combined fitness func
+        mean_voltage = sum(waveform) / len(waveform)  # used by combined fitness func
 
-        self._extra_data['mean_voltage'] = mean_voltage
-        self._extra_data['low_voltage'] = low_val
-        self._extra_data['high_voltage'] = high_val
+        self._extra_data["mean_voltage"] = mean_voltage
+        self._extra_data["low_voltage"] = low_val
+        self._extra_data["high_voltage"] = high_val
 
         return var_max_fitness
