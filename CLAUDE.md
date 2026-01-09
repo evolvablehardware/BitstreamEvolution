@@ -187,11 +187,9 @@ Current state for tracking improvement progress:
 | Pyright | 122 errors | Type checking issues |
 
 ### Remaining Issues
-- **SIM115**: Use context managers for file operations (~74 occurrences)
-- **SIM102**: Nested if statements that could be combined
-- **E711**: `== None` comparisons (use `is None`)
-- **B007**: Unused loop variables
-- **Types**: Module used as type instead of class (pyright)
+- **SIM115**: Use context managers for file operations (~23 remaining)
+- **Other ruff**: Miscellaneous style issues (~61)
+- **Pyright**: Module used as type instead of class, missing annotations
 
 See `docs/CODE_QUALITY_TODO.md` for detailed tracking.
 

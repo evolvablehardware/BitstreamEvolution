@@ -3,7 +3,7 @@
 This document tracks remaining code quality issues and the plan to address them.
 
 **Last Updated**: January 2026
-**Current Status**: 113 ruff errors, 122 pyright errors
+**Current Status**: 84 ruff errors, 122 pyright errors
 
 ## Progress Summary
 
@@ -13,7 +13,7 @@ This document tracks remaining code quality issues and the plan to address them.
 | Auto-fix (E711, E712, B007) | Done | 145 | 124 |
 | Format all files | Done | 32 files | 0 files |
 | Phase 1 quick wins | Done | 124 | 113 |
-| Manual fixes | In Progress | 113 | - |
+| Phase 2 manual fixes | Done | 113 | 84 |
 | Type annotations | Not Started | 122 | - |
 
 ### Phase 1 Fixes Applied
@@ -23,30 +23,42 @@ This document tracks remaining code quality issues and the plan to address them.
 - F821: Fixed undefined `data` → `measurements` in ToneDiscriminatorFitnessFunction.py
 - F821: Added missing `import re` in ToneDiscriminatorFitnessFunction.py
 
+### Phase 2 Fixes Applied
+- B007: Fixed 9 unused loop variables (`i` → `_`)
+- B027: Added docstrings/code to 2 empty abstract methods
+- SIM102: Combined 5 nested if statements with `and`
+- SIM115: Added context managers in 11 files (test_utils, ConfigBuilder, Config, WorkspaceFormatter, ascTemplateBuilder, PulseCountFitnessFunction, VarMaxFitnessFunction, ToneDiscriminatorFitnessFunction)
+
 ---
 
-## Ruff Issues by Category (113 total)
+## Ruff Issues by Category (84 total)
 
-### SIM115: Use context managers for file operations (~50 occurrences)
+### SIM115: Use context managers for file operations (~23 remaining)
 **Effort**: Medium | **Risk**: Low | **Priority**: High
 
-Files affected:
+Files remaining:
 - `CircuitPopulation.py` (1)
-- `Circuit/CircuitLegacy.py` (12)
-- `Circuit/FileBasedCircuit.py` (8)
+- `Circuit/CircuitLegacy.py` (12) - includes mmap usage
+- `Circuit/FileBasedCircuit.py` (8) - includes mmap usage
 - `Circuit/IntrinsicCircuit.py` (2)
-- `Config.py` (8)
-- `ConfigBuilder.py` (2)
-- `Evolution.py` (1)
 - `Logger.py` (5)
 - `Microcontroller.py` (1)
-- `PlotEvolutionLive.py` (3)
-- `PlotSensitivityLive.py` (2)
-- `ascTemplateBuilder.py` (4)
+- `PlotEvolutionLive.py` (10)
+- `PlotSensitivityLive.py` (1)
 - `tools/pulse_histogram.py` (1)
-- `test/test_utils.py` (2)
 
-**Note**: Some file operations use `mmap` which requires the file handle to remain open. These need careful refactoring.
+Files fixed:
+- ✅ `Config.py`
+- ✅ `ConfigBuilder.py`
+- ✅ `Evolution.py`
+- ✅ `WorkspaceFormatter.py`
+- ✅ `ascTemplateBuilder.py`
+- ✅ `Circuit/PulseCountFitnessFunction.py`
+- ✅ `Circuit/VarMaxFitnessFunction.py`
+- ✅ `Circuit/ToneDiscriminatorFitnessFunction.py`
+- ✅ `test/test_utils.py`
+
+**Note**: Some file operations use `mmap` which requires careful refactoring. The mmap pattern opens a file, creates an mmap, then closes the file handle. This is safe but triggers the linter.
 
 ### SIM102: Nested if statements (~15 occurrences)
 **Effort**: Low | **Risk**: Low | **Priority**: Medium
