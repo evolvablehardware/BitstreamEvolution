@@ -45,13 +45,18 @@ git clone https://github.com/evolvablehardware/BitstreamEvolution.git
 cd BitstreamEvolution
 
 # 2. Install Poetry (if not installed)
-# Option A: pipx (recommended)
-pipx install poetry
-# Option B: Official installer
+# Option A: Official installer (recommended - works on all Linux distros)
 curl -sSL https://install.python-poetry.org | python3 -
 
-# 3. Update lock file (if pyproject.toml was modified)
-poetry lock
+# Add Poetry to PATH (add to ~/.bashrc for persistence)
+export PATH="$HOME/.local/bin:$PATH"
+
+# Option B: pipx (on systems with pipx available)
+# Note: On Ubuntu 24.04+ you may need: sudo apt install pipx
+pipx install poetry
+
+# 3. Verify Poetry installation
+poetry --version
 
 # 4. Install dependencies
 poetry install --with dev
@@ -61,6 +66,19 @@ make init
 
 # 6. Run a FULLY_SIM experiment
 poetry run python src/evolve.py -c data/example_configs/sim.ini -d "Test run"
+```
+
+#### Modern Linux Note (Ubuntu 24.04+, Fedora 39+)
+
+Modern Linux distributions use PEP 668 "externally managed environments" which prevents
+`pip install --user` from working. This is why the official Poetry installer is recommended:
+
+```bash
+# This will NOT work on modern Linux:
+pip install poetry  # Fails with "externally-managed-environment" error
+
+# Use the official installer instead:
+curl -sSL https://install.python-poetry.org | python3 -
 ```
 
 ## Running an Experiment
@@ -136,9 +154,12 @@ sudo usermod -a -G dialout $USER
 
 ### Arduino Setup
 
+**IMPORTANT**: The Arduino must have the ReadSignal firmware uploaded before running hardware experiments. Without this firmware, the experiment will fail with "Did not read START from MCU" errors.
+
 ```bash
 # Install Arduino CLI
 curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+export PATH="$HOME/bin:$PATH"
 
 # Install Arduino core
 arduino-cli update
@@ -147,7 +168,37 @@ arduino-cli core install arduino:avr
 # Compile and upload firmware
 arduino-cli compile -b arduino:avr:nano data/ReadSignal/ReadSignal.ino
 arduino-cli upload -b arduino:avr:nano -p /dev/ttyUSB0 data/ReadSignal/ReadSignal.ino
+
+# Or use the Makefile target:
+make arduino-upload
 ```
+
+**Note**: If upload fails, your Arduino Nano may use the old bootloader. Try:
+```bash
+arduino-cli upload -b arduino:avr:nano:cpu=atmega328old -p /dev/ttyUSB0 data/ReadSignal/ReadSignal.ino
+```
+
+### Pre-flight Check
+
+Before running hardware experiments, use the pre-flight check tool to verify everything is configured correctly:
+
+```bash
+# Run pre-flight check
+make preflight
+
+# Or with automatic fixes (uploads Arduino firmware if needed)
+make preflight-fix
+
+# Or directly with poetry
+poetry run python src/tools/preflight_check.py --fix
+```
+
+The pre-flight check verifies:
+- USB devices (FPGA and Arduino) are connected
+- iceprog (FPGA programmer) is installed
+- Arduino firmware is responding correctly
+- Seed hardware file exists
+- Configuration is set for hardware mode
 
 ## Troubleshooting
 
@@ -166,7 +217,19 @@ arduino-cli upload -b arduino:avr:nano -p /dev/ttyUSB0 data/ReadSignal/ReadSigna
 |---------|----------|
 | Permission denied on USB | Run `make udev-rules` and add user to `dialout` group |
 | `make` not found | Install build-essential: `sudo apt install build-essential` |
-| Poetry not in PATH | Add `~/.local/bin` to PATH or use pipx |
+| Poetry not in PATH | Add `~/.local/bin` to PATH: `export PATH="$HOME/.local/bin:$PATH"` |
+| `pip install` fails with "externally-managed-environment" | Use the official Poetry installer instead (see Modern Linux Note above) |
+| pipx not found | Install via apt: `sudo apt install pipx` |
+
+### Hardware Issues
+
+| Problem | Solution |
+|---------|----------|
+| "Did not read START from MCU" | Arduino firmware not uploaded. Run `make arduino-upload` or `make preflight-fix` |
+| "Time Exceeded. Halting MCU Reading" | Arduino not responding. Check connection and run `make preflight` |
+| `FileNotFoundError: seed-hardware.asc` | Create symlink: `ln -sf data/seed-hardware-whitley.asc data/seed-hardware.asc` |
+| FPGA programming hangs | Disconnect and reconnect the FPGA, then retry |
+| "Permission denied" on /dev/ttyUSB* | Run `make udev-rules` and add user to `dialout` group, then logout/login |
 
 ### General Issues
 
@@ -209,8 +272,30 @@ python3 --version                       # Linux
 cmd.exe /c "python -m poetry install --with dev"
 cmd.exe /c "python -m poetry run python src/evolve.py -c data/example_configs/sim.ini -d 'Test'"
 
-# Run Poetry commands on Linux
+# Run Poetry commands on Linux (ensure PATH is set)
+export PATH="$HOME/.local/bin:$PATH"
 poetry install --with dev
+poetry run python src/evolve.py -c data/example_configs/sim.ini -d "Test"
+```
+
+### Linux Claude Code Quick Setup
+
+For Claude Code sessions on Linux, run these commands in sequence:
+
+```bash
+# 1. Install Poetry (if not already installed)
+curl -sSL https://install.python-poetry.org | python3 -
+
+# 2. Set PATH (required after fresh install)
+export PATH="$HOME/.local/bin:$PATH"
+
+# 3. Install project dependencies
+poetry install --with dev
+
+# 4. Initialize workspace
+make init
+
+# 5. Verify with a quick test run
 poetry run python src/evolve.py -c data/example_configs/sim.ini -d "Test"
 ```
 
@@ -218,7 +303,8 @@ poetry run python src/evolve.py -c data/example_configs/sim.ini -d "Test"
 
 - **Windows (MSYS2/MinGW64)**: Use `cmd.exe /c "python ..."` for Python commands
 - **Windows PATH**: Python scripts may be in user-local Scripts folder, not global PATH
-- **Linux**: Standard Poetry commands work directly
+- **Linux**: Ensure `~/.local/bin` is in PATH after installing Poetry
+- **Modern Linux (Ubuntu 24.04+)**: Use official Poetry installer, not pip
 
 ### Simulation Modes
 

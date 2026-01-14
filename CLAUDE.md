@@ -57,6 +57,9 @@ poetry install --with dev     # Install dependencies
 make all                      # Full setup: init + icestorm tools + udev rules
 make init                     # Create workspace directories and default config
 make icestorm-tools           # Build FPGA toolchain (icestorm, arachne-pnr, yosys)
+make preflight                # Check hardware setup before running experiments
+make preflight-fix            # Check and auto-fix (uploads Arduino firmware)
+make arduino-upload           # Upload firmware to Arduino Nano
 ```
 
 ### Run Evolution
