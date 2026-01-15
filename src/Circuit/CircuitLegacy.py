@@ -142,9 +142,8 @@ class CircuitLegacy:
 
         # Since the hardware file is written to and read from a lot, we
         # mmap it to improve preformance.
-        hardware_file = open(self.__hardware_filepath, "r+")
-        self.__hardware_file = mmap(hardware_file.fileno(), 0)
-        hardware_file.close()
+        with open(self.__hardware_filepath, "r+") as hardware_file:
+            self.__hardware_file = mmap(hardware_file.fileno(), 0)
 
         # Used for the sine simulation mode; up to 100 sine waves
         self.__src_sine_funcs = sine_funcs
@@ -224,8 +223,8 @@ class CircuitLegacy:
             attr_index = line.find(attribute + "={")
             lines = hardware_file.readlines()
             line_index = 0  # Index of the line that contains the attribute comment
-            for l in lines:
-                if l.find(".comment FILE_ATTRIBUTES") >= 0:
+            for file_line in lines:
+                if file_line.find(".comment FILE_ATTRIBUTES") >= 0:
                     break
                 line_index = line_index + 1
 
@@ -242,7 +241,7 @@ class CircuitLegacy:
             hardware_file.seek(0)
             hardware_file.writelines(lines)
 
-    def get_file_attribute(self, attribute):
+    def get_file_attribute(self, name: str) -> str | None:
         """
         Returns the value of the stored attribute for this Circuit
         Circuits are capable of storing string name-value pairs in their hardware file, for purposes such as
@@ -250,15 +249,15 @@ class CircuitLegacy:
 
         Parameters
         ----------
-        attrbute : str
+        name : str
             The name of the attribute of this circuit you want
 
         Returns
         -------
-        str
+        str | None
             The value of the attribute
         """
-        return CircuitLegacy.get_file_attribute_st(self.__hardware_file, attribute)
+        return CircuitLegacy.get_file_attribute_st(self.__hardware_file, name)
 
     def set_file_attribute(self, attribute, value):
         """
@@ -273,11 +272,10 @@ class CircuitLegacy:
         value : str
             The value to assign to the attribute
         """
-        hardware_file = open(self.__hardware_filepath, "r+")
-        CircuitLegacy.set_file_attribute_st(hardware_file, attribute, value)
-        # Re-map our hardware file
-        self.__hardware_file = mmap(hardware_file.fileno(), 0)
-        hardware_file.close()
+        with open(self.__hardware_filepath, "r+") as hardware_file:
+            CircuitLegacy.set_file_attribute_st(hardware_file, attribute, value)
+            # Re-map our hardware file
+            self.__hardware_file = mmap(hardware_file.fileno(), 0)
 
     def randomize_bits(self):
         """
@@ -558,9 +556,7 @@ class CircuitLegacy:
         start = time()
         self.__run()
         # self.__microcontroller.measure_pulses(self)
-        self.__microcontroller.simple_measure_pulses(
-            self.get_data_filepath(), self.__config.get_num_samples()
-        )
+        self.__microcontroller.simple_measure_pulses(self.get_data_filepath())
 
         elapsed = time() - start
         self.__log_event(1, "TIME TAKEN RUNNING AND LOGGING ---------------------- ", elapsed)
@@ -654,15 +650,15 @@ class CircuitLegacy:
         list[int]
             waveform
         """
-        data_file = open(self.__data_filepath, "rb")
-        data = data_file.readlines()
+        with open(self.__data_filepath, "rb") as data_file:
+            data = data_file.readlines()
         total_samples = 500
         waveform = []
         for i in range(total_samples - 1):
             try:
                 x = int(data[i].strip().split(b": ", 1)[1])
                 waveform.append(x)
-            except:
+            except (ValueError, IndexError):
                 self.__log_error(1, f"FAILED TO READ {self} AT LINE {i} -> ZEROIZING LINE")
                 waveform.append(0)
 
@@ -684,8 +680,8 @@ class CircuitLegacy:
             waveform
             state
         """
-        data_file = open(self.__data_filepath, "rb")
-        data = data_file.readlines()
+        with open(self.__data_filepath, "rb") as data_file:
+            data = data_file.readlines()
 
         # We take 1000 samples during each circuit's evaluation period
         total_samples = 1000
@@ -706,7 +702,7 @@ class CircuitLegacy:
                 # Add readings to arrays
                 waveform.append(x)
                 state.append(y)
-            except:
+            except (ValueError, IndexError):
                 # If the reading of the data fails, just record the data as 0s
                 self.__log_error(
                     1, f"TONE_DISC FAILED TO READ {self} AT LINE {i} -> ZEROIZING LINE"
@@ -871,10 +867,8 @@ class CircuitLegacy:
         waveform_diffs = [0, 0]
         waveform_sums = [0, 0]
 
-        # 1000 samples are taken per circuit
-        total_samples = 1000
-
         # Counter variables track how many samples were captured when State = 0 and State = 1
+        # Note: 1000 samples are taken per circuit
         # Ideally, these should be 500 and 500, but the Nano is not perfect.
         # They should always add up to 1000 and should be very close to 500.
         stateZeroCount = 0
@@ -986,8 +980,8 @@ class CircuitLegacy:
         list[int]
             Total Pulse Counts (if record_data is true)
         """
-        data_file = open(self.__data_filepath)
-        data = data_file.readlines()
+        with open(self.__data_filepath) as data_file:
+            data = data_file.readlines()
 
         # Extract the integer value from the log file indicating the pulses counted from
         # the microcontroller. Pulses are currently measured by Rising or Falling edges
@@ -1001,18 +995,19 @@ class CircuitLegacy:
 
         # Set pulse_count to whichever one is furthest away
         dist = 0
+        pulse_count = 0  # Default value if no pulses
         for pc in pulse_counts:
             this_dist = abs(pc - self.__config.get_desired_frequency())
             if this_dist >= dist:
                 dist = this_dist
                 pulse_count = pc
 
-        self.__log_event(3, f"Pulses counted: {pulse_count}")
-        self.__pulses = pulse_count
-
         if len(pulse_counts) == 0:
             self.__log_event(2, "NULL DATA FILE. ZEROIZING")
+        else:
+            self.__log_event(3, f"Pulses counted: {pulse_count}")
 
+        self.__pulses = pulse_count
         self.__fitness = self.__calc_pulse_fitness(pulse_count)
 
         return self.__fitness
@@ -1138,10 +1133,7 @@ class CircuitLegacy:
             # Flatten data
             value = [str(item) for sublist in self.__data for item in sublist]
         else:
-            if is_pulse_func(self.__config):
-                value = [str(self.__pulses)]
-            else:
-                value = [str(self.__fitness)]
+            value = [str(self.__pulses)] if is_pulse_func(self.__config) else [str(self.__fitness)]
 
         lines[index] = "{},{},{}\n".format(
             self.__index, ";".join(value), self.get_file_attribute("src_population")
@@ -1267,10 +1259,7 @@ class CircuitLegacy:
 
                 # Determine which rows we can modify
                 # TODO ALIFE2021 The routing protocol here is dated and needs to mimic that of the Tone Discriminator
-                if routing_type == "MOORE":
-                    rows = [1, 2, 13]
-                elif routing_type == "NEWSE":
-                    rows = [1, 2]
+                rows = [1, 2, 13] if routing_type == "MOORE" else [1, 2]
                 # Iterate over each row and the columns that we can access within each row
                 for row in rows:
                     for col in accessible_columns:
@@ -1503,9 +1492,8 @@ class CircuitLegacy:
         self.__hardware_file.close()
         hardware_filepath = self.get_hardware_filepath()
         copyfile(new_file_path, hardware_filepath)
-        hardware_file = open(hardware_filepath, "r+")
-        self.__hardware_file = mmap(hardware_file.fileno(), 0)
-        hardware_file.close()
+        with open(hardware_filepath, "r+") as hardware_file:
+            self.__hardware_file = mmap(hardware_file.fileno(), 0)
 
     def copy_hardware_from(self, source):
         """

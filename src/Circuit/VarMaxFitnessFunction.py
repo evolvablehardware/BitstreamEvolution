@@ -3,7 +3,6 @@ from Circuit.FitnessFunction import FitnessFunction
 
 class VarMaxFitnessFunction(FitnessFunction):
     def __init__(self, total_samples: int):
-        FitnessFunction.__init__(self)
         self.__total_samples = total_samples
 
     def get_measurements(self) -> list[float]:
@@ -12,9 +11,9 @@ class VarMaxFitnessFunction(FitnessFunction):
         fitness = self.__measure_variance_fitness(waveform)
         return [fitness]
 
-    def calculate_fitness(self, data: list[float]) -> float:
+    def calculate_fitness(self, measurements: list[float]) -> float:
         # Just take an average
-        return sum(data) / len(data)
+        return sum(measurements) / len(measurements)
 
     def get_waveform(self) -> list[float]:
         wf = []
@@ -38,7 +37,7 @@ class VarMaxFitnessFunction(FitnessFunction):
             try:
                 x = int(data[i].strip().split(b": ", 1)[1])
                 waveform.append(x)
-            except:
+            except (ValueError, IndexError):
                 # self.__log_error(1, "FAILED TO READ {} AT LINE {} -> ZEROIZING LINE".format(
                 #     self,
                 #     i

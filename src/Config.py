@@ -524,7 +524,7 @@ class Config:
     def get_n_generations(self):
         try:
             nGenerations = int(self.get_stop_parameters("GENERATIONS"))
-        except:
+        except (ValueError, TypeError):
             self.__log_warning(
                 2,
                 "Non-int user input for number of generations. Program will not terminate based on the number of generations",
@@ -546,7 +546,7 @@ class Config:
     def get_target_fitness(self):
         try:
             targetFitness = float(self.get_stop_parameters("TARGET_FITNESS"))
-        except:
+        except (ValueError, TypeError):
             self.__log_warning(
                 2,
                 "Non-int user input for target fitness. Program will not terminate based on fitness",
@@ -577,7 +577,7 @@ class Config:
     def get_sensitivity_trials(self):
         try:
             trials = int(self.get_sensitivity_parameters("SENSITIVITY_TRIALS"))
-        except:
+        except (ValueError, TypeError):
             self.__log_warning(
                 1,
                 "Non-int user input for the number of sensitivity trials. Program will not terminate based on the number of of trials",
@@ -644,7 +644,7 @@ class Config:
     def get_transfer_interval(self):
         try:
             interval = int(self.get_transfer_parameters("TRANSFER_INTERVAl"))
-        except:
+        except (ValueError, TypeError):
             # self.__log_info(2, "Non-int user input for transfer interval. Evolution will occur on only one FPGA")
             return "IGNORE"
         if interval < 1:
@@ -678,7 +678,7 @@ class Config:
     def get_population_bistream_save_interval(self):
         try:
             interval = int(self.get_logging_parameters("population_bitstream_save_interval"))
-        except:
+        except (ValueError, TypeError):
             return "IGNORE"
         if interval < 1:
             self.__log_error(

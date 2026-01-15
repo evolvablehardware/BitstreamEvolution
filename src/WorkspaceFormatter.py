@@ -1,3 +1,4 @@
+import contextlib
 import os
 from datetime import date
 from shutil import copytree, rmtree
@@ -34,27 +35,19 @@ class WorkspaceFormatter:
                 os.remove(path)
 
         # remove directories we don't want included
-        try:
+        with contextlib.suppress(OSError):
             rmtree(folder_name + "/experiment_bin")
-        except OSError:
-            pass
 
-        try:
+        with contextlib.suppress(OSError):
             rmtree(folder_name + "/experiment_data")
-        except OSError:
-            pass
 
         if not self.__config.get_using_configurable_io():
-            try:
+            with contextlib.suppress(OSError):
                 rmtree(folder_name + "/template")
-            except OSError:
-                pass
 
         if self.__config.get_init_mode() != "EXISTING_POPULATION":
-            try:
+            with contextlib.suppress(OSError):
                 rmtree(folder_name + "/source_populations")
-            except OSError:
-                pass
 
         return folder_name
 

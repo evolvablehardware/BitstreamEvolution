@@ -1,6 +1,7 @@
 from datetime import datetime
 from os import mkdir
 from os.path import exists, join
+from pathlib import Path
 from shutil import copytree, rmtree
 from subprocess import CalledProcessError, run
 from sys import stdout
@@ -61,10 +62,9 @@ class Logger:
             self.__analysis_bl_dir.mkdir()
 
         # Put the readme in the Analysis folder
-        readme_file = open(self.__analysis_dir.joinpath("README.txt"), "w")
-        readme_file.write(README_FILE_HEADER)
-        readme_file.write(str(self.__experiment_explanation))
-        readme_file.close()
+        with open(self.__analysis_dir.joinpath("README.txt"), "w") as readme_file:
+            readme_file.write(README_FILE_HEADER)
+            readme_file.write(str(self.__experiment_explanation))
 
     def __init_monitor(self):
         # Start the monitor
@@ -102,9 +102,10 @@ class Logger:
 
         if self.__config.get_launch_plots():
             if self.__config.get_simulation_mode() == "INTRINSIC_SENSITIVITY":
-                args = TERM_CMD + ["python3", "src/PlotSensitivityLive.py"]
+                args = [*TERM_CMD, "python3", "src/PlotSensitivityLive.py"]
             else:
-                args = TERM_CMD + [
+                args = [
+                    *TERM_CMD,
                     "python3",
                     "src/PlotEvolutionLive.py",
                     "--frame-interval",
@@ -122,23 +123,26 @@ class Logger:
     def __init__(self, config, explanation):
         self.__config = config
         self.__config.add_logger(self)
-        self.__monitor_file = open(config.get_log_file(), "w")
+        self.__monitor_file = open(config.get_log_file(), "w")  # noqa: SIM115 - managed by close()
         self.__log_file = stdout
         self.__experiment_explanation = explanation
 
-        # Ensure the logs exists and have been cleared. Not happy with
-        # this method, but couldn't find a better way to do it.
-        open("workspace/alllivedata.log", "w").close()
-        open("workspace/bestlivedata.log", "w").close()
-        open("workspace/waveformlivedata.log", "w").close()
-        open("workspace/maplivedata.log", "w").close()
-        open("workspace/heatmaplivedata.log", "w").close()
-        open("workspace/pulselivedata.log", "w").close()
-        open("workspace/violinlivedata.log", "w").close()
-        open("workspace/poplivedata.log", "w").close()
-        open("workspace/randomizationdata.log", "w").close()
-        open("workspace/fitnesssensitivity.log", "w").close()
-        open("workspace/bitstream_avg.log", "w").close()
+        # Ensure the logs exist and have been cleared
+        log_files = [
+            "workspace/alllivedata.log",
+            "workspace/bestlivedata.log",
+            "workspace/waveformlivedata.log",
+            "workspace/maplivedata.log",
+            "workspace/heatmaplivedata.log",
+            "workspace/pulselivedata.log",
+            "workspace/violinlivedata.log",
+            "workspace/poplivedata.log",
+            "workspace/randomizationdata.log",
+            "workspace/fitnesssensitivity.log",
+            "workspace/bitstream_avg.log",
+        ]
+        for log_file in log_files:
+            Path(log_file).write_text("")
         if not exists("workspace/template"):
             mkdir("workspace/template")
 

@@ -9,6 +9,7 @@ Plots of the active experiment are created and updated in this script using matp
 import sys
 from os import mkdir
 from os.path import exists
+from pathlib import Path
 
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
@@ -31,7 +32,7 @@ config = Config("workspace/builtconfig.ini")
 
 def run():
     def get_data():
-        graph_data = open("workspace/fitnesssensitivity.log").read()
+        graph_data = Path("workspace/fitnesssensitivity.log").read_text()
         lines = graph_data.split("\n")
         xs = []
         ys = []
@@ -50,12 +51,7 @@ def run():
         return ts, xs, ys, cs, hs
 
     def animate_sensitivity(i):
-        xs = []
-        ys = []
-        ts = []
-        cs = []
-        hs = []
-        ts, xs, ys, cs, hs = get_data()
+        ts, xs, ys, _cs, _hs = get_data()
 
         # fitness
         ax2.clear()
@@ -383,22 +379,28 @@ def run():
 
     plots_dir = config.get_plots_directory()
 
+    def plot_static(fig, function):
+        return function(0)
+
+    def plot_animated(fig, function):
+        return animation.FuncAnimation(
+            fig, function, interval=FRAME_INTERVAL, cache_frame_data=False
+        )
+
     formal = False
     if len(sys.argv) > 1 and sys.argv[1] == "formal":
         formal = True
         plots_dir = plots_dir.joinpath("Formal")
         accent_color = "black"
         heatmap_color = "Blues"
-        yellow = "goldenrod"
-        plot = lambda fig, function: function(0)
+        _yellow = "goldenrod"  # Reserved for future use
+        _plot = plot_static  # Reserved for future use
     else:
         style.use("dark_background")
         accent_color = "white"
         heatmap_color = "viridis"
-        yellow = "yellow"
-        plot = lambda fig, function: animation.FuncAnimation(
-            fig, function, interval=FRAME_INTERVAL, cache_frame_data=False
-        )
+        _yellow = "yellow"  # Reserved for future use
+        _plot = plot_animated  # Reserved for future use
 
     if not exists(plots_dir):
         mkdir(plots_dir)
@@ -408,7 +410,7 @@ def run():
     ax3 = fig.add_subplot(2, 2, 2)
     ax4 = fig.add_subplot(2, 2, 3)
     ax5 = fig.add_subplot(2, 2, 4)
-    ani = animation.FuncAnimation(fig, animate_sensitivity, interval=FRAME_INTERVAL)
+    _ani = animation.FuncAnimation(fig, animate_sensitivity, interval=FRAME_INTERVAL)  # type: ignore[arg-type]  # Keep reference to prevent GC
     fig.tight_layout(pad=5.0)
 
     if config.reading_temp_humidity():
@@ -417,7 +419,7 @@ def run():
         ax7 = fig2.add_subplot(2, 2, 2)
         ax8 = fig2.add_subplot(2, 2, 3)
         ax9 = fig2.add_subplot(2, 2, 4)
-        ani3 = animation.FuncAnimation(fig2, animate_temp_humidity, interval=FRAME_INTERVAL)
+        _ani3 = animation.FuncAnimation(fig2, animate_temp_humidity, interval=FRAME_INTERVAL)  # type: ignore[arg-type]  # Keep reference to prevent GC
         fig2.tight_layout(pad=5.0)
 
         fig3 = plt.figure(figsize=(9, 7))
@@ -432,7 +434,7 @@ def run():
         ax16 = fig4.add_subplot(2, 2, 3)
         ax17 = fig4.add_subplot(2, 2, 4)
 
-        ani4 = animation.FuncAnimation(fig3, animate_avg_temp_humidity, interval=FRAME_INTERVAL)
+        _ani4 = animation.FuncAnimation(fig3, animate_avg_temp_humidity, interval=FRAME_INTERVAL)  # type: ignore[arg-type]  # Keep reference to prevent GC
         fig3.tight_layout(pad=5.0)
         fig4.tight_layout(pad=5.0)
 
@@ -440,13 +442,13 @@ def run():
         time_axes = []
         for i in range(2):
             host = fig5.add_subplot(2, 1, i + 1, axes_class=HostAxes)
-            host.axis["right"].set_visible(False)
+            host.axis["right"].set_visible(False)  # type: ignore[index]
             time_axes.append(host)
             for _j in range(2):
-                par = host.get_aux_axes(viewlim_mode=None, sharex=host)
+                par = host.get_aux_axes(viewlim_mode=None, sharex=host)  # type: ignore[attr-defined]
                 time_axes.append(par)
 
-        ani5 = animation.FuncAnimation(fig5, animate_change_over_time, interval=FRAME_INTERVAL)
+        _ani5 = animation.FuncAnimation(fig5, animate_change_over_time, interval=FRAME_INTERVAL)  # type: ignore[arg-type]  # Keep reference to prevent GC
 
     plt.subplots_adjust(hspace=0.50, right=0.8)
     plt.show(block=(not formal))

@@ -1,8 +1,8 @@
 from pathlib import Path
 
-import Config
-import Logger
 from Circuit.FileBasedCircuit import FileBasedCircuit
+from Config import Config
+from Logger import Logger
 
 
 class SimHardwareCircuit(FileBasedCircuit):

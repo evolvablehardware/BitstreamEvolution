@@ -268,9 +268,7 @@ def pulse_count_then_sensitivity_config_generator(
             skip_next_if_fail=True,
             skip_next_if_skipped=True,
         )
-        pulse_count_experiment = list(pc_gen)[
-            0
-        ]  # yield the first element only (there should only be 1)
+        pulse_count_experiment = next(iter(pc_gen))  # yield the first element only (there should only be 1)
         yield pulse_count_experiment
 
         # make sure we have a best.asc to act on.
@@ -399,12 +397,12 @@ if [ $SkipNextCommand -eq 0 ]; then
 exitCode=$?
 if [ $exitCode -ne 0 ]; then  #Error
     UserInterruptTriggered=$((exitCode == 130))
-    ((ErrorCounter=ErrorCounter+1)) && FailedCommands+="$Current_Command"+$'\\n' 
+    ((ErrorCounter=ErrorCounter+1)) && FailedCommands+="$Current_Command"+$'\\n'
     {action_if_failure}
 else # Success
     ((SuccessCounter=SuccessCounter+1))
     {action_if_success}
-fi 
+fi
 else # Skipped
     ((SkippedCounter=SkippedCounter+1)) && SkippedCommands+="$Current_Command"+$'\\n'
     {action_if_skipped}
@@ -503,7 +501,7 @@ except PermissionError:
 You may need to make the bash file executable.
 Alternatively, you could run this command with sudo privilages. (sudo python3 ...)
 To do so run the following command:
-    
+
 chmod +x {bash_file.name}
 
 """

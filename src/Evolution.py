@@ -19,7 +19,7 @@ class Evolution:
         experiment_description: str,
         base_config_path: str,
         built_config_path: str,
-        output_directory: str = None,
+        output_directory: str | None = None,
         print_action_only: bool = False,
     ) -> None:
         if print_action_only:
@@ -52,7 +52,7 @@ class Evolution:
 
         # compiling and uploading to the Arduino
         if config.get_upload_to_arduino():
-            c = run(
+            _compile_result = run(
                 [
                     "./arduino-cli",
                     "compile",
@@ -62,7 +62,7 @@ class Evolution:
                 ]
             )
             usb_port = config.get_usb_path()
-            u = run(
+            _upload_result = run(
                 [
                     "./arduino-cli",
                     "upload",

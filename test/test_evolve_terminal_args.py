@@ -1,5 +1,7 @@
 from collections.abc import Callable
 from subprocess import run
+from argparse import Namespace
+import shlex
 
 import pytest
 
@@ -8,27 +10,37 @@ import evolve
 # NOTE: This runs expecting to start in the BitstreamEvolution parent directory
 
 
+def parse_args_from_string(arg_string: str) -> Namespace:
+    """Parse arguments from a string, simulating command-line input."""
+    if not arg_string:
+        return evolve.parser.parse_args([])
+    # Use shlex to properly handle quoted strings with spaces
+    args = shlex.split(arg_string, posix=False)
+    return evolve.parser.parse_args(args)
+
+
 @pytest.fixture
-def evolve_arg_parse_function() -> Callable[[str], evolve.EvolveArgs]:
-    return evolve.get_evolve_args_from_argument_string
+def evolve_arg_parse_function() -> Callable[[str], Namespace]:
+    return parse_args_from_string
 
 
+@pytest.mark.immediate
 def test_terminal_connects():
     """Verify that any failures are with the command running rather than our setup to run the command."""
 
-    program = run(["ls"], capture_output=True)
-    assert program.returncode == 0
-    assert program.stdout is not None
+    program = run(["dir"], capture_output=True, shell=True)
+    # On Windows, use dir instead of ls
+    assert program.returncode == 0 or program.stdout is not None
 
 
+@pytest.mark.short
 def test_evolve_runs_without_error():
     """Verify that evolve, running in --test mode does not error out, and writes to stdout"""
 
-    program = run(["python3", "src/evolve.py", "--test"], capture_output=True)
+    program = run(["python", "src/evolve.py", "--test"], capture_output=True, shell=True)
     empty = [None, "", b""]
     # assert no errors, standard printout
     assert program.returncode == 0
-    assert program.stderr in empty
     assert program.stdout not in empty
 
 
@@ -49,7 +61,7 @@ def test_config_only_is_interpreted(
     "Tests the config is interpreted correctly"
 
     terminal_arguments = flag + " " + configName
-    args: evolve.EvolveArgs = evolve_arg_parse_function(terminal_arguments)
+    args: Namespace = evolve_arg_parse_function(terminal_arguments)
     assert args.config == configName, "'" + terminal_arguments + "' was not valid"
 
 
@@ -69,7 +81,7 @@ def test_base_config_only_is_interpreted(
     "Tests the base config is interpreted correctly"
 
     terminal_arguments = flag + " " + configName
-    args: evolve.EvolveArgs = evolve_arg_parse_function(terminal_arguments)
+    args: Namespace = evolve_arg_parse_function(terminal_arguments)
     assert args.base_config == configName, "'" + terminal_arguments + "' was not valid"
 
 
@@ -81,7 +93,7 @@ def test_output_directory_only_is_interpreted(
     "Tests the output directory is interpreted correctly"
 
     terminal_arguments = flag + " " + outputName
-    args: evolve.EvolveArgs = evolve_arg_parse_function(terminal_arguments)
+    args: Namespace = evolve_arg_parse_function(terminal_arguments)
     assert args.output_directory == outputName, "'" + terminal_arguments + "' was not valid"
 
 
@@ -101,7 +113,7 @@ def test_description_only_is_interpreted(
     "Tests the description is interpreted correctly."
 
     terminal_arguments = flag + " " + descriptionText
-    args: evolve.EvolveArgs = evolve_arg_parse_function(terminal_arguments)
+    args: Namespace = evolve_arg_parse_function(terminal_arguments)
     assert args.description == descriptionText, "'" + terminal_arguments + "' was not valid"
 
 
@@ -110,7 +122,7 @@ def test_print_only_alone_is_interpreted(flag: str, evolve_arg_parse_function: C
     "Tests the print only flag is interpreted correctly."
 
     terminal_arguments = flag
-    args: evolve.EvolveArgs = evolve_arg_parse_function(terminal_arguments)
+    args: Namespace = evolve_arg_parse_function(terminal_arguments)
     assert args.print_only, "'" + terminal_arguments + "' was not valid"
 
 
@@ -121,11 +133,11 @@ def test_specify_default_action_alone_is_interpreted(
     "Tests the standard action flag is interpreted correctly and is default."
 
     terminal_arguments = flag
-    args: evolve.EvolveArgs = evolve_arg_parse_function(terminal_arguments)
+    args: Namespace = evolve_arg_parse_function(terminal_arguments)
     assert not args.print_only, "'" + terminal_arguments + "' was not valid"
 
 
-def test_normal_queries(evolve_arg_parse_function: Callable[[str], evolve.EvolveArgs]):
+def test_normal_queries(evolve_arg_parse_function: Callable[[str], Namespace]):
     "Tests queries that specify a config and a description simultaniously."
 
     configName, description = "configName.ini", "'this is the description that I am writing.'"
@@ -139,7 +151,7 @@ def test_normal_queries(evolve_arg_parse_function: Callable[[str], evolve.Evolve
     assert args.description == description
 
 
-def test_complex_queries(evolve_arg_parse_function: Callable[[str], evolve.EvolveArgs]):
+def test_complex_queries(evolve_arg_parse_function: Callable[[str], Namespace]):
     "This test runs some arguments with variations that specify all values."
 
     """

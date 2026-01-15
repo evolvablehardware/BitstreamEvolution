@@ -19,7 +19,6 @@ Options:
 """
 
 import argparse
-import os
 import subprocess
 import sys
 import time
@@ -381,12 +380,11 @@ def run_preflight_check(config_path: str, fix: bool = False, quiet: bool = False
             print_status("Firmware may need to be uploaded", "info")
             failures += 1
 
-            if fix and arduino_cli["installed"]:
-                if upload_arduino_firmware(usb["arduino_device"]):
-                    time.sleep(2)
-                    firmware = check_arduino_firmware(usb["arduino_device"])
-                    if firmware["firmware_ok"]:
-                        failures -= 1
+            if fix and arduino_cli["installed"] and upload_arduino_firmware(usb["arduino_device"]):
+                time.sleep(2)
+                firmware = check_arduino_firmware(usb["arduino_device"])
+                if firmware["firmware_ok"]:
+                    failures -= 1
     else:
         print_status("Skipped (no Arduino detected)", "warn")
 
@@ -435,7 +433,7 @@ def run_preflight_check(config_path: str, fix: bool = False, quiet: bool = False
     else:
         print(f"{RED}{failures} failure(s), {warnings} warning(s). Fix issues before running.{RESET}")
         if not fix:
-            print(f"\nTip: Run with --fix to attempt automatic fixes")
+            print("\nTip: Run with --fix to attempt automatic fixes")
         return 2
 
 

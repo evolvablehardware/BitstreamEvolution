@@ -10,7 +10,7 @@ data_filepath = Path(os.path.join("test", "res", "inputs", "test_pulse_count_dat
 mcu = Mock()
 config = Mock()
 
-ff.attach(data_filepath, mcu, config)
+ff.attach(data_filepath, mcu, config, {})
 
 config.get_desired_frequency.return_value = 1000
 

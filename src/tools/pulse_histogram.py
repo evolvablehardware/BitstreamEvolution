@@ -16,9 +16,8 @@ from matplotlib.widgets import Button, Slider
 def run():
     print("Starting up...")
 
-    f = open("./workspace/pulselivedata.log")
-    lines = f.readlines()
-    f.close()
+    with open("./workspace/pulselivedata.log") as f:
+        lines = f.readlines()
 
     # Keep a track of each generation's pulse counts, and the overall ones
     gens = []  # Contains an entry list for each generation
@@ -45,11 +44,9 @@ def run():
 
     width = 5000
 
-    gen = 0
-
     def update(new_gen):
-        gen = new_gen - 1
-        data = gens[gen]
+        gen_idx = new_gen - 1
+        data = gens[gen_idx]
         rerender(data)
 
     def rerender(data):

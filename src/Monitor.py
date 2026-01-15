@@ -17,7 +17,7 @@ try:
     from time import sleep
 
     from tailer import head
-except:
+except ImportError:
     imports_work = False
 
 
@@ -37,8 +37,9 @@ def run():
     A high level monitor for a summary of the evolution experiment
     """
     while True:
-        for line in head(open(MONITOR), 22):
-            print(line)
+        with open(MONITOR) as f:
+            for line in head(f, 22):
+                print(line)
         sleep(0.5)
         print("\033c")
 

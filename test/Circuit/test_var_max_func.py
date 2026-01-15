@@ -11,7 +11,7 @@ data_filepath = Path(os.path.join("test", "res", "inputs", "test_varmax_data.txt
 mcu = Mock()
 config = Mock()
 
-ff.attach(data_filepath, mcu, config)
+ff.attach(data_filepath, mcu, config, {})
 
 
 def test_get_measurement():

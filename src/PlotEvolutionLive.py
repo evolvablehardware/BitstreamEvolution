@@ -10,6 +10,7 @@ import argparse
 import sys
 from os import mkdir
 from os.path import exists
+from pathlib import Path
 
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
@@ -38,7 +39,7 @@ def run():
     """Temporary function to run all of Plot Evolution Live."""
 
     def animate_generation(i):
-        graph_data = open("workspace/alllivedata.log").read()
+        graph_data = Path("workspace/alllivedata.log").read_text()
         lines = graph_data.split("\n")
         xs = []
         ys = []
@@ -46,7 +47,7 @@ def run():
         is_transparent = False
         for line in lines:
             if len(line) > 1:
-                x, y, z = line.split(",")
+                x, y, _z = line.split(",")
                 all_ys = y.split(";")
                 if len(all_ys) > 1:
                     is_transparent = True
@@ -58,7 +59,7 @@ def run():
             avg = sum(ys) / len(ys)
 
         ax1.clear()
-        ax1.set_xlim([0, config.get_population_size() + 1])
+        ax1.set_xlim((0, config.get_population_size() + 1))
         # ax1.set_xticks(range(1, config.get_population_size(), 1))
         ax1.hlines(
             y=avg,
@@ -82,7 +83,7 @@ def run():
                     color="red",
                     linestyles="dotted",
                 )
-            ax1.set_ylim([0, None])
+            ax1.set_ylim(bottom=0)
         else:
             title = "Circuit Fitness this Generation"
             ylabel = "Fitness"
@@ -97,7 +98,7 @@ def run():
             )
 
     def animate_epoch(i):
-        graph_data = open("workspace/bestlivedata.log").read()
+        graph_data = Path("workspace/bestlivedata.log").read_text()
         lines = graph_data.split("\n")
         xs = []
         ys = []
@@ -116,8 +117,9 @@ def run():
                 ds.append(float(d))
         ax2.clear()
         # ax2.set_yscale('symlog')
-        if config.using_transfer_interval():
-            for i in range(0, len(lines), config.get_transfer_interval()):
+        transfer_interval = config.get_transfer_interval()
+        if config.using_transfer_interval() and isinstance(transfer_interval, int):
+            for i in range(0, len(lines), transfer_interval):
                 ax2.axvline(x=i, color=accent_color, linestyle="dashed")
 
         plots = []
@@ -153,7 +155,7 @@ def run():
             fig.savefig(plots_dir.joinpath("1_main.png"), bbox_inches="tight")
 
     def animate_epoch_pulses(i):
-        graph_data = open("workspace/pulselivedata.log").read()
+        graph_data = Path("workspace/pulselivedata.log").read_text()
         lines = graph_data.split("\n")
         xs = []  # closest to desired frequency
         ys = []  # avg # of pulses
@@ -190,8 +192,9 @@ def run():
             # labels.append("Desired Frequency")
         ax9.set(xlabel="Generation", ylabel="Pulses", title="Circuit Pulse Count per Generation")
 
-        if config.using_transfer_interval():
-            for i in range(0, len(lines), config.get_transfer_interval()):
+        transfer_interval = config.get_transfer_interval()
+        if config.using_transfer_interval() and isinstance(transfer_interval, int):
+            for i in range(0, len(lines), transfer_interval):
                 ax9.axvline(x=i, color=accent_color, linestyle="dashed")
 
         if formal:
@@ -203,7 +206,7 @@ def run():
             fig4.savefig(plots_dir.joinpath("2_pulses.png"), bbox_inches="tight")
 
     def animate_waveform(i):
-        graph_data = open("workspace/waveformlivedata.log").read()
+        graph_data = Path("workspace/waveformlivedata.log").read_text()
         lines = graph_data.split("\n")
         pulse_trigger = [341 * 3.3 / 715] * 500
         xs = []
@@ -215,11 +218,11 @@ def run():
                 ys.append(float(y) * 3.3 / 715)
         ax4.clear()
         if config.get_fitness_func() == "TONE_DISCRIMINATOR":
-            ax4.set_xlim([0, 1000])
+            ax4.set_xlim((0, 1000))
         else:
-            ax4.set_xlim([0, 500])
-        # ax4.set_ylim([0, 750])
-        ax4.set_ylim([-0.2, 3.5])
+            ax4.set_xlim((0, 500))
+        # ax4.set_ylim((0, 750))
+        ax4.set_ylim((-0.2, 3.5))
         ax4.plot(pulse_trigger, "r--")
         ax4.plot(xs, ys, color="blue")
 
@@ -234,7 +237,7 @@ def run():
         ax4.set(xlabel="Time (μs)", ylabel="Voltage (V)", title="Current Hardware Waveform")
 
     def animate_state(i):
-        graph_data = open("workspace/statelivedata.log").read()
+        graph_data = Path("workspace/statelivedata.log").read_text()
         lines = graph_data.split("\n")
         pulse_trigger = [341 * 3.3 / 715] * 500
         xs = []
@@ -245,9 +248,9 @@ def run():
                 xs.append(int(x))
                 ys.append(float(y))
         ax5.clear()
-        ax5.set_xlim([0, 1000])
-        # ax4.set_ylim([0, 750])
-        ax5.set_ylim([-0.1, 1.1])
+        ax5.set_xlim((0, 1000))
+        # ax4.set_ylim((0, 750))
+        ax5.set_ylim((-0.1, 1.1))
         ax5.plot(pulse_trigger, "r--")
         ax5.plot(xs, ys, color="blue")
 
@@ -262,7 +265,7 @@ def run():
         ax5.set(xlabel="Time (μs)", ylabel="Voltage (V)", title="Current State")
 
     def animate_map(i):
-        graph_data = open("workspace/maplivedata.log").read()
+        graph_data = Path("workspace/maplivedata.log").read_text()
         lines = graph_data.split("\n")
         xs = []
         ys = []
@@ -301,7 +304,7 @@ def run():
             fig_map.savefig(plots_dir.joinpath("5_map.png"), bbox_inches="tight")
 
     def animate_pops(i):
-        graph_data = open("workspace/poplivedata.log").read()
+        graph_data = Path("workspace/poplivedata.log").read_text()
         lines = graph_data.split("\n")
         xs = []
         ys = []
@@ -341,7 +344,7 @@ def run():
             )
 
     def anim_violin_plots(i):
-        data = open("workspace/violinlivedata.log").read()
+        data = Path("workspace/violinlivedata.log").read_text()
         collections = []
         gens = []
         widths = []
@@ -378,8 +381,9 @@ def run():
 
         if len(collections) > 0:
             ax7.clear()
-            if config.using_transfer_interval():
-                for i in range(0, len(lines), config.get_transfer_interval()):
+            transfer_interval = config.get_transfer_interval()
+            if config.using_transfer_interval() and isinstance(transfer_interval, int):
+                for i in range(0, len(lines), transfer_interval):
                     ax7.axvline(x=i, color=accent_color, linestyle="dashed")
             ax7.violinplot(collections, positions=gens, widths=widths)
             ax7.set(xlabel="Generation", ylabel="Fitness", title="Fitness Violin Plots")
@@ -388,7 +392,7 @@ def run():
             fig2.savefig(plots_dir.joinpath("3_violin_plots.png"))
 
     def anim_violin_plots_pulse(i):
-        data = open("workspace/pulselivedata.log").read()
+        data = Path("workspace/pulselivedata.log").read_text()
         collections = []
         gens = []
         widths = []
@@ -416,8 +420,9 @@ def run():
         if len(collections) > 0:
             ax10.clear()
             ax10.violinplot(collections, positions=gens, widths=widths)
-            if config.using_transfer_interval():
-                for i in range(0, len(lines), config.get_transfer_interval()):
+            transfer_interval = config.get_transfer_interval()
+            if config.using_transfer_interval() and isinstance(transfer_interval, int):
+                for i in range(0, len(lines), transfer_interval):
                     ax10.axvline(x=i, color=accent_color, linestyle="dashed")
             if config.is_pulse_count():
                 ax10.hlines(
@@ -433,9 +438,9 @@ def run():
     def anim_heatmap(i):
         global max_pulses
         if config.is_pulse_func():
-            data = open("workspace/pulselivedata.log").read()
+            data = Path("workspace/pulselivedata.log").read_text()
         else:
-            data = open("workspace/heatmaplivedata.log").read()
+            data = Path("workspace/heatmaplivedata.log").read_text()
 
         lines = data.split("\n")
         collections = []
@@ -461,15 +466,16 @@ def run():
         else:
             ax8.set(xlabel="Generation", ylabel="Voltage (V)", title="Voltage Heatmap")
 
-        if config.using_transfer_interval():
-            for i in range(0, len(lines), config.get_transfer_interval()):
+        transfer_interval = config.get_transfer_interval()
+        if config.using_transfer_interval() and isinstance(transfer_interval, int):
+            for i in range(0, len(lines), transfer_interval):
                 ax8.axvline(x=i, color=accent_color, linestyle="dashed")
 
         if config.get_save_plots():
             fig3.savefig(plots_dir.joinpath("4_heatmap.png"))
 
     def animate_pulse_map(i):
-        graph_data = open("workspace/maplivedata.log").read()
+        graph_data = Path("workspace/maplivedata.log").read_text()
         lines = graph_data.split("\n")
         xs = []
         fits = []
@@ -503,6 +509,14 @@ def run():
 
     plots_dir = config.get_plots_directory()
 
+    def plot_static(fig, function):
+        return function(0)
+
+    def plot_animated(fig, function):
+        return animation.FuncAnimation(
+            fig, function, interval=FRAME_INTERVAL, cache_frame_data=False
+        )
+
     formal = False
     if len(sys.argv) > 1 and sys.argv[1] == "formal":
         formal = True
@@ -511,16 +525,14 @@ def run():
         accent_color2 = "#65187A"
         heatmap_color = "Blues"
         yellow = "goldenrod"
-        plot = lambda fig, function: function(0)
+        plot = plot_static
     else:
         style.use("dark_background")
         accent_color = "white"
         accent_color2 = "#f0f8ff"
         heatmap_color = "viridis"
         yellow = "yellow"
-        plot = lambda fig, function: animation.FuncAnimation(
-            fig, function, interval=FRAME_INTERVAL, cache_frame_data=False
-        )
+        plot = plot_animated
 
     if not exists(plots_dir):
         mkdir(plots_dir)
@@ -549,46 +561,46 @@ def run():
         has_pop_plot = True
 
     ax1 = fig.add_subplot(rows, cols, 2)
-    ani = plot(fig, animate_generation)
+    _ani = plot(fig, animate_generation)  # Keep reference to prevent GC
     ax2 = fig.add_subplot(rows, cols, 1)
     ax3 = ax2.twinx()
-    ani2 = plot(fig, animate_epoch)
+    _ani2 = plot(fig, animate_epoch)  # Keep reference to prevent GC
 
     if has_wf_plot:
         ax4 = fig.add_subplot(rows, cols, 3)
-        ani3 = plot(fig, animate_waveform)
+        _ani3 = plot(fig, animate_waveform)  # Keep reference to prevent GC
 
     if has_st_plot:
         ax5 = fig.add_subplot(rows, cols, 4)
-        ani4 = plot(fig, animate_state)
+        _ani4 = plot(fig, animate_state)  # Keep reference to prevent GC
 
     if has_pop_plot:
         ax6 = fig.add_subplot(rows, cols, rows * cols)
-        ani6 = plot(fig, animate_pops)
+        _ani6 = plot(fig, animate_pops)  # Keep reference to prevent GC
 
     fig2 = plt.figure()
     ax7 = fig2.add_subplot(1, 1, 1)
-    ani7 = plot(fig2, anim_violin_plots)
+    _ani7 = plot(fig2, anim_violin_plots)  # Keep reference to prevent GC
 
     if config.get_simulation_mode() == "FULLY_INTRINSIC":
         fig3 = plt.figure()
         ax8 = fig3.add_subplot(1, 1, 1)
-        ani8 = plot(fig3, anim_heatmap)
+        _ani8 = plot(fig3, anim_heatmap)  # Keep reference to prevent GC
 
     if config.is_pulse_count():
         fig4 = plt.figure()
         ax9 = fig4.add_subplot(2, 1, 1)
-        ani9 = plot(fig4, animate_epoch_pulses)
+        _ani9 = plot(fig4, animate_epoch_pulses)  # Keep reference to prevent GC
         ax10 = fig4.add_subplot(2, 1, 2)
-        ani10 = plot(fig4, anim_violin_plots_pulse)
+        _ani10 = plot(fig4, anim_violin_plots_pulse)  # Keep reference to prevent GC
 
     if config.get_selection_type() == "MAP_ELITES":
         fig_map = plt.figure()
         ax5 = fig_map.add_subplot(1, 1, 1)
         if config.get_fitness_func() == "PULSE_CONSISTENCY":
-            ani4 = plot(fig_map, animate_pulse_map)
+            _ani_map = plot(fig_map, animate_pulse_map)  # Keep reference to prevent GC
         else:
-            ani4 = plot(fig_map, animate_map)
+            _ani_map = plot(fig_map, animate_map)  # Keep reference to prevent GC
 
     plt.subplots_adjust(hspace=0.50)
     fig.tight_layout(pad=5.0)

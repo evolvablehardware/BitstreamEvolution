@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-import Config
+from Config import Config
 
 
 class Circuit(ABC):
@@ -121,7 +121,7 @@ class Circuit(ABC):
         return self._fitness
 
     @abstractmethod
-    def get_file_attribute(self, name: str):
+    def get_file_attribute(self, name: str) -> str | None:
         pass
 
     def _get_all_live_reported_value(self) -> list[float]:

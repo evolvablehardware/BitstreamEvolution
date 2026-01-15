@@ -4,14 +4,11 @@ from Circuit.FitnessFunction import FitnessFunction
 
 
 class ToneDiscriminatorFitnessFunction(FitnessFunction):
-    def __init__(self):
-        FitnessFunction.__init__(self)
-
     def get_measurements(self) -> list[float]:
         self._microcontroller.measure_signal_td(self._data_filepath)
         (waveform, state) = self.__read_variance_data_td()
         fitness = self.__measure_tonedisc_fitness(waveform, state)
-        return fitness
+        return [fitness]
 
     def calculate_fitness(self, measurements: list[float]) -> float:
         # Just take an average
@@ -54,7 +51,7 @@ class ToneDiscriminatorFitnessFunction(FitnessFunction):
                 # Add readings to arrays
                 waveform.append(x)
                 state.append(y)
-            except:
+            except (ValueError, IndexError):
                 # If the reading of the data fails, just record the data as 0s
                 # self.__log_error(1, "TONE_DISC FAILED TO READ {} AT LINE {} -> ZEROIZING LINE".format(
                 #     self,
@@ -117,10 +114,8 @@ class ToneDiscriminatorFitnessFunction(FitnessFunction):
         waveform_diffs = [0, 0]
         waveform_sums = [0, 0]
 
-        # 1000 samples are taken per circuit
-        total_samples = 1000
-
         # Counter variables track how many samples were captured when State = 0 and State = 1
+        # Note: 1000 samples are taken per circuit
         # Ideally, these should be 500 and 500, but the Nano is not perfect.
         # They should always add up to 1000 and should be very close to 500.
         stateZeroCount = 0
@@ -184,7 +179,7 @@ class ToneDiscriminatorFitnessFunction(FitnessFunction):
             #   " ----- State 1 Average = ", stateOneAve,
             #   " State 1 Count = ", stateOneCount)
 
-        # Compute mean voltage
-        mean_voltage = sum(waveform) / len(waveform)  # used by combined fitness func
+        # Note: mean_voltage = sum(waveform) / len(waveform) could be computed here
+        # if needed by a combined fitness function in the future
 
         return fitness

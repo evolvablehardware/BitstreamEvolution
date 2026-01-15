@@ -4,32 +4,29 @@ from Circuit.FitnessFunction import FitnessFunction
 
 
 class PulseCountFitnessFunction(FitnessFunction):
-    def __init__(self):
-        FitnessFunction.__init__(self)
-
     def get_measurements(self) -> list[float]:
         self._microcontroller.simple_measure_pulses(self._data_filepath)
         pulses = self.__count_pulses()
         return pulses
 
-    def calculate_fitness(self, data: list[float]) -> float:
+    def calculate_fitness(self, measurements: list[float]) -> float:
         # Get the pulse that is furthest away from the target, and calculate with that
-        dist = 0
+        dist = 0.0
         pulse_count = -1
-        for pc in data:
+        for pc in measurements:
             this_dist = abs(pc - self._config.get_desired_frequency())
             if this_dist >= dist:
                 dist = this_dist
-                pulse_count = pc
+                pulse_count = int(pc)
 
-        self._extra_data["pulses"] = pulse_count
+        self._extra_data["pulses"] = float(pulse_count)
         return self.__calculate_pulse_fitness(pulse_count)
 
     def get_waveform(self):
         return []
 
     def _get_all_live_reported_value(self) -> list[float]:
-        return self._data
+        return []  # No live data for pulse count
 
     def __count_pulses(self) -> list[float]:
         with open(self._data_filepath) as data_file:

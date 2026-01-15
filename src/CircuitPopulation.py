@@ -321,9 +321,8 @@ class CircuitPopulation:
                     path = (
                         self.__config.get_src_pops_dir().joinpath(subdirectories[i]).joinpath(file)
                     )
-                    hw_file = open(path, "r+")
-                    mmapped_file = mmap(hw_file.fileno(), 0)
-                    hw_file.close()
+                    with open(path, "r+") as hw_file:
+                        mmapped_file = mmap(hw_file.fileno(), 0)
                     fitness = float(FileBasedCircuit.get_file_attribute_st(mmapped_file, "fitness"))
                     if fitness is None:
                         fitness = 0
@@ -1343,10 +1342,7 @@ class CircuitPopulation:
         """
         if len(ar1) != len(ar2):
             return False
-        for i in range(0, len(ar1)):
-            if ar1[i] != ar2[i]:
-                return False
-        return True
+        return all(ar1[i] == ar2[i] for i in range(len(ar1)))
 
     def __files_eq(self, fp1, fp2):
         """
@@ -1386,7 +1382,7 @@ class CircuitPopulation:
         """
 
         args = [iter(iterable)] * n
-        return zip_longest(fillvalue=fillvalue, *args)
+        return zip_longest(*args, fillvalue=fillvalue)
 
     def __log_event(self, level, *event):
         """

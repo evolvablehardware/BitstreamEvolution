@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
+from pathlib import Path
 
-import Config
-import Microcontroller
+from Config import Config
+from Microcontroller import Microcontroller
 
 
 class FitnessFunction(ABC):
@@ -12,16 +13,14 @@ class FitnessFunction(ABC):
     combines two fitness strategies together
     """
 
-    def __init__(self):
-        """Initialize the fitness function. Call attach() to configure before use."""
-        self._data_filepath = None
-        self._microcontroller = None
-        self._config = None
-        self._extra_data = None
+    _data_filepath: Path
+    _microcontroller: Microcontroller
+    _config: Config
+    _extra_data: dict[str, float]
 
     def attach(
         self,
-        data_filepath,
+        data_filepath: Path,
         microcontroller: Microcontroller,
         config: Config,
         extra_data: dict[str, float],

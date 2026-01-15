@@ -4,9 +4,9 @@ from pathlib import Path
 from shutil import copyfile
 from subprocess import run
 
-import Config
-import Logger
 from Circuit.Circuit import Circuit
+from Config import Config
+from Logger import Logger
 
 COMPILE_CMD = "icepack"
 
@@ -41,16 +41,15 @@ class FileBasedCircuit(Circuit):
         # NOTE Using log files instead of a data buffer in the event of premature termination
         self._data_filepath = data_dir.joinpath(filename + ".log")
         # Create the data file if it doesn't exist
-        open(self._data_filepath, "w+").close()
+        Path(self._data_filepath).touch()
 
         if template:
             copyfile(template, self._hardware_filepath)
 
         # Since the hardware file is written to and read from a lot, we
         # mmap it to improve preformance.
-        hardware_file = open(self._hardware_filepath, "r+")
-        self._hardware_file = mmap(hardware_file.fileno(), 0)
-        hardware_file.close()
+        with open(self._hardware_filepath, "r+") as hardware_file:
+            self._hardware_file = mmap(hardware_file.fileno(), 0)
 
     def copy_from(self, other):
         copyfile(other._hardware_filepath, self._hardware_filepath)
@@ -175,10 +174,7 @@ class FileBasedCircuit(Circuit):
 
                 # Determine which rows we can modify
                 # TODO ALIFE2021 The routing protocol here is dated and needs to mimic that of the Tone Discriminator
-                if routing_type == "MOORE":
-                    rows = [1, 2, 13]
-                elif routing_type == "NEWSE":
-                    rows = [1, 2]
+                rows = [1, 2, 13] if routing_type == "MOORE" else [1, 2]
                 # Iterate over each row and the columns that we can access within each row
                 for row in rows:
                     for col in accessible_columns:
@@ -367,8 +363,8 @@ class FileBasedCircuit(Circuit):
             attr_index = line.find(attribute + "={")
             lines = hardware_file.readlines()
             line_index = 0  # Index of the line that contains the attribute comment
-            for l in lines:
-                if l.find(".comment FILE_ATTRIBUTES") >= 0:
+            for file_line in lines:
+                if file_line.find(".comment FILE_ATTRIBUTES") >= 0:
                     break
                 line_index = line_index + 1
 
@@ -385,7 +381,7 @@ class FileBasedCircuit(Circuit):
             hardware_file.seek(0)
             hardware_file.writelines(lines)
 
-    def get_file_attribute(self, attribute):
+    def get_file_attribute(self, name: str) -> str | None:
         """
         Returns the value of the stored attribute for this Circuit
         Circuits are capable of storing string name-value pairs in their hardware file, for purposes such as
@@ -393,7 +389,7 @@ class FileBasedCircuit(Circuit):
 
         Parameters
         ----------
-        attrbute : str
+        name : str
             The name of the attribute of this circuit you want
 
         Returns
@@ -401,7 +397,7 @@ class FileBasedCircuit(Circuit):
         str
             The value of the attribute
         """
-        return FileBasedCircuit.get_file_attribute_st(self._hardware_file, attribute)
+        return FileBasedCircuit.get_file_attribute_st(self._hardware_file, name)
 
     def set_file_attribute(self, attribute, value):
         """
@@ -416,11 +412,10 @@ class FileBasedCircuit(Circuit):
         value : str
             The value to assign to the attribute
         """
-        hardware_file = open(self._hardware_filepath, "r+")
-        FileBasedCircuit.set_file_attribute_st(hardware_file, attribute, value)
-        # Re-map our hardware file
-        self._hardware_file = mmap(hardware_file.fileno(), 0)
-        hardware_file.close()
+        with open(self._hardware_filepath, "r+") as hardware_file:
+            FileBasedCircuit.set_file_attribute_st(hardware_file, attribute, value)
+            # Re-map our hardware file
+            self._hardware_file = mmap(hardware_file.fileno(), 0)
 
     def _log_event(self, level, *event):
         """
