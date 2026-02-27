@@ -163,6 +163,44 @@ hardware_file = open(self.__hardware_filepath, "r+")
 self._hardware_file = mmap(hardware_file.fileno(), 0)
 ```
 
+## Per-Generation Stateful Fitness Evaluators
+
+`EvalVarMaxFitness` (and potentially future evaluators) maintain state across the individuals within a single generation. This is intentional design for tracking the best result to record to `PlotDataRecorder`.
+
+**Pattern location**: [EvaluateFitness/EvalVarMaxFitness.py](../src/EvaluateFitness/EvalVarMaxFitness.py)
+
+**State held**:
+- `__best_waveform` / `__best_waveform_fit` — the best waveform seen so far this generation (reset by `start_eval()`)
+- `__epoch` — generation counter, incremented by `end_eval()`
+
+**Lifecycle** (called by `EvaluateFitness.evaluate()`):
+```python
+evaluator.start_eval()           # resets best_waveform for this generation
+for each measurement:
+    evaluator.calculate_success(data, index, src_pop)  # updates best_waveform if better
+evaluator.end_eval()             # records best_waveform heatmap, increments epoch
+```
+
+**Why this is intentional**: `PlotDataRecorder.record_waveform_heatmap()` takes an epoch number and the best waveform for that epoch. The evaluator tracks the best to hand off at `end_eval()`.
+
+**Limitation**: The epoch counter is implicit — it increments automatically on each `end_eval()` call. If `end_eval()` is called extra times (e.g., during testing or after an error), the epoch counter drifts.
+
+**Proposed alternative**: Pass the epoch number explicitly to `start_eval(epoch: int)` and remove the internal `__epoch` counter. The caller (e.g., `Evolution.run()`) already tracks the generation number via `GenData.generation_number`, so this information is available:
+
+```python
+# Current
+evaluator.start_eval()
+...
+evaluator.end_eval()  # internally increments self.__epoch
+
+# Proposed
+evaluator.start_eval(epoch=gen_data.generation_number)
+...
+evaluator.end_eval()  # uses epoch passed in, no internal counter
+```
+
+This would make the evaluator fully stateless between generations (only state is within one generation), eliminating the drift risk.
+
 ## Testing Conventions
 
 **Mock pattern**: Use `spec=` parameter to enforce protocol interface

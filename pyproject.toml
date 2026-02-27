@@ -48,7 +48,7 @@ markers = [
     "all:       Automatically applied to all tests                            Group: all_tests (default)",
 ]
 
-[tool.pytest.marker_groups]
+[tool.pytest_marker_groups]
 # These are the test groups that all tests must be a part of, so if one test is not marked, the default mark will be applied.
 # Here the name of the marker group is the variable assigned, and the markers in it are the members of the group
 # The marker at index 0 is the default

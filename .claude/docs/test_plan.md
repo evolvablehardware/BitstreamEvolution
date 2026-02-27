@@ -595,6 +595,64 @@ def test_measurement_to_fitness_integration():
 - [ ] High variance data
 - [ ] Empty data handling
 
+### 3.6 PlotDataRecorder
+**File**: [PlotDataRecorder.py](src/PlotDataRecorder.py)
+**Status**: NOT TESTED (only used as Mock in other tests)
+
+**Testing approach**: Use `pytest`'s `tmp_path` fixture plus `monkeypatch.chdir()` to redirect all
+hard-coded `workspace/` path opens to a temporary directory.
+
+**Required Tests**:
+- [ ] `record_waveform(waveform)`: Writes correct CSV format (`i, value\n`) to `waveformlivedata.log`
+- [ ] `record_generation(fits, epoch, diversity)`: Appends correct line format to `bestlivedata.log` and `violinlivedata.log`
+- [ ] `record_generation` best/worst/avg calculation: Verifies sorted order and sum
+- [ ] `record_waveform_heatmap(epoch, waveform)`: Appends `epoch:v1,v2,...\n` to `heatmaplivedata.log`
+- [ ] `record_all_live_data(index, value, src_pop)`: Writes/updates correct line in `alllivedata.log`
+- [ ] `record_all_live_data` index beyond current length: Pads file with empty lines first
+- [ ] `reset()`: Resets `__ovr_best_fit` so subsequent `record_generation` uses new best
+
+```python
+# Suggested fixture
+@pytest.fixture
+def plot_recorder(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "workspace").mkdir()
+    return PlotDataRecorder()
+```
+
+### 3.7 FullySimCircuit
+**File**: [Circuit/FullySimCircuit.py](src/Circuit/FullySimCircuit.py)
+**Status**: NOT TESTED — **currently un-instantiable (broken)**
+
+**Issue**: `FullySimCircuit` extends `Circuit` (ABC) but does not implement the `@abstractmethod compile()`.
+This means `FullySimCircuit` **cannot be instantiated** with current code. It also uses `rand.integers()`
+(NumPy's random API) rather than Python's `random.Random`.
+
+**History**: This is legacy code predating the current protocol-based architecture. It was built for a
+simulation-only evolution mode where circuits ran in-memory instead of on hardware.
+
+**Recommendation**: **Do not add tests until the class is brought up to date.** Before testing:
+1. Decide if `FullySimCircuit` is still needed (simulation-only use case)
+2. If yes: implement `compile()` (probably returning `Success(None)`) and fix the `rand.integers()` call
+3. If no: delete the file
+
+### 3.8 Logger
+**File**: [Logger.py](src/Logger.py)
+**Status**: NOT TESTED — **testing deferred, redesign needed first**
+
+**Issue**: `Logger` has multiple blocking problems (see [logger_broken_methods.md](../todos/logger_broken_methods.md)):
+- `log_generation()` calls non-existent `Population` methods — crashes at runtime
+- `__init__` hard-codes `workspace/` paths relative to CWD
+- `__init_monitor()` launches `gnome-terminal` (Linux-only subprocess)
+
+**Recommendation**: **Defer testing until Logger is redesigned.** Specifically:
+1. Fix or remove `log_generation()` (see options in logger_broken_methods.md)
+2. Make workspace path configurable (not hard-coded)
+3. Consider migrating to Python's built-in `logging` module (TODO already in source)
+
+After redesign, the simple log methods (`log_event`, `log_info`, `log_warning`, etc.) are straightforward
+to test by capturing stdout/stderr with `capsys`.
+
 ---
 
 ## Part 4: Test Markers

@@ -148,7 +148,7 @@ class Population:
             if if_tup[0] == individual:
                 self.set_fitness_by_index(index=i,fitness=fitness)
                 return
-        raise ValueError(f"Cound not find provided Individual in the population. Individual: {individual}")
+        raise ValueError(f"Could not find provided Individual in the population. Individual: {individual}")
     
     def set_fitness_of_unevaluated_individuals(self,default_fitness:Fitness)->None:
         for i,if_tup in enumerate(self.population_list):

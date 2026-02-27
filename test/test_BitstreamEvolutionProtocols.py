@@ -1,6 +1,7 @@
-from src.BitstreamEvolutionProtocols import Population, Individual, Fitness, GenData,GenDataFactory, GenDataIncrementer
+from src.BitstreamEvolutionProtocols import Population, Individual, Fitness, GenData, GenDataFactory, GenDataIncrementer
 from dataclasses import dataclass
 from typing import Optional
+from unittest.mock import Mock
 import pytest # type: ignore
 
 
@@ -94,3 +95,89 @@ You can apply a marker to a test (in this case 'long') by typing : `@pytest.mark
 def test_LongTest():
     "In the testing pipeline we need at least one 'long' test or the code running tests on github will break. This ensures we have that long test."
     pass
+
+
+# --- GenDataIncrementer edge cases ---
+
+def test_GenDataIncrementer_ZeroGenerations():
+    """max_gen_num=0 should return gen 0 on first call, then None."""
+    inc = GenDataIncrementer(0)
+    result = inc(None)
+    assert result is not None
+    assert result.generation_number == 0
+    result = inc(result)
+    assert result is None
+
+
+def test_GenDataIncrementer_SingleGeneration():
+    """max_gen_num=1 should return gen 0, then gen 1 is not reached (returns None after gen 0)."""
+    inc = GenDataIncrementer(1)
+    result = inc(None)
+    assert result is not None
+    assert result.generation_number == 0
+    result = inc(result)
+    assert result is None
+
+
+def test_GenDataIncrementer_return_type_validation():
+    """GenDataIncrementer should return GenData or None."""
+    inc = GenDataIncrementer(5)
+    result = inc(None)
+    assert isinstance(result, GenData)
+    # Run to completion
+    for _ in range(4):
+        result = inc(result)
+    assert result is not None
+    result = inc(result)
+    assert result is None
+
+
+# --- Fitness protocol tests ---
+
+def test_float_satisfies_Fitness_protocol():
+    """float should work as Fitness type in Population sort."""
+    pop = Population([Mock(), Mock()], [1.5, 2.5])
+    pop.sort(lambda x: x, reverse=True)
+    fitnesses = [f for _, f in pop]
+    assert fitnesses[0] == 2.5
+    assert fitnesses[1] == 1.5
+
+
+def test_int_satisfies_Fitness_protocol():
+    """int should work as Fitness type in Population sort."""
+    pop = Population([Mock(), Mock()], [1, 2])
+    pop.sort(lambda x: x, reverse=True)
+    fitnesses = [f for _, f in pop]
+    assert fitnesses[0] == 2
+    assert fitnesses[1] == 1
+
+
+def test_custom_Fitness_class():
+    """A custom class with comparison operators should work as Fitness."""
+
+    class CustomFitness:
+        def __init__(self, val):
+            self.val = val
+
+        def __lt__(self, other):
+            return self.val < other.val
+
+        def __gt__(self, other):
+            return self.val > other.val
+
+        def __eq__(self, other):
+            return self.val == other.val
+
+        def __le__(self, other):
+            return self.val <= other.val
+
+        def __ge__(self, other):
+            return self.val >= other.val
+
+    f1 = CustomFitness(10)
+    f2 = CustomFitness(20)
+    pop = Population([Mock(), Mock()], [f1, f2])
+    pop.sort(lambda x: x, reverse=True)
+    fitnesses = [f for _, f in pop]
+    assert fitnesses[0].val == 20
+    assert fitnesses[1].val == 10
