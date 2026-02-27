@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(poetry run pytest:*)",
+      "Bash(python -m pytest:*)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\mierowir\\OneDrive - Rose-Hulman Institute of Technology\\Documents\\Research\\BitstreamEvolution\\.claude"
+    ]
+  }
+}

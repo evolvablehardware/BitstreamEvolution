@@ -100,6 +100,7 @@ instance/
 docs/*/**
 !docs/sphinx/**
 docs/sphinx/build/
+docs/**/__pycache__
 
 # PyBuilder
 target/
