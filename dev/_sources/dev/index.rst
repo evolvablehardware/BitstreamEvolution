@@ -2,16 +2,23 @@
 Development Information
 -----------------------
 
+This section contains information for developers working on BitstreamEvolution,
+including how to build the documentation, view test results, and contribute to
+the project.
+
 .. toctree::
     :maxdepth: 1
     :hidden:
 
     test_results
+    contributing
 
 .. only:: dev
 
     .. seealso::
-        :doc:`test_results` — Embedded CI test results from the latest build.
+
+        - :doc:`test_results` — CI test results from the latest build (per Python version).
+        - :doc:`contributing` — How to set up a development environment and submit changes.
 
 Link To Main Website
 --------------------
@@ -30,11 +37,11 @@ The Webiste will be generated automatically by Github Actions, but this section 
 
 .. code-block:: bash
     :caption: Installing Poetry & Compiling Website
-    
+
     cd BitstreamEvolution/docs/sphinx
 
     poetry install --with dev
-    
+
     poetry run make html
 
     cd build/html

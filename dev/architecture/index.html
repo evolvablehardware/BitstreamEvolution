@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/junit.css?v=5e09be6b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -48,7 +49,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="ICE40 HX1K Hardware Model" href="ice40_hardware.html" />
-    <link rel="prev" title="Test Results" href="../dev/test_results.html" />
+    <link rel="prev" title="Contributing" href="../dev/contributing.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -162,6 +163,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting Started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../dev/test_results.html">Test Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/contributing.html">Contributing</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Bitstream Evolution’s Architecture</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -169,7 +171,10 @@
 <li class="toctree-l2"><a class="reference internal" href="mcu_protocol.html">MCU Serial Protocol</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../code/BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/Evolution.html">Evolution.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/TrivialImplementation.html">TrivialImplementation.py</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../code/Circuit/Circuit.html">Circuit.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../code/Circuit/FileBasedCircuit.html">FileBasedCircuit.py</a></li>
@@ -198,10 +203,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../code/Population/PopulationInitialization.html">PopulationInitialization.py</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2"><a class="reference internal" href="../code/BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../code/TrivialImplementation.html">TrivialImplementation.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../code/Directories.html">Directories.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../code/Evolution.html">Evolution.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../code/Logger.html">Logger.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../code/PlotConfig.html">PlotConfig.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../code/PlotDataRecorder.html">PlotDataRecorder.py</a></li>
@@ -358,6 +360,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-structure">General Structure</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-proposal">Initial Proposal</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#architecture-description">Architecture Description</a></li>
@@ -379,18 +382,55 @@ document.write(`
                   
   <section id="bitstream-evolution-s-architecture">
 <h1>Bitstream Evolution’s Architecture<a class="headerlink" href="#bitstream-evolution-s-architecture" title="Link to this heading">#</a></h1>
-<p>The origional code was designed in a vaguely class-like structure to prove the concept, but once proven it became very challenging to change the code and coordinate those changes, even in a small group.
-Thus, we created the following general architecture to make the code more modular and easy to edit and use for a broader range of applications.</p>
+<p>The original code was designed in a vaguely class-like structure to prove the
+concept, but once proven it became very challenging to change the code and
+coordinate those changes, even in a small group. Thus, we created the following
+general architecture to make the code more modular and easy to edit and use for
+a broader range of applications.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>BitstreamEvolution uses a <strong>protocol-based architecture</strong>: every major component
+is defined as a Python <code class="docutils literal notranslate"><span class="pre">Protocol</span></code> class in
+<a class="reference internal" href="../code/BitstreamEvolutionProtocols.html"><span class="doc">BitstreamEvolutionProtocols.py</span></a>, so that implementations can be swapped
+without changing the orchestration code. The main loop
+(<a class="reference internal" href="../code/Evolution.html"><span class="doc">Evolution.py</span></a>) wires these components together.</p>
+<p>The data flow through a single generation looks like this:</p>
+<ol class="arabic simple">
+<li><p>A <a class="reference internal" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.GenDataFactory" title="BitstreamEvolutionProtocols.GenDataFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenDataFactory</span></code></a> produces or
+increments the generation metadata and decides when to stop.</p></li>
+<li><p>A <a class="reference internal" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.CircuitFactory" title="BitstreamEvolutionProtocols.CircuitFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">CircuitFactory</span></code></a> converts the
+<a class="reference internal" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Population" title="BitstreamEvolutionProtocols.Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a> of
+<a class="reference internal" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Individual" title="BitstreamEvolutionProtocols.Individual"><code class="xref py py-class docutils literal notranslate"><span class="pre">Individual</span></code></a> objects into
+<a class="reference internal" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Circuit" title="BitstreamEvolutionProtocols.Circuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Circuit</span></code></a> objects ready for hardware.</p></li>
+<li><p>A <a class="reference internal" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.GenerateMeasurements" title="BitstreamEvolutionProtocols.GenerateMeasurements"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenerateMeasurements</span></code></a> strategy
+creates <a class="reference internal" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Measurement" title="BitstreamEvolutionProtocols.Measurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Measurement</span></code></a> objects — one per
+Circuit — describing what to measure.</p></li>
+<li><p>The <a class="reference internal" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Hardware" title="BitstreamEvolutionProtocols.Hardware"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hardware</span></code></a> interface compiles each
+Circuit (<code class="docutils literal notranslate"><span class="pre">icepack</span></code> / <code class="docutils literal notranslate"><span class="pre">iceprog</span></code>), uploads it to an FPGA, and fills the
+Measurement with raw data (waveform samples or pulse counts).</p></li>
+<li><p>An <a class="reference internal" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.EvaluatePopulationFitness" title="BitstreamEvolutionProtocols.EvaluatePopulationFitness"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvaluatePopulationFitness</span></code></a> evaluator
+interprets the raw measurements and assigns
+<a class="reference internal" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Fitness" title="BitstreamEvolutionProtocols.Fitness"><code class="xref py py-class docutils literal notranslate"><span class="pre">Fitness</span></code></a> values to each Individual.</p></li>
+<li><p>A <a class="reference internal" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Reproducer" title="BitstreamEvolutionProtocols.Reproducer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Reproducer</span></code></a> performs selection and
+mutation to produce the next generation’s Population.</p></li>
+</ol>
+<p>For a working end-to-end example that exercises this entire pipeline with
+integer-valued circuits (no hardware required), see
+<a class="reference internal" href="../code/TrivialImplementation.html"><span class="doc">TrivialImplementation.py</span></a>.</p>
+</section>
 <section id="general-structure">
 <h2>General Structure<a class="headerlink" href="#general-structure" title="Link to this heading">#</a></h2>
-<p>Below is the best current description of our architecture. It is currently pretty in-line with the initial proposal.</p>
+<p>Below is the best current description of our architecture. It is currently
+pretty in-line with the initial proposal.</p>
 <img alt="../_images/Arch_Proposal-7.png" src="../_images/Arch_Proposal-7.png" />
 </section>
 <section id="initial-proposal">
 <h2>Initial Proposal<a class="headerlink" href="#initial-proposal" title="Link to this heading">#</a></h2>
-<p>Below are a series of slides from the initial proposal for the Archatecture. These are non-final, but were going in the right direction.</p>
-<p>To see this as the origional presentation, <a class="reference external" href="https://docs.google.com/presentation/d/1QkHsh1EmpQeNTC4FLra8Vry-5Ln28tJxNxoWPVK5R3A/edit?usp=sharing">look here</a>.</p>
-<p>I then attempted to implement a basic example of it in the TrivialImplementation.py file.</p>
+<p>Below are a series of slides from the initial proposal for the architecture.
+These are non-final, but were going in the right direction.</p>
+<p>To see this as the original presentation, <a class="reference external" href="https://docs.google.com/presentation/d/1QkHsh1EmpQeNTC4FLra8Vry-5Ln28tJxNxoWPVK5R3A/edit?usp=sharing">look here</a>.</p>
+<p>I then attempted to implement a basic example of it in the
+<a class="reference internal" href="../code/TrivialImplementation.html"><span class="doc">TrivialImplementation.py</span></a> file.</p>
 <section id="architecture-description">
 <h3>Architecture Description<a class="headerlink" href="#architecture-description" title="Link to this heading">#</a></h3>
 <img alt="../_images/Arch_Proposal-1.png" src="../_images/Arch_Proposal-1.png" />
@@ -434,7 +474,8 @@ Thus, we created the following general architecture to make the code more modula
 </section>
 <section id="early-design-ideas">
 <h2>Early Design Ideas<a class="headerlink" href="#early-design-ideas" title="Link to this heading">#</a></h2>
-<p>Below is one of the early attempts at conceptualizing an architecture for this project:</p>
+<p>Below is one of the early attempts at conceptualizing an architecture for this
+project:</p>
 <img alt="../_images/EarlyDesignIdea.png" src="../_images/EarlyDesignIdea.png" />
 </section>
 </section>
@@ -451,12 +492,12 @@ Thus, we created the following general architecture to make the code more modula
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../dev/test_results.html"
+       href="../dev/contributing.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Test Results</p>
+        <p class="prev-next-title">Contributing</p>
       </div>
     </a>
     <a class="right-next"
@@ -484,6 +525,7 @@ Thus, we created the following general architecture to make the code more modula
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-structure">General Structure</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-proposal">Initial Proposal</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#architecture-description">Architecture Description</a></li>

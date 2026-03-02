@@ -1,14 +1,14 @@
 ICE40 HX1K Hardware Model
 =========================
 
-.. note::
+.. todo::
 
-   This documentation was drafted from code analysis and may need verification
+   This documentation was drafted from code analysis and needs verification
    against hardware datasheets.
 
 This page documents how the BitstreamEvolution framework models and interacts
 with the Lattice ICE40 HX1K FPGA. The primary implementation lives in
-:py:class:`FileBasedCircuit` (see :file:`src/Circuit/FileBasedCircuit.py`),
+:class:`~Circuit.FileBasedCircuit.FileBasedCircuit` (see :file:`src/Circuit/FileBasedCircuit.py`),
 which reads, mutates, compiles, and uploads bitstream configurations to physical
 hardware through the IceStorm open-source toolchain.
 
@@ -87,11 +87,10 @@ the file.
 Tile Grid Structure
 --------------------
 
-.. note::
+.. todo::
 
-   This documentation was drafted from code analysis and may need verification
-   against hardware datasheets. The tile coordinate ranges below are
-   hard-coded in ``FileBasedCircuit.__tile_is_included`` and are specific to
+   Verify tile coordinate ranges against hardware datasheets. The ranges below
+   are hard-coded in ``FileBasedCircuit.__tile_is_included`` and are specific to
    the ICE40 HX1K. A different iCE40 model (e.g., HX8K) would require
    different ranges.
 
@@ -115,11 +114,11 @@ byte slices as UTF-8 strings before converting to integers.
 Routing Types
 --------------
 
-.. note::
+.. todo::
 
-   This documentation was drafted from code analysis and may need verification
-   against hardware datasheets. The row selections below are noted in the
-   source as "dated" and may not reflect the latest routing protocol.
+   Verify routing row selections against hardware datasheets. The row
+   selections below are noted in the source as "dated" and may not reflect the
+   latest routing protocol.
 
 Within each valid tile, only specific rows and columns of configuration bits are
 subject to evolutionary modification. The set of modifiable rows is determined

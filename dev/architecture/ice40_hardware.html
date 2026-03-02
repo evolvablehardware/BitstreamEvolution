@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/junit.css?v=5e09be6b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -162,6 +163,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting Started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../dev/test_results.html">Test Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/contributing.html">Contributing</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Bitstream Evolution’s Architecture</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
@@ -169,7 +171,10 @@
 <li class="toctree-l2"><a class="reference internal" href="mcu_protocol.html">MCU Serial Protocol</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../code/BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/Evolution.html">Evolution.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/TrivialImplementation.html">TrivialImplementation.py</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../code/Circuit/Circuit.html">Circuit.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../code/Circuit/FileBasedCircuit.html">FileBasedCircuit.py</a></li>
@@ -198,10 +203,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../code/Population/PopulationInitialization.html">PopulationInitialization.py</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2"><a class="reference internal" href="../code/BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../code/TrivialImplementation.html">TrivialImplementation.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../code/Directories.html">Directories.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../code/Evolution.html">Evolution.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../code/Logger.html">Logger.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../code/PlotConfig.html">PlotConfig.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../code/PlotDataRecorder.html">PlotDataRecorder.py</a></li>
@@ -387,14 +389,14 @@ document.write(`
                   
   <section id="ice40-hx1k-hardware-model">
 <h1>ICE40 HX1K Hardware Model<a class="headerlink" href="#ice40-hx1k-hardware-model" title="Link to this heading">#</a></h1>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This documentation was drafted from code analysis and may need verification
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>This documentation was drafted from code analysis and needs verification
 against hardware datasheets.</p>
 </div>
 <p>This page documents how the BitstreamEvolution framework models and interacts
 with the Lattice ICE40 HX1K FPGA. The primary implementation lives in
-<code class="xref py py-class docutils literal notranslate"><span class="pre">FileBasedCircuit</span></code> (see <code class="file docutils literal notranslate"><span class="pre">src/Circuit/FileBasedCircuit.py</span></code>),
+<a class="reference internal" href="../code/Circuit/FileBasedCircuit.html#Circuit.FileBasedCircuit.FileBasedCircuit" title="Circuit.FileBasedCircuit.FileBasedCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileBasedCircuit</span></code></a> (see <code class="file docutils literal notranslate"><span class="pre">src/Circuit/FileBasedCircuit.py</span></code>),
 which reads, mutates, compiles, and uploads bitstream configurations to physical
 hardware through the IceStorm open-source toolchain.</p>
 <section id="ice40-hx1k-overview">
@@ -468,11 +470,10 @@ the file.</p>
 </section>
 <section id="tile-grid-structure">
 <h2>Tile Grid Structure<a class="headerlink" href="#tile-grid-structure" title="Link to this heading">#</a></h2>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This documentation was drafted from code analysis and may need verification
-against hardware datasheets. The tile coordinate ranges below are
-hard-coded in <code class="docutils literal notranslate"><span class="pre">FileBasedCircuit.__tile_is_included</span></code> and are specific to
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<p>Verify tile coordinate ranges against hardware datasheets. The ranges below
+are hard-coded in <code class="docutils literal notranslate"><span class="pre">FileBasedCircuit.__tile_is_included</span></code> and are specific to
 the ICE40 HX1K. A different iCE40 model (e.g., HX8K) would require
 different ranges.</p>
 </div>
@@ -492,11 +493,11 @@ byte slices as UTF-8 strings before converting to integers.</p>
 </section>
 <section id="routing-types">
 <h2>Routing Types<a class="headerlink" href="#routing-types" title="Link to this heading">#</a></h2>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This documentation was drafted from code analysis and may need verification
-against hardware datasheets. The row selections below are noted in the
-source as “dated” and may not reflect the latest routing protocol.</p>
+<div class="admonition-todo admonition" id="id3">
+<p class="admonition-title">Todo</p>
+<p>Verify routing row selections against hardware datasheets. The row
+selections below are noted in the source as “dated” and may not reflect the
+latest routing protocol.</p>
 </div>
 <p>Within each valid tile, only specific rows and columns of configuration bits are
 subject to evolutionary modification. The set of modifiable rows is determined

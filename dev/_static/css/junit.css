@@ -1,0 +1,41 @@
+/* Styling for junit-results Sphinx directive */
+
+table.junit-summary,
+table.junit-detail {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5em;
+}
+
+table.junit-summary th,
+table.junit-detail th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    text-align: left;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+}
+
+table.junit-summary td,
+table.junit-detail td {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+}
+
+/* Row status colors */
+tr.junit-pass td {
+    background-color: #e6f4ea;
+}
+
+tr.junit-fail td {
+    background-color: #fce8e6;
+}
+
+tr.junit-error td {
+    background-color: #fce8e6;
+    font-weight: bold;
+}
+
+tr.junit-skip td {
+    background-color: #fff8e1;
+}

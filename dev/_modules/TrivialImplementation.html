@@ -30,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/junit.css?v=5e09be6b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -161,6 +162,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting Started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../dev/test_results.html">Test Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/contributing.html">Contributing</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -168,7 +170,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../code/BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/Evolution.html">Evolution.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/TrivialImplementation.html">TrivialImplementation.py</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../code/Circuit/Circuit.html">Circuit.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../code/Circuit/FileBasedCircuit.html">FileBasedCircuit.py</a></li>
@@ -197,10 +202,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../code/Population/PopulationInitialization.html">PopulationInitialization.py</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2"><a class="reference internal" href="../code/BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../code/TrivialImplementation.html">TrivialImplementation.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../code/Directories.html">Directories.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../code/Evolution.html">Evolution.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../code/Logger.html">Logger.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../code/PlotConfig.html">PlotConfig.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../code/PlotDataRecorder.html">PlotDataRecorder.py</a></li>
@@ -369,12 +371,12 @@ document.write(`
 <div class="viewcode-block" id="TrivialReproduceWithMutation">
 <a class="viewcode-back" href="../code/TrivialImplementation.html#TrivialImplementation.TrivialReproduceWithMutation">[docs]</a>
 <span class="linenos"> 52</span><span class="k">def</span><span class="w"> </span><span class="nf">TrivialReproduceWithMutation</span> <span class="p">(</span><span class="n">population</span><span class="p">:</span> <span class="n">Population</span><span class="p">,</span><span class="n">random</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Population</span><span class="p">:</span>
-<span class="linenos"> 53</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos"> 54</span><span class="sd">    Returns a population where all of the top half of the circuits are included, unchanged, </span>
-<span class="linenos"> 55</span><span class="sd">        and each will get a child that is mutated randomly, being incremented or decremented.</span>
-<span class="linenos"> 56</span><span class="sd">    This primarily ensures the population remains the same size.</span>
-<span class="linenos"> 57</span><span class="sd">    If an odd length population is passed on, the next individual is kept, but does not reproduce or mutate.</span>
-<span class="linenos"> 58</span><span class="sd">    The outputed population has all of its fitnesses unevaluated (None).</span>
+<span class="linenos"> 53</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a population where the top half are kept and each gets a mutated child.</span>
+<span class="linenos"> 54</span>
+<span class="linenos"> 55</span><span class="sd">    Each child is the parent incremented or decremented randomly. This primarily</span>
+<span class="linenos"> 56</span><span class="sd">    ensures the population remains the same size. If an odd-length population is</span>
+<span class="linenos"> 57</span><span class="sd">    passed, the next individual is kept but does not reproduce or mutate. The</span>
+<span class="linenos"> 58</span><span class="sd">    output population has all of its fitnesses unevaluated (None).</span>
 <span class="linenos"> 59</span><span class="sd">    &quot;&quot;&quot;</span>
 <span class="linenos"> 60</span>    <span class="n">population</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 <span class="linenos"> 61</span>    <span class="n">individuals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">population</span><span class="p">))</span>
@@ -515,86 +517,91 @@ document.write(`
 <div class="viewcode-block" id="TrivialEvolution">
 <a class="viewcode-back" href="../code/TrivialImplementation.html#TrivialImplementation.TrivialEvolution">[docs]</a>
 <span class="linenos">177</span><span class="k">class</span><span class="w"> </span><span class="nc">TrivialEvolution</span><span class="p">:</span>
-<span class="linenos">178</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos">179</span><span class="sd">    This class utilizes the protocols defined to run experiments</span>
+<span class="linenos">178</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Utilizes the protocols defined to run experiments.</span>
+<span class="linenos">179</span>
 <span class="linenos">180</span><span class="sd">    This is an example that should be generalized for a more general solution.</span>
-<span class="linenos">181</span><span class="sd">    There should be different versions of Evolution for structurally different experiments.</span>
-<span class="linenos">182</span><span class="sd">        (e.x. Multiple populations of individuals evolved simultaniously, bacterial populations where only some individuals are evaluated and reproduce each loop)</span>
-<span class="linenos">183</span><span class="sd">    Any other evolution implementations should try to maintain as similar of function signatures as possible, </span>
-<span class="linenos">184</span><span class="sd">        with arguments communicated with protocols that are as general as possible. </span>
-<span class="linenos">185</span><span class="sd">    This implementations generates, evaluates, and reproduces entire populations at once,</span>
-<span class="linenos">186</span><span class="sd">        and does so in discrete timesteps.</span>
-<span class="linenos">187</span><span class="sd">    &quot;&quot;&quot;</span>
-<span class="linenos">188</span>
+<span class="linenos">181</span><span class="sd">    There should be different versions of Evolution for structurally different</span>
+<span class="linenos">182</span><span class="sd">    experiments (e.g. multiple populations of individuals evolved simultaneously,</span>
+<span class="linenos">183</span><span class="sd">    bacterial populations where only some individuals are evaluated and reproduce</span>
+<span class="linenos">184</span><span class="sd">    each loop).</span>
+<span class="linenos">185</span>
+<span class="linenos">186</span><span class="sd">    Any other evolution implementations should try to maintain as similar of</span>
+<span class="linenos">187</span><span class="sd">    function signatures as possible, with arguments communicated with protocols</span>
+<span class="linenos">188</span><span class="sd">    that are as general as possible.</span>
+<span class="linenos">189</span>
+<span class="linenos">190</span><span class="sd">    This implementation generates, evaluates, and reproduces entire populations</span>
+<span class="linenos">191</span><span class="sd">    at once, and does so in discrete timesteps.</span>
+<span class="linenos">192</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos">193</span>
 <div class="viewcode-block" id="TrivialEvolution.__init__">
 <a class="viewcode-back" href="../code/TrivialImplementation.html#TrivialImplementation.TrivialEvolution.__init__">[docs]</a>
-<span class="linenos">189</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
-<span class="linenos">190</span>                 <span class="n">generation_data_factory</span><span class="p">:</span><span class="n">GenDataFactory</span><span class="p">,</span>
-<span class="linenos">191</span>                 <span class="c1">#circuit_factory:CircuitFactory,</span>
-<span class="linenos">192</span>                 <span class="n">reproducer</span><span class="p">:</span><span class="n">Reproducer</span><span class="p">,</span>
-<span class="linenos">193</span>                 <span class="n">generate_intial_population</span><span class="p">:</span> <span class="n">GenerateInitialPopulation</span><span class="p">,</span>
-<span class="linenos">194</span>                 <span class="c1">#evaluate_population_fitness: EvaluatePopulationFitness,</span>
-<span class="linenos">195</span>                 <span class="c1">#generate_measurements: GenerateMeasurements,</span>
-<span class="linenos">196</span>                 <span class="c1">#hardware:Hardware</span>
-<span class="linenos">197</span>                 <span class="p">):</span>
-<span class="linenos">198</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos">199</span><span class="sd">        Initializes the Evolution with all of the objects and functions needed for it</span>
-<span class="linenos">200</span><span class="sd">        to carry out it the evolution.</span>
-<span class="linenos">201</span><span class="sd">        This does not execute any functions passed in.</span>
-<span class="linenos">202</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">203</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_generation_data_factory</span><span class="p">:</span><span class="n">GenDataFactory</span>                 <span class="o">=</span> <span class="n">generation_data_factory</span>
-<span class="linenos">204</span>        <span class="c1">#self._circuit_factory:CircuitFactory                         = circuit_factory</span>
-<span class="linenos">205</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_reproduce</span><span class="p">:</span><span class="n">Reproducer</span>                                   <span class="o">=</span> <span class="n">reproducer</span>
-<span class="linenos">206</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_generate_intial_population</span><span class="p">:</span><span class="n">GenerateInitialPopulation</span>   <span class="o">=</span> <span class="n">generate_intial_population</span></div>
+<span class="linenos">194</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+<span class="linenos">195</span>                 <span class="n">generation_data_factory</span><span class="p">:</span><span class="n">GenDataFactory</span><span class="p">,</span>
+<span class="linenos">196</span>                 <span class="c1">#circuit_factory:CircuitFactory,</span>
+<span class="linenos">197</span>                 <span class="n">reproducer</span><span class="p">:</span><span class="n">Reproducer</span><span class="p">,</span>
+<span class="linenos">198</span>                 <span class="n">generate_intial_population</span><span class="p">:</span> <span class="n">GenerateInitialPopulation</span><span class="p">,</span>
+<span class="linenos">199</span>                 <span class="c1">#evaluate_population_fitness: EvaluatePopulationFitness,</span>
+<span class="linenos">200</span>                 <span class="c1">#generate_measurements: GenerateMeasurements,</span>
+<span class="linenos">201</span>                 <span class="c1">#hardware:Hardware</span>
+<span class="linenos">202</span>                 <span class="p">):</span>
+<span class="linenos">203</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">204</span><span class="sd">        Initializes the Evolution with all of the objects and functions needed for it</span>
+<span class="linenos">205</span><span class="sd">        to carry out it the evolution.</span>
+<span class="linenos">206</span><span class="sd">        This does not execute any functions passed in.</span>
+<span class="linenos">207</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">208</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_generation_data_factory</span><span class="p">:</span><span class="n">GenDataFactory</span>                 <span class="o">=</span> <span class="n">generation_data_factory</span>
+<span class="linenos">209</span>        <span class="c1">#self._circuit_factory:CircuitFactory                         = circuit_factory</span>
+<span class="linenos">210</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_reproduce</span><span class="p">:</span><span class="n">Reproducer</span>                                   <span class="o">=</span> <span class="n">reproducer</span>
+<span class="linenos">211</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_generate_intial_population</span><span class="p">:</span><span class="n">GenerateInitialPopulation</span>   <span class="o">=</span> <span class="n">generate_intial_population</span></div>
 
-<span class="linenos">207</span>        <span class="c1">#self._evaluate_population_fitness:EvaluatePopulationFitness  = evaluate_population_fitness</span>
-<span class="linenos">208</span>        <span class="c1">#self._generate_measurements:GenerateMeasurements             = generate_measurements</span>
-<span class="linenos">209</span>        <span class="c1">#self._hardware:Hardware                                      = hardware</span>
-<span class="linenos">210</span>
+<span class="linenos">212</span>        <span class="c1">#self._evaluate_population_fitness:EvaluatePopulationFitness  = evaluate_population_fitness</span>
+<span class="linenos">213</span>        <span class="c1">#self._generate_measurements:GenerateMeasurements             = generate_measurements</span>
+<span class="linenos">214</span>        <span class="c1">#self._hardware:Hardware                                      = hardware</span>
+<span class="linenos">215</span>
 <div class="viewcode-block" id="TrivialEvolution.run">
 <a class="viewcode-back" href="../code/TrivialImplementation.html#TrivialImplementation.TrivialEvolution.run">[docs]</a>
-<span class="linenos">211</span>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="linenos">212</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos">213</span><span class="sd">        This Function Runs the evolution run specified by the protocols provided, using them</span>
-<span class="linenos">214</span><span class="sd">        according to how the architecture of this evolution object is configured.</span>
-<span class="linenos">215</span>
-<span class="linenos">216</span><span class="sd">        This implementations generates, evaluates, and reproduces entire populations at once,</span>
-<span class="linenos">217</span><span class="sd">            and does so in discrete timesteps.</span>
-<span class="linenos">218</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">219</span>        <span class="n">prev_population</span><span class="p">:</span><span class="n">Population</span><span class="o">|</span><span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="linenos">220</span>        <span class="n">current_population</span><span class="p">:</span><span class="n">Population</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_intial_population</span><span class="p">()</span>
-<span class="linenos">221</span>        <span class="n">current_gendata</span><span class="p">:</span><span class="n">GenData</span><span class="o">|</span><span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="linenos">222</span>
-<span class="linenos">223</span>        <span class="k">while</span> <span class="p">(</span><span class="n">current_gendata</span><span class="o">:=</span>
-<span class="linenos">224</span>               <span class="bp">self</span><span class="o">.</span><span class="n">_generation_data_factory</span><span class="p">(</span><span class="n">gen_data</span><span class="o">=</span><span class="n">current_gendata</span><span class="p">)</span>
-<span class="linenos">225</span>               <span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">226</span>            
-<span class="linenos">227</span>            <span class="c1"># measurements:list[Measurement] = self._generate_measurements(self._circuit_factory,[current_population])</span>
-<span class="linenos">228</span>            <span class="c1"># tasks = [self.__hardware.request_measurement(m) for m in measurements]</span>
-<span class="linenos">229</span>            <span class="c1"># self._hardware.request_measurement(measurement for measurement in measurements)</span>
-<span class="linenos">230</span>            <span class="c1"># results = asyncio.run( asyncio.gather(*tasks) ) # I added asyncio.run to make sure that the async experiements were run at this point</span>
-<span class="linenos">231</span>            <span class="c1">#     # Maybe figure out task groups. See https://docs.python.org/3/library/asyncio-task.html#coroutines-and-tasks</span>
-<span class="linenos">232</span>            <span class="c1">#</span>
-<span class="linenos">233</span>            <span class="c1"># prev_population = self._evaluate_population_fitness(current_population,measurements)</span>
-<span class="linenos">234</span>
-<span class="linenos">235</span>            <span class="c1">#NOTE: If we want to add multiple populations, create different evolution object, </span>
-<span class="linenos">236</span>            <span class="c1">#       and specify how you create initial populations for each set of individuals, </span>
-<span class="linenos">237</span>            <span class="c1">#       then specify in circuit_factory how to turn one individual from each population into a circuit,</span>
-<span class="linenos">238</span>            <span class="c1">#       then, generate measurements decides which circuits it wants to make from those individuals </span>
-<span class="linenos">239</span>            <span class="c1">#       and it should be provided with a list that is the same number of populations as the number of arguments in circuit_factory.</span>
-<span class="linenos">240</span>
-<span class="linenos">241</span>            
-<span class="linenos">242</span>
-<span class="linenos">243</span>            <span class="c1">#move current_population to prev. &amp; reproduce to current_pop</span>
-<span class="linenos">244</span>            <span class="n">prev_population</span> <span class="o">=</span> <span class="n">FakeMeasuringFitnessTrivialImplemention</span><span class="p">(</span><span class="n">current_population</span><span class="p">)</span>
-<span class="linenos">245</span>            <span class="n">current_population</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reproduce</span><span class="p">(</span><span class="n">prev_population</span><span class="p">)</span>
-<span class="linenos">246</span>        
-<span class="linenos">247</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Trivial Evolution Complete!&quot;</span><span class="p">)</span></div>
+<span class="linenos">216</span>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">217</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">218</span><span class="sd">        This Function Runs the evolution run specified by the protocols provided, using them</span>
+<span class="linenos">219</span><span class="sd">        according to how the architecture of this evolution object is configured.</span>
+<span class="linenos">220</span>
+<span class="linenos">221</span><span class="sd">        This implementations generates, evaluates, and reproduces entire populations at once,</span>
+<span class="linenos">222</span><span class="sd">            and does so in discrete timesteps.</span>
+<span class="linenos">223</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">224</span>        <span class="n">prev_population</span><span class="p">:</span><span class="n">Population</span><span class="o">|</span><span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="linenos">225</span>        <span class="n">current_population</span><span class="p">:</span><span class="n">Population</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_intial_population</span><span class="p">()</span>
+<span class="linenos">226</span>        <span class="n">current_gendata</span><span class="p">:</span><span class="n">GenData</span><span class="o">|</span><span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="linenos">227</span>
+<span class="linenos">228</span>        <span class="k">while</span> <span class="p">(</span><span class="n">current_gendata</span><span class="o">:=</span>
+<span class="linenos">229</span>               <span class="bp">self</span><span class="o">.</span><span class="n">_generation_data_factory</span><span class="p">(</span><span class="n">gen_data</span><span class="o">=</span><span class="n">current_gendata</span><span class="p">)</span>
+<span class="linenos">230</span>               <span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">231</span>            
+<span class="linenos">232</span>            <span class="c1"># measurements:list[Measurement] = self._generate_measurements(self._circuit_factory,[current_population])</span>
+<span class="linenos">233</span>            <span class="c1"># tasks = [self.__hardware.request_measurement(m) for m in measurements]</span>
+<span class="linenos">234</span>            <span class="c1"># self._hardware.request_measurement(measurement for measurement in measurements)</span>
+<span class="linenos">235</span>            <span class="c1"># results = asyncio.run( asyncio.gather(*tasks) ) # I added asyncio.run to make sure that the async experiements were run at this point</span>
+<span class="linenos">236</span>            <span class="c1">#     # Maybe figure out task groups. See https://docs.python.org/3/library/asyncio-task.html#coroutines-and-tasks</span>
+<span class="linenos">237</span>            <span class="c1">#</span>
+<span class="linenos">238</span>            <span class="c1"># prev_population = self._evaluate_population_fitness(current_population,measurements)</span>
+<span class="linenos">239</span>
+<span class="linenos">240</span>            <span class="c1">#NOTE: If we want to add multiple populations, create different evolution object, </span>
+<span class="linenos">241</span>            <span class="c1">#       and specify how you create initial populations for each set of individuals, </span>
+<span class="linenos">242</span>            <span class="c1">#       then specify in circuit_factory how to turn one individual from each population into a circuit,</span>
+<span class="linenos">243</span>            <span class="c1">#       then, generate measurements decides which circuits it wants to make from those individuals </span>
+<span class="linenos">244</span>            <span class="c1">#       and it should be provided with a list that is the same number of populations as the number of arguments in circuit_factory.</span>
+<span class="linenos">245</span>
+<span class="linenos">246</span>            
+<span class="linenos">247</span>
+<span class="linenos">248</span>            <span class="c1">#move current_population to prev. &amp; reproduce to current_pop</span>
+<span class="linenos">249</span>            <span class="n">prev_population</span> <span class="o">=</span> <span class="n">FakeMeasuringFitnessTrivialImplemention</span><span class="p">(</span><span class="n">current_population</span><span class="p">)</span>
+<span class="linenos">250</span>            <span class="n">current_population</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reproduce</span><span class="p">(</span><span class="n">prev_population</span><span class="p">)</span>
+<span class="linenos">251</span>        
+<span class="linenos">252</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Trivial Evolution Complete!&quot;</span><span class="p">)</span></div>
 </div>
 
-<span class="linenos">248</span>
-<span class="linenos">249</span>
-<span class="linenos">250</span>
+<span class="linenos">253</span>
+<span class="linenos">254</span>
+<span class="linenos">255</span>
 </pre></div>
 
                 </article>

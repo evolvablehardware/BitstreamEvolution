@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/junit.css?v=5e09be6b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -48,7 +49,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Circuit.py" href="Circuit.html" />
-    <link rel="prev" title="Refactored Code" href="../index.html" />
+    <link rel="prev" title="TrivialImplementation.py" href="../TrivialImplementation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -162,6 +163,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Getting Started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../dev/test_results.html">Test Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/contributing.html">Contributing</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -169,7 +171,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Refactored Code</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Evolution.html">Evolution.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../TrivialImplementation.html">TrivialImplementation.py</a></li>
 <li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">Circuit</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="Circuit.html">Circuit.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FileBasedCircuit.html">FileBasedCircuit.py</a></li>
@@ -198,10 +203,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../Population/PopulationInitialization.html">PopulationInitialization.py</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2"><a class="reference internal" href="../BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../TrivialImplementation.html">TrivialImplementation.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../Directories.html">Directories.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../Evolution.html">Evolution.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../Logger.html">Logger.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../PlotConfig.html">PlotConfig.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../PlotDataRecorder.html">PlotDataRecorder.py</a></li>
@@ -372,23 +374,25 @@ document.write(`
                   
   <section id="circuit">
 <h1>Circuit<a class="headerlink" href="#circuit" title="Link to this heading">#</a></h1>
+<p>A Circuit represents an FPGA configuration that can be compiled and uploaded to
+physical hardware. The <a class="reference internal" href="../BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Circuit" title="BitstreamEvolutionProtocols.Circuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Circuit</span></code></a> protocol
+requires a single method, <code class="docutils literal notranslate"><span class="pre">compile(fpga)</span></code>, which converts the circuit’s
+internal representation into a binary bitstream for a target FPGA.</p>
+<p>Circuits may or may not be the same object as an Individual — they are identical
+when the Individual directly represents a full circuit, but separate when
+multiple Individuals are combined to form a single circuit for evaluation.</p>
 <section id="implementations">
 <h2>Implementations<a class="headerlink" href="#implementations" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="Circuit.html"><span class="doc">Circuit.py</span></a> — Abstract base providing shared constants (tile coordinates,
+routing types, column definitions) for ICE40-based circuits.</p></li>
+<li><p><a class="reference internal" href="FileBasedCircuit.html"><span class="doc">FileBasedCircuit.py</span></a> — The primary implementation: operates on IceStorm
+<code class="docutils literal notranslate"><span class="pre">.asc</span></code> files via memory-mapped I/O, supporting mutation, compilation
+(<code class="docutils literal notranslate"><span class="pre">icepack</span></code>), and upload (<code class="docutils literal notranslate"><span class="pre">iceprog</span></code>).</p></li>
+<li><p><a class="reference internal" href="FullySimCircuit.html"><span class="doc">FullySimCircuit.py</span></a> — A simulated circuit for testing without physical
+hardware.</p></li>
+</ul>
 <div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Circuit.html">Circuit.py</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Circuit.html#Circuit.Circuit.Circuit"><code class="docutils literal notranslate"><span class="pre">Circuit</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="FileBasedCircuit.html">FileBasedCircuit.py</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="FileBasedCircuit.html#Circuit.FileBasedCircuit.FileBasedCircuit"><code class="docutils literal notranslate"><span class="pre">FileBasedCircuit</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="FullySimCircuit.html">FullySimCircuit.py</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="FullySimCircuit.html#Circuit.FullySimCircuit.FullySimCircuit"><code class="docutils literal notranslate"><span class="pre">FullySimCircuit</span></code></a></li>
-</ul>
-</li>
-</ul>
 </div>
 </section>
 </section>
@@ -405,12 +409,12 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../index.html"
+       href="../TrivialImplementation.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Refactored Code</p>
+        <p class="prev-next-title">TrivialImplementation.py</p>
       </div>
     </a>
     <a class="right-next"

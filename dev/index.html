@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="_static/css/junit.css?v=5e09be6b" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -163,6 +164,7 @@
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting Started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="dev/test_results.html">Test Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/contributing.html">Contributing</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -170,7 +172,10 @@
 <li class="toctree-l2"><a class="reference internal" href="architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="code/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="code/BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code/Evolution.html">Evolution.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code/TrivialImplementation.html">TrivialImplementation.py</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="code/Circuit/Circuit.html">Circuit.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="code/Circuit/FileBasedCircuit.html">FileBasedCircuit.py</a></li>
@@ -199,10 +204,7 @@
 <li class="toctree-l3"><a class="reference internal" href="code/Population/PopulationInitialization.html">PopulationInitialization.py</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2"><a class="reference internal" href="code/BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/TrivialImplementation.html">TrivialImplementation.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="code/Directories.html">Directories.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/Evolution.html">Evolution.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="code/Logger.html">Logger.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="code/PlotConfig.html">PlotConfig.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="code/PlotDataRecorder.html">PlotDataRecorder.py</a></li>
@@ -379,7 +381,25 @@ document.write(`
   <section id="welcome-to-bitstreamevolution-s-documentation">
 <h1>Welcome to BitstreamEvolution’s documentation!<a class="headerlink" href="#welcome-to-bitstreamevolution-s-documentation" title="Link to this heading">#</a></h1>
 <p>This is the Develop documentation for BitstreamEvolution.</p>
-<a class="reference external image-reference" href="https://github.com/evolvablehardware/BitstreamEvolution/actions/workflows/initialize-push-workflows.yml"><img alt="CI Status" src="https://github.com/evolvablehardware/BitstreamEvolution/actions/workflows/initialize-push-workflows.yml/badge.svg" />
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><strong>This is the development documentation</strong> for the <code class="docutils literal notranslate"><span class="pre">develop</span></code> branch, which is
+actively being worked on by developers. It may contain incomplete features,
+experimental content, or issues not present on the
+<a class="reference external" href="https://evolvablehardware.github.io/BitstreamEvolution/">stable release site</a>.</p>
+<p>This site also includes <strong>TODO items</strong> and <strong>development notes</strong> that are hidden
+on the release website. If you are looking for stable documentation, please visit
+the release site linked above.</p>
+</div>
+<div class="line-block">
+<div class="line"><strong>Develop branch:</strong></div>
+</div>
+<a class="reference external image-reference" href="https://github.com/evolvablehardware/BitstreamEvolution/actions/workflows/initialize-push-workflows.yml?query=branch%3Adevelop"><img alt="Develop Branch CI Status" src="https://github.com/evolvablehardware/BitstreamEvolution/actions/workflows/initialize-push-workflows.yml/badge.svg?branch=develop" />
+</a>
+<div class="line-block">
+<div class="line"><strong>Main branch:</strong></div>
+</div>
+<a class="reference external image-reference" href="https://github.com/evolvablehardware/BitstreamEvolution/actions/workflows/initialize-push-workflows.yml?query=branch%3Amain"><img alt="Main Branch CI Status" src="https://github.com/evolvablehardware/BitstreamEvolution/actions/workflows/initialize-push-workflows.yml/badge.svg?branch=main" />
 </a>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -387,7 +407,7 @@ document.write(`
 Until this is done, the <code class="docutils literal notranslate"><span class="pre">develop</span></code> branch will be used for this process and modifications will be made to the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch directly for pre-existing code.</p>
 </div>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
-<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 docutils">
+<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
 <div class="sd-card-body docutils">
@@ -411,9 +431,9 @@ Architecture</div>
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 API Reference</div>
-<p class="sd-card-text">Auto-generated documentation from source code docstrings.</p>
+<p class="sd-card-text">Protocol interfaces, implementations, and auto-generated module docs.</p>
 </div>
-<a class="sd-stretched-link sd-hide-link-text reference internal" href="code/index.html"><span class="doc">Refactored Code</span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="code/index.html"><span class="doc">API Reference</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -438,6 +458,65 @@ Development</div>
 </ul>
 <section id="to-do-list">
 <h2>To Do List<a class="headerlink" href="#to-do-list" title="Link to this heading">#</a></h2>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>This documentation was drafted from code analysis and needs verification
+against hardware datasheets.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="architecture/ice40_hardware.html#id1"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/ice40_hardware.rst, line 4.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>Verify tile coordinate ranges against hardware datasheets. The ranges below
+are hard-coded in <code class="docutils literal notranslate"><span class="pre">FileBasedCircuit.__tile_is_included</span></code> and are specific to
+the ICE40 HX1K. A different iCE40 model (e.g., HX8K) would require
+different ranges.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="architecture/ice40_hardware.html#id2"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/ice40_hardware.rst, line 90.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>Verify routing row selections against hardware datasheets. The row
+selections below are noted in the source as “dated” and may not reflect the
+latest routing protocol.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="architecture/ice40_hardware.html#id3"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/ice40_hardware.rst, line 117.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>This documentation was drafted from code analysis and needs verification
+against the MCU firmware.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="architecture/mcu_protocol.html#id1"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/mcu_protocol.rst, line 4.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>Verify waveform protocol against the MCU firmware. The exact sample count,
+sample rate, and ADC resolution should be confirmed with the firmware source.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="architecture/mcu_protocol.html#id2"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/mcu_protocol.rst, line 90.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>Verify pulse count protocol against the MCU firmware. The pulse-counting
+window duration and any firmware-side filtering should be confirmed with the
+firmware source.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="architecture/mcu_protocol.html#id3"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/mcu_protocol.rst, line 126.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>Optimize serial read/write in <code class="docutils literal notranslate"><span class="pre">measure_signal</span></code> — the waveform reading loop
+could read all available bytes at once rather than line-by-line.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="architecture/mcu_protocol.html#id4"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/mcu_protocol.rst, line 195.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>Improve regex/filtering in <code class="docutils literal notranslate"><span class="pre">measure_pulses_once</span></code> — the current chain of
+byte-string containment checks should be replaced with a proper parser that
+handles transmission-loss artefacts (dropped or extra spaces, shifted colons).</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="architecture/mcu_protocol.html#id5"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/mcu_protocol.rst, line 200.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>Add <code class="docutils literal notranslate"><span class="pre">elif</span></code> branches in <code class="docutils literal notranslate"><span class="pre">request_measurement()</span></code> to handle future
+<code class="docutils literal notranslate"><span class="pre">DataRequest</span></code> types beyond <code class="docutils literal notranslate"><span class="pre">WAVEFORM</span></code> and <code class="docutils literal notranslate"><span class="pre">OSCILLATIONS</span></code>.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="architecture/mcu_protocol.html#id6"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/mcu_protocol.rst, line 206.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
 <p>Figure out the format for an FPGA Request, potentially also changing the type, and adjust that here.</p>

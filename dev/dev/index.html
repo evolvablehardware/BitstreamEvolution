@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/junit.css?v=5e09be6b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -162,6 +163,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting Started</a></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Development Information</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="test_results.html">Test Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html">Contributing</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -169,7 +171,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../code/BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/Evolution.html">Evolution.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/TrivialImplementation.html">TrivialImplementation.py</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../code/Circuit/Circuit.html">Circuit.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../code/Circuit/FileBasedCircuit.html">FileBasedCircuit.py</a></li>
@@ -198,10 +203,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../code/Population/PopulationInitialization.html">PopulationInitialization.py</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2"><a class="reference internal" href="../code/BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../code/TrivialImplementation.html">TrivialImplementation.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../code/Directories.html">Directories.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../code/Evolution.html">Evolution.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../code/Logger.html">Logger.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../code/PlotConfig.html">PlotConfig.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../code/PlotDataRecorder.html">PlotDataRecorder.py</a></li>
@@ -373,11 +375,17 @@ document.write(`
                   
   <section id="development-information">
 <h1>Development Information<a class="headerlink" href="#development-information" title="Link to this heading">#</a></h1>
+<p>This section contains information for developers working on BitstreamEvolution,
+including how to build the documentation, view test results, and contribute to
+the project.</p>
 <div class="toctree-wrapper compound">
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="test_results.html"><span class="doc">Test Results</span></a> — Embedded CI test results from the latest build.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="test_results.html"><span class="doc">Test Results</span></a> — CI test results from the latest build (per Python version).</p></li>
+<li><p><a class="reference internal" href="contributing.html"><span class="doc">Contributing</span></a> — How to set up a development environment and submit changes.</p></li>
+</ul>
 </div>
 <section id="link-to-main-website">
 <h2>Link To Main Website<a class="headerlink" href="#link-to-main-website" title="Link to this heading">#</a></h2>

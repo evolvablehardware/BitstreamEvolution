@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/junit.css?v=5e09be6b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -162,6 +163,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Getting Started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../dev/test_results.html">Test Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/contributing.html">Contributing</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -169,7 +171,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Refactored Code</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Evolution.html">Evolution.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../TrivialImplementation.html">TrivialImplementation.py</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../Circuit/Circuit.html">Circuit.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../Circuit/FileBasedCircuit.html">FileBasedCircuit.py</a></li>
@@ -198,10 +203,7 @@
 <li class="toctree-l3"><a class="reference internal" href="PopulationInitialization.html">PopulationInitialization.py</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2"><a class="reference internal" href="../BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../TrivialImplementation.html">TrivialImplementation.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../Directories.html">Directories.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../Evolution.html">Evolution.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../Logger.html">Logger.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../PlotConfig.html">PlotConfig.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../PlotDataRecorder.html">PlotDataRecorder.py</a></li>
@@ -372,19 +374,23 @@ document.write(`
                   
   <section id="population">
 <h1>Population<a class="headerlink" href="#population" title="Link to this heading">#</a></h1>
+<p>A <a class="reference internal" href="../BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Population" title="BitstreamEvolutionProtocols.Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a> holds a collection of
+<code class="docutils literal notranslate"><span class="pre">(Individual,</span> <span class="pre">Fitness</span> <span class="pre">|</span> <span class="pre">None)</span></code> pairs. It supports fitness assignment (by index
+or by Individual reference), sorting by fitness, and iteration. All Individuals
+in a Population must be unique objects.</p>
+<p>Populations are created by a
+<a class="reference internal" href="../BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.GenerateInitialPopulation" title="BitstreamEvolutionProtocols.GenerateInitialPopulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenerateInitialPopulation</span></code></a> factory at the
+start of evolution, and by a <a class="reference internal" href="../BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Reproducer" title="BitstreamEvolutionProtocols.Reproducer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Reproducer</span></code></a>
+at the end of each generation.</p>
 <section id="implementations">
 <h2>Implementations<a class="headerlink" href="#implementations" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="PopulationInitialization.html"><span class="doc">PopulationInitialization.py</span></a> — Factories for creating initial populations,
+including <code class="docutils literal notranslate"><span class="pre">GenerateBitstreamPopulation</span></code> which produces populations of
+<a class="reference internal" href="../Individual/BitstreamIndividual.html#Individual.BitstreamIndividual.BitstreamIndividual" title="Individual.BitstreamIndividual.BitstreamIndividual"><code class="xref py py-class docutils literal notranslate"><span class="pre">BitstreamIndividual</span></code></a> with random or
+seeded bitstreams.</p></li>
+</ul>
 <div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="PopulationInitialization.html">PopulationInitialization.py</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="PopulationInitialization.html#Population.PopulationInitialization.GenerateInitialPopulation"><code class="docutils literal notranslate"><span class="pre">GenerateInitialPopulation</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="PopulationInitialization.html#Population.PopulationInitialization.GenerateInitialPopulations"><code class="docutils literal notranslate"><span class="pre">GenerateInitialPopulations</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="PopulationInitialization.html#Population.PopulationInitialization.GenerateSinglePopulationWrapper"><code class="docutils literal notranslate"><span class="pre">GenerateSinglePopulationWrapper</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="PopulationInitialization.html#Population.PopulationInitialization.PostConstructionStrategy"><code class="docutils literal notranslate"><span class="pre">PostConstructionStrategy</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="PopulationInitialization.html#Population.PopulationInitialization.RandomizationStrategy"><code class="docutils literal notranslate"><span class="pre">RandomizationStrategy</span></code></a></li>
-</ul>
-</li>
-</ul>
 </div>
 </section>
 </section>

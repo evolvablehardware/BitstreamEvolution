@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/junit.css?v=5e09be6b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -47,8 +48,8 @@
     <link rel="icon" href="https://evolvablehardware.org/images/setup_tutorial_2.jpg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Directories.py" href="Directories.html" />
-    <link rel="prev" title="BitstreamEvolutionProtocols.py" href="BitstreamEvolutionProtocols.html" />
+    <link rel="next" title="Circuit" href="Circuit/index.html" />
+    <link rel="prev" title="Evolution.py" href="Evolution.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -162,6 +163,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting Started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../dev/test_results.html">Test Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/contributing.html">Contributing</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -169,7 +171,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Refactored Code</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Evolution.html">Evolution.py</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">TrivialImplementation.py</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="Circuit/Circuit.html">Circuit.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Circuit/FileBasedCircuit.html">FileBasedCircuit.py</a></li>
@@ -198,10 +203,7 @@
 <li class="toctree-l3"><a class="reference internal" href="Population/PopulationInitialization.html">PopulationInitialization.py</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2"><a class="reference internal" href="BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">TrivialImplementation.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Directories.html">Directories.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Evolution.html">Evolution.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Logger.html">Logger.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PlotConfig.html">PlotConfig.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PlotDataRecorder.html">PlotDataRecorder.py</a></li>
@@ -412,18 +414,17 @@ This returns the same population, it just evaluates it.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="TrivialImplementation.TrivialEvolution">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TrivialImplementation.</span></span><span class="sig-name descname"><span class="pre">TrivialEvolution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generation_data_factory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.GenDataFactory" title="BitstreamEvolutionProtocols.GenDataFactory"><span class="pre">GenDataFactory</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">reproducer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Reproducer" title="BitstreamEvolutionProtocols.Reproducer"><span class="pre">Reproducer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">generate_intial_population</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.GenerateInitialPopulation" title="BitstreamEvolutionProtocols.GenerateInitialPopulation"><span class="pre">GenerateInitialPopulation</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/TrivialImplementation.html#TrivialEvolution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#TrivialImplementation.TrivialEvolution" title="Link to this definition">#</a></dt>
-<dd><p>This class utilizes the protocols defined to run experiments
-This is an example that should be generalized for a more general solution.
-There should be different versions of Evolution for structurally different experiments.</p>
-<blockquote>
-<div><p>(e.x. Multiple populations of individuals evolved simultaniously, bacterial populations where only some individuals are evaluated and reproduce each loop)</p>
-</div></blockquote>
-<dl class="simple">
-<dt>Any other evolution implementations should try to maintain as similar of function signatures as possible,</dt><dd><p>with arguments communicated with protocols that are as general as possible.</p>
-</dd>
-<dt>This implementations generates, evaluates, and reproduces entire populations at once,</dt><dd><p>and does so in discrete timesteps.</p>
-</dd>
-</dl>
+<dd><p>Utilizes the protocols defined to run experiments.</p>
+<p>This is an example that should be generalized for a more general solution.
+There should be different versions of Evolution for structurally different
+experiments (e.g. multiple populations of individuals evolved simultaneously,
+bacterial populations where only some individuals are evaluated and reproduce
+each loop).</p>
+<p>Any other evolution implementations should try to maintain as similar of
+function signatures as possible, with arguments communicated with protocols
+that are as general as possible.</p>
+<p>This implementation generates, evaluates, and reproduces entire populations
+at once, and does so in discrete timesteps.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="TrivialImplementation.TrivialEvolution.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generation_data_factory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.GenDataFactory" title="BitstreamEvolutionProtocols.GenDataFactory"><span class="pre">GenDataFactory</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">reproducer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Reproducer" title="BitstreamEvolutionProtocols.Reproducer"><span class="pre">Reproducer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">generate_intial_population</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.GenerateInitialPopulation" title="BitstreamEvolutionProtocols.GenerateInitialPopulation"><span class="pre">GenerateInitialPopulation</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/TrivialImplementation.html#TrivialEvolution.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#TrivialImplementation.TrivialEvolution.__init__" title="Link to this definition">#</a></dt>
@@ -461,13 +462,11 @@ zero and population_size sorted in descending order</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="TrivialImplementation.TrivialReproduceWithMutation">
 <span class="sig-prename descclassname"><span class="pre">TrivialImplementation.</span></span><span class="sig-name descname"><span class="pre">TrivialReproduceWithMutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Population" title="BitstreamEvolutionProtocols.Population"><span class="pre">Population</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">random</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/random.html#random.Random" title="(in Python v3.14)"><span class="pre">Random</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Population" title="BitstreamEvolutionProtocols.Population"><span class="pre">Population</span></a></span></span><a class="reference internal" href="../_modules/TrivialImplementation.html#TrivialReproduceWithMutation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#TrivialImplementation.TrivialReproduceWithMutation" title="Link to this definition">#</a></dt>
-<dd><dl class="simple">
-<dt>Returns a population where all of the top half of the circuits are included, unchanged,</dt><dd><p>and each will get a child that is mutated randomly, being incremented or decremented.</p>
-</dd>
-</dl>
-<p>This primarily ensures the population remains the same size.
-If an odd length population is passed on, the next individual is kept, but does not reproduce or mutate.
-The outputed population has all of its fitnesses unevaluated (None).</p>
+<dd><p>Return a population where the top half are kept and each gets a mutated child.</p>
+<p>Each child is the parent incremented or decremented randomly. This primarily
+ensures the population remains the same size. If an odd-length population is
+passed, the next individual is kept but does not reproduce or mutate. The
+output population has all of its fitnesses unevaluated (None).</p>
 </dd></dl>
 
 <dl class="py class">
@@ -489,20 +488,20 @@ The outputed population has all of its fitnesses unevaluated (None).</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="BitstreamEvolutionProtocols.html"
+       href="Evolution.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">BitstreamEvolutionProtocols.py</p>
+        <p class="prev-next-title">Evolution.py</p>
       </div>
     </a>
     <a class="right-next"
-       href="Directories.html"
+       href="Circuit/index.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Directories.py</p>
+        <p class="prev-next-title">Circuit</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
