@@ -61,15 +61,21 @@ jobs:
       run: |
         poetry install --with gh_tests
 
+    - name: Sanitize test group name
+      id: sanitize
+      run: |
+        SANITIZED=$(echo "${{ matrix.pytest-testing-group }}" | tr ' ' '-')
+        echo "group_slug=${SANITIZED}" >> $GITHUB_OUTPUT
+
     - name: Run Tests in Python ${{matrix.python-version}} with masks ${{matrix.pytest-testing-group}}
       run: |
-        poetry run pytest -m "${{matrix.pytest-testing-group}}" --junitxml=junit/test-results-${{ matrix.python-version }}.xml
+        poetry run pytest -m "${{matrix.pytest-testing-group}}" --junitxml=junit/test-results-${{ matrix.python-version }}-${{ steps.sanitize.outputs.group_slug }}.xml
 
     - name: Upload pytest test results
       uses: actions/upload-artifact@v4
       with:
         name: pytest-results-${{strategy.job-index}}of${{strategy.job-total}}-python${{ matrix.python-version }}
-        path: junit/test-results-${{ matrix.python-version }}.xml
+        path: junit/test-results-${{ matrix.python-version }}-${{ steps.sanitize.outputs.group_slug }}.xml
       # Use always() to always run this step to publish test results when there are test failures
       if: ${{ always() }}
 
@@ -79,7 +85,7 @@ jobs:
       with:
         # A list of JUnit XML files, directories containing the former, and wildcard
         # patterns to process.
-        path: junit/test-results-${{ matrix.python-version }}.xml
+        path: junit/test-results-${{ matrix.python-version }}-${{ steps.sanitize.outputs.group_slug }}.xml
 
         # (Optional) Add a summary of the results at the top of the report
         summary: ${{fromJson(needs.PyprojectTOML.outputs.toml_values)['test_results_display_summary']}}
@@ -149,46 +155,15 @@ jobs:
           merge-multiple: true
         continue-on-error: true
 
-      - name: Merge JUnit XML per Python version
+      - name: Stage JUnit XML results
         run: |
-          # Each Python version may have multiple XML files (one per test group).
-          # Merge them into a single file per version so the Sphinx directive
-          # can render one report per Python version.
+          # Each (python-version, test-group) matrix job produces a uniquely-named
+          # XML file (e.g. test-results-3.11-immediate-or-short.xml).  The Sphinx
+          # directive groups them by version automatically.
           mkdir -p ${{ github.workspace }}/merged-junit
-          if ls ${{ github.workspace }}/junit-results/test-results-*.xml 1>/dev/null 2>&1; then
-            python3 - <<'MERGE_SCRIPT'
-          import xml.etree.ElementTree as ET
-          from pathlib import Path
-          import re
-
-          src = Path("${{ github.workspace }}/junit-results")
-          dst = Path("${{ github.workspace }}/merged-junit")
-          versions = {}
-          for f in sorted(src.glob("test-results-*.xml")):
-              m = re.search(r"test-results-(\d+\.\d+)", f.name)
-              if m:
-                  ver = m.group(1)
-                  versions.setdefault(ver, []).append(f)
-
-          for ver, files in versions.items():
-              root = ET.Element("testsuites")
-              for f in files:
-                  try:
-                      tree = ET.parse(f)
-                      r = tree.getroot()
-                      if r.tag == "testsuites":
-                          for suite in r:
-                              root.append(suite)
-                      elif r.tag == "testsuite":
-                          root.append(r)
-                  except ET.ParseError:
-                      pass
-              ET.ElementTree(root).write(dst / f"test-results-{ver}.xml",
-                                         xml_declaration=True, encoding="utf-8")
-          MERGE_SCRIPT
-          else
-            echo "No JUnit XML files found to merge."
-          fi
+          cp ${{ github.workspace }}/junit-results/test-results-*.xml \
+             ${{ github.workspace }}/merged-junit/ 2>/dev/null \
+             || echo "No JUnit XML files found."
         continue-on-error: true
 
       - name: Checkout Main Branch

@@ -12,9 +12,11 @@ Provides three directives:
 ``.. junit-test-results:: path/to/directory``
     Auto-discovers all ``test-results-*.xml`` files in the given directory,
     renders a cross-version overview table at the top, then a per-version
-    section with summary + detail for each discovered file. This is the
-    recommended single-directive approach — the page content adapts
-    automatically when Python versions change in CI.
+    section with summary + detail for each discovered file.  Files are
+    grouped by Python version and test group (e.g.
+    ``test-results-3.11-immediate-or-short.xml``).  This is the recommended
+    single-directive approach — the page content adapts automatically when
+    Python versions or test groups change in CI.
 """
 
 from __future__ import annotations
@@ -30,8 +32,12 @@ from sphinx.util import logging
 
 logger = logging.getLogger(__name__)
 
-# Pattern for extracting version from filenames like test-results-3.11.xml
-_VERSION_RE = re.compile(r"test-results-(\d+\.\d+)\.xml$")
+# Matches test-results-3.11-immediate-or-short.xml
+# Group 1 = version ("3.11"), Group 2 = group slug ("immediate-or-short")
+_FILE_RE = re.compile(r"test-results-(\d+\.\d+)-(.+?)\.xml$")
+
+# Fallback: matches the old merged format test-results-3.11.xml
+_VERSION_ONLY_RE = re.compile(r"test-results-(\d+\.\d+)\.xml$")
 
 
 # ── Helpers ──────────────────────────────────────────────────────────
@@ -75,16 +81,64 @@ def _aggregate(suites: list[ET.Element]) -> dict[str, int | float]:
     }
 
 
-def _discover_xml_files(directory: Path) -> list[tuple[str, Path]]:
-    """Find test-results-*.xml files and return sorted (version, path) pairs."""
-    results = []
+def _discover_grouped_xml_files(
+    directory: Path,
+) -> list[tuple[str, list[tuple[str, Path]]]]:
+    """Find test-results-*.xml files, return (version, [(group_slug, path)...]) pairs.
+
+    Files matching ``test-results-{ver}-{group}.xml`` are grouped by version.
+    Files matching the old ``test-results-{ver}.xml`` format are returned as
+    a single group with slug ``""`` (empty string) for backwards compatibility.
+
+    Returns a sorted list of ``(version, group_files)`` tuples.
+    """
     if not directory.is_dir():
-        return results
+        return []
+
+    by_version: dict[str, list[tuple[str, Path]]] = {}
     for f in sorted(directory.glob("test-results-*.xml")):
-        m = _VERSION_RE.search(f.name)
+        m = _FILE_RE.search(f.name)
+        if m:
+            ver, group_slug = m.group(1), m.group(2)
+            by_version.setdefault(ver, []).append((group_slug, f))
+        else:
+            m2 = _VERSION_ONLY_RE.search(f.name)
+            if m2:
+                ver = m2.group(1)
+                by_version.setdefault(ver, []).append(("", f))
+
+    return sorted(by_version.items(), key=lambda x: x[0])
+
+
+def _discover_flat_xml_files(directory: Path) -> list[tuple[str, Path]]:
+    """Find test-results-*.xml files and return flat (version, path) pairs.
+
+    Used by the ``junit-overview`` directive which only needs a flat list.
+    Multiple files for the same version are returned as separate entries.
+    """
+    if not directory.is_dir():
+        return []
+    results: list[tuple[str, Path]] = []
+    for f in sorted(directory.glob("test-results-*.xml")):
+        m = _FILE_RE.search(f.name)
         if m:
             results.append((m.group(1), f))
+        else:
+            m2 = _VERSION_ONLY_RE.search(f.name)
+            if m2:
+                results.append((m2.group(1), f))
     return results
+
+
+def _slug_to_label(slug: str) -> str:
+    """Convert a sanitized group slug back to a display label.
+
+    ``"immediate-or-short"`` → ``"Immediate or Short"``
+    ``""`` → ``"All Tests"``
+    """
+    if not slug:
+        return "All Tests"
+    return slug.replace("-", " ").title()
 
 
 def _make_row(col_nodes: list[nodes.Node | str], css_class: str = "") -> nodes.row:
@@ -111,6 +165,13 @@ def _status_class(stats: dict) -> str:
 def _version_to_anchor(version: str) -> str:
     """Convert a version string like '3.11' to a stable anchor ID."""
     return f"python-{version.replace('.', '-')}"
+
+
+def _group_anchor_id(version: str, slug: str) -> str:
+    """Create a stable anchor ID for a per-group sub-section."""
+    if slug:
+        return f"python-{version.replace('.', '-')}-{slug}"
+    return _version_to_anchor(version)
 
 
 def _build_overview_table(
@@ -268,6 +329,17 @@ def _build_detail_table(suites: list[ET.Element]) -> nodes.table:
 class JUnitTestResultsDirective(Directive):
     """Auto-discover XML files and render a full test results page.
 
+    Discovers files matching ``test-results-{ver}-{group}.xml`` (and the
+    legacy ``test-results-{ver}.xml`` format), groups them by Python version,
+    and renders:
+
+    1. An **Overview** section with a cross-version summary table (aggregated
+       across all test groups).
+    2. A **Python {ver}** section for each version, containing a sub-section
+       per test group with its own summary and detail tables.
+
+    All sections use ``nodes.section()`` so they appear in the Sphinx TOC.
+
     Usage::
 
         .. junit-test-results:: _static/test-results
@@ -284,48 +356,71 @@ class JUnitTestResultsDirective(Directive):
         rel_dir = self.arguments[0]
         xml_dir = (src_dir / rel_dir).resolve()
 
-        result_nodes: list[nodes.Node] = []
-
-        discovered = _discover_xml_files(xml_dir)
+        discovered = _discover_grouped_xml_files(xml_dir)
 
         if not discovered:
             para = nodes.paragraph()
             para += nodes.emphasis(
                 text="No test results found. Results are populated by CI."
             )
-            result_nodes.append(para)
-            return result_nodes
+            return [para]
 
-        # Collect stats for overview
+        # ── Build data structures ──
+        # overview_entries: one row per version, stats aggregated across groups
+        # version_data: parsed per-group data for detail sections
         overview_entries: list[tuple[str, dict | None]] = []
-        parsed_data: list[tuple[str, list[ET.Element], dict]] = []
+        version_data: list[tuple[str, list[tuple[str, list[ET.Element], dict]]]] = []
 
-        for version, xml_path in discovered:
-            suites = _parse_suites(xml_path)
-            if suites:
-                stats = _aggregate(suites)
-                overview_entries.append((version, stats))
-                parsed_data.append((version, suites, stats))
+        for version, group_files in discovered:
+            all_suites: list[ET.Element] = []
+            group_data: list[tuple[str, list[ET.Element], dict]] = []
+
+            for slug, xml_path in group_files:
+                suites = _parse_suites(xml_path)
+                if suites:
+                    stats = _aggregate(suites)
+                    group_data.append((slug, suites, stats))
+                    all_suites.extend(suites)
+
+            if all_suites:
+                agg_stats = _aggregate(all_suites)
+                overview_entries.append((version, agg_stats))
+                version_data.append((version, group_data))
             else:
                 overview_entries.append((version, None))
 
-        # Overview section
-        overview_title = nodes.subtitle(text="Overview")
-        result_nodes.append(overview_title)
-        result_nodes.append(_build_overview_table(overview_entries))
+        result_nodes: list[nodes.Node] = []
 
-        # Per-version sections
-        for version, suites, stats in parsed_data:
-            anchor_id = _version_to_anchor(version)
+        # ── Overview section ──
+        overview_section = nodes.section(ids=["test-results-overview"])
+        overview_section += nodes.title(text="Overview")
+        overview_section += _build_overview_table(overview_entries)
+        result_nodes.append(overview_section)
 
-            # Section with anchor target
-            target = nodes.target("", "", ids=[anchor_id])
-            result_nodes.append(target)
+        # ── Per-version sections ──
+        for version, group_data in version_data:
+            ver_anchor = _version_to_anchor(version)
+            ver_section = nodes.section(ids=[ver_anchor])
+            ver_section += nodes.title(text=f"Python {version}")
 
-            section_title = nodes.subtitle(text=f"Python {version}")
-            result_nodes.append(section_title)
-            result_nodes.append(_build_summary_table(stats))
-            result_nodes.append(_build_detail_table(suites))
+            if len(group_data) == 1 and group_data[0][0] == "":
+                # Legacy single-file format — no sub-sections needed
+                _, suites, stats = group_data[0]
+                ver_section += _build_summary_table(stats)
+                ver_section += _build_detail_table(suites)
+            else:
+                for slug, suites, stats in group_data:
+                    group_anchor = _group_anchor_id(version, slug)
+                    group_label = _slug_to_label(slug)
+                    grp_section = nodes.section(ids=[group_anchor])
+                    grp_section += nodes.title(
+                        text=f"Python {version} — {group_label}"
+                    )
+                    grp_section += _build_summary_table(stats)
+                    grp_section += _build_detail_table(suites)
+                    ver_section += grp_section
+
+            result_nodes.append(ver_section)
 
         return result_nodes
 
@@ -354,7 +449,7 @@ class JUnitOverviewDirective(Directive):
         directory = self.options.get("directory")
         if directory:
             xml_dir = (src_dir / directory.strip()).resolve()
-            entries = _discover_xml_files(xml_dir)
+            entries = _discover_flat_xml_files(xml_dir)
 
         # Option 2: explicit file list
         if not entries:
@@ -363,7 +458,6 @@ class JUnitOverviewDirective(Directive):
                 line = line.strip()
                 if ";" in line:
                     label, path = line.split(";", 1)
-                    # Extract version from label (e.g. "Python 3.11" -> "3.11")
                     m = re.search(r"(\d+\.\d+)", label)
                     version = m.group(1) if m else label.strip()
                     entries.append((version, (src_dir / path.strip()).resolve()))
@@ -373,13 +467,23 @@ class JUnitOverviewDirective(Directive):
             para += nodes.emphasis(text="No test result files found.")
             return [para]
 
-        overview_entries: list[tuple[str, dict | None]] = []
+        # Aggregate per version (may have multiple files per version)
+        by_version: dict[str, list[ET.Element]] = {}
         for version, xml_path in entries:
             suites = _parse_suites(xml_path)
             if suites:
-                overview_entries.append((version, _aggregate(suites)))
-            else:
-                overview_entries.append((version, None))
+                by_version.setdefault(version, []).extend(suites)
+
+        overview_entries: list[tuple[str, dict | None]] = []
+        for version in sorted(by_version.keys()):
+            overview_entries.append((version, _aggregate(by_version[version])))
+
+        # Include versions with no results
+        all_versions = sorted(set(v for v, _ in entries))
+        for v in all_versions:
+            if v not in by_version:
+                overview_entries.append((v, None))
+        overview_entries.sort(key=lambda x: x[0])
 
         return [_build_overview_table(overview_entries)]
 
@@ -438,7 +542,7 @@ def setup(app: Sphinx) -> dict:
     app.add_directive("junit-test-results", JUnitTestResultsDirective)
     app.add_css_file("css/junit.css")
     return {
-        "version": "0.3",
+        "version": "0.4",
         "parallel_read_safe": True,
         "parallel_write_safe": True,
     }
