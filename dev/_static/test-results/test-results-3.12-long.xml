@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="0.308" timestamp="2026-03-02T17:44:48.651825+00:00" hostname="runnervmnay03"><testcase classname="test.test_BitstreamEvolutionProtocols" name="test_LongTest" time="0.001" /></testsuite></testsuites>

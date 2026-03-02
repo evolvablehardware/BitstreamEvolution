@@ -152,3 +152,12 @@ table.junit-overview a {
 table.junit-overview a:hover {
     text-decoration: underline;
 }
+
+/* ── Per-group subsection spacing ─────────────────────────────────── */
+
+/* Add visual breathing room above each test-group sub-section */
+section[id^="python-"] section {
+    margin-top: 2em;
+    padding-top: 0.5em;
+    border-top: 1px solid var(--junit-border, #ccc);
+}
