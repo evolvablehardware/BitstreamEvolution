@@ -1,9 +1,17 @@
+"""Generic fitness evaluation wrapper.
+
+Delegates to a :class:`FitnessEvaluator` strategy for computing fitness
+from measurement results. Connects the measurement pipeline to the
+population's fitness slots.
+"""
+
 from abc import ABC
 from typing import Any, Protocol
 from BitstreamEvolutionProtocols import Fitness, Measurement, Population
-from result import is_ok # type: ignore
+from returns.result import Success # type: ignore
 
 class FitnessEvaluator(Protocol):
+    """Strategy protocol for computing fitness from measurement data."""
     def start_eval(self) -> None: ...
 
     def end_eval(self) -> None: ...
@@ -23,12 +31,12 @@ class EvaluateFitness:
         self.__evaluator.start_eval()
         for i in range(len(measurements)):
             m = measurements[i]
-            if is_ok(m.result):
-                data = m.result.ok_value # type: ignore
+            if isinstance(m.result, Success):
+                data = m.result.unwrap()
                 fit = self.__evaluator.calculate_success(data, i, '')
                 population.set_fitness_by_index(i, fit)
             else:
-                err = m.result.err_value # type: ignore
+                err = m.result.failure()
                 fit = self.__evaluator.calculate_error(err, i, '')
                 population.set_fitness_by_index(i, fit)
         self.__evaluator.end_eval()

@@ -1,3 +1,14 @@
+"""ICE40 ASC-file circuit implementation.
+
+Provides :class:`FileBasedCircuit`, which reads and writes bitstreams in the
+IceStorm ASCII (``.asc``) format, compiles them via ``icepack``, and uploads
+to hardware via ``iceprog``. Uses memory-mapped file I/O for performance.
+
+.. note::
+    Magic tile coordinates and routing types are specific to the ICE40 HX1K.
+    Different FPGA models will require different constants.
+"""
+
 from mmap import mmap
 from pathlib import Path
 from shutil import copyfile
@@ -8,7 +19,7 @@ from BitstreamEvolutionProtocols import FPGA_Compilation_Data
 from Circuit.Circuit import Circuit
 from Directories import Directories
 from Logger import Logger
-from result import Result, Ok, Err # type: ignore
+from returns.result import Result, Success, Failure # type: ignore
 
 COMPILE_CMD = "icepack"
 RUN_CMD = "iceprog"
@@ -51,8 +62,14 @@ class FileBasedCircuit(Circuit):
         self._hardware_file = mmap(hardware_file.fileno(), 0)
         hardware_file.close()
 
-    def copy_from(self, other):
-        copyfile(other._hardware_filepath, self.__hardware_filepath)
+    def copy_from(self, other: 'FileBasedCircuit'):
+        # Close our mmap so the file can be overwritten (required on Windows)
+        self._hardware_file.close()
+        copyfile(other.__hardware_filepath, self.__hardware_filepath)
+        # Re-open and re-mmap
+        hardware_file = open(self.__hardware_filepath, "r+")
+        self._hardware_file = mmap(hardware_file.fileno(), 0)
+        hardware_file.close()
 
     def compile(self, fpga: FPGA_Compilation_Data) -> Result[None,Exception]:
         """
@@ -71,7 +88,7 @@ class FileBasedCircuit(Circuit):
         run(cmd_str)
         sleep(1)
 
-        return Ok(None)
+        return Success(None)
 
         # if switching fpgas every sample, need to upload to the second fpga also
         # if self._config.get_transfer_sample():

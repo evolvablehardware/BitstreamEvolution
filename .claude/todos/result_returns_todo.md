@@ -23,7 +23,7 @@ Example failure: `test_TrivialCircuit_ImplementsCompile` fails because `TrivialC
 
 ### Source Files
 
-- [ ] `src/Circuit/Circuit.py` (line 6)
+- [x] `src/Circuit/Circuit.py` (line 6)
   - Change: `from result import Result` → `from returns.result import Result`
   - Note: `compile()` return type annotation only, no Ok/Err created here
 

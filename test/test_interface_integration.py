@@ -24,7 +24,7 @@ from EvaluateFitness.EvalVarMaxFitness import EvalVarMaxFitness
 from EvaluateFitness.EvalPulseCountFitness import EvalPulseCountFitness
 from PlotDataRecorder import PlotDataRecorder
 from Circuit.FileBasedCircuit import FileBasedCircuit
-from result import Ok, Err # type: ignore
+from returns.result import Success, Failure # type: ignore
 
 
 # ============================================================================
@@ -176,7 +176,7 @@ def test_EvaluatePopulationFitness_modifies_in_place():
     pop = Population([0], None)
     measure = Measurement('fpga', DataRequest.WAVEFORM, ckt, 1)
     # Use result.Ok directly since EvaluateFitness uses result.is_ok(), not returns.result
-    measure.result = Ok([0, 2])
+    measure.result = Success([0, 2])
 
     result = evaluator.evaluate(pop, [measure])
 
@@ -194,9 +194,9 @@ def test_EvaluatePopulationFitness_measurement_mapping():
 
     pop = Population([0, 1], None)
     m1 = Measurement('fpga', DataRequest.WAVEFORM, ckt1, 1)
-    m1.result = Ok([0, 2])  # fitness = 1.0
+    m1.result = Success([0, 2])  # fitness = 1.0
     m2 = Measurement('fpga', DataRequest.WAVEFORM, ckt2, 1)
-    m2.result = Ok([0, 4])  # fitness = 2.0
+    m2.result = Success([0, 4])  # fitness = 2.0
 
     evaluator.evaluate(pop, [m1, m2])
 
@@ -213,7 +213,7 @@ def test_EvaluatePopulationFitness_handles_errors():
 
     pop = Population([0], None)
     measure = Measurement('fpga', DataRequest.WAVEFORM, ckt, 1)
-    measure.result = Err(Exception("Hardware failure"))
+    measure.result = Failure(Exception("Hardware failure"))
 
     evaluator.evaluate(pop, [measure])
 
@@ -233,7 +233,7 @@ def test_EvaluatePopulationFitness_multiple_measurements():
     for _ in individuals:
         ckt = Mock(spec=FileBasedCircuit)
         m = Measurement('fpga', DataRequest.WAVEFORM, ckt, 1)
-        m.result = Ok([0, 2])
+        m.result = Success([0, 2])
         measurements.append(m)
 
     evaluator.evaluate(pop, measurements)
@@ -288,7 +288,7 @@ def test_FitnessEvaluator_lifecycle():
     pop = Population([Mock()], None)
     ckt = Mock(spec=FileBasedCircuit)
     measure = Measurement('fpga', DataRequest.WAVEFORM, ckt, 1)
-    measure.result = Ok([1, 2])
+    measure.result = Success([1, 2])
 
     ef.evaluate(pop, [measure])
 
@@ -305,7 +305,7 @@ def test_FitnessEvaluator_calculate_success_called():
     pop = Population([Mock()], None)
     ckt = Mock(spec=FileBasedCircuit)
     measure = Measurement('fpga', DataRequest.WAVEFORM, ckt, 1)
-    measure.result = Ok([10, 20, 30])
+    measure.result = Success([10, 20, 30])
 
     ef.evaluate(pop, [measure])
 
@@ -322,7 +322,7 @@ def test_FitnessEvaluator_calculate_error_called():
     pop = Population([Mock()], None)
     ckt = Mock(spec=FileBasedCircuit)
     measure = Measurement('fpga', DataRequest.WAVEFORM, ckt, 1)
-    measure.result = Err(Exception("hardware error"))
+    measure.result = Failure(Exception("hardware error"))
 
     ef.evaluate(pop, [measure])
 

@@ -6,9 +6,15 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-import os, sys
+import sys
+from pathlib import Path
+
 import toml
 from enum import Enum
+
+# Resolve project paths relative to this config file (works regardless of cwd)
+_conf_dir = Path(__file__).resolve().parent
+_project_root = _conf_dir.parent.parent.parent
 
 ######################### Define Available Tags ######################
 class sTag(Enum):
@@ -47,7 +53,7 @@ for tag in unknown_tags:
 
 
 ############################### Project Information ###################
-py_project_toml = os.path.join(os.getcwd(),"../../../pyproject.toml")
+py_project_toml = _project_root / "pyproject.toml"
 py_project_data = toml.load(py_project_toml)
 
 #Load general data for website from pyproject.toml file
@@ -70,22 +76,16 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.graphviz',
               'sphinx.ext.inheritance_diagram',
               'sphinx_design', # This allows for greater user interfaces. https://sphinx-design.readthedocs.io/en/latest/get_started.html#usage
+              'notfound.extension', # Custom 404 page that works in subdirectories
               ]
 
 templates_path = ['_templates']
 exclude_patterns = []
 
 # -- Adding Modules To sys.path so they can be addressed ---------------------
-# may be possible to use __init__.py to get around this and import the project directly, like i think Scipy is doing.
-directory_of_source_code = os.path.join(os.getcwd(),"../../../src") # Add src
-sys.path.append(directory_of_source_code)
-#directory_of_old_source_code = os.path.join(os.getcwd(),"../../../src_old") # Add old_src               # DEPENDANCY ANNOYANCE: Have to do this so imports in the files work, because they are evaluated relative to the home directory when python runs, but relative to path directory when sphinx runs.
-#sys.path.append(directory_of_old_source_code)
-# directory_of_interfaces = os.path.join(os.getcwd(),"../../../interface") # Add abstractions
-# sys.path.append(directory_of_interfaces)
-
-directory_base = os.path.join(os.getcwd(),"../../..") # Add base directory
-sys.path.append(directory_base)
+# Resolved relative to __file__ so this works regardless of working directory.
+sys.path.append(str(_project_root / "src"))
+sys.path.append(str(_project_root))
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
@@ -160,27 +160,10 @@ napoleon_include_special_with_doc = True    # True to include special members li
 
 ############################# Substitutions #####################################
 
-develop_grid_card = "\n".join([ "grid-item-card: See Development Documentation",
-                                '       :link: code/old_test_verify',
-                                '       :link-type: doc',
-                                '       :link-alt: Link to code/old_test_verify',
-                                '       Follow this link to go to the documentation used to develop this software, including information about how to contribute.'])
-
-testing_grid_card = "\n".join([
-    'grig-item-card: Testing Results',
-    '   :link: code/old_test_verify',
-    '   :link-type: doc',
-    '   :link-alt: Link to code/old_test_verify',
-    '   This brings you to the test results of the previous commit completed.'
-
-])
-
-
 rst_prolog = f"""
 .. |doc_version| replace:: {"Release" if tag_is_applied(sTag.release) else "Develop"}
 """
-# .. |dev_test_card| {testing_grid_card if tag_is_applied(sTag.dev) else develop_grid_card}
 
-rst_epilog = f"""
-
-"""
+# -- Options for notfound extension ------------------------------------------
+# https://sphinx-notfound-page.readthedocs.io/
+notfound_urls_prefix = '/BitstreamEvolution/'

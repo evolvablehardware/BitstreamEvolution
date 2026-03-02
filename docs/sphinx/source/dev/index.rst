@@ -2,6 +2,17 @@
 Development Information
 -----------------------
 
+.. toctree::
+    :maxdepth: 1
+    :hidden:
+
+    test_results
+
+.. only:: dev
+
+    .. seealso::
+        :doc:`test_results` — Embedded CI test results from the latest build.
+
 Link To Main Website
 --------------------
 

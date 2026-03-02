@@ -144,8 +144,8 @@ def TrivialEvaluatePopulationFitness(population:Population,measurement_dependant
 
 
 class TrivialHardware(Hardware):
-    def __init__(self,FPGAs:list[str]):
-        self.FPGAs = ["FAKE_FPGA1", "FAKE FPGA2"]
+    def __init__(self,FPGAs:list[str] = ["FAKE_FPGA1", "FAKE FPGA2"]):
+        self.FPGAs = FPGAs
         
     async def request_measurement(self, measurement: Trivial_Meas)->Trivial_Meas: 
         measurement.record_FPGA_used(random.choice(self.FPGAs))
@@ -156,10 +156,10 @@ class TrivialHardware(Hardware):
 
 
 def TrivialEvaluateMeasurements(measurements: Iterable[Measurement], HW: TrivialHardware)->None:
-    tasks = []
-    for meas in measurements:
-        tasks.append(asyncio.create_task(HW.request_measurement(meas)))
-    asyncio.run(asyncio.gather(*tasks))
+    async def _run_all():
+        tasks = [HW.request_measurement(meas) for meas in measurements]
+        await asyncio.gather(*tasks)
+    asyncio.run(_run_all())
         
 
 ## ------------------------------------ Trivial Evolution Object -----------------------------------------

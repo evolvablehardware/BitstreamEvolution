@@ -1,9 +1,16 @@
+"""Abstract base class for FPGA circuit representations.
+
+Concrete subclasses (e.g. :class:`~Circuit.FileBasedCircuit.FileBasedCircuit`)
+implement compilation, bitstream access, and file-attribute storage for a
+specific hardware format.
+"""
+
 from abc import ABC, abstractmethod
 from pathlib import Path
 
 from BitstreamEvolutionProtocols import FPGA_Compilation_Data
 from Logger import Logger
-from result import Result # type: ignore
+from returns.result import Result # type: ignore
 
 class Circuit(ABC):
     def __repr__(self):

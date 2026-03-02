@@ -1,3 +1,8 @@
+"""Logging and monitoring for evolutionary experiments.
+
+Provides console and file-based logging with ANSI color formatting,
+live plot launching, and workspace archival for experiment results.
+"""
 from dataclasses import dataclass
 from pathlib import Path
 from sys import stdout
@@ -40,6 +45,12 @@ README_FILE_HEADER = "FPGA/MCU [1] \n"
 
 @dataclass
 class LoggerConfig:
+    """Configuration for Logger output, plot launching, and file paths.
+
+    Consumed by ``Logger.__init__`` to control verbosity, plot behavior,
+    and workspace log destinations.
+    """
+
     plots_dir: Path
     launch_plots: bool
     is_sensitivity: bool
@@ -51,7 +62,18 @@ class LoggerConfig:
 
 # TODO Utilize Python logging library
 class Logger:
+    """Level-gated logger with monitor file output and live plot integration.
+
+    Writes timestamped entries to both stdout and a monitor file, supports
+    ANSI-colored severity prefixes, and can launch gnome-terminal-based
+    live plotting windows for experiment visualization.
+    """
     def __init_monitor(self):
+        """Initialize the monitor file header, plots directory, and live plot windows.
+
+        Writes the experiment banner to the monitor file, resets the plots
+        directory, and optionally launches a live plotting terminal.
+        """
         # Start the monitor
         # self.log_event(1, "Creating the monitor file...")
 
@@ -101,6 +123,15 @@ class Logger:
                 self.log_error(1, e)
 
     def __init__(self, explanation: str, logger_config: LoggerConfig):
+        """Set up log files, clear workspace data logs, and start the monitor.
+
+        Parameters
+        ----------
+        explanation : str
+            Human-readable description of the experiment.
+        logger_config : LoggerConfig
+            Configuration controlling log paths, verbosity, and plot behavior.
+        """
         self.__monitor_file = open(logger_config.log_file, "w")
         self.__log_file = stdout
         self.__config = logger_config
@@ -139,6 +170,15 @@ class Logger:
         self.__init_monitor()
 
     def log_generation(self, population, epoch_time):
+        """Log a generation summary including current and overall best fitness.
+
+        Parameters
+        ----------
+        population : Population
+            The population whose best circuits are reported.
+        epoch_time : float
+            Wall-clock seconds elapsed during the epoch.
+        """
         self.log_event(2, DOUBLE_HLINE)
         self.log_event(2, DOUBLE_HLINE)
         self.log_event(2, DOUBLE_HLINE)
@@ -164,36 +204,43 @@ class Logger:
         self.log_event(2, DOUBLE_HLINE)
 
     def log_monitor(self, prefix,  *msg):
+        """Write a timestamped message directly to the monitor log file."""
         if self.__config.save_log:
             now = datetime.now()
             print(now, prefix, *msg, file=self.__monitor_file)
 
     def log_event(self, level, *msg):
+        """Log a general event to stdout and the monitor file if level permits."""
         if self.__config.log_level >= level:
             print(*msg, file=self.__log_file)
             self.log_monitor("", *msg)
 
     def log_info(self, level, *msg):
+        """Log an informational message with blue ANSI formatting."""
         if self.__config.log_level >= level:
             print("INFO: ", OKBLUE, *msg, ENDC, file=self.__log_file)
             self.log_monitor("INFO: ", *msg)
 
     def log_warning(self, level, *msg):
+        """Log a warning message with yellow ANSI formatting."""
         if self.__config.log_level >= level:
             print("WARNING: ", WARNING, *msg, ENDC, file=self.__log_file)
             self.log_monitor("WARNING: ", *msg)
 
     def log_error(self, level, *msg):
+        """Log an error message with red ANSI formatting."""
         if self.__config.log_level >= level:
             print("ERROR: ", FAIL, *msg, ENDC, file=self.__log_file)
             self.log_monitor("ERROR: ", *msg)
 
     def log_critical(self, level, *msg):
+        """Log a critical message with red ANSI formatting."""
         if self.__config.log_level >= level:
             print("CRITICAL: ", FAIL, *msg, ENDC, file=self.__log_file)
             self.log_monitor("CRITICAL: ", *msg)
 
     def save_workspace(self, directory):
+        """Close the monitor file and archive the workspace to a timestamped directory."""
         self.__monitor_file.close()
         current_time = str(datetime.now().strftime(self.__config.datetime_format))
         current_time = current_time.replace('/', '-')

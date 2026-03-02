@@ -1,3 +1,14 @@
+"""Main evolution loop orchestrator.
+
+Wires together the protocol implementations (population generation,
+circuit factory, fitness evaluation, reproduction) and runs the
+generational evolution loop with async hardware measurements.
+
+.. warning::
+    This module is marked as NOT CURRENT VERSION. See
+    :class:`~TrivialImplementation.TrivialEvolution` for the reference
+    implementation currently used for testing.
+"""
 
 from BitstreamEvolutionProtocols import CircuitFactory, EvaluatePopulationFitness, GenDataFactory, GenerateMeasurements, Hardware, Population, Reproducer
 from PlotDataRecorder import PlotDataRecorder
@@ -39,8 +50,14 @@ class Evolution:
         while gen_data is not None:
             measurements = self.__generate_measurements(self.__circuit_factory, populations)
             tasks = [self.__hardware.request_measurement(m) for m in measurements]
-            results = asyncio.run( asyncio.gather(*tasks) ) # I added asyncio.run to make sure that the async experiements were run at this point
-            # Maybe figure out task groups. See https://docs.python.org/3/library/asyncio-task.html#coroutines-and-tasks
+            # asyncio.gather dispatches all measurement requests concurrently. In the intended
+            # server-client model, each await genuinely suspends while waiting for a network
+            # response, so multiple FPGAs are measured in parallel here.
+            # NOTE: asyncio.run() creates a new event loop each generation and destroys it
+            # after. A cleaner approach is to make run() itself async (i.e. `async def run`)
+            # and use `await asyncio.gather(*tasks)` directly, keeping one event loop for the
+            # whole experiment. See .claude/docs/hardware_concurrency.md for discussion.
+            results = asyncio.run( asyncio.gather(*tasks) )
 
             for p in populations:
                 self.__eval_population_fitness(p, results)

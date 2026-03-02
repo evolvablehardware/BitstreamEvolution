@@ -1,3 +1,10 @@
+"""Population initialization factories and strategies.
+
+Provides protocols and concrete implementations for creating initial
+populations of :class:`~Individual.BitstreamIndividual.BitstreamIndividual`
+objects with configurable post-construction and randomization strategies.
+"""
+
 from pathlib import Path
 from random import Random
 from typing import Protocol
@@ -10,8 +17,6 @@ from utilities import wipe_folder
 import os
 
 SEED_HARDWARE_FILEPATH = Path("data/seed-hardware.asc")
-
-# File for implementations of GenerateInitialPopulations
 
 class GenerateInitialPopulations(Protocol):
     "Somehow gets you an initial implementation."

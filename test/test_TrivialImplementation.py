@@ -2,7 +2,7 @@ from pathlib import Path
 from random import Random
 from BitstreamEvolutionProtocols import FPGA_Compilation_Data, FPGA_Model, Population, GenerateInitialPopulation, GenDataIncrementer, DataRequest
 from TrivialImplementation import TrivialCircuit, TrivialCircuitFactory, TrivialReproduceWithMutation, TrivialGenerateInitialPopulation, FakeMeasuringFitnessTrivialImplemention, TrivialEvolution, TrivialGenerateMeasurements, TrivialHardware, TrivialEvaluateMeasurements, Trivial_Meas
-from result import Result, Ok, Err # type: ignore
+from returns.result import Result, Success, Failure # type: ignore
 import pytest # type: ignore
 from pytest_mock import MockerFixture
 from collections.abc import Generator,Iterable
@@ -50,13 +50,7 @@ def test_TrivialCircuit_SetsInherentFitness():
 #This test uses the fixture seen above
 def test_TrivialCircuit_ImplementsCompile(FPGA_compilation_data:FPGA_Compilation_Data):
     output = TrivialCircuit(23).compile(FPGA_compilation_data)
-    match output:
-        case Ok(filepath):
-            pass #don't care what this is
-        case Err(error):
-            assert False, f"This should not return an Exception, but returned {error}"
-        case _:
-            assert False, f"This should return a Result, instead was {output}"
+    assert isinstance(output, Success), f"This should return a Success, but was {output}"
 
 def test_TrivialCircuitFatory_ReturnsTheIndividualAsACircuit():
     individual1 = TrivialCircuit(34)
@@ -272,7 +266,7 @@ def test_TrivialHardware_evaluates_measurements(TrivialMeasurements:tuple[list[T
     for fpga in fpgas: assert fpga in fpgas_used, "all fpgas available should be used"
     for fpga in fpgas_used: assert fpga in fpgas, "all fpgas used should be valid"
     for i in range(len(measurements)): assert measurements[i].circuit == circuits[i], "verify correct circuit is linked"
-    for i in range(len(measurements)): assert measurements[i].result.expect() == circuits[i].inherent_fitness
+    for i in range(len(measurements)): assert measurements[i].result.unwrap() == circuits[i].inherent_fitness
 
 
 

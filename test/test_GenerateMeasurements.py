@@ -1,6 +1,6 @@
 from BitstreamEvolutionProtocols import Circuit, DataRequest, FPGA_Compilation_Data, Individual, Population
 from GenerateMeasurements.GenerateMeasurements import SimpleGenerateMeasurements
-from result import Result, Ok # type: ignore
+from returns.result import Result, Success # type: ignore
 
 class MockIndividual:
     def __init__(self, id: int):
@@ -11,7 +11,7 @@ class MockCircuit:
         self.id = id
 
     def compile(self, fpga: FPGA_Compilation_Data) -> Result[None,Exception]:
-        Ok(None)
+        Success(None)
 
 class MockCircuitFactory:
     def generate(self, populations: list[Population]) -> dict[Circuit,list[tuple[Population,Individual]]]:

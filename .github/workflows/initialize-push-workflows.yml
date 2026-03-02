@@ -16,6 +16,9 @@ permissions:
 
 jobs:
 
+  # NOTE: This reusable workflow is pinned to @main because GitHub Actions
+  # requires a static ref for `uses:`. If read-toml.yml is changed on
+  # develop, it must be merged to main before those changes take effect here.
   PyprojectTOML:
     uses: evolvablehardware/BitstreamEvolution/.github/workflows/read-toml.yml@main
     with:
@@ -33,9 +36,9 @@ jobs:
         python-version: ${{fromJson(needs.PyprojectTOML.outputs.toml_values)['python_versions']}}
         pytest-testing-group: ${{fromJson(needs.PyprojectTOML.outputs.toml_values)['pytest_testing_groups']}}
         run-on: ['ubuntu-latest']
-    
+
     runs-on: ${{matrix.run-on}}
-    
+
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{matrix.python-version}}
@@ -47,17 +50,17 @@ jobs:
       run: |
         sudo apt update
         sudo apt install pipx
-        pipx ensurepath 
+        pipx ensurepath
         sudo pipx ensurepath
-          
+
     - name: Install poetry
       run: |
         pip install poetry
-        
+
     - name: Install Testing Dependencies
       run: |
         poetry install --with gh_tests
-    
+
     - name: Run Tests in Python ${{matrix.python-version}} with masks ${{matrix.pytest-testing-group}}
       run: |
         poetry run pytest -m "${{matrix.pytest-testing-group}}" --junitxml=junit/test-results-${{ matrix.python-version }}.xml
@@ -94,16 +97,18 @@ jobs:
         # (Optional) Title of the test results section in the workflow summary
         title: Results For python${{matrix.python-version}} markers "${{matrix.pytest-testing-group}}"
 
-    
+
   build-website:
     needs: RunTests
     if: ${{always()}}
-    
+
     runs-on: ubuntu-latest
     steps:
-      
+
       - name: Setup python
         uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
       - name: Setup Directory Structure
         run: |
@@ -111,10 +116,51 @@ jobs:
           mkdir $SECONDARY_BRANCH
           mkdir $TEMP_WEBSITE_FOLDER
 
+      - name: Install Graphviz
+        run: |
+          sudo apt-get update && sudo apt-get install -y graphviz
+
       - name: Install General dependencies
         run: |
           pip install poetry
-          
+
+      - name: Cache Poetry virtualenv
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-docs-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-docs-
+
+      - name: Determine test status
+        id: test-status
+        run: |
+          if [ "${{ needs.RunTests.result }}" = "failure" ]; then
+            echo "sphinx_tags=-t tests_failed" >> $GITHUB_OUTPUT
+          else
+            echo "sphinx_tags=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Download JUnit test results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: pytest-results-*
+          path: ${{ github.workspace }}/junit-results
+          merge-multiple: true
+        continue-on-error: true
+
+      - name: Convert JUnit XML to HTML
+        run: |
+          pip install junit2html
+          mkdir -p ${{ github.workspace }}/test-results-html
+          # Merge all XML files into a single HTML report
+          if ls ${{ github.workspace }}/junit-results/*.xml 1>/dev/null 2>&1; then
+            junit2html ${{ github.workspace }}/junit-results/*.xml ${{ github.workspace }}/test-results-html/test-results.html || true
+          else
+            echo "<html><body><p>No test results available for this build.</p></body></html>" > ${{ github.workspace }}/test-results-html/test-results.html
+          fi
+        continue-on-error: true
+
       - name: Checkout Main Branch
         uses: actions/checkout@v4
         with:
@@ -129,7 +175,7 @@ jobs:
       - name: 'MAIN SITE: Sphinx build (Release Mode)'
         run: |
           cd ${{github.workspace}}/${{env.MAIN_BRANCH}}
-          poetry run sphinx-build docs/sphinx/source docs/sphinx/build -t release
+          poetry run sphinx-build docs/sphinx/source docs/sphinx/build -t release ${{ steps.test-status.outputs.sphinx_tags }}
           cp -r docs/sphinx/build/* ${{github.workspace}}/${{env.TEMP_WEBSITE_FOLDER}}
 
       - name: Checkout Secondary Branch
@@ -144,12 +190,20 @@ jobs:
           cd ${{github.workspace}}/${{env.SECONDARY_BRANCH}}
           pwd
           poetry install --with gh_docs --no-root
-  
+
+      - name: 'SECONDARY SITE: Copy test results to static directory'
+        run: |
+          mkdir -p ${{github.workspace}}/${{env.SECONDARY_BRANCH}}/docs/sphinx/source/_static/test-results
+          cp ${{ github.workspace }}/test-results-html/*.html ${{github.workspace}}/${{env.SECONDARY_BRANCH}}/docs/sphinx/source/_static/test-results/ || true
+        continue-on-error: true
+
       - name: 'SECONDARY SITE: Sphinx build (Dev Mode)'
         run: |
           cd ${{github.workspace}}/${{env.SECONDARY_BRANCH}}
-          poetry run sphinx-build docs/sphinx/source ${{github.workspace}}/${{env.TEMP_WEBSITE_FOLDER}}/${{env.SECONDARY_SITE_DIRECTORY}} -t dev
-          
+          poetry run sphinx-build docs/sphinx/source ${{github.workspace}}/${{env.TEMP_WEBSITE_FOLDER}}/${{env.SECONDARY_SITE_DIRECTORY}} -t dev ${{ steps.test-status.outputs.sphinx_tags }}
+
+      - name: Add .nojekyll
+        run: touch ${{ env.TEMP_WEBSITE_FOLDER }}/.nojekyll
 
       - name: Deploy Combined Website to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -157,4 +211,3 @@ jobs:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ${{ env.TEMP_WEBSITE_FOLDER }}
-          force_orphan: true

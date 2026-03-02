@@ -79,16 +79,16 @@ Uses `returns.result.Result[T, Exception]` instead of exceptions for compile and
 
 **Pattern locations**:
 - [BitstreamEvolutionProtocols.py:101-108](../src/BitstreamEvolutionProtocols.py#L101-L108) - Circuit.compile signature
-- [FileBasedCircuit.py:57-74](../src/Circuit/FileBasedCircuit.py#L57-L74) - Returns `Ok(None)` or `Err(Exception)`
-- [Microcontroller.py:27-45](../src/Hardware/Microcontroller.py#L27-L45) - Wraps results in Ok/Err
+- [FileBasedCircuit.py:57-74](../src/Circuit/FileBasedCircuit.py#L57-L74) - Returns `Success(None)` or `Failure(Exception)`
+- [Microcontroller.py:27-45](../src/Hardware/Microcontroller.py#L27-L45) - Wraps results in Success/Failure
 
 **Checking results**:
 ```python
-from result import is_ok
-if is_ok(m.result):
-    data = m.result.ok_value
+from returns.result import Success
+if isinstance(m.result, Success):
+    data = m.result.unwrap()
 else:
-    err = m.result.err_value
+    err = m.result.failure()
 ```
 
 ## Wrapper/Adapter Pattern

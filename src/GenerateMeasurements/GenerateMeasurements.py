@@ -1,6 +1,11 @@
-from BitstreamEvolutionProtocols import CircuitFactory, DataRequest, Individual, Measurement, Population
+"""Measurement generation for the evolution pipeline.
 
-# Trivial enough that unit tests do not exist for this particular implementation
+Creates :class:`~BitstreamEvolutionProtocols.Measurement` objects for each
+circuit in a population, linking them back to the individuals whose
+fitness they determine.
+"""
+
+from BitstreamEvolutionProtocols import CircuitFactory, DataRequest, Individual, Measurement, Population
 class SimpleGenerateMeasurements:
     '''
     A simple implementater of GenerateMeasurements protocol

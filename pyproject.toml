@@ -151,6 +151,7 @@ sphinx-book-theme = ">=1.1.2, <2.0.0"
 sphinx-wagtail-theme = ">=6.3.0, <7.0.0"
 pydata-sphinx-theme = ">=0.15.2, <1.0.0"
 sphinx-design = ">=0.6.1, <1.0.0"
+sphinx-notfound-page = ">=1.0.0"
 
 [tool.poetry.group.test]
 optional = true

@@ -1,3 +1,11 @@
+"""Core protocols and interfaces for the BitstreamEvolution framework.
+
+Defines the abstract contracts (``Protocol`` classes) that all concrete
+implementations must satisfy: ``Individual``, ``Circuit``, ``Population``,
+``Fitness``, ``Hardware``, ``Reproducer``, ``GenerateMeasurements``, and
+``EvaluatePopulationFitness``. Start here to understand the system architecture.
+"""
+
 from dataclasses import dataclass
 from collections.abc import Iterator, Callable, Iterable
 from typing import Generic, Protocol, Optional, TypeVar, Any
@@ -240,11 +248,45 @@ class GenerateMeasurements(Protocol):
     def __call__(self, factory: CircuitFactory, populations: list[Population]) -> dict[Measurement,list[tuple[Population,Individual]]]: ...
 
 class Hardware(Protocol):
-    "Used to Evaluate Measurements. Compile hardware would be responsible for compiling the Circuit in the Measurement object passed to it in request_measurement()."
+    """
+    Used to Evaluate Measurements. Compile hardware would be responsible for compiling the Circuit
+    in the Measurement object passed to it in request_measurement().
+
+    Intended concurrency model (server-client):
+    ============================================
+    request_measurement() is async so that multiple measurements can be dispatched concurrently
+    via asyncio.gather() in Evolution.run(). This is meaningful when Hardware is a client that
+    sends requests over a network to a hardware server — the await genuinely suspends while
+    waiting for the network response, allowing other coroutines to run in the meantime.
+
+    The current Microcontroller implementation uses blocking pyserial and does NOT achieve
+    real concurrency. As the codebase moves to a server-client model, asyncio.gather() will
+    provide true parallelism across multiple FPGAs automatically. The server-side should use
+    serial_asyncio (https://pypi.org/project/serial-asyncio/) in place of pyserial so that
+    serial reads are genuinely non-blocking within the server's event loop.
+
+    Per-FPGA exclusivity constraint:
+    =================================
+    Each physical Icestick (or FPGA device) can only be accessed by one process at a time —
+    iceprog holds exclusive USB access while programming the device. Implementations of this
+    protocol MUST ensure that concurrent calls to request_measurement() targeting the same
+    physical FPGA are serialized. Recommended approaches for the server:
+
+    Option A — asyncio.Semaphore(1) per FPGA:
+        Each FPGA gets its own Semaphore. request_measurement acquires the semaphore for the
+        target device before proceeding. Requests for different FPGAs run concurrently;
+        requests for the same FPGA queue up automatically.
+
+    Option B — Per-FPGA asyncio.Queue with a dedicated worker coroutine:
+        One worker coroutine per FPGA dequeues and processes measurements one at a time.
+        Naturally serializes access while allowing inter-FPGA parallelism.
+
+    See .claude/docs/hardware_concurrency.md for full discussion.
+    """
     #Has FPGAs
     #Has Active Measurements being evaluated
-    #Has Pending MEasurements to be evaluated
-    async def request_measurement(self, measurement: Measurement)->Measurement: ... #make this an async function
+    #Has Pending Measurements to be evaluated
+    async def request_measurement(self, measurement: Measurement)->Measurement: ...
     def get_available_FPGAs(self)->list[str]: ... # This could be a list of ids, or some sort of FPGA object with the UUID included and other relevant data.
 
 # Example usage

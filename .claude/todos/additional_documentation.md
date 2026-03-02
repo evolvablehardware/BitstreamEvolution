@@ -8,6 +8,11 @@ Tracks documentation suggestions to be added to `.claude/docs/` or elsewhere.
 
 ## Pending
 
+### Add Docstrings to Python Classes
+Add dockstrings for all python classes and files so that they can be interpreted by sphinx.
+- Be fairly terse, usually like 1-4 lines unless more is useful for explaination.
+- Describe how it integrates with the rest of the project and how it is used. 
+
 ### ICE40 Hardware Model Guide
 Document the ICE40hx1k-specific constants and bitstream format used in [FileBasedCircuit.py](../../src/Circuit/FileBasedCircuit.py).
 - Magic tile coordinates: X=(4,9), Y=(1,16) for ICE40hx1k
