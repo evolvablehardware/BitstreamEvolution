@@ -81,6 +81,15 @@ Architectural Example
     
 
 
+Hardware Documentation
+=====================
+
+.. toctree::
+    :maxdepth: 1
+
+    ice40_hardware
+    mcu_protocol
+
 Early Design Ideas
 ==================
 

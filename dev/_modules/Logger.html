@@ -158,8 +158,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../code/Circuit/Circuit.html">Circuit.py</a></li>
@@ -304,209 +312,286 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for Logger</h1><div class="highlight"><pre>
-<span></span><span class="linenos">  1</span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="linenos">  2</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="linenos">  3</span><span class="kn">from</span><span class="w"> </span><span class="nn">sys</span><span class="w"> </span><span class="kn">import</span> <span class="n">stdout</span>
-<span class="linenos">  4</span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
-<span class="linenos">  5</span><span class="kn">from</span><span class="w"> </span><span class="nn">subprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">CalledProcessError</span><span class="p">,</span> <span class="n">run</span>
-<span class="linenos">  6</span><span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">exists</span>
-<span class="linenos">  7</span><span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">join</span>
-<span class="linenos">  8</span><span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">mkdir</span>
-<span class="linenos">  9</span><span class="kn">from</span><span class="w"> </span><span class="nn">shutil</span><span class="w"> </span><span class="kn">import</span> <span class="n">copytree</span>
-<span class="linenos"> 10</span><span class="kn">from</span><span class="w"> </span><span class="nn">shutil</span><span class="w"> </span><span class="kn">import</span> <span class="n">rmtree</span>
-<span class="linenos"> 11</span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
-<span class="linenos"> 12</span>
-<span class="linenos"> 13</span><span class="c1"># The window dimensions</span>
-<span class="linenos"> 14</span><span class="n">LINE_WIDTH</span> <span class="o">=</span> <span class="mi">112</span>
-<span class="linenos"> 15</span><span class="n">WIN_DIM</span><span class="o">=</span><span class="s2">&quot;105x29&quot;</span>
-<span class="linenos"> 16</span><span class="n">DOUBLE_HLINE</span> <span class="o">=</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="n">LINE_WIDTH</span>
+<span></span><span class="linenos">  1</span><span class="sd">&quot;&quot;&quot;Logging and monitoring for evolutionary experiments.</span>
+<span class="linenos">  2</span>
+<span class="linenos">  3</span><span class="sd">Provides console and file-based logging with ANSI color formatting,</span>
+<span class="linenos">  4</span><span class="sd">live plot launching, and workspace archival for experiment results.</span>
+<span class="linenos">  5</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  6</span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="linenos">  7</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="linenos">  8</span><span class="kn">from</span><span class="w"> </span><span class="nn">sys</span><span class="w"> </span><span class="kn">import</span> <span class="n">stdout</span>
+<span class="linenos">  9</span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="linenos"> 10</span><span class="kn">from</span><span class="w"> </span><span class="nn">subprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">CalledProcessError</span><span class="p">,</span> <span class="n">run</span>
+<span class="linenos"> 11</span><span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">exists</span>
+<span class="linenos"> 12</span><span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">join</span>
+<span class="linenos"> 13</span><span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">mkdir</span>
+<span class="linenos"> 14</span><span class="kn">from</span><span class="w"> </span><span class="nn">shutil</span><span class="w"> </span><span class="kn">import</span> <span class="n">copytree</span>
+<span class="linenos"> 15</span><span class="kn">from</span><span class="w"> </span><span class="nn">shutil</span><span class="w"> </span><span class="kn">import</span> <span class="n">rmtree</span>
+<span class="linenos"> 16</span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 <span class="linenos"> 17</span>
-<span class="linenos"> 18</span><span class="n">MONITOR_FILE</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="linenos"> 19</span>
-<span class="linenos"> 20</span><span class="n">TERM_CMD</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;gnome-terminal&quot;</span><span class="p">,</span> <span class="s2">&quot;--geometry=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">WIN_DIM</span><span class="p">),</span> <span class="s2">&quot;--&quot;</span><span class="p">]</span>
-<span class="linenos"> 21</span>
-<span class="linenos"> 22</span><span class="c1"># The time between animation frames in milliseconds</span>
-<span class="linenos"> 23</span><span class="n">FRAME_DELAY</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="linenos"> 18</span><span class="c1"># The window dimensions</span>
+<span class="linenos"> 19</span><span class="n">LINE_WIDTH</span> <span class="o">=</span> <span class="mi">112</span>
+<span class="linenos"> 20</span><span class="n">WIN_DIM</span><span class="o">=</span><span class="s2">&quot;105x29&quot;</span>
+<span class="linenos"> 21</span><span class="n">DOUBLE_HLINE</span> <span class="o">=</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="n">LINE_WIDTH</span>
+<span class="linenos"> 22</span>
+<span class="linenos"> 23</span><span class="n">MONITOR_FILE</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="linenos"> 24</span>
-<span class="linenos"> 25</span><span class="c1"># The spacing between matplotlib subplots as a percentage of the average</span>
-<span class="linenos"> 26</span><span class="c1"># axis height</span>
-<span class="linenos"> 27</span><span class="n">SUBPLOT_SPACING</span> <span class="o">=</span> <span class="mf">0.5</span>
-<span class="linenos"> 28</span>
-<span class="linenos"> 29</span><span class="c1"># Formatting constants</span>
-<span class="linenos"> 30</span><span class="n">HEADER</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[95m&#39;</span>
-<span class="linenos"> 31</span><span class="n">OKBLUE</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[94m&#39;</span>
-<span class="linenos"> 32</span><span class="n">OKGREEN</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[92m&#39;</span>
-<span class="linenos"> 33</span><span class="n">WARNING</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[93m&#39;</span>
-<span class="linenos"> 34</span><span class="n">FAIL</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[91m&#39;</span>
-<span class="linenos"> 35</span><span class="n">ENDC</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[0m&#39;</span>
-<span class="linenos"> 36</span><span class="n">BOLD</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[1m&#39;</span>
-<span class="linenos"> 37</span><span class="n">UNDERLINE</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[4m&#39;</span>
-<span class="linenos"> 38</span>
-<span class="linenos"> 39</span><span class="n">README_FILE_HEADER</span> <span class="o">=</span> <span class="s2">&quot;FPGA/MCU [1] </span><span class="se">\n</span><span class="s2">&quot;</span>
-<span class="linenos"> 40</span>
+<span class="linenos"> 25</span><span class="n">TERM_CMD</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;gnome-terminal&quot;</span><span class="p">,</span> <span class="s2">&quot;--geometry=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">WIN_DIM</span><span class="p">),</span> <span class="s2">&quot;--&quot;</span><span class="p">]</span>
+<span class="linenos"> 26</span>
+<span class="linenos"> 27</span><span class="c1"># The time between animation frames in milliseconds</span>
+<span class="linenos"> 28</span><span class="n">FRAME_DELAY</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="linenos"> 29</span>
+<span class="linenos"> 30</span><span class="c1"># The spacing between matplotlib subplots as a percentage of the average</span>
+<span class="linenos"> 31</span><span class="c1"># axis height</span>
+<span class="linenos"> 32</span><span class="n">SUBPLOT_SPACING</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="linenos"> 33</span>
+<span class="linenos"> 34</span><span class="c1"># Formatting constants</span>
+<span class="linenos"> 35</span><span class="n">HEADER</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[95m&#39;</span>
+<span class="linenos"> 36</span><span class="n">OKBLUE</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[94m&#39;</span>
+<span class="linenos"> 37</span><span class="n">OKGREEN</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[92m&#39;</span>
+<span class="linenos"> 38</span><span class="n">WARNING</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[93m&#39;</span>
+<span class="linenos"> 39</span><span class="n">FAIL</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[91m&#39;</span>
+<span class="linenos"> 40</span><span class="n">ENDC</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[0m&#39;</span>
+<span class="linenos"> 41</span><span class="n">BOLD</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[1m&#39;</span>
+<span class="linenos"> 42</span><span class="n">UNDERLINE</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[4m&#39;</span>
+<span class="linenos"> 43</span>
+<span class="linenos"> 44</span><span class="n">README_FILE_HEADER</span> <span class="o">=</span> <span class="s2">&quot;FPGA/MCU [1] </span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="linenos"> 45</span>
 <div class="viewcode-block" id="LoggerConfig">
 <a class="viewcode-back" href="../code/Logger.html#Logger.LoggerConfig">[docs]</a>
-<span class="linenos"> 41</span><span class="nd">@dataclass</span>
-<span class="linenos"> 42</span><span class="k">class</span><span class="w"> </span><span class="nc">LoggerConfig</span><span class="p">:</span>
-<span class="linenos"> 43</span>    <span class="n">plots_dir</span><span class="p">:</span> <span class="n">Path</span>
-<span class="linenos"> 44</span>    <span class="n">launch_plots</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="linenos"> 45</span>    <span class="n">is_sensitivity</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="linenos"> 46</span>    <span class="n">frame_interval</span><span class="p">:</span> <span class="nb">int</span>
-<span class="linenos"> 47</span>    <span class="n">log_file</span><span class="p">:</span> <span class="n">Path</span>
-<span class="linenos"> 48</span>    <span class="n">log_level</span><span class="p">:</span> <span class="nb">int</span>
-<span class="linenos"> 49</span>    <span class="n">save_log</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="linenos"> 50</span>    <span class="n">datetime_format</span><span class="p">:</span> <span class="nb">str</span></div>
+<span class="linenos"> 46</span><span class="nd">@dataclass</span>
+<span class="linenos"> 47</span><span class="k">class</span><span class="w"> </span><span class="nc">LoggerConfig</span><span class="p">:</span>
+<span class="linenos"> 48</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for Logger output, plot launching, and file paths.</span>
+<span class="linenos"> 49</span>
+<span class="linenos"> 50</span><span class="sd">    Consumed by ``Logger.__init__`` to control verbosity, plot behavior,</span>
+<span class="linenos"> 51</span><span class="sd">    and workspace log destinations.</span>
+<span class="linenos"> 52</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos"> 53</span>
+<span class="linenos"> 54</span>    <span class="n">plots_dir</span><span class="p">:</span> <span class="n">Path</span>
+<span class="linenos"> 55</span>    <span class="n">launch_plots</span><span class="p">:</span> <span class="nb">bool</span>
+<span class="linenos"> 56</span>    <span class="n">is_sensitivity</span><span class="p">:</span> <span class="nb">bool</span>
+<span class="linenos"> 57</span>    <span class="n">frame_interval</span><span class="p">:</span> <span class="nb">int</span>
+<span class="linenos"> 58</span>    <span class="n">log_file</span><span class="p">:</span> <span class="n">Path</span>
+<span class="linenos"> 59</span>    <span class="n">log_level</span><span class="p">:</span> <span class="nb">int</span>
+<span class="linenos"> 60</span>    <span class="n">save_log</span><span class="p">:</span> <span class="nb">bool</span>
+<span class="linenos"> 61</span>    <span class="n">datetime_format</span><span class="p">:</span> <span class="nb">str</span></div>
 
-<span class="linenos"> 51</span>
-<span class="linenos"> 52</span><span class="c1"># TODO Utilize Python logging library</span>
-<span class="linenos"> 53</span><span class="k">class</span><span class="w"> </span><span class="nc">Logger</span><span class="p">:</span>
-<span class="linenos"> 54</span>    <span class="k">def</span><span class="w"> </span><span class="nf">__init_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="linenos"> 55</span>        <span class="c1"># Start the monitor</span>
-<span class="linenos"> 56</span>        <span class="c1"># self.log_event(1, &quot;Creating the monitor file...&quot;)</span>
-<span class="linenos"> 57</span>
-<span class="linenos"> 58</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-<span class="linenos"> 59</span>            <span class="s2">&quot;Evolutionary Experiment Monitor&quot;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="n">LINE_WIDTH</span><span class="p">),</span>
-<span class="linenos"> 60</span>            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-<span class="linenos"> 61</span>        <span class="p">))</span>
-<span class="linenos"> 62</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DOUBLE_HLINE</span><span class="p">))</span>
-<span class="linenos"> 63</span>        <span class="c1"># self.log_monitor(1, &quot;Parameters and updates load during circuit evaluation&quot;)</span>
-<span class="linenos"> 64</span>        <span class="c1"># self.log_monitor(1, &quot;.\n&quot; * 23)</span>
-<span class="linenos"> 65</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__experiment_explanation</span><span class="p">))</span>
-<span class="linenos"> 66</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DOUBLE_HLINE</span><span class="p">))</span>
-<span class="linenos"> 67</span>        <span class="c1"># self.log_monitor(&quot;&quot;, self.__config.get_raw_data())</span>
-<span class="linenos"> 68</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DOUBLE_HLINE</span><span class="p">))</span>
-<span class="linenos"> 69</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__monitor_file</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-<span class="linenos"> 70</span>
-<span class="linenos"> 71</span>        <span class="c1"># args = TERM_CMD + [&quot;python3&quot;, &quot;src/Monitor.py&quot;]</span>
-<span class="linenos"> 72</span>        <span class="c1"># try:</span>
-<span class="linenos"> 73</span>        <span class="c1">#     run(args, check=True, capture_output=True)</span>
-<span class="linenos"> 74</span>        <span class="c1"># except OSError as e:</span>
-<span class="linenos"> 75</span>        <span class="c1">#     self.log_error(1, &quot;An error occured while launching Monitor.py&quot;)</span>
-<span class="linenos"> 76</span>        <span class="c1"># except CalledProcessError as e:</span>
-<span class="linenos"> 77</span>        <span class="c1">#     self.log_error(1, &quot;An error occured in Monitor.py&quot;)</span>
-<span class="linenos"> 78</span>
-<span class="linenos"> 79</span>        <span class="c1">#set up directory for saving files</span>
-<span class="linenos"> 80</span>        <span class="n">plots_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">plots_dir</span>
-<span class="linenos"> 81</span>        <span class="k">try</span><span class="p">:</span>
-<span class="linenos"> 82</span>            <span class="n">rmtree</span><span class="p">(</span><span class="n">plots_dir</span><span class="p">)</span>
-<span class="linenos"> 83</span>        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-<span class="linenos"> 84</span>            <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
-<span class="linenos"> 85</span>
-<span class="linenos"> 86</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">plots_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-<span class="linenos"> 87</span>            <span class="n">plots_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
-<span class="linenos"> 88</span>
-<span class="linenos"> 89</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">launch_plots</span><span class="p">:</span>
-<span class="linenos"> 90</span>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">is_sensitivity</span><span class="p">:</span>
-<span class="linenos"> 91</span>                <span class="n">args</span> <span class="o">=</span> <span class="n">TERM_CMD</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;python3&quot;</span><span class="p">,</span> <span class="s2">&quot;src/PlotSensitivityLive.py&quot;</span><span class="p">]</span>
-<span class="linenos"> 92</span>            <span class="k">else</span><span class="p">:</span> 
-<span class="linenos"> 93</span>                <span class="n">args</span> <span class="o">=</span> <span class="n">TERM_CMD</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;python3&quot;</span><span class="p">,</span> <span class="s2">&quot;src/PlotEvolutionLive.py&quot;</span><span class="p">,</span> <span class="s2">&quot;--frame-interval&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">frame_interval</span><span class="p">)]</span>
-<span class="linenos"> 94</span>            
-<span class="linenos"> 95</span>            <span class="k">try</span><span class="p">:</span>
-<span class="linenos"> 96</span>                <span class="n">run</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="linenos"> 97</span>            <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<span class="linenos"> 98</span>                <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;An error occured while launching PlotEvolutionLive.py&quot;</span><span class="p">)</span>
-<span class="linenos"> 99</span>            <span class="k">except</span> <span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<span class="linenos">100</span>                <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;An error occured in PlotEvolutionLive.py&quot;</span><span class="p">)</span>
-<span class="linenos">101</span>                <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
-<span class="linenos">102</span>
-<span class="linenos">103</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">explanation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">logger_config</span><span class="p">:</span> <span class="n">LoggerConfig</span><span class="p">):</span>
-<span class="linenos">104</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__monitor_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">logger_config</span><span class="o">.</span><span class="n">log_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
-<span class="linenos">105</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__log_file</span> <span class="o">=</span> <span class="n">stdout</span>
-<span class="linenos">106</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__config</span> <span class="o">=</span> <span class="n">logger_config</span>
-<span class="linenos">107</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__experiment_explanation</span> <span class="o">=</span> <span class="n">explanation</span>
-<span class="linenos">108</span>
-<span class="linenos">109</span>        <span class="c1"># Ensure the logs exists and have been cleared. Not happy with</span>
-<span class="linenos">110</span>        <span class="c1"># this method, but couldn&#39;t find a better way to do it.</span>
-<span class="linenos">111</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/alllivedata.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="linenos">112</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/bestlivedata.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="linenos">113</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/waveformlivedata.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="linenos">114</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/maplivedata.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="linenos">115</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/heatmaplivedata.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="linenos">116</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/pulselivedata.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="linenos">117</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/violinlivedata.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="linenos">118</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/poplivedata.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="linenos">119</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/randomizationdata.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="linenos">120</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/fitnesssensitivity.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="linenos">121</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/bitstream_avg.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="linenos">122</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="s2">&quot;workspace/template&quot;</span><span class="p">):</span>
-<span class="linenos">123</span>            <span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;workspace/template&quot;</span><span class="p">)</span>
+<span class="linenos"> 62</span>
+<span class="linenos"> 63</span><span class="c1"># TODO Utilize Python logging library</span>
+<div class="viewcode-block" id="Logger">
+<a class="viewcode-back" href="../code/Logger.html#Logger.Logger">[docs]</a>
+<span class="linenos"> 64</span><span class="k">class</span><span class="w"> </span><span class="nc">Logger</span><span class="p">:</span>
+<span class="linenos"> 65</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Level-gated logger with monitor file output and live plot integration.</span>
+<span class="linenos"> 66</span>
+<span class="linenos"> 67</span><span class="sd">    Writes timestamped entries to both stdout and a monitor file, supports</span>
+<span class="linenos"> 68</span><span class="sd">    ANSI-colored severity prefixes, and can launch gnome-terminal-based</span>
+<span class="linenos"> 69</span><span class="sd">    live plotting windows for experiment visualization.</span>
+<span class="linenos"> 70</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos"> 71</span>    <span class="k">def</span><span class="w"> </span><span class="nf">__init_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos"> 72</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the monitor file header, plots directory, and live plot windows.</span>
+<span class="linenos"> 73</span>
+<span class="linenos"> 74</span><span class="sd">        Writes the experiment banner to the monitor file, resets the plots</span>
+<span class="linenos"> 75</span><span class="sd">        directory, and optionally launches a live plotting terminal.</span>
+<span class="linenos"> 76</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 77</span>        <span class="c1"># Start the monitor</span>
+<span class="linenos"> 78</span>        <span class="c1"># self.log_event(1, &quot;Creating the monitor file...&quot;)</span>
+<span class="linenos"> 79</span>
+<span class="linenos"> 80</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+<span class="linenos"> 81</span>            <span class="s2">&quot;Evolutionary Experiment Monitor&quot;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="n">LINE_WIDTH</span><span class="p">),</span>
+<span class="linenos"> 82</span>            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="linenos"> 83</span>        <span class="p">))</span>
+<span class="linenos"> 84</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DOUBLE_HLINE</span><span class="p">))</span>
+<span class="linenos"> 85</span>        <span class="c1"># self.log_monitor(1, &quot;Parameters and updates load during circuit evaluation&quot;)</span>
+<span class="linenos"> 86</span>        <span class="c1"># self.log_monitor(1, &quot;.\n&quot; * 23)</span>
+<span class="linenos"> 87</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__experiment_explanation</span><span class="p">))</span>
+<span class="linenos"> 88</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DOUBLE_HLINE</span><span class="p">))</span>
+<span class="linenos"> 89</span>        <span class="c1"># self.log_monitor(&quot;&quot;, self.__config.get_raw_data())</span>
+<span class="linenos"> 90</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DOUBLE_HLINE</span><span class="p">))</span>
+<span class="linenos"> 91</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__monitor_file</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+<span class="linenos"> 92</span>
+<span class="linenos"> 93</span>        <span class="c1"># args = TERM_CMD + [&quot;python3&quot;, &quot;src/Monitor.py&quot;]</span>
+<span class="linenos"> 94</span>        <span class="c1"># try:</span>
+<span class="linenos"> 95</span>        <span class="c1">#     run(args, check=True, capture_output=True)</span>
+<span class="linenos"> 96</span>        <span class="c1"># except OSError as e:</span>
+<span class="linenos"> 97</span>        <span class="c1">#     self.log_error(1, &quot;An error occured while launching Monitor.py&quot;)</span>
+<span class="linenos"> 98</span>        <span class="c1"># except CalledProcessError as e:</span>
+<span class="linenos"> 99</span>        <span class="c1">#     self.log_error(1, &quot;An error occured in Monitor.py&quot;)</span>
+<span class="linenos">100</span>
+<span class="linenos">101</span>        <span class="c1">#set up directory for saving files</span>
+<span class="linenos">102</span>        <span class="n">plots_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">plots_dir</span>
+<span class="linenos">103</span>        <span class="k">try</span><span class="p">:</span>
+<span class="linenos">104</span>            <span class="n">rmtree</span><span class="p">(</span><span class="n">plots_dir</span><span class="p">)</span>
+<span class="linenos">105</span>        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+<span class="linenos">106</span>            <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+<span class="linenos">107</span>
+<span class="linenos">108</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">plots_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+<span class="linenos">109</span>            <span class="n">plots_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+<span class="linenos">110</span>
+<span class="linenos">111</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">launch_plots</span><span class="p">:</span>
+<span class="linenos">112</span>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">is_sensitivity</span><span class="p">:</span>
+<span class="linenos">113</span>                <span class="n">args</span> <span class="o">=</span> <span class="n">TERM_CMD</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;python3&quot;</span><span class="p">,</span> <span class="s2">&quot;src/PlotSensitivityLive.py&quot;</span><span class="p">]</span>
+<span class="linenos">114</span>            <span class="k">else</span><span class="p">:</span> 
+<span class="linenos">115</span>                <span class="n">args</span> <span class="o">=</span> <span class="n">TERM_CMD</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;python3&quot;</span><span class="p">,</span> <span class="s2">&quot;src/PlotEvolutionLive.py&quot;</span><span class="p">,</span> <span class="s2">&quot;--frame-interval&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">frame_interval</span><span class="p">)]</span>
+<span class="linenos">116</span>            
+<span class="linenos">117</span>            <span class="k">try</span><span class="p">:</span>
+<span class="linenos">118</span>                <span class="n">run</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">119</span>            <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="linenos">120</span>                <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;An error occured while launching PlotEvolutionLive.py&quot;</span><span class="p">)</span>
+<span class="linenos">121</span>            <span class="k">except</span> <span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="linenos">122</span>                <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;An error occured in PlotEvolutionLive.py&quot;</span><span class="p">)</span>
+<span class="linenos">123</span>                <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
 <span class="linenos">124</span>
-<span class="linenos">125</span>        <span class="k">if</span> <span class="n">exists</span><span class="p">(</span><span class="s2">&quot;workspace/plots&quot;</span><span class="p">):</span>
-<span class="linenos">126</span>            <span class="n">rmtree</span><span class="p">(</span><span class="s2">&quot;workspace/plots&quot;</span><span class="p">)</span>
-<span class="linenos">127</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="s2">&quot;workspace/plots&quot;</span><span class="p">):</span>
-<span class="linenos">128</span>            <span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;workspace/plots&quot;</span><span class="p">)</span>
-<span class="linenos">129</span>        <span class="c1"># Determine if we need to the to initialize the analysis and</span>
-<span class="linenos">130</span>        <span class="c1"># if so, do so.</span>
-<span class="linenos">131</span>        <span class="c1"># currently removed since we&#39;re not currently storing any data, so there&#39;s a bunch of empty files and directories</span>
-<span class="linenos">132</span>        <span class="c1"># if explanation != &quot;test&quot;:</span>
-<span class="linenos">133</span>        <span class="c1">#     self.__init_analysis()</span>
-<span class="linenos">134</span>
-<span class="linenos">135</span>        <span class="c1"># Determine whether we need to launch the monitor and launch it</span>
-<span class="linenos">136</span>        <span class="c1"># if so.</span>
-<span class="linenos">137</span>        <span class="c1"># if config.get_launch_monitor():</span>
-<span class="linenos">138</span>        <span class="c1">#     self.__init_monitor()</span>
-<span class="linenos">139</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__init_monitor</span><span class="p">()</span>
-<span class="linenos">140</span>
-<span class="linenos">141</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_generation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">epoch_time</span><span class="p">):</span>
-<span class="linenos">142</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">DOUBLE_HLINE</span><span class="p">)</span>
-<span class="linenos">143</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">DOUBLE_HLINE</span><span class="p">)</span>
-<span class="linenos">144</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">DOUBLE_HLINE</span><span class="p">)</span>
-<span class="linenos">145</span>
-<span class="linenos">146</span>        <span class="n">current_best_circuit</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">get_current_best_circuit</span><span class="p">()</span>
-<span class="linenos">147</span>        <span class="n">overall_best_circuit</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">get_overall_best_circuit_info</span><span class="p">()</span>
-<span class="linenos">148</span>
-<span class="linenos">149</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;CURRENT BEST: </span><span class="si">{}</span><span class="s2"> : EPOCH </span><span class="si">{}</span><span class="s2"> : FITNESS </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-<span class="linenos">150</span>            <span class="nb">str</span><span class="p">(</span><span class="n">overall_best_circuit</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
-<span class="linenos">151</span>            <span class="nb">str</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">get_best_epoch</span><span class="p">()),</span>
-<span class="linenos">152</span>            <span class="nb">str</span><span class="p">(</span><span class="n">overall_best_circuit</span><span class="o">.</span><span class="n">fitness</span><span class="p">)</span>
-<span class="linenos">153</span>        <span class="p">))</span>
-<span class="linenos">154</span>
-<span class="linenos">155</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;HIGHEST FITNESS OF EPOCH </span><span class="si">{}</span><span class="s2"> IS: </span><span class="si">{}</span><span class="s2"> = </span><span class="si">{}</span><span class="s2"> over </span><span class="si">{}</span><span class="s2"> seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-<span class="linenos">156</span>            <span class="nb">str</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">get_current_epoch</span><span class="p">()),</span>
-<span class="linenos">157</span>            <span class="nb">str</span><span class="p">(</span><span class="n">current_best_circuit</span><span class="p">),</span>
-<span class="linenos">158</span>            <span class="nb">str</span><span class="p">(</span><span class="n">current_best_circuit</span><span class="o">.</span><span class="n">get_fitness</span><span class="p">()),</span>
-<span class="linenos">159</span>            <span class="nb">str</span><span class="p">(</span><span class="n">epoch_time</span><span class="p">)</span>
-<span class="linenos">160</span>        <span class="p">))</span>
-<span class="linenos">161</span>
-<span class="linenos">162</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">DOUBLE_HLINE</span><span class="p">)</span>
-<span class="linenos">163</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">DOUBLE_HLINE</span><span class="p">)</span>
-<span class="linenos">164</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">DOUBLE_HLINE</span><span class="p">)</span>
+<div class="viewcode-block" id="Logger.__init__">
+<a class="viewcode-back" href="../code/Logger.html#Logger.Logger.__init__">[docs]</a>
+<span class="linenos">125</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">explanation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">logger_config</span><span class="p">:</span> <span class="n">LoggerConfig</span><span class="p">):</span>
+<span class="linenos">126</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Set up log files, clear workspace data logs, and start the monitor.</span>
+<span class="linenos">127</span>
+<span class="linenos">128</span><span class="sd">        Parameters</span>
+<span class="linenos">129</span><span class="sd">        ----------</span>
+<span class="linenos">130</span><span class="sd">        explanation : str</span>
+<span class="linenos">131</span><span class="sd">            Human-readable description of the experiment.</span>
+<span class="linenos">132</span><span class="sd">        logger_config : LoggerConfig</span>
+<span class="linenos">133</span><span class="sd">            Configuration controlling log paths, verbosity, and plot behavior.</span>
+<span class="linenos">134</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">135</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__monitor_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">logger_config</span><span class="o">.</span><span class="n">log_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+<span class="linenos">136</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__log_file</span> <span class="o">=</span> <span class="n">stdout</span>
+<span class="linenos">137</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__config</span> <span class="o">=</span> <span class="n">logger_config</span>
+<span class="linenos">138</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__experiment_explanation</span> <span class="o">=</span> <span class="n">explanation</span>
+<span class="linenos">139</span>
+<span class="linenos">140</span>        <span class="c1"># Ensure the logs exists and have been cleared. Not happy with</span>
+<span class="linenos">141</span>        <span class="c1"># this method, but couldn&#39;t find a better way to do it.</span>
+<span class="linenos">142</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/alllivedata.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="linenos">143</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/bestlivedata.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="linenos">144</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/waveformlivedata.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="linenos">145</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/maplivedata.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="linenos">146</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/heatmaplivedata.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="linenos">147</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/pulselivedata.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="linenos">148</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/violinlivedata.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="linenos">149</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/poplivedata.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="linenos">150</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/randomizationdata.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="linenos">151</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/fitnesssensitivity.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="linenos">152</span>        <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;workspace/bitstream_avg.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="linenos">153</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="s2">&quot;workspace/template&quot;</span><span class="p">):</span>
+<span class="linenos">154</span>            <span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;workspace/template&quot;</span><span class="p">)</span>
+<span class="linenos">155</span>
+<span class="linenos">156</span>        <span class="k">if</span> <span class="n">exists</span><span class="p">(</span><span class="s2">&quot;workspace/plots&quot;</span><span class="p">):</span>
+<span class="linenos">157</span>            <span class="n">rmtree</span><span class="p">(</span><span class="s2">&quot;workspace/plots&quot;</span><span class="p">)</span>
+<span class="linenos">158</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="s2">&quot;workspace/plots&quot;</span><span class="p">):</span>
+<span class="linenos">159</span>            <span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;workspace/plots&quot;</span><span class="p">)</span>
+<span class="linenos">160</span>        <span class="c1"># Determine if we need to the to initialize the analysis and</span>
+<span class="linenos">161</span>        <span class="c1"># if so, do so.</span>
+<span class="linenos">162</span>        <span class="c1"># currently removed since we&#39;re not currently storing any data, so there&#39;s a bunch of empty files and directories</span>
+<span class="linenos">163</span>        <span class="c1"># if explanation != &quot;test&quot;:</span>
+<span class="linenos">164</span>        <span class="c1">#     self.__init_analysis()</span>
 <span class="linenos">165</span>
-<span class="linenos">166</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span>  <span class="o">*</span><span class="n">msg</span><span class="p">):</span>
-<span class="linenos">167</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">save_log</span><span class="p">:</span>
-<span class="linenos">168</span>            <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-<span class="linenos">169</span>            <span class="nb">print</span><span class="p">(</span><span class="n">now</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__monitor_file</span><span class="p">)</span>
-<span class="linenos">170</span>
-<span class="linenos">171</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">):</span>
-<span class="linenos">172</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">log_level</span> <span class="o">&gt;=</span> <span class="n">level</span><span class="p">:</span>
-<span class="linenos">173</span>            <span class="nb">print</span><span class="p">(</span><span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__log_file</span><span class="p">)</span>
-<span class="linenos">174</span>            <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">)</span>
-<span class="linenos">175</span>
-<span class="linenos">176</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">):</span>
-<span class="linenos">177</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">log_level</span> <span class="o">&gt;=</span> <span class="n">level</span><span class="p">:</span>
-<span class="linenos">178</span>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;INFO: &quot;</span><span class="p">,</span> <span class="n">OKBLUE</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">ENDC</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__log_file</span><span class="p">)</span>
-<span class="linenos">179</span>            <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="s2">&quot;INFO: &quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">)</span>
-<span class="linenos">180</span>
-<span class="linenos">181</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">):</span>
-<span class="linenos">182</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">log_level</span> <span class="o">&gt;=</span> <span class="n">level</span><span class="p">:</span>
-<span class="linenos">183</span>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: &quot;</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">ENDC</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__log_file</span><span class="p">)</span>
-<span class="linenos">184</span>            <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="s2">&quot;WARNING: &quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">)</span>
+<span class="linenos">166</span>        <span class="c1"># Determine whether we need to launch the monitor and launch it</span>
+<span class="linenos">167</span>        <span class="c1"># if so.</span>
+<span class="linenos">168</span>        <span class="c1"># if config.get_launch_monitor():</span>
+<span class="linenos">169</span>        <span class="c1">#     self.__init_monitor()</span>
+<span class="linenos">170</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__init_monitor</span><span class="p">()</span></div>
+
+<span class="linenos">171</span>
+<div class="viewcode-block" id="Logger.log_generation">
+<a class="viewcode-back" href="../code/Logger.html#Logger.Logger.log_generation">[docs]</a>
+<span class="linenos">172</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_generation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">epoch_time</span><span class="p">):</span>
+<span class="linenos">173</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Log a generation summary including current and overall best fitness.</span>
+<span class="linenos">174</span>
+<span class="linenos">175</span><span class="sd">        Parameters</span>
+<span class="linenos">176</span><span class="sd">        ----------</span>
+<span class="linenos">177</span><span class="sd">        population : Population</span>
+<span class="linenos">178</span><span class="sd">            The population whose best circuits are reported.</span>
+<span class="linenos">179</span><span class="sd">        epoch_time : float</span>
+<span class="linenos">180</span><span class="sd">            Wall-clock seconds elapsed during the epoch.</span>
+<span class="linenos">181</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">182</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">DOUBLE_HLINE</span><span class="p">)</span>
+<span class="linenos">183</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">DOUBLE_HLINE</span><span class="p">)</span>
+<span class="linenos">184</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">DOUBLE_HLINE</span><span class="p">)</span>
 <span class="linenos">185</span>
-<span class="linenos">186</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">):</span>
-<span class="linenos">187</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">log_level</span> <span class="o">&gt;=</span> <span class="n">level</span><span class="p">:</span>
-<span class="linenos">188</span>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: &quot;</span><span class="p">,</span> <span class="n">FAIL</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">ENDC</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__log_file</span><span class="p">)</span>
-<span class="linenos">189</span>            <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="s2">&quot;ERROR: &quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">)</span>
-<span class="linenos">190</span>
-<span class="linenos">191</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_critical</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">):</span>
-<span class="linenos">192</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">log_level</span> <span class="o">&gt;=</span> <span class="n">level</span><span class="p">:</span>
-<span class="linenos">193</span>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CRITICAL: &quot;</span><span class="p">,</span> <span class="n">FAIL</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">ENDC</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__log_file</span><span class="p">)</span>
-<span class="linenos">194</span>            <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="s2">&quot;CRITICAL: &quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">)</span>
-<span class="linenos">195</span>
-<span class="linenos">196</span>    <span class="k">def</span><span class="w"> </span><span class="nf">save_workspace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">):</span>
-<span class="linenos">197</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__monitor_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="linenos">198</span>        <span class="n">current_time</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">datetime_format</span><span class="p">))</span>
-<span class="linenos">199</span>        <span class="n">current_time</span> <span class="o">=</span> <span class="n">current_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
-<span class="linenos">200</span>        <span class="n">copytree</span><span class="p">(</span><span class="s2">&quot;./workspace&quot;</span><span class="p">,</span> <span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">current_time</span><span class="p">))</span>
+<span class="linenos">186</span>        <span class="n">current_best_circuit</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">get_current_best_circuit</span><span class="p">()</span>
+<span class="linenos">187</span>        <span class="n">overall_best_circuit</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">get_overall_best_circuit_info</span><span class="p">()</span>
+<span class="linenos">188</span>
+<span class="linenos">189</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;CURRENT BEST: </span><span class="si">{}</span><span class="s2"> : EPOCH </span><span class="si">{}</span><span class="s2"> : FITNESS </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+<span class="linenos">190</span>            <span class="nb">str</span><span class="p">(</span><span class="n">overall_best_circuit</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+<span class="linenos">191</span>            <span class="nb">str</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">get_best_epoch</span><span class="p">()),</span>
+<span class="linenos">192</span>            <span class="nb">str</span><span class="p">(</span><span class="n">overall_best_circuit</span><span class="o">.</span><span class="n">fitness</span><span class="p">)</span>
+<span class="linenos">193</span>        <span class="p">))</span>
+<span class="linenos">194</span>
+<span class="linenos">195</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;HIGHEST FITNESS OF EPOCH </span><span class="si">{}</span><span class="s2"> IS: </span><span class="si">{}</span><span class="s2"> = </span><span class="si">{}</span><span class="s2"> over </span><span class="si">{}</span><span class="s2"> seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+<span class="linenos">196</span>            <span class="nb">str</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">get_current_epoch</span><span class="p">()),</span>
+<span class="linenos">197</span>            <span class="nb">str</span><span class="p">(</span><span class="n">current_best_circuit</span><span class="p">),</span>
+<span class="linenos">198</span>            <span class="nb">str</span><span class="p">(</span><span class="n">current_best_circuit</span><span class="o">.</span><span class="n">get_fitness</span><span class="p">()),</span>
+<span class="linenos">199</span>            <span class="nb">str</span><span class="p">(</span><span class="n">epoch_time</span><span class="p">)</span>
+<span class="linenos">200</span>        <span class="p">))</span>
+<span class="linenos">201</span>
+<span class="linenos">202</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">DOUBLE_HLINE</span><span class="p">)</span>
+<span class="linenos">203</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">DOUBLE_HLINE</span><span class="p">)</span>
+<span class="linenos">204</span>        <span class="bp">self</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">DOUBLE_HLINE</span><span class="p">)</span></div>
+
+<span class="linenos">205</span>
+<div class="viewcode-block" id="Logger.log_monitor">
+<a class="viewcode-back" href="../code/Logger.html#Logger.Logger.log_monitor">[docs]</a>
+<span class="linenos">206</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span>  <span class="o">*</span><span class="n">msg</span><span class="p">):</span>
+<span class="linenos">207</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Write a timestamped message directly to the monitor log file.&quot;&quot;&quot;</span>
+<span class="linenos">208</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">save_log</span><span class="p">:</span>
+<span class="linenos">209</span>            <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+<span class="linenos">210</span>            <span class="nb">print</span><span class="p">(</span><span class="n">now</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__monitor_file</span><span class="p">)</span></div>
+
+<span class="linenos">211</span>
+<div class="viewcode-block" id="Logger.log_event">
+<a class="viewcode-back" href="../code/Logger.html#Logger.Logger.log_event">[docs]</a>
+<span class="linenos">212</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">):</span>
+<span class="linenos">213</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Log a general event to stdout and the monitor file if level permits.&quot;&quot;&quot;</span>
+<span class="linenos">214</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">log_level</span> <span class="o">&gt;=</span> <span class="n">level</span><span class="p">:</span>
+<span class="linenos">215</span>            <span class="nb">print</span><span class="p">(</span><span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__log_file</span><span class="p">)</span>
+<span class="linenos">216</span>            <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">)</span></div>
+
+<span class="linenos">217</span>
+<div class="viewcode-block" id="Logger.log_info">
+<a class="viewcode-back" href="../code/Logger.html#Logger.Logger.log_info">[docs]</a>
+<span class="linenos">218</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">):</span>
+<span class="linenos">219</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Log an informational message with blue ANSI formatting.&quot;&quot;&quot;</span>
+<span class="linenos">220</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">log_level</span> <span class="o">&gt;=</span> <span class="n">level</span><span class="p">:</span>
+<span class="linenos">221</span>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;INFO: &quot;</span><span class="p">,</span> <span class="n">OKBLUE</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">ENDC</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__log_file</span><span class="p">)</span>
+<span class="linenos">222</span>            <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="s2">&quot;INFO: &quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">)</span></div>
+
+<span class="linenos">223</span>
+<div class="viewcode-block" id="Logger.log_warning">
+<a class="viewcode-back" href="../code/Logger.html#Logger.Logger.log_warning">[docs]</a>
+<span class="linenos">224</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">):</span>
+<span class="linenos">225</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Log a warning message with yellow ANSI formatting.&quot;&quot;&quot;</span>
+<span class="linenos">226</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">log_level</span> <span class="o">&gt;=</span> <span class="n">level</span><span class="p">:</span>
+<span class="linenos">227</span>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: &quot;</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">ENDC</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__log_file</span><span class="p">)</span>
+<span class="linenos">228</span>            <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="s2">&quot;WARNING: &quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">)</span></div>
+
+<span class="linenos">229</span>
+<div class="viewcode-block" id="Logger.log_error">
+<a class="viewcode-back" href="../code/Logger.html#Logger.Logger.log_error">[docs]</a>
+<span class="linenos">230</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">):</span>
+<span class="linenos">231</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Log an error message with red ANSI formatting.&quot;&quot;&quot;</span>
+<span class="linenos">232</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">log_level</span> <span class="o">&gt;=</span> <span class="n">level</span><span class="p">:</span>
+<span class="linenos">233</span>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: &quot;</span><span class="p">,</span> <span class="n">FAIL</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">ENDC</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__log_file</span><span class="p">)</span>
+<span class="linenos">234</span>            <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="s2">&quot;ERROR: &quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">)</span></div>
+
+<span class="linenos">235</span>
+<div class="viewcode-block" id="Logger.log_critical">
+<a class="viewcode-back" href="../code/Logger.html#Logger.Logger.log_critical">[docs]</a>
+<span class="linenos">236</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_critical</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">):</span>
+<span class="linenos">237</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Log a critical message with red ANSI formatting.&quot;&quot;&quot;</span>
+<span class="linenos">238</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">log_level</span> <span class="o">&gt;=</span> <span class="n">level</span><span class="p">:</span>
+<span class="linenos">239</span>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CRITICAL: &quot;</span><span class="p">,</span> <span class="n">FAIL</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">ENDC</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__log_file</span><span class="p">)</span>
+<span class="linenos">240</span>            <span class="bp">self</span><span class="o">.</span><span class="n">log_monitor</span><span class="p">(</span><span class="s2">&quot;CRITICAL: &quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">)</span></div>
+
+<span class="linenos">241</span>
+<div class="viewcode-block" id="Logger.save_workspace">
+<a class="viewcode-back" href="../code/Logger.html#Logger.Logger.save_workspace">[docs]</a>
+<span class="linenos">242</span>    <span class="k">def</span><span class="w"> </span><span class="nf">save_workspace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">):</span>
+<span class="linenos">243</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the monitor file and archive the workspace to a timestamped directory.&quot;&quot;&quot;</span>
+<span class="linenos">244</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__monitor_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="linenos">245</span>        <span class="n">current_time</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__config</span><span class="o">.</span><span class="n">datetime_format</span><span class="p">))</span>
+<span class="linenos">246</span>        <span class="n">current_time</span> <span class="o">=</span> <span class="n">current_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
+<span class="linenos">247</span>        <span class="n">copytree</span><span class="p">(</span><span class="s2">&quot;./workspace&quot;</span><span class="p">,</span> <span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">current_time</span><span class="p">))</span></div>
+</div>
+
 </pre></div>
 
                 </article>

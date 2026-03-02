@@ -159,8 +159,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Refactored Code</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="Circuit/Circuit.html">Circuit.py</a></li>
@@ -327,7 +335,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -343,6 +353,28 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig"><code class="docutils literal notranslate"><span class="pre">PlotConfig</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.__init__"><code class="docutils literal notranslate"><span class="pre">PlotConfig.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.get_desired_frequency"><code class="docutils literal notranslate"><span class="pre">PlotConfig.get_desired_frequency()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.get_diversity_measure"><code class="docutils literal notranslate"><span class="pre">PlotConfig.get_diversity_measure()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.get_plots_directory"><code class="docutils literal notranslate"><span class="pre">PlotConfig.get_plots_directory()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.get_population_size"><code class="docutils literal notranslate"><span class="pre">PlotConfig.get_population_size()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.get_save_plots"><code class="docutils literal notranslate"><span class="pre">PlotConfig.get_save_plots()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.get_transfer_interval"><code class="docutils literal notranslate"><span class="pre">PlotConfig.get_transfer_interval()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.is_pulse_count"><code class="docutils literal notranslate"><span class="pre">PlotConfig.is_pulse_count()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.is_tone_discriminator"><code class="docutils literal notranslate"><span class="pre">PlotConfig.is_tone_discriminator()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.uses_init_existing_population"><code class="docutils literal notranslate"><span class="pre">PlotConfig.uses_init_existing_population()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.using_transfer_interval"><code class="docutils literal notranslate"><span class="pre">PlotConfig.using_transfer_interval()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.save_plot_config"><code class="docutils literal notranslate"><span class="pre">save_plot_config()</span></code></a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -354,6 +386,85 @@ document.write(`
                   
   <section id="module-PlotConfig">
 <span id="plotconfig-py"></span><h1>PlotConfig.py<a class="headerlink" href="#module-PlotConfig" title="Link to this heading">#</a></h1>
+<p>Configuration reader for the live plotting system.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="PlotConfig.PlotConfig">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PlotConfig.</span></span><span class="sig-name descname"><span class="pre">PlotConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PlotConfig.html#PlotConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotConfig.PlotConfig" title="Link to this definition">#</a></dt>
+<dd><p>Reads experiment config from an INI file for use by the plotting scripts.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="PlotConfig.PlotConfig.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PlotConfig.html#PlotConfig.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotConfig.PlotConfig.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Load config from the given INI file path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PlotConfig.PlotConfig.get_desired_frequency">
+<span class="sig-name descname"><span class="pre">get_desired_frequency</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/PlotConfig.html#PlotConfig.get_desired_frequency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotConfig.PlotConfig.get_desired_frequency" title="Link to this definition">#</a></dt>
+<dd><p>Return the target frequency in Hz.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PlotConfig.PlotConfig.get_diversity_measure">
+<span class="sig-name descname"><span class="pre">get_diversity_measure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/PlotConfig.html#PlotConfig.get_diversity_measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotConfig.PlotConfig.get_diversity_measure" title="Link to this definition">#</a></dt>
+<dd><p>Return the name of the diversity measure.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PlotConfig.PlotConfig.get_plots_directory">
+<span class="sig-name descname"><span class="pre">get_plots_directory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a></span></span><a class="reference internal" href="../_modules/PlotConfig.html#PlotConfig.get_plots_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotConfig.PlotConfig.get_plots_directory" title="Link to this definition">#</a></dt>
+<dd><p>Return the directory path for saved plots.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PlotConfig.PlotConfig.get_population_size">
+<span class="sig-name descname"><span class="pre">get_population_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/PlotConfig.html#PlotConfig.get_population_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotConfig.PlotConfig.get_population_size" title="Link to this definition">#</a></dt>
+<dd><p>Return the population size.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PlotConfig.PlotConfig.get_save_plots">
+<span class="sig-name descname"><span class="pre">get_save_plots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/PlotConfig.html#PlotConfig.get_save_plots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotConfig.PlotConfig.get_save_plots" title="Link to this definition">#</a></dt>
+<dd><p>Return whether plots should be saved to disk.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PlotConfig.PlotConfig.get_transfer_interval">
+<span class="sig-name descname"><span class="pre">get_transfer_interval</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/PlotConfig.html#PlotConfig.get_transfer_interval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotConfig.PlotConfig.get_transfer_interval" title="Link to this definition">#</a></dt>
+<dd><p>Return the migration transfer interval in generations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PlotConfig.PlotConfig.is_pulse_count">
+<span class="sig-name descname"><span class="pre">is_pulse_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/PlotConfig.html#PlotConfig.is_pulse_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotConfig.PlotConfig.is_pulse_count" title="Link to this definition">#</a></dt>
+<dd><p>Return whether pulse-count fitness is used.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PlotConfig.PlotConfig.is_tone_discriminator">
+<span class="sig-name descname"><span class="pre">is_tone_discriminator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/PlotConfig.html#PlotConfig.is_tone_discriminator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotConfig.PlotConfig.is_tone_discriminator" title="Link to this definition">#</a></dt>
+<dd><p>Return whether tone-discriminator mode is enabled.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PlotConfig.PlotConfig.uses_init_existing_population">
+<span class="sig-name descname"><span class="pre">uses_init_existing_population</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/PlotConfig.html#PlotConfig.uses_init_existing_population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotConfig.PlotConfig.uses_init_existing_population" title="Link to this definition">#</a></dt>
+<dd><p>Return whether the run starts from an existing population.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PlotConfig.PlotConfig.using_transfer_interval">
+<span class="sig-name descname"><span class="pre">using_transfer_interval</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/PlotConfig.html#PlotConfig.using_transfer_interval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotConfig.PlotConfig.using_transfer_interval" title="Link to this definition">#</a></dt>
+<dd><p>Return whether a positive transfer interval is configured.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PlotConfig.save_plot_config">
+<span class="sig-prename descclassname"><span class="pre">PlotConfig.</span></span><span class="sig-name descname"><span class="pre">save_plot_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_sz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_pulse_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_td</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">desired_freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">diversity_measure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_plots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">plots_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_init_existing_population</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/PlotConfig.html#save_plot_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotConfig.save_plot_config" title="Link to this definition">#</a></dt>
+<dd><p>Write experiment configuration to an INI file at <em>file_path</em>.</p>
+</dd></dl>
+
 </section>
 
 
@@ -391,6 +502,35 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig"><code class="docutils literal notranslate"><span class="pre">PlotConfig</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.__init__"><code class="docutils literal notranslate"><span class="pre">PlotConfig.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.get_desired_frequency"><code class="docutils literal notranslate"><span class="pre">PlotConfig.get_desired_frequency()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.get_diversity_measure"><code class="docutils literal notranslate"><span class="pre">PlotConfig.get_diversity_measure()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.get_plots_directory"><code class="docutils literal notranslate"><span class="pre">PlotConfig.get_plots_directory()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.get_population_size"><code class="docutils literal notranslate"><span class="pre">PlotConfig.get_population_size()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.get_save_plots"><code class="docutils literal notranslate"><span class="pre">PlotConfig.get_save_plots()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.get_transfer_interval"><code class="docutils literal notranslate"><span class="pre">PlotConfig.get_transfer_interval()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.is_pulse_count"><code class="docutils literal notranslate"><span class="pre">PlotConfig.is_pulse_count()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.is_tone_discriminator"><code class="docutils literal notranslate"><span class="pre">PlotConfig.is_tone_discriminator()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.uses_init_existing_population"><code class="docutils literal notranslate"><span class="pre">PlotConfig.uses_init_existing_population()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.PlotConfig.using_transfer_interval"><code class="docutils literal notranslate"><span class="pre">PlotConfig.using_transfer_interval()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotConfig.save_plot_config"><code class="docutils literal notranslate"><span class="pre">save_plot_config()</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

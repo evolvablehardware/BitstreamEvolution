@@ -159,8 +159,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Refactored Code</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="../Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../Circuit/Circuit.html">Circuit.py</a></li>
@@ -327,7 +335,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -343,6 +353,23 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Individual.BitstreamIndividual.BitstreamIndividual"><code class="docutils literal notranslate"><span class="pre">BitstreamIndividual</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Individual.BitstreamIndividual.BitstreamIndividual.__init__"><code class="docutils literal notranslate"><span class="pre">BitstreamIndividual.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Individual.BitstreamIndividual.BitstreamIndividual.copy_from"><code class="docutils literal notranslate"><span class="pre">BitstreamIndividual.copy_from()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Individual.BitstreamIndividual.BitstreamIndividual.crossover"><code class="docutils literal notranslate"><span class="pre">BitstreamIndividual.crossover()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Individual.BitstreamIndividual.BitstreamIndividual.get_bitstream"><code class="docutils literal notranslate"><span class="pre">BitstreamIndividual.get_bitstream()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Individual.BitstreamIndividual.BitstreamIndividual.mutate"><code class="docutils literal notranslate"><span class="pre">BitstreamIndividual.mutate()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Individual.BitstreamIndividual.BitstreamIndividual.randomize"><code class="docutils literal notranslate"><span class="pre">BitstreamIndividual.randomize()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Individual.BitstreamIndividual.BitstreamIndividual.set_bitstream"><code class="docutils literal notranslate"><span class="pre">BitstreamIndividual.set_bitstream()</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -354,6 +381,60 @@ document.write(`
                   
   <section id="module-Individual.BitstreamIndividual">
 <span id="bitstreamindividual-py"></span><h1>BitstreamIndividual.py<a class="headerlink" href="#module-Individual.BitstreamIndividual" title="Link to this heading">#</a></h1>
+<p>Individual representation for evolutionary bitstream experiments.</p>
+<p>Each individual wraps a boolean bitstream that maps to an FPGA circuit
+configuration. Provides mutation, crossover, and randomization operators
+used by the population initialization and reproduction strategies.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="Individual.BitstreamIndividual.BitstreamIndividual">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Individual.BitstreamIndividual.</span></span><span class="sig-name descname"><span class="pre">BitstreamIndividual</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bitstream_sz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rand</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/random.html#random.Random" title="(in Python v3.14)"><span class="pre">Random</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_probability</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/Individual/BitstreamIndividual.html#BitstreamIndividual"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Individual.BitstreamIndividual.BitstreamIndividual" title="Link to this definition">#</a></dt>
+<dd><p>A genetic individual whose genome is a list of boolean bits.</p>
+<p>Used by <code class="xref py py-class docutils literal notranslate"><span class="pre">GenerateBitstreamPopulation</span></code>
+to create populations, and by reproducers to generate offspring.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Individual.BitstreamIndividual.BitstreamIndividual.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bitstream_sz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rand</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/random.html#random.Random" title="(in Python v3.14)"><span class="pre">Random</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_probability</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/Individual/BitstreamIndividual.html#BitstreamIndividual.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Individual.BitstreamIndividual.BitstreamIndividual.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Create an individual with a zeroed bitstream of the given size.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Individual.BitstreamIndividual.BitstreamIndividual.copy_from">
+<span class="sig-name descname"><span class="pre">copy_from</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Individual.BitstreamIndividual.BitstreamIndividual" title="Individual.BitstreamIndividual.BitstreamIndividual"><span class="pre">BitstreamIndividual</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/Individual/BitstreamIndividual.html#BitstreamIndividual.copy_from"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Individual.BitstreamIndividual.BitstreamIndividual.copy_from" title="Link to this definition">#</a></dt>
+<dd><p>Deep-copy the bitstream from <em>other</em> into this individual.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Individual.BitstreamIndividual.BitstreamIndividual.crossover">
+<span class="sig-name descname"><span class="pre">crossover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Individual.BitstreamIndividual.BitstreamIndividual" title="Individual.BitstreamIndividual.BitstreamIndividual"><span class="pre">BitstreamIndividual</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">crossover_point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/Individual/BitstreamIndividual.html#BitstreamIndividual.crossover"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Individual.BitstreamIndividual.BitstreamIndividual.crossover" title="Link to this definition">#</a></dt>
+<dd><p>Single-point crossover: take bits before <em>crossover_point</em> from self and the rest from <em>parent</em>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Individual.BitstreamIndividual.BitstreamIndividual.get_bitstream">
+<span class="sig-name descname"><span class="pre">get_bitstream</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/Individual/BitstreamIndividual.html#BitstreamIndividual.get_bitstream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Individual.BitstreamIndividual.BitstreamIndividual.get_bitstream" title="Link to this definition">#</a></dt>
+<dd><p>Return the current bitstream.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Individual.BitstreamIndividual.BitstreamIndividual.mutate">
+<span class="sig-name descname"><span class="pre">mutate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/Individual/BitstreamIndividual.html#BitstreamIndividual.mutate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Individual.BitstreamIndividual.BitstreamIndividual.mutate" title="Link to this definition">#</a></dt>
+<dd><p>Flip each bit independently with the configured mutation probability.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Individual.BitstreamIndividual.BitstreamIndividual.randomize">
+<span class="sig-name descname"><span class="pre">randomize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/Individual/BitstreamIndividual.html#BitstreamIndividual.randomize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Individual.BitstreamIndividual.BitstreamIndividual.randomize" title="Link to this definition">#</a></dt>
+<dd><p>Set every bit to a uniformly random value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Individual.BitstreamIndividual.BitstreamIndividual.set_bitstream">
+<span class="sig-name descname"><span class="pre">set_bitstream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bitstream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/Individual/BitstreamIndividual.html#BitstreamIndividual.set_bitstream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Individual.BitstreamIndividual.BitstreamIndividual.set_bitstream" title="Link to this definition">#</a></dt>
+<dd><p>Replace the entire bitstream with the provided list.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -391,6 +472,30 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Individual.BitstreamIndividual.BitstreamIndividual"><code class="docutils literal notranslate"><span class="pre">BitstreamIndividual</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Individual.BitstreamIndividual.BitstreamIndividual.__init__"><code class="docutils literal notranslate"><span class="pre">BitstreamIndividual.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Individual.BitstreamIndividual.BitstreamIndividual.copy_from"><code class="docutils literal notranslate"><span class="pre">BitstreamIndividual.copy_from()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Individual.BitstreamIndividual.BitstreamIndividual.crossover"><code class="docutils literal notranslate"><span class="pre">BitstreamIndividual.crossover()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Individual.BitstreamIndividual.BitstreamIndividual.get_bitstream"><code class="docutils literal notranslate"><span class="pre">BitstreamIndividual.get_bitstream()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Individual.BitstreamIndividual.BitstreamIndividual.mutate"><code class="docutils literal notranslate"><span class="pre">BitstreamIndividual.mutate()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Individual.BitstreamIndividual.BitstreamIndividual.randomize"><code class="docutils literal notranslate"><span class="pre">BitstreamIndividual.randomize()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Individual.BitstreamIndividual.BitstreamIndividual.set_bitstream"><code class="docutils literal notranslate"><span class="pre">BitstreamIndividual.set_bitstream()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

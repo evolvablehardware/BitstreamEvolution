@@ -1,0 +1,599 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Getting Started &#8212; Bitstream Evolution Develop Branch 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'quickstart';</script>
+    <link rel="icon" href="https://evolvablehardware.org/images/setup_tutorial_2.jpg"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Development Information" href="dev/index.html" />
+    <link rel="prev" title="Welcome to BitstreamEvolution’s documentation!" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="https://evolvablehardware.org/images/setup_tutorial_2.jpg" class="logo__image only-light" alt="Bitstream Evolution Develop Branch 0.1.0 documentation - Home"/>
+    <script>document.write(`<img src="https://evolvablehardware.org/images/setup_tutorial_2.jpg" class="logo__image only-dark" alt="Bitstream Evolution Develop Branch 0.1.0 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="code/Circuit/Circuit.html">Circuit.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code/Circuit/FileBasedCircuit.html">FileBasedCircuit.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code/Circuit/FullySimCircuit.html">FullySimCircuit.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="code/EvaluateFitness/index.html">Evaluate Fitness</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="code/EvaluateFitness/EvaluateFitness.html">EvaluateFitness.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code/EvaluateFitness/EvalPulseCountFitness.html">EvalPulseCountFitness.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code/EvaluateFitness/EvalVarMaxFitness.html">EvalVarMaxFitness.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="code/GenerateMeasurements/index.html">Generate Measurements</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="code/GenerateMeasurements/GenerateMeasurements.html">GenerateMeasurements.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="code/Hardware/index.html">Hardware</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="code/Hardware/Microcontroller.html">Microcontroller.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="code/Individual/index.html">Individual</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="code/Individual/BitstreamIndividual.html">BitstreamIndividual.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="code/Population/index.html">Population</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="code/Population/PopulationInitialization.html">PopulationInitialization.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="code/BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code/TrivialImplementation.html">TrivialImplementation.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code/Directories.html">Directories.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code/Evolution.html">Evolution.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code/Logger.html">Logger.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code/PlotConfig.html">PlotConfig.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code/PlotDataRecorder.html">PlotDataRecorder.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code/PlotEvolutionLive.html">PlotEvolutionLive.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code/utilities.html">utilities.py</a></li>
+</ul>
+</details></li>
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/quickstart.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Getting Started</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-tests">Running Tests</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project-architecture">Project Architecture</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-an-experiment">Running an Experiment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interpreting-results">Interpreting Results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next Steps</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading">#</a></h1>
+<p>This guide walks through setting up BitstreamEvolution and running your first experiment.</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h2>
+<p><strong>Software:</strong></p>
+<ul class="simple">
+<li><p>Python 3.11 or later</p></li>
+<li><p><a class="reference external" href="https://python-poetry.org/">Poetry</a> package manager</p></li>
+<li><p><a class="reference external" href="https://github.com/YosysHQ/icestorm">IceStorm toolchain</a> (<code class="docutils literal notranslate"><span class="pre">icepack</span></code>, <code class="docutils literal notranslate"><span class="pre">iceprog</span></code>)</p></li>
+</ul>
+<p><strong>Hardware:</strong></p>
+<ul class="simple">
+<li><p>ICE40 HX1K FPGA development board</p></li>
+<li><p>Microcontroller with serial interface (for fitness measurement)</p></li>
+<li><p>USB connection between host, MCU, and FPGA</p></li>
+</ul>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
+<p>Clone the repository and install dependencies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/evolvablehardware/BitstreamEvolution.git
+<span class="nb">cd</span><span class="w"> </span>BitstreamEvolution
+poetry<span class="w"> </span>install
+</pre></div>
+</div>
+<p>To include development tools (documentation, testing, linting):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>install<span class="w"> </span>--with<span class="w"> </span>dev
+</pre></div>
+</div>
+</section>
+<section id="running-tests">
+<h2>Running Tests<a class="headerlink" href="#running-tests" title="Link to this heading">#</a></h2>
+<p>Verify the installation by running the test suite:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run fast tests only (&lt; 10 seconds)</span>
+poetry<span class="w"> </span>run<span class="w"> </span>pytest
+
+<span class="c1"># Run fast and medium tests</span>
+poetry<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;immediate or short&quot;</span>
+</pre></div>
+</div>
+<p>See <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--markers</span></code> for all available test timing markers.</p>
+</section>
+<section id="project-architecture">
+<h2>Project Architecture<a class="headerlink" href="#project-architecture" title="Link to this heading">#</a></h2>
+<p>BitstreamEvolution uses a protocol-based architecture. All major components
+are defined as Python <code class="docutils literal notranslate"><span class="pre">Protocol</span></code> classes in
+<a class="reference internal" href="code/BitstreamEvolutionProtocols.html"><span class="doc">BitstreamEvolutionProtocols.py</span></a>, allowing implementations to be
+swapped freely.</p>
+<p>The main abstractions are:</p>
+<ul class="simple">
+<li><p><strong>Individual</strong> — The genome being evolved (e.g. a boolean bitstream)</p></li>
+<li><p><strong>Circuit</strong> — An FPGA configuration compiled from an Individual</p></li>
+<li><p><strong>Population</strong> — A collection of Individuals with optional fitness values</p></li>
+<li><p><strong>Hardware</strong> — Async interface to the physical FPGA via serial</p></li>
+<li><p><strong>FitnessEvaluator</strong> — Strategy for computing fitness from measurements</p></li>
+<li><p><strong>Reproducer</strong> — Selection and mutation to create the next generation</p></li>
+</ul>
+</section>
+<section id="running-an-experiment">
+<h2>Running an Experiment<a class="headerlink" href="#running-an-experiment" title="Link to this heading">#</a></h2>
+<p>The simplest way to understand the system is through the
+<a class="reference internal" href="code/TrivialImplementation.html"><span class="doc">TrivialImplementation.py</span></a>, a self-contained example that
+evolves integer-valued circuits without real hardware:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">TrivialImplementation</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TrivialEvolution</span><span class="p">,</span>
+    <span class="n">TrivialGenerateInitialPopulation</span><span class="p">,</span>
+    <span class="n">TrivialReproduceWithMutation</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">BitstreamEvolutionProtocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenDataIncrementer</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+
+<span class="n">rand</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="n">evolution</span> <span class="o">=</span> <span class="n">TrivialEvolution</span><span class="p">(</span>
+    <span class="n">generation_data_factory</span><span class="o">=</span><span class="n">GenDataIncrementer</span><span class="p">(</span><span class="n">max_gen_num</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+    <span class="n">reproducer</span><span class="o">=</span><span class="k">lambda</span> <span class="n">pop</span><span class="p">:</span> <span class="n">TrivialReproduceWithMutation</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">rand</span><span class="p">),</span>
+    <span class="n">generate_intial_population</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">TrivialGenerateInitialPopulation</span><span class="p">(</span>
+        <span class="n">population_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">random</span><span class="o">=</span><span class="n">rand</span><span class="p">,</span> <span class="n">min_fitness</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_fitness</span><span class="o">=</span><span class="mi">50</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">evolution</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For real hardware experiments, you would replace the trivial implementations
+with concrete classes like <a class="reference internal" href="code/Circuit/FileBasedCircuit.html#Circuit.FileBasedCircuit.FileBasedCircuit" title="Circuit.FileBasedCircuit.FileBasedCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileBasedCircuit</span></code></a>,
+<a class="reference internal" href="code/Hardware/Microcontroller.html#Hardware.Microcontroller.Microcontroller" title="Hardware.Microcontroller.Microcontroller"><code class="xref py py-class docutils literal notranslate"><span class="pre">Microcontroller</span></code></a>, and a fitness evaluator
+such as <a class="reference internal" href="code/EvaluateFitness/EvalPulseCountFitness.html#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness" title="EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvalPulseCountFitness</span></code></a>.</p>
+</section>
+<section id="interpreting-results">
+<h2>Interpreting Results<a class="headerlink" href="#interpreting-results" title="Link to this heading">#</a></h2>
+<p>During an experiment, data is written to the <code class="docutils literal notranslate"><span class="pre">workspace/</span></code> directory:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">alllivedata.log</span></code> — Per-individual fitness each generation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bestlivedata.log</span></code> — Best/worst/average fitness per generation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">waveformlivedata.log</span></code> — Most recent waveform capture</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">heatmaplivedata.log</span></code> — Best waveform per generation (for heatmaps)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">violinlivedata.log</span></code> — Full fitness distribution per generation</p></li>
+</ul>
+<p>The <a class="reference internal" href="code/PlotEvolutionLive.html"><span class="doc">PlotEvolutionLive.py</span></a> module reads these files and produces
+real-time matplotlib plots during evolution.</p>
+<p>After an experiment, use <a class="reference internal" href="code/Logger.html#Logger.Logger.save_workspace" title="Logger.Logger.save_workspace"><code class="xref py py-func docutils literal notranslate"><span class="pre">save_workspace()</span></code></a> to archive
+the workspace to a timestamped directory.</p>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="architecture/index.html"><span class="doc">Bitstream Evolution’s Architecture</span></a> — System design and architectural proposals</p></li>
+<li><p><a class="reference internal" href="code/index.html"><span class="doc">Refactored Code</span></a> — Full API reference for all modules</p></li>
+<li><p><a class="reference internal" href="dev/index.html"><span class="doc">Development Information</span></a> — How to build the documentation locally</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Welcome to BitstreamEvolution’s documentation!</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="dev/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Development Information</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-tests">Running Tests</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project-architecture">Project Architecture</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-an-experiment">Running an Experiment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interpreting-results">Interpreting Results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next Steps</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Evolvable Hardware
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024-2026, Evolvable Hardware.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

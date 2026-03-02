@@ -159,8 +159,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Refactored Code</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="../Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../Circuit/Circuit.html">Circuit.py</a></li>
@@ -350,7 +358,21 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.MicrocontrollerConfig"><code class="docutils literal notranslate"><span class="pre">MicrocontrollerConfig</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.Microcontroller"><code class="docutils literal notranslate"><span class="pre">Microcontroller</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.Microcontroller.__init__"><code class="docutils literal notranslate"><span class="pre">Microcontroller.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.Microcontroller.get_available_FPGAs"><code class="docutils literal notranslate"><span class="pre">Microcontroller.get_available_FPGAs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.Microcontroller.measure_pulses"><code class="docutils literal notranslate"><span class="pre">Microcontroller.measure_pulses()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.Microcontroller.measure_pulses_once"><code class="docutils literal notranslate"><span class="pre">Microcontroller.measure_pulses_once()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.Microcontroller.measure_signal"><code class="docutils literal notranslate"><span class="pre">Microcontroller.measure_signal()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.Microcontroller.request_measurement"><code class="docutils literal notranslate"><span class="pre">Microcontroller.request_measurement()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.MicrocontrollerConfig"><code class="docutils literal notranslate"><span class="pre">MicrocontrollerConfig</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.MicrocontrollerConfig.usb_path"><code class="docutils literal notranslate"><span class="pre">MicrocontrollerConfig.usb_path</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.MicrocontrollerConfig.serial_baud"><code class="docutils literal notranslate"><span class="pre">MicrocontrollerConfig.serial_baud</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.MicrocontrollerConfig.read_timeout"><code class="docutils literal notranslate"><span class="pre">MicrocontrollerConfig.read_timeout</span></code></a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -364,10 +386,172 @@ document.write(`
                   
   <section id="module-Hardware.Microcontroller">
 <span id="microcontroller-py"></span><h1>Microcontroller.py<a class="headerlink" href="#module-Hardware.Microcontroller" title="Link to this heading">#</a></h1>
+<p>Serial interface for MCU-mediated FPGA measurement.</p>
+<p>Provides the <code class="docutils literal notranslate"><span class="pre">Microcontroller</span></code> class that communicates with a
+microcontroller over a serial link to program an ICE40 FPGA and
+retrieve fitness-evaluation data (pulse counts or ADC waveforms).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Serial protocol details were inferred from code and may need
+verification against MCU firmware.</p>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="Hardware.Microcontroller.Microcontroller">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Hardware.Microcontroller.</span></span><span class="sig-name descname"><span class="pre">Microcontroller</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpga</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../Logger.html#Logger.Logger" title="Logger.Logger"><span class="pre">Logger</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Hardware.Microcontroller.MicrocontrollerConfig" title="Hardware.Microcontroller.MicrocontrollerConfig"><span class="pre">MicrocontrollerConfig</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/Hardware/Microcontroller.html#Microcontroller"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Hardware.Microcontroller.Microcontroller" title="Link to this definition">#</a></dt>
+<dd><p>Driver for a serial-connected MCU that programs and reads from an FPGA.</p>
+<p>Opens a persistent serial connection on construction and provides
+async methods to request waveform or pulse-count measurements.</p>
+<section id="concurrency-note">
+<h2>Concurrency note:<a class="headerlink" href="#concurrency-note" title="Link to this heading">#</a></h2>
+<p>The async methods in this class use blocking pyserial calls and do NOT yield
+to the event loop. As a result, asyncio.gather() over multiple Microcontroller
+instances currently runs them sequentially, not in parallel.</p>
+<p>TODO: Migrate serial I/O to serial_asyncio (<a class="reference external" href="https://pypi.org/project/serial-asyncio/">https://pypi.org/project/serial-asyncio/</a>)
+so that serial reads genuinely suspend and allow other coroutines to run. This is
+the server-side component — when the architecture moves to a server-client model,
+this class (or its replacement) will run on the server and use serial_asyncio.</p>
+</section>
+<section id="per-icestick-exclusivity">
+<h2>Per-Icestick exclusivity:<a class="headerlink" href="#per-icestick-exclusivity" title="Link to this heading">#</a></h2>
+<p>Each Microcontroller instance manages exactly one Icestick via one serial port.
+iceprog holds exclusive USB access to the device during compile(). Concurrent
+calls to request_measurement() on the SAME Microcontroller instance will corrupt
+each other. The server must serialize calls per-instance (e.g. one
+asyncio.Semaphore(1) per Microcontroller, or a dedicated worker coroutine per
+device). Calls on DIFFERENT Microcontroller instances (different Icesticks) can
+run concurrently. See .claude/docs/hardware_concurrency.md.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Hardware.Microcontroller.Microcontroller.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpga</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../Logger.html#Logger.Logger" title="Logger.Logger"><span class="pre">Logger</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Hardware.Microcontroller.MicrocontrollerConfig" title="Hardware.Microcontroller.MicrocontrollerConfig"><span class="pre">MicrocontrollerConfig</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/Hardware/Microcontroller.html#Microcontroller.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Hardware.Microcontroller.Microcontroller.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize the serial connection to the MCU.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fpga</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – FPGA device identifier passed to <code class="docutils literal notranslate"><span class="pre">icepack</span></code>/<code class="docutils literal notranslate"><span class="pre">iceprog</span></code>.</p></li>
+<li><p><strong>logger</strong> (<a class="reference internal" href="../Logger.html#Logger.Logger" title="Logger.Logger"><em>Logger</em></a>) – Logger instance for event and warning messages.</p></li>
+<li><p><strong>config</strong> (<a class="reference internal" href="#Hardware.Microcontroller.MicrocontrollerConfig" title="Hardware.Microcontroller.MicrocontrollerConfig"><em>MicrocontrollerConfig</em></a>) – Serial port settings.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Hardware.Microcontroller.Microcontroller.get_available_FPGAs">
+<span class="sig-name descname"><span class="pre">get_available_FPGAs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/Hardware/Microcontroller.html#Microcontroller.get_available_FPGAs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Hardware.Microcontroller.Microcontroller.get_available_FPGAs" title="Link to this definition">#</a></dt>
+<dd><p>Return the list of FPGA device identifiers managed by this MCU.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Hardware.Microcontroller.Microcontroller.measure_pulses">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">measure_pulses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/Hardware/Microcontroller.html#Microcontroller.measure_pulses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Hardware.Microcontroller.Microcontroller.measure_pulses" title="Link to this definition">#</a></dt>
+<dd><p>Collect multiple pulse-count samples from the FPGA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>samples</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of times to call <code class="docutils literal notranslate"><span class="pre">measure_pulses_once</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Concatenated pulse counts from all sample rounds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Hardware.Microcontroller.Microcontroller.measure_pulses_once">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">measure_pulses_once</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/Hardware/Microcontroller.html#Microcontroller.measure_pulses_once"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Hardware.Microcontroller.Microcontroller.measure_pulses_once" title="Link to this definition">#</a></dt>
+<dd><p>Perform a single pulse-count read from the MCU.</p>
+<p>Sends command <code class="docutils literal notranslate"><span class="pre">'1'</span></code> and polls the serial line for a numeric
+response, retrying up to 5 times on timeout.  Returns <code class="docutils literal notranslate"><span class="pre">-1</span></code>
+on timeout and <code class="docutils literal notranslate"><span class="pre">-2</span></code> on parse failure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Parsed pulse count(s) from a single read cycle.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Hardware.Microcontroller.Microcontroller.measure_signal">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">measure_signal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/Hardware/Microcontroller.html#Microcontroller.measure_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Hardware.Microcontroller.Microcontroller.measure_signal" title="Link to this definition">#</a></dt>
+<dd><p>Capture an ADC waveform from the FPGA via the MCU.</p>
+<p>Sends command <code class="docutils literal notranslate"><span class="pre">'2'</span></code> to initiate ADC capture, then reads
+lines between <code class="docutils literal notranslate"><span class="pre">START</span></code> and <code class="docutils literal notranslate"><span class="pre">FINISHED</span></code> delimiters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Integer ADC samples (~10 us apart).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Hardware.Microcontroller.Microcontroller.request_measurement">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">request_measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measurement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Measurement" title="BitstreamEvolutionProtocols.Measurement"><span class="pre">Measurement</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Measurement" title="BitstreamEvolutionProtocols.Measurement"><span class="pre">Measurement</span></a></span></span><a class="reference internal" href="../../_modules/Hardware/Microcontroller.html#Microcontroller.request_measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Hardware.Microcontroller.Microcontroller.request_measurement" title="Link to this definition">#</a></dt>
+<dd><p>Compile the circuit and perform the requested measurement.</p>
+<p>Dispatches to <code class="docutils literal notranslate"><span class="pre">measure_signal</span></code> or <code class="docutils literal notranslate"><span class="pre">measure_pulses</span></code> based on
+<code class="docutils literal notranslate"><span class="pre">measurement.data_request</span></code>.  The result (or error) is stored in
+<code class="docutils literal notranslate"><span class="pre">measurement.result</span></code> as a <code class="docutils literal notranslate"><span class="pre">Success</span></code> or <code class="docutils literal notranslate"><span class="pre">Failure</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>measurement</strong> (<a class="reference internal" href="../BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Measurement" title="BitstreamEvolutionProtocols.Measurement"><em>Measurement</em></a>) – Measurement descriptor specifying circuit and data type.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The same object with <code class="docutils literal notranslate"><span class="pre">result</span></code> populated.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Measurement" title="BitstreamEvolutionProtocols.Measurement">Measurement</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="Hardware.Microcontroller.MicrocontrollerConfig">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Hardware.Microcontroller.</span></span><span class="sig-name descname"><span class="pre">MicrocontrollerConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usb_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">serial_baud</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/Hardware/Microcontroller.html#MicrocontrollerConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Hardware.Microcontroller.MicrocontrollerConfig" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Serial connection parameters for the MCU.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Hardware.Microcontroller.MicrocontrollerConfig.usb_path">
+<span class="sig-name descname"><span class="pre">usb_path</span></span><a class="headerlink" href="#Hardware.Microcontroller.MicrocontrollerConfig.usb_path" title="Link to this definition">#</a></dt>
+<dd><p>Device path to the serial port (e.g. <code class="docutils literal notranslate"><span class="pre">/dev/ttyUSB0</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Hardware.Microcontroller.MicrocontrollerConfig.serial_baud">
+<span class="sig-name descname"><span class="pre">serial_baud</span></span><a class="headerlink" href="#Hardware.Microcontroller.MicrocontrollerConfig.serial_baud" title="Link to this definition">#</a></dt>
+<dd><p>Baud rate for the serial connection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Hardware.Microcontroller.MicrocontrollerConfig.read_timeout">
+<span class="sig-name descname"><span class="pre">read_timeout</span></span><a class="headerlink" href="#Hardware.Microcontroller.MicrocontrollerConfig.read_timeout" title="Link to this definition">#</a></dt>
+<dd><p>Timeout in seconds for serial read operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 </section>
 
@@ -416,7 +600,21 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.MicrocontrollerConfig"><code class="docutils literal notranslate"><span class="pre">MicrocontrollerConfig</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.Microcontroller"><code class="docutils literal notranslate"><span class="pre">Microcontroller</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.Microcontroller.__init__"><code class="docutils literal notranslate"><span class="pre">Microcontroller.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.Microcontroller.get_available_FPGAs"><code class="docutils literal notranslate"><span class="pre">Microcontroller.get_available_FPGAs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.Microcontroller.measure_pulses"><code class="docutils literal notranslate"><span class="pre">Microcontroller.measure_pulses()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.Microcontroller.measure_pulses_once"><code class="docutils literal notranslate"><span class="pre">Microcontroller.measure_pulses_once()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.Microcontroller.measure_signal"><code class="docutils literal notranslate"><span class="pre">Microcontroller.measure_signal()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.Microcontroller.request_measurement"><code class="docutils literal notranslate"><span class="pre">Microcontroller.request_measurement()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.MicrocontrollerConfig"><code class="docutils literal notranslate"><span class="pre">MicrocontrollerConfig</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.MicrocontrollerConfig.usb_path"><code class="docutils literal notranslate"><span class="pre">MicrocontrollerConfig.usb_path</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.MicrocontrollerConfig.serial_baud"><code class="docutils literal notranslate"><span class="pre">MicrocontrollerConfig.serial_baud</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Hardware.Microcontroller.MicrocontrollerConfig.read_timeout"><code class="docutils literal notranslate"><span class="pre">MicrocontrollerConfig.read_timeout</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

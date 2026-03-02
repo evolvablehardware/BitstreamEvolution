@@ -158,8 +158,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../code/Circuit/Circuit.html">Circuit.py</a></li>
@@ -304,347 +312,389 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for BitstreamEvolutionProtocols</h1><div class="highlight"><pre>
-<span></span><span class="linenos">  1</span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="linenos">  2</span><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span>
-<span class="linenos">  3</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Any</span>
-<span class="linenos">  4</span><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span>
-<span class="linenos">  5</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="linenos">  6</span><span class="kn">from</span><span class="w"> </span><span class="nn">returns.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">Result</span><span class="p">,</span> <span class="n">Success</span><span class="p">,</span> <span class="n">Failure</span> <span class="c1"># type: ignore</span>
-<span class="linenos">  7</span><span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
-<span class="linenos">  8</span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
-<span class="linenos">  9</span>
-<span class="linenos"> 10</span><span class="c1"># TODO:</span>
-<span class="linenos"> 11</span><span class="c1"># Mutation - is this performed on Individuals or Circuits (very likely on Individuals)</span>
-<span class="linenos"> 12</span><span class="c1"># - In that case, we need some mechanism/interface for mutating them (like a function defined on Individual)</span>
-<span class="linenos"> 13</span><span class="c1"># - Also in that case, we need a way to link those to Circuits, or have a way to transmit the filepaths to the hardware file between Individual and Circuit</span>
-<span class="linenos"> 14</span><span class="c1">#   - Could just get copied in CircuitFactory for when there&#39;s a 1-to-1 relationship between Individuals and Circuits</span>
-<span class="linenos"> 15</span><span class="c1"># Only thing is I think we need some protocol for taking/collecting a measurement. Potentially replacing the &quot;data_request&quot; field in Measurement</span>
-<span class="linenos"> 16</span><span class="c1"># - This would have diff. implementations for VarMax, PulseCount, ToneDiscrimination, etc.</span>
-<span class="linenos"> 17</span><span class="c1"># - Not 100% sure on the interface for this, it should take in one or more Measurements and compute their results, and take in </span>
-<span class="linenos"> 18</span><span class="c1">#   a Circuit?</span>
-<span class="linenos"> 19</span>
-<span class="linenos"> 20</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos"> 21</span><span class="sd">TODO: Check if a protocol *populations:Population can be implemented by a function with no such variable.</span>
-<span class="linenos"> 22</span><span class="sd">i.e. can val(p:int) match the type of vals(p:int, *populations:Population)?</span>
-<span class="linenos"> 23</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos"> 24</span>
+<span></span><span class="linenos">  1</span><span class="sd">&quot;&quot;&quot;Core protocols and interfaces for the BitstreamEvolution framework.</span>
+<span class="linenos">  2</span>
+<span class="linenos">  3</span><span class="sd">Defines the abstract contracts (``Protocol`` classes) that all concrete</span>
+<span class="linenos">  4</span><span class="sd">implementations must satisfy: ``Individual``, ``Circuit``, ``Population``,</span>
+<span class="linenos">  5</span><span class="sd">``Fitness``, ``Hardware``, ``Reproducer``, ``GenerateMeasurements``, and</span>
+<span class="linenos">  6</span><span class="sd">``EvaluatePopulationFitness``. Start here to understand the system architecture.</span>
+<span class="linenos">  7</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  8</span>
+<span class="linenos">  9</span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="linenos"> 10</span><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span>
+<span class="linenos"> 11</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Any</span>
+<span class="linenos"> 12</span><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span>
+<span class="linenos"> 13</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="linenos"> 14</span><span class="kn">from</span><span class="w"> </span><span class="nn">returns.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">Result</span><span class="p">,</span> <span class="n">Success</span><span class="p">,</span> <span class="n">Failure</span> <span class="c1"># type: ignore</span>
+<span class="linenos"> 15</span><span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
+<span class="linenos"> 16</span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="linenos"> 17</span>
+<span class="linenos"> 18</span><span class="c1"># TODO:</span>
+<span class="linenos"> 19</span><span class="c1"># Mutation - is this performed on Individuals or Circuits (very likely on Individuals)</span>
+<span class="linenos"> 20</span><span class="c1"># - In that case, we need some mechanism/interface for mutating them (like a function defined on Individual)</span>
+<span class="linenos"> 21</span><span class="c1"># - Also in that case, we need a way to link those to Circuits, or have a way to transmit the filepaths to the hardware file between Individual and Circuit</span>
+<span class="linenos"> 22</span><span class="c1">#   - Could just get copied in CircuitFactory for when there&#39;s a 1-to-1 relationship between Individuals and Circuits</span>
+<span class="linenos"> 23</span><span class="c1"># Only thing is I think we need some protocol for taking/collecting a measurement. Potentially replacing the &quot;data_request&quot; field in Measurement</span>
+<span class="linenos"> 24</span><span class="c1"># - This would have diff. implementations for VarMax, PulseCount, ToneDiscrimination, etc.</span>
+<span class="linenos"> 25</span><span class="c1"># - Not 100% sure on the interface for this, it should take in one or more Measurements and compute their results, and take in </span>
+<span class="linenos"> 26</span><span class="c1">#   a Circuit?</span>
+<span class="linenos"> 27</span>
+<span class="linenos"> 28</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 29</span><span class="sd">TODO: Check if a protocol *populations:Population can be implemented by a function with no such variable.</span>
+<span class="linenos"> 30</span><span class="sd">i.e. can val(p:int) match the type of vals(p:int, *populations:Population)?</span>
+<span class="linenos"> 31</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 32</span>
 <div class="viewcode-block" id="GenData">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.GenData">[docs]</a>
-<span class="linenos"> 25</span><span class="nd">@dataclass</span>
-<span class="linenos"> 26</span><span class="k">class</span><span class="w"> </span><span class="nc">GenData</span><span class="p">:</span>
-<span class="linenos"> 27</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos"> 28</span><span class="sd">    The most basic Generation Data Object. This simply requires a generation_number.</span>
-<span class="linenos"> 29</span><span class="sd">    &quot;&quot;&quot;</span>
-<span class="linenos"> 30</span>    <span class="n">generation_number</span><span class="p">:</span> <span class="nb">int</span></div>
+<span class="linenos"> 33</span><span class="nd">@dataclass</span>
+<span class="linenos"> 34</span><span class="k">class</span><span class="w"> </span><span class="nc">GenData</span><span class="p">:</span>
+<span class="linenos"> 35</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 36</span><span class="sd">    The most basic Generation Data Object. This simply requires a generation_number.</span>
+<span class="linenos"> 37</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos"> 38</span>    <span class="n">generation_number</span><span class="p">:</span> <span class="nb">int</span></div>
 
-<span class="linenos"> 31</span>
-<span class="linenos"> 32</span><span class="c1"># This is the &quot;Evolution Generation Info Incrementer&quot; in the diagram. It is a function.</span>
+<span class="linenos"> 39</span>
+<span class="linenos"> 40</span><span class="c1"># This is the &quot;Evolution Generation Info Incrementer&quot; in the diagram. It is a function.</span>
 <div class="viewcode-block" id="GenDataFactory">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.GenDataFactory">[docs]</a>
-<span class="linenos"> 33</span><span class="k">class</span><span class="w"> </span><span class="nc">GenDataFactory</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="linenos"> 34</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos"> 35</span><span class="sd">    The most basic Function Protocol that converts the Generation Data </span>
-<span class="linenos"> 36</span><span class="sd">    from the previous iteration to the one for the next generation. </span>
-<span class="linenos"> 37</span><span class="sd">    It also constructs the initial GenData object (gen_data is None) </span>
-<span class="linenos"> 38</span><span class="sd">    and determines when the final generation occours (returns None).</span>
-<span class="linenos"> 39</span><span class="sd">    &quot;&quot;&quot;</span>
-<span class="linenos"> 40</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen_data</span><span class="p">:</span><span class="n">GenData</span><span class="o">|</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenData</span><span class="o">|</span><span class="kc">None</span><span class="p">:</span> <span class="o">...</span>  </div>
+<span class="linenos"> 41</span><span class="k">class</span><span class="w"> </span><span class="nc">GenDataFactory</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="linenos"> 42</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 43</span><span class="sd">    The most basic Function Protocol that converts the Generation Data </span>
+<span class="linenos"> 44</span><span class="sd">    from the previous iteration to the one for the next generation. </span>
+<span class="linenos"> 45</span><span class="sd">    It also constructs the initial GenData object (gen_data is None) </span>
+<span class="linenos"> 46</span><span class="sd">    and determines when the final generation occours (returns None).</span>
+<span class="linenos"> 47</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos"> 48</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen_data</span><span class="p">:</span><span class="n">GenData</span><span class="o">|</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenData</span><span class="o">|</span><span class="kc">None</span><span class="p">:</span> <span class="o">...</span>  </div>
 
-<span class="linenos"> 41</span>    <span class="c1"># If want to say it can&#39;t have any other positional only arguments, use:</span>
-<span class="linenos"> 42</span>    <span class="c1">#def __call__(self,gen_data:GenData|None,/, **kwds:Any) -&gt; GenData|None: ...</span>
-<span class="linenos"> 43</span>
-<span class="linenos"> 44</span><span class="k">class</span><span class="w"> </span><span class="nc">GenDataIncrementer</span><span class="p">():</span>
-<span class="linenos"> 45</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_gen_num</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
-<span class="linenos"> 46</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__max_gen_num</span> <span class="o">=</span> <span class="n">max_gen_num</span>
-<span class="linenos"> 47</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">GenData</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">GenData</span><span class="p">]:</span>
-<span class="linenos"> 48</span>        <span class="k">if</span> <span class="n">gen_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos"> 49</span>            <span class="k">return</span> <span class="n">GenData</span><span class="p">(</span><span class="n">generation_number</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="linenos"> 50</span>        <span class="k">if</span> <span class="n">gen_data</span><span class="o">.</span><span class="n">generation_number</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__max_gen_num</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-<span class="linenos"> 51</span>            <span class="k">return</span> <span class="n">GenData</span><span class="p">(</span><span class="n">gen_data</span><span class="o">.</span><span class="n">generation_number</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-<span class="linenos"> 52</span>        <span class="k">else</span><span class="p">:</span>
-<span class="linenos"> 53</span>            <span class="k">return</span> <span class="kc">None</span>
-<span class="linenos"> 54</span>
-<span class="linenos"> 55</span>
-<span class="linenos"> 56</span><span class="c1"># TODO: Replace this with Self if update to python 3.12</span>
-<span class="linenos"> 57</span><span class="n">F</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">,</span><span class="n">bound</span><span class="o">=</span><span class="s1">&#39;Fitness&#39;</span><span class="p">)</span>
-<span class="linenos"> 58</span><span class="c1"># Want this to match the specific instance of the thing implementing Fitness it was matched with,</span>
-<span class="linenos"> 59</span><span class="c1">#   not anything that matches the protocol, so this may not be exactly correct.</span>
-<span class="linenos"> 60</span>
+<span class="linenos"> 49</span>    <span class="c1"># If want to say it can&#39;t have any other positional only arguments, use:</span>
+<span class="linenos"> 50</span>    <span class="c1">#def __call__(self,gen_data:GenData|None,/, **kwds:Any) -&gt; GenData|None: ...</span>
+<span class="linenos"> 51</span>
+<span class="linenos"> 52</span><span class="k">class</span><span class="w"> </span><span class="nc">GenDataIncrementer</span><span class="p">():</span>
+<span class="linenos"> 53</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_gen_num</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
+<span class="linenos"> 54</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__max_gen_num</span> <span class="o">=</span> <span class="n">max_gen_num</span>
+<span class="linenos"> 55</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">GenData</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">GenData</span><span class="p">]:</span>
+<span class="linenos"> 56</span>        <span class="k">if</span> <span class="n">gen_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos"> 57</span>            <span class="k">return</span> <span class="n">GenData</span><span class="p">(</span><span class="n">generation_number</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="linenos"> 58</span>        <span class="k">if</span> <span class="n">gen_data</span><span class="o">.</span><span class="n">generation_number</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__max_gen_num</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+<span class="linenos"> 59</span>            <span class="k">return</span> <span class="n">GenData</span><span class="p">(</span><span class="n">gen_data</span><span class="o">.</span><span class="n">generation_number</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="linenos"> 60</span>        <span class="k">else</span><span class="p">:</span>
+<span class="linenos"> 61</span>            <span class="k">return</span> <span class="kc">None</span>
+<span class="linenos"> 62</span>
+<span class="linenos"> 63</span>
+<span class="linenos"> 64</span><span class="c1"># TODO: Replace this with Self if update to python 3.12</span>
+<span class="linenos"> 65</span><span class="n">F</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">,</span><span class="n">bound</span><span class="o">=</span><span class="s1">&#39;Fitness&#39;</span><span class="p">)</span>
+<span class="linenos"> 66</span><span class="c1"># Want this to match the specific instance of the thing implementing Fitness it was matched with,</span>
+<span class="linenos"> 67</span><span class="c1">#   not anything that matches the protocol, so this may not be exactly correct.</span>
+<span class="linenos"> 68</span>
 <div class="viewcode-block" id="Fitness">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Fitness">[docs]</a>
-<span class="linenos"> 61</span><span class="k">class</span><span class="w"> </span><span class="nc">Fitness</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="linenos"> 62</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos"> 63</span><span class="sd">    The most basic Class Protocol that contains the result of an evaluation, allowing you to</span>
-<span class="linenos"> 64</span><span class="sd">    compare the resulting fitness. This should match most numeric types (i.e. int, float) </span>
-<span class="linenos"> 65</span><span class="sd">    but allows you to do something more complex as desired.</span>
-<span class="linenos"> 66</span>
-<span class="linenos"> 67</span><span class="sd">    The slash here ensures that the arguments before it can only be provided as positional arguments.</span>
-<span class="linenos"> 68</span><span class="sd">    &quot;&quot;&quot;</span>
-<span class="linenos"> 69</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="n">o</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
-<span class="linenos"> 70</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="n">o</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
-<span class="linenos"> 71</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="n">o</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
-<span class="linenos"> 72</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="n">o</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
-<span class="linenos"> 73</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="n">o</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">bool</span><span class="p">:</span> <span class="o">...</span></div>
-
+<span class="linenos"> 69</span><span class="k">class</span><span class="w"> </span><span class="nc">Fitness</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="linenos"> 70</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 71</span><span class="sd">    The most basic Class Protocol that contains the result of an evaluation, allowing you to</span>
+<span class="linenos"> 72</span><span class="sd">    compare the resulting fitness. This should match most numeric types (i.e. int, float) </span>
+<span class="linenos"> 73</span><span class="sd">    but allows you to do something more complex as desired.</span>
 <span class="linenos"> 74</span>
+<span class="linenos"> 75</span><span class="sd">    The slash here ensures that the arguments before it can only be provided as positional arguments.</span>
+<span class="linenos"> 76</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos"> 77</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="n">o</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
+<span class="linenos"> 78</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="n">o</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
+<span class="linenos"> 79</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="n">o</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
+<span class="linenos"> 80</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="n">o</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
+<span class="linenos"> 81</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="n">o</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">bool</span><span class="p">:</span> <span class="o">...</span></div>
+
+<span class="linenos"> 82</span>
 <div class="viewcode-block" id="Individual">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Individual">[docs]</a>
-<span class="linenos"> 75</span><span class="k">class</span><span class="w"> </span><span class="nc">Individual</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="linenos"> 76</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos"> 77</span><span class="sd">    The most basic Class Protocol for creating the Individuals that evolution will act upon.</span>
-<span class="linenos"> 78</span><span class="sd">    This specifies basically nothing.</span>
-<span class="linenos"> 79</span><span class="sd">    &quot;&quot;&quot;</span>
-<span class="linenos"> 80</span>    <span class="o">...</span></div>
+<span class="linenos"> 83</span><span class="k">class</span><span class="w"> </span><span class="nc">Individual</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="linenos"> 84</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 85</span><span class="sd">    The most basic Class Protocol for creating the Individuals that evolution will act upon.</span>
+<span class="linenos"> 86</span><span class="sd">    This specifies basically nothing.</span>
+<span class="linenos"> 87</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos"> 88</span>    <span class="o">...</span></div>
 
-<span class="linenos"> 81</span>
+<span class="linenos"> 89</span>
 <div class="viewcode-block" id="FPGA_Model">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.FPGA_Model">[docs]</a>
-<span class="linenos"> 82</span><span class="k">class</span><span class="w"> </span><span class="nc">FPGA_Model</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="linenos"> 83</span>    <span class="s2">&quot;All of the FPGA models that any part of our code supports&quot;</span>
-<span class="linenos"> 84</span>    <span class="n">ICE40</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>          <span class="c1"># Check</span></div>
-
-<span class="linenos"> 85</span>
-<span class="linenos"> 86</span><span class="c1"># This class may even be able to have somewhat of a universal application for for particular FPGA models.</span>
-<div class="viewcode-block" id="FPGA_Compilation_Data">
-<a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.FPGA_Compilation_Data">[docs]</a>
-<span class="linenos"> 87</span><span class="nd">@dataclass</span>
-<span class="linenos"> 88</span><span class="k">class</span><span class="w"> </span><span class="nc">FPGA_Compilation_Data</span><span class="p">:</span>
-<span class="linenos"> 89</span>    <span class="s2">&quot;This contains all data needed to compile data for a particular FPGA.&quot;</span>
-<span class="linenos"> 90</span>    <span class="n">model</span><span class="p">:</span> <span class="n">FPGA_Model</span>
-<span class="linenos"> 91</span>    <span class="s2">&quot;The id for the particular FPGA (Maybe?)&quot;</span>
-<span class="linenos"> 92</span>    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span></div>
+<span class="linenos"> 90</span><span class="k">class</span><span class="w"> </span><span class="nc">FPGA_Model</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="linenos"> 91</span>    <span class="s2">&quot;All of the FPGA models that any part of our code supports&quot;</span>
+<span class="linenos"> 92</span>    <span class="n">ICE40</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>          <span class="c1"># Check</span></div>
 
 <span class="linenos"> 93</span>
+<span class="linenos"> 94</span><span class="c1"># This class may even be able to have somewhat of a universal application for for particular FPGA models.</span>
+<div class="viewcode-block" id="FPGA_Compilation_Data">
+<a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.FPGA_Compilation_Data">[docs]</a>
+<span class="linenos"> 95</span><span class="nd">@dataclass</span>
+<span class="linenos"> 96</span><span class="k">class</span><span class="w"> </span><span class="nc">FPGA_Compilation_Data</span><span class="p">:</span>
+<span class="linenos"> 97</span>    <span class="s2">&quot;This contains all data needed to compile data for a particular FPGA.&quot;</span>
+<span class="linenos"> 98</span>    <span class="n">model</span><span class="p">:</span> <span class="n">FPGA_Model</span>
+<span class="linenos"> 99</span>    <span class="s2">&quot;The id for the particular FPGA (Maybe?)&quot;</span>
+<span class="linenos">100</span>    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span></div>
+
+<span class="linenos">101</span>
 <div class="viewcode-block" id="Circuit">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Circuit">[docs]</a>
-<span class="linenos"> 94</span><span class="k">class</span><span class="w"> </span><span class="nc">Circuit</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="linenos"> 95</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos"> 96</span><span class="sd">    The most basic Class Protocol for creating the Circuits that are evaluated on physical FPGAs.</span>
-<span class="linenos"> 97</span><span class="sd">    This may or may not be an Individual based on what the Individual represents.</span>
-<span class="linenos"> 98</span><span class="sd">    It will if the Individual represents a circuit in its entirety.</span>
-<span class="linenos"> 99</span><span class="sd">    It will not if you are simultaniously evolving multiple sub-sections that need to be combined to make the circuit to be evaluated.</span>
-<span class="linenos">100</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos">102</span><span class="k">class</span><span class="w"> </span><span class="nc">Circuit</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="linenos">103</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">104</span><span class="sd">    The most basic Class Protocol for creating the Circuits that are evaluated on physical FPGAs.</span>
+<span class="linenos">105</span><span class="sd">    This may or may not be an Individual based on what the Individual represents.</span>
+<span class="linenos">106</span><span class="sd">    It will if the Individual represents a circuit in its entirety.</span>
+<span class="linenos">107</span><span class="sd">    It will not if you are simultaniously evolving multiple sub-sections that need to be combined to make the circuit to be evaluated.</span>
+<span class="linenos">108</span><span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Circuit.compile">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Circuit.compile">[docs]</a>
-<span class="linenos">101</span>    <span class="k">def</span><span class="w"> </span><span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fpga</span><span class="p">:</span> <span class="n">FPGA_Compilation_Data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Result</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span><span class="ne">Exception</span><span class="p">]:</span>
-<span class="linenos">102</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos">103</span><span class="sd">        This looks at the fpga and compiles the circuit for it if it can. </span>
-<span class="linenos">104</span><span class="sd">        If it can it does all of its work in the working_dir and returns with Ok(Path) for the path to the file/directory containing this data.</span>
-<span class="linenos">105</span><span class="sd">        If it cannot, it should return an exception Err(Exception) explaining why it failed.</span>
-<span class="linenos">106</span><span class="sd">        This should never raise an Exception, only return one as described.</span>
-<span class="linenos">107</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">108</span>        <span class="o">...</span></div>
+<span class="linenos">109</span>    <span class="k">def</span><span class="w"> </span><span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fpga</span><span class="p">:</span> <span class="n">FPGA_Compilation_Data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Result</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span><span class="ne">Exception</span><span class="p">]:</span>
+<span class="linenos">110</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">111</span><span class="sd">        This looks at the fpga and compiles the circuit for it if it can. </span>
+<span class="linenos">112</span><span class="sd">        If it can it does all of its work in the working_dir and returns with Ok(Path) for the path to the file/directory containing this data.</span>
+<span class="linenos">113</span><span class="sd">        If it cannot, it should return an exception Err(Exception) explaining why it failed.</span>
+<span class="linenos">114</span><span class="sd">        This should never raise an Exception, only return one as described.</span>
+<span class="linenos">115</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">116</span>        <span class="o">...</span></div>
 </div>
 
-<span class="linenos">109</span>
+<span class="linenos">117</span>
 <div class="viewcode-block" id="Population">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Population">[docs]</a>
-<span class="linenos">110</span><span class="k">class</span><span class="w"> </span><span class="nc">Population</span><span class="p">:</span>
-<span class="linenos">111</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos">112</span><span class="sd">    This is the Population object used to hold individuals and their fitnesses durring evolution. </span>
-<span class="linenos">113</span><span class="sd">    It starts out with its full list of individuals, and optionally fitnesses.</span>
-<span class="linenos">114</span><span class="sd">    No individuals in the list may be duplicates. (determined using == )</span>
-<span class="linenos">115</span><span class="sd">    If there is no fitness it is None. </span>
-<span class="linenos">116</span><span class="sd">    Fitnesses can be added to individuals in the population as desired, and once all individuals are added, the population can be sorted. </span>
-<span class="linenos">117</span><span class="sd">    The Population can also be itterated through. (iter() -then-&gt; next())</span>
-<span class="linenos">118</span><span class="sd">    &quot;&quot;&quot;</span>
-<span class="linenos">119</span>
-<span class="linenos">120</span>    <span class="c1"># May want specific type variables.</span>
+<span class="linenos">118</span><span class="k">class</span><span class="w"> </span><span class="nc">Population</span><span class="p">:</span>
+<span class="linenos">119</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">120</span><span class="sd">    This is the Population object used to hold individuals and their fitnesses durring evolution. </span>
+<span class="linenos">121</span><span class="sd">    It starts out with its full list of individuals, and optionally fitnesses.</span>
+<span class="linenos">122</span><span class="sd">    No individuals in the list may be duplicates. (determined using == )</span>
+<span class="linenos">123</span><span class="sd">    If there is no fitness it is None. </span>
+<span class="linenos">124</span><span class="sd">    Fitnesses can be added to individuals in the population as desired, and once all individuals are added, the population can be sorted. </span>
+<span class="linenos">125</span><span class="sd">    The Population can also be itterated through. (iter() -then-&gt; next())</span>
+<span class="linenos">126</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos">127</span>
+<span class="linenos">128</span>    <span class="c1"># May want specific type variables.</span>
 <div class="viewcode-block" id="Population.__init__">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Population.__init__">[docs]</a>
-<span class="linenos">121</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">individuals</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Individual</span><span class="p">],</span> <span class="n">fitnesses</span><span class="p">:</span><span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Fitness</span><span class="o">|</span><span class="kc">None</span><span class="p">]]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="linenos">122</span>        <span class="s2">&quot;Can raise ValueError if Individuals are not unique.&quot;</span>
-<span class="linenos">123</span>        <span class="n">ind</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span>
-<span class="linenos">124</span>
-<span class="linenos">125</span>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">):</span>
-<span class="linenos">126</span>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;There are duplicate individuals in this population. Each Individual in a population must be a unique object.&quot;</span><span class="p">)</span>
-<span class="linenos">127</span>
-<span class="linenos">128</span>        <span class="n">fit_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">fitnesses</span><span class="p">)</span> <span class="k">if</span> <span class="n">fitnesses</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
-<span class="linenos">129</span>        <span class="n">fit</span> <span class="o">=</span> <span class="n">fit_list</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fit_list</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
-<span class="linenos">130</span>
-<span class="linenos">131</span>        <span class="bp">self</span><span class="o">.</span><span class="n">population_list</span><span class="p">:</span><span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Individual</span><span class="p">,</span><span class="n">Optional</span><span class="p">[</span><span class="n">Fitness</span><span class="p">]]]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span><span class="n">fit</span><span class="p">))</span></div>
+<span class="linenos">129</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">individuals</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Individual</span><span class="p">],</span> <span class="n">fitnesses</span><span class="p">:</span><span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Fitness</span><span class="o">|</span><span class="kc">None</span><span class="p">]]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="linenos">130</span>        <span class="s2">&quot;Can raise ValueError if Individuals are not unique.&quot;</span>
+<span class="linenos">131</span>        <span class="n">ind</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span>
+<span class="linenos">132</span>
+<span class="linenos">133</span>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">):</span>
+<span class="linenos">134</span>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;There are duplicate individuals in this population. Each Individual in a population must be a unique object.&quot;</span><span class="p">)</span>
+<span class="linenos">135</span>
+<span class="linenos">136</span>        <span class="n">fit_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">fitnesses</span><span class="p">)</span> <span class="k">if</span> <span class="n">fitnesses</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+<span class="linenos">137</span>        <span class="n">fit</span> <span class="o">=</span> <span class="n">fit_list</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fit_list</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+<span class="linenos">138</span>
+<span class="linenos">139</span>        <span class="bp">self</span><span class="o">.</span><span class="n">population_list</span><span class="p">:</span><span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Individual</span><span class="p">,</span><span class="n">Optional</span><span class="p">[</span><span class="n">Fitness</span><span class="p">]]]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span><span class="n">fit</span><span class="p">))</span></div>
 
-<span class="linenos">132</span>        <span class="c1"># = [(Individual, Fitness), (Individual2, Fitness2), ...]</span>
-<span class="linenos">133</span>
-<span class="linenos">134</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Individual</span><span class="p">,</span><span class="n">Optional</span><span class="p">[</span><span class="n">Fitness</span><span class="p">]]]:</span>
-<span class="linenos">135</span>        <span class="c1"># call iter() to get iterator, then next()</span>
-<span class="linenos">136</span>        <span class="c1"># If wanted to be safe, return a copy that can&#39;t change</span>
-<span class="linenos">137</span>        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population_list</span><span class="p">)</span>
-<span class="linenos">138</span>    
-<span class="linenos">139</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">int</span><span class="p">:</span>
-<span class="linenos">140</span>        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population_list</span><span class="p">)</span>
+<span class="linenos">140</span>        <span class="c1"># = [(Individual, Fitness), (Individual2, Fitness2), ...]</span>
 <span class="linenos">141</span>
-<span class="linenos">142</span>    <span class="k">def</span><span class="w"> </span><span class="nf">set_fitness_by_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">index</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">fitness</span><span class="p">:</span><span class="n">Fitness</span><span class="p">)</span><span class="o">-&gt;</span><span class="kc">None</span><span class="p">:</span>
-<span class="linenos">143</span>        <span class="bp">self</span><span class="o">.</span><span class="n">population_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population_list</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">fitness</span><span class="p">)</span>
-<span class="linenos">144</span>
+<span class="linenos">142</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Individual</span><span class="p">,</span><span class="n">Optional</span><span class="p">[</span><span class="n">Fitness</span><span class="p">]]]:</span>
+<span class="linenos">143</span>        <span class="c1"># call iter() to get iterator, then next()</span>
+<span class="linenos">144</span>        <span class="c1"># If wanted to be safe, return a copy that can&#39;t change</span>
+<span class="linenos">145</span>        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population_list</span><span class="p">)</span>
+<span class="linenos">146</span>    
+<span class="linenos">147</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">int</span><span class="p">:</span>
+<span class="linenos">148</span>        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population_list</span><span class="p">)</span>
+<span class="linenos">149</span>
+<span class="linenos">150</span>    <span class="k">def</span><span class="w"> </span><span class="nf">set_fitness_by_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">index</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">fitness</span><span class="p">:</span><span class="n">Fitness</span><span class="p">)</span><span class="o">-&gt;</span><span class="kc">None</span><span class="p">:</span>
+<span class="linenos">151</span>        <span class="bp">self</span><span class="o">.</span><span class="n">population_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population_list</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">fitness</span><span class="p">)</span>
+<span class="linenos">152</span>
 <div class="viewcode-block" id="Population.set_fitness">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Population.set_fitness">[docs]</a>
-<span class="linenos">145</span>    <span class="k">def</span><span class="w"> </span><span class="nf">set_fitness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">:</span><span class="n">Individual</span><span class="p">,</span> <span class="n">fitness</span><span class="p">:</span><span class="n">Fitness</span><span class="p">)</span><span class="o">-&gt;</span><span class="kc">None</span><span class="p">:</span>
-<span class="linenos">146</span>        <span class="s2">&quot;This can return value error if provided individual is not in the population.&quot;</span>
-<span class="linenos">147</span>        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">if_tup</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population_list</span><span class="p">):</span>
-<span class="linenos">148</span>            <span class="k">if</span> <span class="n">if_tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">individual</span><span class="p">:</span>
-<span class="linenos">149</span>                <span class="bp">self</span><span class="o">.</span><span class="n">set_fitness_by_index</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">,</span><span class="n">fitness</span><span class="o">=</span><span class="n">fitness</span><span class="p">)</span>
-<span class="linenos">150</span>                <span class="k">return</span>
-<span class="linenos">151</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cound not find provided Individual in the population. Individual: </span><span class="si">{</span><span class="n">individual</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+<span class="linenos">153</span>    <span class="k">def</span><span class="w"> </span><span class="nf">set_fitness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">:</span><span class="n">Individual</span><span class="p">,</span> <span class="n">fitness</span><span class="p">:</span><span class="n">Fitness</span><span class="p">)</span><span class="o">-&gt;</span><span class="kc">None</span><span class="p">:</span>
+<span class="linenos">154</span>        <span class="s2">&quot;This can return value error if provided individual is not in the population.&quot;</span>
+<span class="linenos">155</span>        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">if_tup</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population_list</span><span class="p">):</span>
+<span class="linenos">156</span>            <span class="k">if</span> <span class="n">if_tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">individual</span><span class="p">:</span>
+<span class="linenos">157</span>                <span class="bp">self</span><span class="o">.</span><span class="n">set_fitness_by_index</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">,</span><span class="n">fitness</span><span class="o">=</span><span class="n">fitness</span><span class="p">)</span>
+<span class="linenos">158</span>                <span class="k">return</span>
+<span class="linenos">159</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find provided Individual in the population. Individual: </span><span class="si">{</span><span class="n">individual</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<span class="linenos">152</span>    
-<span class="linenos">153</span>    <span class="k">def</span><span class="w"> </span><span class="nf">set_fitness_of_unevaluated_individuals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">default_fitness</span><span class="p">:</span><span class="n">Fitness</span><span class="p">)</span><span class="o">-&gt;</span><span class="kc">None</span><span class="p">:</span>
-<span class="linenos">154</span>        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">if_tup</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population_list</span><span class="p">):</span>
-<span class="linenos">155</span>            <span class="k">if</span> <span class="n">if_tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">156</span>                <span class="bp">self</span><span class="o">.</span><span class="n">set_fitness_by_index</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">,</span><span class="n">fitness</span><span class="o">=</span><span class="n">default_fitness</span><span class="p">)</span>
-<span class="linenos">157</span>                
+<span class="linenos">160</span>    
+<span class="linenos">161</span>    <span class="k">def</span><span class="w"> </span><span class="nf">set_fitness_of_unevaluated_individuals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">default_fitness</span><span class="p">:</span><span class="n">Fitness</span><span class="p">)</span><span class="o">-&gt;</span><span class="kc">None</span><span class="p">:</span>
+<span class="linenos">162</span>        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">if_tup</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population_list</span><span class="p">):</span>
+<span class="linenos">163</span>            <span class="k">if</span> <span class="n">if_tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">164</span>                <span class="bp">self</span><span class="o">.</span><span class="n">set_fitness_by_index</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">,</span><span class="n">fitness</span><span class="o">=</span><span class="n">default_fitness</span><span class="p">)</span>
+<span class="linenos">165</span>                
 <div class="viewcode-block" id="Population.sort">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Population.sort">[docs]</a>
-<span class="linenos">158</span>    <span class="k">def</span><span class="w"> </span><span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">:</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Fitness</span><span class="p">],</span><span class="n">Fitness</span><span class="p">],</span><span class="n">reverse</span><span class="p">:</span><span class="nb">bool</span><span class="p">)</span><span class="o">-&gt;</span><span class="kc">None</span><span class="p">:</span>
-<span class="linenos">159</span>        <span class="s2">&quot;Operates on the Population fitness function like the standard sort for a list. May Raise TypeError if population not fully evaluated.&quot;</span>
-<span class="linenos">160</span>        <span class="k">try</span><span class="p">:</span>
-<span class="linenos">161</span>            <span class="bp">self</span><span class="o">.</span><span class="n">population_list</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span>
-<span class="linenos">162</span>                <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">if_tup</span><span class="p">:</span> <span class="n">key</span><span class="p">(</span><span class="n">if_tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="c1"># type: ignore</span>
-<span class="linenos">163</span>                <span class="n">reverse</span><span class="o">=</span> <span class="n">reverse</span>
-<span class="linenos">164</span>            <span class="p">)</span>
-<span class="linenos">165</span>        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-<span class="linenos">166</span>            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Population does not have all individual&#39;s fitnesses fully specified. </span><span class="si">{</span><span class="nb">sum</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">population_list</span><span class="p">])</span><span class="si">}</span><span class="s2"> individuals did not have a fitness assigned.&quot;</span><span class="p">)</span></div>
+<span class="linenos">166</span>    <span class="k">def</span><span class="w"> </span><span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">:</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Fitness</span><span class="p">],</span><span class="n">Fitness</span><span class="p">],</span><span class="n">reverse</span><span class="p">:</span><span class="nb">bool</span><span class="p">)</span><span class="o">-&gt;</span><span class="kc">None</span><span class="p">:</span>
+<span class="linenos">167</span>        <span class="s2">&quot;Operates on the Population fitness function like the standard sort for a list. May Raise TypeError if population not fully evaluated.&quot;</span>
+<span class="linenos">168</span>        <span class="k">try</span><span class="p">:</span>
+<span class="linenos">169</span>            <span class="bp">self</span><span class="o">.</span><span class="n">population_list</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span>
+<span class="linenos">170</span>                <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">if_tup</span><span class="p">:</span> <span class="n">key</span><span class="p">(</span><span class="n">if_tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="c1"># type: ignore</span>
+<span class="linenos">171</span>                <span class="n">reverse</span><span class="o">=</span> <span class="n">reverse</span>
+<span class="linenos">172</span>            <span class="p">)</span>
+<span class="linenos">173</span>        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+<span class="linenos">174</span>            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Population does not have all individual&#39;s fitnesses fully specified. </span><span class="si">{</span><span class="nb">sum</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">population_list</span><span class="p">])</span><span class="si">}</span><span class="s2"> individuals did not have a fitness assigned.&quot;</span><span class="p">)</span></div>
 </div>
 
-<span class="linenos">167</span>
-<span class="linenos">168</span>
+<span class="linenos">175</span>
+<span class="linenos">176</span>
 <div class="viewcode-block" id="CircuitFactory">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.CircuitFactory">[docs]</a>
-<span class="linenos">169</span><span class="k">class</span><span class="w"> </span><span class="nc">CircuitFactory</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="linenos">170</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos">171</span><span class="sd">    The most basic Protocol for turning Individuals into Circuits in whatever way best fits your application.</span>
-<span class="linenos">172</span><span class="sd">    How the circuit is built should be fully specified here, and any unique roles the individuals have should be specified here;</span>
-<span class="linenos">173</span><span class="sd">    however, how these individuals are selected and matched to roles is not.</span>
-<span class="linenos">174</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos">177</span><span class="k">class</span><span class="w"> </span><span class="nc">CircuitFactory</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="linenos">178</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">179</span><span class="sd">    The most basic Protocol for turning Individuals into Circuits in whatever way best fits your application.</span>
+<span class="linenos">180</span><span class="sd">    How the circuit is built should be fully specified here, and any unique roles the individuals have should be specified here;</span>
+<span class="linenos">181</span><span class="sd">    however, how these individuals are selected and matched to roles is not.</span>
+<span class="linenos">182</span><span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="CircuitFactory.__call__">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.CircuitFactory.__call__">[docs]</a>
-<span class="linenos">175</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Population</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Circuit</span><span class="p">,</span><span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Population</span><span class="p">,</span><span class="n">Individual</span><span class="p">]]]:</span>
-<span class="linenos">176</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos">177</span><span class="sd">        This takes the population of Individuals and constructs the necessary Circuit from it as requested.</span>
-<span class="linenos">178</span><span class="sd">        It returns the circuits as keys in a dictionary, where the associated values are </span>
-<span class="linenos">179</span><span class="sd">        a list of tupples for each Individual used to generate the circuit (or all individuals whose fitness is impacted directly by the circuit&#39;s fitness)</span>
-<span class="linenos">180</span><span class="sd">        and includes the population the individual was from, and the individual itself.</span>
-<span class="linenos">181</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">182</span>        <span class="o">...</span></div>
+<span class="linenos">183</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Population</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Circuit</span><span class="p">,</span><span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Population</span><span class="p">,</span><span class="n">Individual</span><span class="p">]]]:</span>
+<span class="linenos">184</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">185</span><span class="sd">        This takes the population of Individuals and constructs the necessary Circuit from it as requested.</span>
+<span class="linenos">186</span><span class="sd">        It returns the circuits as keys in a dictionary, where the associated values are </span>
+<span class="linenos">187</span><span class="sd">        a list of tupples for each Individual used to generate the circuit (or all individuals whose fitness is impacted directly by the circuit&#39;s fitness)</span>
+<span class="linenos">188</span><span class="sd">        and includes the population the individual was from, and the individual itself.</span>
+<span class="linenos">189</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">190</span>        <span class="o">...</span></div>
 </div>
 
-<span class="linenos">183</span>
+<span class="linenos">191</span>
 <div class="viewcode-block" id="Reproducer">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Reproducer">[docs]</a>
-<span class="linenos">184</span><span class="k">class</span><span class="w"> </span><span class="nc">Reproducer</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="linenos">185</span>    <span class="s2">&quot;Gets a population and returns another population filled with the children of this generation. (reproduce + mutation)&quot;</span>
-<span class="linenos">186</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">population</span><span class="p">:</span><span class="n">Population</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">Population</span><span class="p">:</span> <span class="o">...</span></div>
+<span class="linenos">192</span><span class="k">class</span><span class="w"> </span><span class="nc">Reproducer</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="linenos">193</span>    <span class="s2">&quot;Gets a population and returns another population filled with the children of this generation. (reproduce + mutation)&quot;</span>
+<span class="linenos">194</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">population</span><span class="p">:</span><span class="n">Population</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">Population</span><span class="p">:</span> <span class="o">...</span></div>
 
-<span class="linenos">187</span>
+<span class="linenos">195</span>
 <div class="viewcode-block" id="GenerateInitialPopulation">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.GenerateInitialPopulation">[docs]</a>
-<span class="linenos">188</span><span class="k">class</span><span class="w"> </span><span class="nc">GenerateInitialPopulation</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="linenos">189</span>    <span class="s2">&quot;Somehow gets you an initial implementation.&quot;</span>
-<span class="linenos">190</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">Population</span><span class="p">:</span> <span class="o">...</span></div>
+<span class="linenos">196</span><span class="k">class</span><span class="w"> </span><span class="nc">GenerateInitialPopulation</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="linenos">197</span>    <span class="s2">&quot;Somehow gets you an initial implementation.&quot;</span>
+<span class="linenos">198</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">Population</span><span class="p">:</span> <span class="o">...</span></div>
 
-<span class="linenos">191</span>
+<span class="linenos">199</span>
 <div class="viewcode-block" id="MeasurementError">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.MeasurementError">[docs]</a>
-<span class="linenos">192</span><span class="k">class</span><span class="w"> </span><span class="nc">MeasurementError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-<span class="linenos">193</span>    <span class="o">...</span></div>
+<span class="linenos">200</span><span class="k">class</span><span class="w"> </span><span class="nc">MeasurementError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="linenos">201</span>    <span class="o">...</span></div>
 
 <div class="viewcode-block" id="MeasurementNotTaken">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.MeasurementNotTaken">[docs]</a>
-<span class="linenos">194</span><span class="k">class</span><span class="w"> </span><span class="nc">MeasurementNotTaken</span><span class="p">(</span><span class="n">MeasurementError</span><span class="p">):</span>
-<span class="linenos">195</span>    <span class="o">...</span></div>
+<span class="linenos">202</span><span class="k">class</span><span class="w"> </span><span class="nc">MeasurementNotTaken</span><span class="p">(</span><span class="n">MeasurementError</span><span class="p">):</span>
+<span class="linenos">203</span>    <span class="o">...</span></div>
 
-<span class="linenos">196</span>
+<span class="linenos">204</span>
 <div class="viewcode-block" id="DataRequest">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.DataRequest">[docs]</a>
-<span class="linenos">197</span><span class="k">class</span><span class="w"> </span><span class="nc">DataRequest</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="linenos">198</span>    <span class="n">NONE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-<span class="linenos">199</span>    <span class="n">WAVEFORM</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-<span class="linenos">200</span>    <span class="n">OSCILLATIONS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
+<span class="linenos">205</span><span class="k">class</span><span class="w"> </span><span class="nc">DataRequest</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="linenos">206</span>    <span class="n">NONE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+<span class="linenos">207</span>    <span class="n">WAVEFORM</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+<span class="linenos">208</span>    <span class="n">OSCILLATIONS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
 
-<span class="linenos">201</span>
-<span class="linenos">202</span><span class="n">C</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Circuit</span><span class="p">)</span> <span class="c1">#circuit type used</span>
-<span class="linenos">203</span><span class="n">M</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Any</span><span class="p">)</span> <span class="c1"># type of measurement taken</span>
+<span class="linenos">209</span>
+<span class="linenos">210</span><span class="n">C</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Circuit</span><span class="p">)</span> <span class="c1">#circuit type used</span>
+<span class="linenos">211</span><span class="n">M</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Any</span><span class="p">)</span> <span class="c1"># type of measurement taken</span>
 <div class="viewcode-block" id="Measurement">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Measurement">[docs]</a>
-<span class="linenos">204</span><span class="k">class</span><span class="w"> </span><span class="nc">Measurement</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">C</span><span class="p">,</span><span class="n">M</span><span class="p">]):</span>
-<span class="linenos">205</span>    <span class="s2">&quot;All measurement data, this could even be a class potentially&quot;</span>
-<span class="linenos">206</span>    <span class="c1"># FPGA_request:str</span>
-<span class="linenos">207</span>    <span class="c1"># data_request:Enum</span>
-<span class="linenos">208</span>    <span class="c1"># circuit:Circuit</span>
-<span class="linenos">209</span>    <span class="c1"># FPGA_used:Optional[str]</span>
-<span class="linenos">210</span>    <span class="c1"># result = Result[Any,Exception] </span>
-<span class="linenos">211</span>    <span class="c1"># argument = Any</span>
+<span class="linenos">212</span><span class="k">class</span><span class="w"> </span><span class="nc">Measurement</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">C</span><span class="p">,</span><span class="n">M</span><span class="p">]):</span>
+<span class="linenos">213</span>    <span class="s2">&quot;All measurement data, this could even be a class potentially&quot;</span>
+<span class="linenos">214</span>    <span class="c1"># FPGA_request:str</span>
+<span class="linenos">215</span>    <span class="c1"># data_request:Enum</span>
+<span class="linenos">216</span>    <span class="c1"># circuit:Circuit</span>
+<span class="linenos">217</span>    <span class="c1"># FPGA_used:Optional[str]</span>
+<span class="linenos">218</span>    <span class="c1"># result = Result[Any,Exception] </span>
+<span class="linenos">219</span>    <span class="c1"># argument = Any</span>
 <div class="viewcode-block" id="Measurement.__init__">
 <a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Measurement.__init__">[docs]</a>
-<span class="linenos">212</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">FPGA_request</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">data_request</span><span class="p">:</span><span class="n">DataRequest</span><span class="p">,</span><span class="n">circuit_to_measure</span><span class="p">:</span><span class="n">Circuit</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span><span class="o">-&gt;</span><span class="kc">None</span><span class="p">:</span>
-<span class="linenos">213</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos">214</span><span class="sd">        .. TODO::</span>
-<span class="linenos">215</span><span class="sd">            Figure out the format for an FPGA Request, potentially also changing the type, and adjust that here.</span>
-<span class="linenos">216</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">217</span>        <span class="bp">self</span><span class="o">.</span><span class="n">FPGA_request</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="n">FPGA_request</span> <span class="c1">#may want to refine typing here</span>
-<span class="linenos">218</span>        <span class="bp">self</span><span class="o">.</span><span class="n">data_request</span><span class="p">:</span><span class="n">Enum</span> <span class="o">=</span> <span class="n">data_request</span>
-<span class="linenos">219</span>        <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">:</span><span class="n">C</span> <span class="o">=</span> <span class="n">circuit_to_measure</span>
-<span class="linenos">220</span>        <span class="bp">self</span><span class="o">.</span><span class="n">FPGA_used</span><span class="p">:</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="linenos">221</span>        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">:</span> <span class="n">Result</span><span class="p">[</span><span class="n">M</span><span class="p">,</span><span class="ne">Exception</span><span class="p">]</span> <span class="o">=</span> <span class="n">Failure</span><span class="p">(</span><span class="n">MeasurementNotTaken</span><span class="p">(</span><span class="s2">&quot;Initialized Measurement option has not yet been measured.&quot;</span><span class="p">))</span>
-<span class="linenos">222</span>                      <span class="c1"># The Any should be the measurement data, which we may want to standardize at some point</span>
-<span class="linenos">223</span>        <span class="bp">self</span><span class="o">.</span><span class="n">num_samples</span> <span class="o">=</span> <span class="n">num_samples</span></div>
+<span class="linenos">220</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">FPGA_request</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">data_request</span><span class="p">:</span><span class="n">DataRequest</span><span class="p">,</span><span class="n">circuit_to_measure</span><span class="p">:</span><span class="n">Circuit</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span><span class="o">-&gt;</span><span class="kc">None</span><span class="p">:</span>
+<span class="linenos">221</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">222</span><span class="sd">        .. TODO::</span>
+<span class="linenos">223</span><span class="sd">            Figure out the format for an FPGA Request, potentially also changing the type, and adjust that here.</span>
+<span class="linenos">224</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">225</span>        <span class="bp">self</span><span class="o">.</span><span class="n">FPGA_request</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="n">FPGA_request</span> <span class="c1">#may want to refine typing here</span>
+<span class="linenos">226</span>        <span class="bp">self</span><span class="o">.</span><span class="n">data_request</span><span class="p">:</span><span class="n">Enum</span> <span class="o">=</span> <span class="n">data_request</span>
+<span class="linenos">227</span>        <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">:</span><span class="n">C</span> <span class="o">=</span> <span class="n">circuit_to_measure</span>
+<span class="linenos">228</span>        <span class="bp">self</span><span class="o">.</span><span class="n">FPGA_used</span><span class="p">:</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="linenos">229</span>        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">:</span> <span class="n">Result</span><span class="p">[</span><span class="n">M</span><span class="p">,</span><span class="ne">Exception</span><span class="p">]</span> <span class="o">=</span> <span class="n">Failure</span><span class="p">(</span><span class="n">MeasurementNotTaken</span><span class="p">(</span><span class="s2">&quot;Initialized Measurement option has not yet been measured.&quot;</span><span class="p">))</span>
+<span class="linenos">230</span>                      <span class="c1"># The Any should be the measurement data, which we may want to standardize at some point</span>
+<span class="linenos">231</span>        <span class="bp">self</span><span class="o">.</span><span class="n">num_samples</span> <span class="o">=</span> <span class="n">num_samples</span></div>
 
-<span class="linenos">224</span>    
-<span class="linenos">225</span>    <span class="k">def</span><span class="w"> </span><span class="nf">record_FPGA_used</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">FPGA</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span><span class="o">-&gt;</span><span class="kc">None</span><span class="p">:</span>
-<span class="linenos">226</span>        <span class="bp">self</span><span class="o">.</span><span class="n">FPGA_used</span> <span class="o">=</span> <span class="n">FPGA</span>
-<span class="linenos">227</span>    
-<span class="linenos">228</span>    <span class="k">def</span><span class="w"> </span><span class="nf">record_measurement_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">result</span><span class="p">:</span><span class="n">M</span><span class="o">|</span><span class="ne">Exception</span><span class="p">):</span>
-<span class="linenos">229</span>        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="ne">Exception</span><span class="p">):</span>
-<span class="linenos">230</span>            <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">Failure</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-<span class="linenos">231</span>        <span class="k">else</span><span class="p">:</span>
-<span class="linenos">232</span>            <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">Success</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
-
-<span class="linenos">233</span>
-<div class="viewcode-block" id="EvaluatePopulationFitness">
-<a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.EvaluatePopulationFitness">[docs]</a>
-<span class="linenos">234</span><span class="k">class</span><span class="w"> </span><span class="nc">EvaluatePopulationFitness</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="linenos">235</span>    <span class="s2">&quot;Fully Evaluates a Population, the fitnesses in the population are fully specified. The populations involved will be edited in place. Any populations not provided will not be edited.&quot;</span>
-<span class="linenos">236</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">population</span><span class="p">:</span><span class="n">Population</span><span class="p">,</span><span class="n">measurements</span><span class="p">:</span><span class="nb">list</span><span class="p">[</span><span class="n">Measurement</span><span class="p">])</span><span class="o">-&gt;</span><span class="kc">None</span><span class="p">:</span> <span class="o">...</span></div>
-
-<span class="linenos">237</span>
-<div class="viewcode-block" id="GenerateMeasurements">
-<a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.GenerateMeasurements">[docs]</a>
-<span class="linenos">238</span><span class="k">class</span><span class="w"> </span><span class="nc">GenerateMeasurements</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="linenos">239</span>    <span class="s2">&quot;Generate the measurements to take for the given populations. Returns a dict where all new measurements are given, and map to the individuals whose fitnesses they impact and the population the individuals are in.&quot;</span>
-<span class="linenos">240</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">:</span> <span class="n">CircuitFactory</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Population</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Measurement</span><span class="p">,</span><span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Population</span><span class="p">,</span><span class="n">Individual</span><span class="p">]]]:</span> <span class="o">...</span></div>
+<span class="linenos">232</span>    
+<span class="linenos">233</span>    <span class="k">def</span><span class="w"> </span><span class="nf">record_FPGA_used</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">FPGA</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span><span class="o">-&gt;</span><span class="kc">None</span><span class="p">:</span>
+<span class="linenos">234</span>        <span class="bp">self</span><span class="o">.</span><span class="n">FPGA_used</span> <span class="o">=</span> <span class="n">FPGA</span>
+<span class="linenos">235</span>    
+<span class="linenos">236</span>    <span class="k">def</span><span class="w"> </span><span class="nf">record_measurement_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">result</span><span class="p">:</span><span class="n">M</span><span class="o">|</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="linenos">237</span>        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="linenos">238</span>            <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">Failure</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="linenos">239</span>        <span class="k">else</span><span class="p">:</span>
+<span class="linenos">240</span>            <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">Success</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 <span class="linenos">241</span>
-<div class="viewcode-block" id="Hardware">
-<a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Hardware">[docs]</a>
-<span class="linenos">242</span><span class="k">class</span><span class="w"> </span><span class="nc">Hardware</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="linenos">243</span>    <span class="s2">&quot;Used to Evaluate Measurements. Compile hardware would be responsible for compiling the Circuit in the Measurement object passed to it in request_measurement().&quot;</span>
-<span class="linenos">244</span>    <span class="c1">#Has FPGAs</span>
-<span class="linenos">245</span>    <span class="c1">#Has Active Measurements being evaluated</span>
-<span class="linenos">246</span>    <span class="c1">#Has Pending MEasurements to be evaluated</span>
-<span class="linenos">247</span>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">request_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">measurement</span><span class="p">:</span> <span class="n">Measurement</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">Measurement</span><span class="p">:</span> <span class="o">...</span> <span class="c1">#make this an async function</span>
-<span class="linenos">248</span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_available_FPGAs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span> <span class="o">...</span> <span class="c1"># This could be a list of ids, or some sort of FPGA object with the UUID included and other relevant data.</span></div>
+<div class="viewcode-block" id="EvaluatePopulationFitness">
+<a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.EvaluatePopulationFitness">[docs]</a>
+<span class="linenos">242</span><span class="k">class</span><span class="w"> </span><span class="nc">EvaluatePopulationFitness</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="linenos">243</span>    <span class="s2">&quot;Fully Evaluates a Population, the fitnesses in the population are fully specified. The populations involved will be edited in place. Any populations not provided will not be edited.&quot;</span>
+<span class="linenos">244</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">population</span><span class="p">:</span><span class="n">Population</span><span class="p">,</span><span class="n">measurements</span><span class="p">:</span><span class="nb">list</span><span class="p">[</span><span class="n">Measurement</span><span class="p">])</span><span class="o">-&gt;</span><span class="kc">None</span><span class="p">:</span> <span class="o">...</span></div>
+
+<span class="linenos">245</span>
+<div class="viewcode-block" id="GenerateMeasurements">
+<a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.GenerateMeasurements">[docs]</a>
+<span class="linenos">246</span><span class="k">class</span><span class="w"> </span><span class="nc">GenerateMeasurements</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="linenos">247</span>    <span class="s2">&quot;Generate the measurements to take for the given populations. Returns a dict where all new measurements are given, and map to the individuals whose fitnesses they impact and the population the individuals are in.&quot;</span>
+<span class="linenos">248</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">:</span> <span class="n">CircuitFactory</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Population</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Measurement</span><span class="p">,</span><span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Population</span><span class="p">,</span><span class="n">Individual</span><span class="p">]]]:</span> <span class="o">...</span></div>
 
 <span class="linenos">249</span>
-<span class="linenos">250</span><span class="c1"># Example usage</span>
-<span class="linenos">251</span><span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
-<span class="linenos">252</span>    <span class="c1">#https://www.pythontutorial.net/python-concurrency/python-async-await/</span>
-<span class="linenos">253</span>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">evalMeas</span><span class="p">(</span><span class="n">Measurements</span><span class="p">:</span><span class="nb">list</span><span class="p">[</span><span class="n">Measurement</span><span class="p">]):</span>
-<span class="linenos">254</span>        <span class="n">hw</span> <span class="o">=</span> <span class="n">Hardware</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="linenos">255</span>        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">Measurements</span><span class="p">:</span>
-<span class="linenos">256</span>            <span class="k">await</span> <span class="n">Hardware</span><span class="o">.</span><span class="n">request_measurement</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-<span class="linenos">257</span>    
-<span class="linenos">258</span>    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">evalMeas</span><span class="p">(</span><span class="o">...</span><span class="p">))</span> <span class="c1"># or something of this nature</span>
-<span class="linenos">259</span>    
-<span class="linenos">260</span>    
+<div class="viewcode-block" id="Hardware">
+<a class="viewcode-back" href="../code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Hardware">[docs]</a>
+<span class="linenos">250</span><span class="k">class</span><span class="w"> </span><span class="nc">Hardware</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="linenos">251</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">252</span><span class="sd">    Used to Evaluate Measurements. Compile hardware would be responsible for compiling the Circuit</span>
+<span class="linenos">253</span><span class="sd">    in the Measurement object passed to it in request_measurement().</span>
+<span class="linenos">254</span>
+<span class="linenos">255</span><span class="sd">    Intended concurrency model (server-client):</span>
+<span class="linenos">256</span><span class="sd">    ============================================</span>
+<span class="linenos">257</span><span class="sd">    request_measurement() is async so that multiple measurements can be dispatched concurrently</span>
+<span class="linenos">258</span><span class="sd">    via asyncio.gather() in Evolution.run(). This is meaningful when Hardware is a client that</span>
+<span class="linenos">259</span><span class="sd">    sends requests over a network to a hardware server — the await genuinely suspends while</span>
+<span class="linenos">260</span><span class="sd">    waiting for the network response, allowing other coroutines to run in the meantime.</span>
 <span class="linenos">261</span>
-<span class="linenos">262</span>
-<span class="linenos">263</span><span class="c1">## Interesting Experiment to consider if update python version;</span>
-<span class="linenos">264</span>
-<span class="linenos">265</span>
-<span class="linenos">266</span><span class="c1">#from mypy_extensions import Arg,VarArg,KwArg</span>
+<span class="linenos">262</span><span class="sd">    The current Microcontroller implementation uses blocking pyserial and does NOT achieve</span>
+<span class="linenos">263</span><span class="sd">    real concurrency. As the codebase moves to a server-client model, asyncio.gather() will</span>
+<span class="linenos">264</span><span class="sd">    provide true parallelism across multiple FPGAs automatically. The server-side should use</span>
+<span class="linenos">265</span><span class="sd">    serial_asyncio (https://pypi.org/project/serial-asyncio/) in place of pyserial so that</span>
+<span class="linenos">266</span><span class="sd">    serial reads are genuinely non-blocking within the server&#39;s event loop.</span>
 <span class="linenos">267</span>
-<span class="linenos">268</span><span class="c1"># &quot;type&quot; requires python 3.12+</span>
-<span class="linenos">269</span><span class="c1">#type GenDataFactory = Callable[[Arg(GenData|None),VarArg(Any),KwArg(Any)],GenData|None]</span>
+<span class="linenos">268</span><span class="sd">    Per-FPGA exclusivity constraint:</span>
+<span class="linenos">269</span><span class="sd">    =================================</span>
+<span class="linenos">270</span><span class="sd">    Each physical Icestick (or FPGA device) can only be accessed by one process at a time —</span>
+<span class="linenos">271</span><span class="sd">    iceprog holds exclusive USB access while programming the device. Implementations of this</span>
+<span class="linenos">272</span><span class="sd">    protocol MUST ensure that concurrent calls to request_measurement() targeting the same</span>
+<span class="linenos">273</span><span class="sd">    physical FPGA are serialized. Recommended approaches for the server:</span>
+<span class="linenos">274</span>
+<span class="linenos">275</span><span class="sd">    Option A — asyncio.Semaphore(1) per FPGA:</span>
+<span class="linenos">276</span><span class="sd">        Each FPGA gets its own Semaphore. request_measurement acquires the semaphore for the</span>
+<span class="linenos">277</span><span class="sd">        target device before proceeding. Requests for different FPGAs run concurrently;</span>
+<span class="linenos">278</span><span class="sd">        requests for the same FPGA queue up automatically.</span>
+<span class="linenos">279</span>
+<span class="linenos">280</span><span class="sd">    Option B — Per-FPGA asyncio.Queue with a dedicated worker coroutine:</span>
+<span class="linenos">281</span><span class="sd">        One worker coroutine per FPGA dequeues and processes measurements one at a time.</span>
+<span class="linenos">282</span><span class="sd">        Naturally serializes access while allowing inter-FPGA parallelism.</span>
+<span class="linenos">283</span>
+<span class="linenos">284</span><span class="sd">    See .claude/docs/hardware_concurrency.md for full discussion.</span>
+<span class="linenos">285</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos">286</span>    <span class="c1">#Has FPGAs</span>
+<span class="linenos">287</span>    <span class="c1">#Has Active Measurements being evaluated</span>
+<span class="linenos">288</span>    <span class="c1">#Has Pending Measurements to be evaluated</span>
+<span class="linenos">289</span>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">request_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">measurement</span><span class="p">:</span> <span class="n">Measurement</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">Measurement</span><span class="p">:</span> <span class="o">...</span>
+<span class="linenos">290</span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_available_FPGAs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span> <span class="o">...</span> <span class="c1"># This could be a list of ids, or some sort of FPGA object with the UUID included and other relevant data.</span></div>
+
+<span class="linenos">291</span>
+<span class="linenos">292</span><span class="c1"># Example usage</span>
+<span class="linenos">293</span><span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+<span class="linenos">294</span>    <span class="c1">#https://www.pythontutorial.net/python-concurrency/python-async-await/</span>
+<span class="linenos">295</span>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">evalMeas</span><span class="p">(</span><span class="n">Measurements</span><span class="p">:</span><span class="nb">list</span><span class="p">[</span><span class="n">Measurement</span><span class="p">]):</span>
+<span class="linenos">296</span>        <span class="n">hw</span> <span class="o">=</span> <span class="n">Hardware</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="linenos">297</span>        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">Measurements</span><span class="p">:</span>
+<span class="linenos">298</span>            <span class="k">await</span> <span class="n">Hardware</span><span class="o">.</span><span class="n">request_measurement</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="linenos">299</span>    
+<span class="linenos">300</span>    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">evalMeas</span><span class="p">(</span><span class="o">...</span><span class="p">))</span> <span class="c1"># or something of this nature</span>
+<span class="linenos">301</span>    
+<span class="linenos">302</span>    
+<span class="linenos">303</span>
+<span class="linenos">304</span>
+<span class="linenos">305</span><span class="c1">## Interesting Experiment to consider if update python version;</span>
+<span class="linenos">306</span>
+<span class="linenos">307</span>
+<span class="linenos">308</span><span class="c1">#from mypy_extensions import Arg,VarArg,KwArg</span>
+<span class="linenos">309</span>
+<span class="linenos">310</span><span class="c1"># &quot;type&quot; requires python 3.12+</span>
+<span class="linenos">311</span><span class="c1">#type GenDataFactory = Callable[[Arg(GenData|None),VarArg(Any),KwArg(Any)],GenData|None]</span>
 </pre></div>
 
                 </article>

@@ -158,8 +158,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../code/Circuit/Circuit.html">Circuit.py</a></li>
@@ -304,158 +312,163 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for Population.PopulationInitialization</h1><div class="highlight"><pre>
-<span></span><span class="linenos">  1</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="linenos">  2</span><span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">Random</span>
-<span class="linenos">  3</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span>
-<span class="linenos">  4</span><span class="kn">from</span><span class="w"> </span><span class="nn">BitstreamEvolutionProtocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">Circuit</span><span class="p">,</span> <span class="n">Individual</span><span class="p">,</span> <span class="n">Population</span>
-<span class="linenos">  5</span><span class="kn">from</span><span class="w"> </span><span class="nn">Circuit.FileBasedCircuit</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileBasedCircuit</span>
-<span class="linenos">  6</span><span class="kn">from</span><span class="w"> </span><span class="nn">Directories</span><span class="w"> </span><span class="kn">import</span> <span class="n">Directories</span>
-<span class="linenos">  7</span><span class="kn">from</span><span class="w"> </span><span class="nn">Individual.BitstreamIndividual</span><span class="w"> </span><span class="kn">import</span> <span class="n">BitstreamIndividual</span>
-<span class="linenos">  8</span><span class="kn">from</span><span class="w"> </span><span class="nn">Logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
-<span class="linenos">  9</span><span class="kn">from</span><span class="w"> </span><span class="nn">utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">wipe_folder</span>
-<span class="linenos"> 10</span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="linenos"> 11</span>
-<span class="linenos"> 12</span><span class="n">SEED_HARDWARE_FILEPATH</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/seed-hardware.asc&quot;</span><span class="p">)</span>
-<span class="linenos"> 13</span>
-<span class="linenos"> 14</span><span class="c1"># File for implementations of GenerateInitialPopulations</span>
-<span class="linenos"> 15</span>
+<span></span><span class="linenos">  1</span><span class="sd">&quot;&quot;&quot;Population initialization factories and strategies.</span>
+<span class="linenos">  2</span>
+<span class="linenos">  3</span><span class="sd">Provides protocols and concrete implementations for creating initial</span>
+<span class="linenos">  4</span><span class="sd">populations of :class:`~Individual.BitstreamIndividual.BitstreamIndividual`</span>
+<span class="linenos">  5</span><span class="sd">objects with configurable post-construction and randomization strategies.</span>
+<span class="linenos">  6</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  7</span>
+<span class="linenos">  8</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="linenos">  9</span><span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">Random</span>
+<span class="linenos"> 10</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span>
+<span class="linenos"> 11</span><span class="kn">from</span><span class="w"> </span><span class="nn">BitstreamEvolutionProtocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">Circuit</span><span class="p">,</span> <span class="n">Individual</span><span class="p">,</span> <span class="n">Population</span>
+<span class="linenos"> 12</span><span class="kn">from</span><span class="w"> </span><span class="nn">Circuit.FileBasedCircuit</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileBasedCircuit</span>
+<span class="linenos"> 13</span><span class="kn">from</span><span class="w"> </span><span class="nn">Directories</span><span class="w"> </span><span class="kn">import</span> <span class="n">Directories</span>
+<span class="linenos"> 14</span><span class="kn">from</span><span class="w"> </span><span class="nn">Individual.BitstreamIndividual</span><span class="w"> </span><span class="kn">import</span> <span class="n">BitstreamIndividual</span>
+<span class="linenos"> 15</span><span class="kn">from</span><span class="w"> </span><span class="nn">Logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
+<span class="linenos"> 16</span><span class="kn">from</span><span class="w"> </span><span class="nn">utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">wipe_folder</span>
+<span class="linenos"> 17</span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="linenos"> 18</span>
+<span class="linenos"> 19</span><span class="n">SEED_HARDWARE_FILEPATH</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/seed-hardware.asc&quot;</span><span class="p">)</span>
+<span class="linenos"> 20</span>
 <div class="viewcode-block" id="GenerateInitialPopulations">
 <a class="viewcode-back" href="../../code/Population/PopulationInitialization.html#Population.PopulationInitialization.GenerateInitialPopulations">[docs]</a>
-<span class="linenos"> 16</span><span class="k">class</span><span class="w"> </span><span class="nc">GenerateInitialPopulations</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="linenos"> 17</span>    <span class="s2">&quot;Somehow gets you an initial implementation.&quot;</span>
-<span class="linenos"> 18</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Population</span><span class="p">]:</span> <span class="o">...</span></div>
+<span class="linenos"> 21</span><span class="k">class</span><span class="w"> </span><span class="nc">GenerateInitialPopulations</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="linenos"> 22</span>    <span class="s2">&quot;Somehow gets you an initial implementation.&quot;</span>
+<span class="linenos"> 23</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Population</span><span class="p">]:</span> <span class="o">...</span></div>
 
-<span class="linenos"> 19</span>
+<span class="linenos"> 24</span>
 <div class="viewcode-block" id="GenerateInitialPopulation">
 <a class="viewcode-back" href="../../code/Population/PopulationInitialization.html#Population.PopulationInitialization.GenerateInitialPopulation">[docs]</a>
-<span class="linenos"> 20</span><span class="k">class</span><span class="w"> </span><span class="nc">GenerateInitialPopulation</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="linenos"> 21</span>    <span class="s2">&quot;The special case of GenerateInitialPopulations that constructs only a single population&quot;</span>
-<span class="linenos"> 22</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Population</span><span class="p">:</span> <span class="o">...</span></div>
+<span class="linenos"> 25</span><span class="k">class</span><span class="w"> </span><span class="nc">GenerateInitialPopulation</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="linenos"> 26</span>    <span class="s2">&quot;The special case of GenerateInitialPopulations that constructs only a single population&quot;</span>
+<span class="linenos"> 27</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Population</span><span class="p">:</span> <span class="o">...</span></div>
 
-<span class="linenos"> 23</span>
+<span class="linenos"> 28</span>
 <div class="viewcode-block" id="GenerateSinglePopulationWrapper">
 <a class="viewcode-back" href="../../code/Population/PopulationInitialization.html#Population.PopulationInitialization.GenerateSinglePopulationWrapper">[docs]</a>
-<span class="linenos"> 24</span><span class="k">class</span><span class="w"> </span><span class="nc">GenerateSinglePopulationWrapper</span><span class="p">:</span>
-<span class="linenos"> 25</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos"> 26</span><span class="sd">    A wrapper around GenerateInitialPopulation (singular) that follows</span>
-<span class="linenos"> 27</span><span class="sd">    GenerateInitialPopulations (plural) which is the protocol used in Evolution</span>
-<span class="linenos"> 28</span><span class="sd">    Returns a one-element list of the population created</span>
-<span class="linenos"> 29</span><span class="sd">    Example Usage: Evolution(..., GenerateSinglePopulationWrapper(GenerateRandomPopulation(...)), ...)</span>
-<span class="linenos"> 30</span><span class="sd">    &quot;&quot;&quot;</span>
-<span class="linenos"> 31</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen_func</span><span class="p">:</span> <span class="n">GenerateInitialPopulation</span><span class="p">):</span>
-<span class="linenos"> 32</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__gen_func</span> <span class="o">=</span> <span class="n">gen_func</span>
-<span class="linenos"> 33</span>    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Population</span><span class="p">]:</span>
-<span class="linenos"> 34</span>        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__gen_func</span><span class="p">()]</span></div>
+<span class="linenos"> 29</span><span class="k">class</span><span class="w"> </span><span class="nc">GenerateSinglePopulationWrapper</span><span class="p">:</span>
+<span class="linenos"> 30</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 31</span><span class="sd">    A wrapper around GenerateInitialPopulation (singular) that follows</span>
+<span class="linenos"> 32</span><span class="sd">    GenerateInitialPopulations (plural) which is the protocol used in Evolution</span>
+<span class="linenos"> 33</span><span class="sd">    Returns a one-element list of the population created</span>
+<span class="linenos"> 34</span><span class="sd">    Example Usage: Evolution(..., GenerateSinglePopulationWrapper(GenerateRandomPopulation(...)), ...)</span>
+<span class="linenos"> 35</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos"> 36</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen_func</span><span class="p">:</span> <span class="n">GenerateInitialPopulation</span><span class="p">):</span>
+<span class="linenos"> 37</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__gen_func</span> <span class="o">=</span> <span class="n">gen_func</span>
+<span class="linenos"> 38</span>    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Population</span><span class="p">]:</span>
+<span class="linenos"> 39</span>        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__gen_func</span><span class="p">()]</span></div>
 
-<span class="linenos"> 35</span>
+<span class="linenos"> 40</span>
 <div class="viewcode-block" id="PostConstructionStrategy">
 <a class="viewcode-back" href="../../code/Population/PopulationInitialization.html#Population.PopulationInitialization.PostConstructionStrategy">[docs]</a>
-<span class="linenos"> 36</span><span class="k">class</span><span class="w"> </span><span class="nc">PostConstructionStrategy</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="linenos"> 37</span><span class="w">    </span><span class="sd">&#39;&#39;&#39;Consumes the incoming parameter&#39;&#39;&#39;</span>
-<span class="linenos"> 38</span>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">:</span> <span class="n">BitstreamIndividual</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BitstreamIndividual</span><span class="p">:</span> <span class="o">...</span></div>
+<span class="linenos"> 41</span><span class="k">class</span><span class="w"> </span><span class="nc">PostConstructionStrategy</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="linenos"> 42</span><span class="w">    </span><span class="sd">&#39;&#39;&#39;Consumes the incoming parameter&#39;&#39;&#39;</span>
+<span class="linenos"> 43</span>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">:</span> <span class="n">BitstreamIndividual</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BitstreamIndividual</span><span class="p">:</span> <span class="o">...</span></div>
 
-<span class="linenos"> 39</span>
+<span class="linenos"> 44</span>
 <div class="viewcode-block" id="RandomizationStrategy">
 <a class="viewcode-back" href="../../code/Population/PopulationInitialization.html#Population.PopulationInitialization.RandomizationStrategy">[docs]</a>
-<span class="linenos"> 40</span><span class="k">class</span><span class="w"> </span><span class="nc">RandomizationStrategy</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="linenos"> 41</span><span class="w">    </span><span class="sd">&#39;&#39;&#39;Consumes the incoming parameter&#39;&#39;&#39;</span>
-<span class="linenos"> 42</span>    <span class="k">def</span><span class="w"> </span><span class="nf">randomize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individuals</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BitstreamIndividual</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BitstreamIndividual</span><span class="p">]:</span> <span class="o">...</span></div>
+<span class="linenos"> 45</span><span class="k">class</span><span class="w"> </span><span class="nc">RandomizationStrategy</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="linenos"> 46</span><span class="w">    </span><span class="sd">&#39;&#39;&#39;Consumes the incoming parameter&#39;&#39;&#39;</span>
+<span class="linenos"> 47</span>    <span class="k">def</span><span class="w"> </span><span class="nf">randomize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individuals</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BitstreamIndividual</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BitstreamIndividual</span><span class="p">]:</span> <span class="o">...</span></div>
 
-<span class="linenos"> 43</span>
-<span class="linenos"> 44</span><span class="k">class</span><span class="w"> </span><span class="nc">GenerateBitstreamPopulation</span><span class="p">:</span>
-<span class="linenos"> 45</span>    <span class="c1"># force everything to be passed by keyword</span>
-<span class="linenos"> 46</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">sz</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bitstream_sz</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-<span class="linenos"> 47</span>                 <span class="n">post_construction_strategy</span><span class="p">:</span> <span class="n">PostConstructionStrategy</span><span class="p">,</span>
-<span class="linenos"> 48</span>                 <span class="n">randomization_strategy</span><span class="p">:</span> <span class="n">RandomizationStrategy</span><span class="p">,</span>
-<span class="linenos"> 49</span>                 <span class="n">mutation_prob</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">rand</span><span class="p">:</span> <span class="n">Random</span><span class="p">):</span>
-<span class="linenos"> 50</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__sz</span> <span class="o">=</span> <span class="n">sz</span>
-<span class="linenos"> 51</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__bitstream_sz</span> <span class="o">=</span> <span class="n">bitstream_sz</span>
-<span class="linenos"> 52</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__post_construction_strategy</span> <span class="o">=</span> <span class="n">post_construction_strategy</span>
-<span class="linenos"> 53</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__randomization_strategy</span> <span class="o">=</span> <span class="n">randomization_strategy</span>
-<span class="linenos"> 54</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__rand</span> <span class="o">=</span> <span class="n">rand</span>
-<span class="linenos"> 55</span>
-<span class="linenos"> 56</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__mutation_prob</span> <span class="o">=</span> <span class="n">mutation_prob</span>
-<span class="linenos"> 57</span>        
-<span class="linenos"> 58</span>    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Population</span><span class="p">:</span>
-<span class="linenos"> 59</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos"> 60</span><span class="sd">        Creates initial population based on the config.</span>
-<span class="linenos"> 61</span><span class="sd">        1. Clears the files used to keep track of circuit</span>
-<span class="linenos"> 62</span><span class="sd">        2. Uses appropriate initialization method specified by config.</span>
-<span class="linenos"> 63</span><span class="sd">        3. Handles randomization until condition in config is met.</span>
-<span class="linenos"> 64</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos"> 65</span>
-<span class="linenos"> 66</span>        <span class="n">individuals</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="linenos"> 67</span>
-<span class="linenos"> 68</span>        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sz</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-<span class="linenos"> 69</span>            <span class="n">individual</span> <span class="o">=</span> <span class="n">BitstreamIndividual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__bitstream_sz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__rand</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__mutation_prob</span><span class="p">)</span>
-<span class="linenos"> 70</span>            <span class="n">individual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__post_construction_strategy</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
-<span class="linenos"> 71</span>
-<span class="linenos"> 72</span>            <span class="n">individuals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
-<span class="linenos"> 73</span>
-<span class="linenos"> 74</span>        <span class="n">circuits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__randomization_strategy</span><span class="o">.</span><span class="n">randomize</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span>
-<span class="linenos"> 75</span>
-<span class="linenos"> 76</span>        <span class="k">return</span> <span class="n">Population</span><span class="p">(</span><span class="n">circuits</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-<span class="linenos"> 77</span>
-<span class="linenos"> 78</span><span class="c1"># used for CLONE_SEED</span>
-<span class="linenos"> 79</span><span class="k">class</span><span class="w"> </span><span class="nc">NoPostConstructionStrategy</span><span class="p">:</span>
-<span class="linenos"> 80</span>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">:</span> <span class="n">BitstreamIndividual</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BitstreamIndividual</span><span class="p">:</span>
-<span class="linenos"> 81</span>        <span class="k">return</span> <span class="n">individual</span>
+<span class="linenos"> 48</span>
+<span class="linenos"> 49</span><span class="k">class</span><span class="w"> </span><span class="nc">GenerateBitstreamPopulation</span><span class="p">:</span>
+<span class="linenos"> 50</span>    <span class="c1"># force everything to be passed by keyword</span>
+<span class="linenos"> 51</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">sz</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bitstream_sz</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos"> 52</span>                 <span class="n">post_construction_strategy</span><span class="p">:</span> <span class="n">PostConstructionStrategy</span><span class="p">,</span>
+<span class="linenos"> 53</span>                 <span class="n">randomization_strategy</span><span class="p">:</span> <span class="n">RandomizationStrategy</span><span class="p">,</span>
+<span class="linenos"> 54</span>                 <span class="n">mutation_prob</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">rand</span><span class="p">:</span> <span class="n">Random</span><span class="p">):</span>
+<span class="linenos"> 55</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__sz</span> <span class="o">=</span> <span class="n">sz</span>
+<span class="linenos"> 56</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__bitstream_sz</span> <span class="o">=</span> <span class="n">bitstream_sz</span>
+<span class="linenos"> 57</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__post_construction_strategy</span> <span class="o">=</span> <span class="n">post_construction_strategy</span>
+<span class="linenos"> 58</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__randomization_strategy</span> <span class="o">=</span> <span class="n">randomization_strategy</span>
+<span class="linenos"> 59</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__rand</span> <span class="o">=</span> <span class="n">rand</span>
+<span class="linenos"> 60</span>
+<span class="linenos"> 61</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__mutation_prob</span> <span class="o">=</span> <span class="n">mutation_prob</span>
+<span class="linenos"> 62</span>        
+<span class="linenos"> 63</span>    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Population</span><span class="p">:</span>
+<span class="linenos"> 64</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 65</span><span class="sd">        Creates initial population based on the config.</span>
+<span class="linenos"> 66</span><span class="sd">        1. Clears the files used to keep track of circuit</span>
+<span class="linenos"> 67</span><span class="sd">        2. Uses appropriate initialization method specified by config.</span>
+<span class="linenos"> 68</span><span class="sd">        3. Handles randomization until condition in config is met.</span>
+<span class="linenos"> 69</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 70</span>
+<span class="linenos"> 71</span>        <span class="n">individuals</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 72</span>
+<span class="linenos"> 73</span>        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sz</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+<span class="linenos"> 74</span>            <span class="n">individual</span> <span class="o">=</span> <span class="n">BitstreamIndividual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__bitstream_sz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__rand</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__mutation_prob</span><span class="p">)</span>
+<span class="linenos"> 75</span>            <span class="n">individual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__post_construction_strategy</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
+<span class="linenos"> 76</span>
+<span class="linenos"> 77</span>            <span class="n">individuals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
+<span class="linenos"> 78</span>
+<span class="linenos"> 79</span>        <span class="n">circuits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__randomization_strategy</span><span class="o">.</span><span class="n">randomize</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span>
+<span class="linenos"> 80</span>
+<span class="linenos"> 81</span>        <span class="k">return</span> <span class="n">Population</span><span class="p">(</span><span class="n">circuits</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 <span class="linenos"> 82</span>
-<span class="linenos"> 83</span><span class="c1"># used for CLONE_SEED_MUTATE</span>
-<span class="linenos"> 84</span><span class="k">class</span><span class="w"> </span><span class="nc">MutateOncePostConstructionStrategy</span><span class="p">:</span>
+<span class="linenos"> 83</span><span class="c1"># used for CLONE_SEED</span>
+<span class="linenos"> 84</span><span class="k">class</span><span class="w"> </span><span class="nc">NoPostConstructionStrategy</span><span class="p">:</span>
 <span class="linenos"> 85</span>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">:</span> <span class="n">BitstreamIndividual</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BitstreamIndividual</span><span class="p">:</span>
-<span class="linenos"> 86</span>        <span class="n">individual</span><span class="o">.</span><span class="n">mutate</span><span class="p">()</span>
-<span class="linenos"> 87</span>        <span class="k">return</span> <span class="n">individual</span>
-<span class="linenos"> 88</span>    
-<span class="linenos"> 89</span><span class="c1"># used for RANDOM</span>
-<span class="linenos"> 90</span><span class="k">class</span><span class="w"> </span><span class="nc">RandomizeBitstreamPostConstructionStrategy</span><span class="p">:</span>
-<span class="linenos"> 91</span>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">:</span> <span class="n">BitstreamIndividual</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BitstreamIndividual</span><span class="p">:</span>
-<span class="linenos"> 92</span>        <span class="n">individual</span><span class="o">.</span><span class="n">randomize</span><span class="p">()</span>
-<span class="linenos"> 93</span>        <span class="k">return</span> <span class="n">individual</span>
-<span class="linenos"> 94</span>
-<span class="linenos"> 95</span><span class="k">class</span><span class="w"> </span><span class="nc">NoRandomizationStrategy</span><span class="p">:</span>
-<span class="linenos"> 96</span>    <span class="k">def</span><span class="w"> </span><span class="nf">randomize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individuals</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BitstreamIndividual</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BitstreamIndividual</span><span class="p">]:</span>
-<span class="linenos"> 97</span>        <span class="k">return</span> <span class="n">individuals</span>
-<span class="linenos"> 98</span>
-<span class="linenos"> 99</span><span class="k">class</span><span class="w"> </span><span class="nc">FileBasedCircuitFactory</span><span class="p">:</span>
-<span class="linenos">100</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">sz</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">,</span> <span class="n">directories</span><span class="p">:</span> <span class="n">Directories</span><span class="p">,</span> <span class="n">routing_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">accessed_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
-<span class="linenos">101</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span> <span class="o">=</span> <span class="n">logger</span>
-<span class="linenos">102</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__directories</span> <span class="o">=</span> <span class="n">directories</span>
-<span class="linenos">103</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__routing_type</span> <span class="o">=</span> <span class="n">routing_type</span>
-<span class="linenos">104</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__accessed_columns</span> <span class="o">=</span> <span class="n">accessed_columns</span>
-<span class="linenos">105</span>
-<span class="linenos">106</span>        <span class="n">wipe_folder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__directories</span><span class="o">.</span><span class="n">asc_dir</span><span class="p">)</span>
-<span class="linenos">107</span>        <span class="n">wipe_folder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__directories</span><span class="o">.</span><span class="n">bin_dir</span><span class="p">)</span>
-<span class="linenos">108</span>        <span class="n">wipe_folder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__directories</span><span class="o">.</span><span class="n">data_dir</span><span class="p">)</span>
-<span class="linenos">109</span>
-<span class="linenos">110</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__circuits</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="linenos">111</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sz</span><span class="p">):</span>
-<span class="linenos">112</span>            <span class="n">circuit</span> <span class="o">=</span> <span class="n">FileBasedCircuit</span><span class="p">(</span>
-<span class="linenos">113</span>                <span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
-<span class="linenos">114</span>                <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;hardware&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
-<span class="linenos">115</span>                <span class="n">template</span><span class="o">=</span><span class="n">SEED_HARDWARE_FILEPATH</span><span class="p">,</span>
-<span class="linenos">116</span>                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__logger</span><span class="p">,</span>
-<span class="linenos">117</span>                <span class="n">directories</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__directories</span><span class="p">,</span>
-<span class="linenos">118</span>                <span class="n">routing_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__routing_type</span><span class="p">,</span>
-<span class="linenos">119</span>                <span class="n">accessed_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__accessed_columns</span>
-<span class="linenos">120</span>            <span class="p">)</span>
-<span class="linenos">121</span>            <span class="bp">self</span><span class="o">.</span><span class="n">__circuits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
-<span class="linenos">122</span>
-<span class="linenos">123</span>    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Population</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Circuit</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Population</span><span class="p">,</span> <span class="n">Individual</span><span class="p">]]]:</span>
-<span class="linenos">124</span>        <span class="n">res</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Circuit</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Population</span><span class="p">,</span> <span class="n">Individual</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="linenos">125</span>        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="linenos">126</span>        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">:</span>
-<span class="linenos">127</span>            <span class="n">pop</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">population_list</span>
-<span class="linenos">128</span>            <span class="k">for</span> <span class="p">(</span><span class="n">individual</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="n">pop</span><span class="p">:</span>
-<span class="linenos">129</span>                <span class="n">circuit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__circuits</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-<span class="linenos">130</span>                <span class="n">bitstream</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">get_bitstream</span><span class="p">()</span> <span class="c1"># type: ignore</span>
-<span class="linenos">131</span>                <span class="n">circuit</span><span class="o">.</span><span class="n">set_bitstream</span><span class="p">(</span><span class="n">bitstream</span><span class="p">)</span>
-<span class="linenos">132</span>                <span class="n">res</span><span class="p">[</span><span class="n">circuit</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">p</span><span class="p">,</span> <span class="n">individual</span><span class="p">)]</span>
-<span class="linenos">133</span>                <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
-<span class="linenos">134</span>
-<span class="linenos">135</span>        <span class="k">return</span> <span class="n">res</span>
-<span class="linenos">136</span>
-<span class="linenos">137</span><span class="c1"># TODO: to add in randomize_until modes, we need a way to get circuit fitness/measurements AT initialization time</span>
+<span class="linenos"> 86</span>        <span class="k">return</span> <span class="n">individual</span>
+<span class="linenos"> 87</span>
+<span class="linenos"> 88</span><span class="c1"># used for CLONE_SEED_MUTATE</span>
+<span class="linenos"> 89</span><span class="k">class</span><span class="w"> </span><span class="nc">MutateOncePostConstructionStrategy</span><span class="p">:</span>
+<span class="linenos"> 90</span>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">:</span> <span class="n">BitstreamIndividual</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BitstreamIndividual</span><span class="p">:</span>
+<span class="linenos"> 91</span>        <span class="n">individual</span><span class="o">.</span><span class="n">mutate</span><span class="p">()</span>
+<span class="linenos"> 92</span>        <span class="k">return</span> <span class="n">individual</span>
+<span class="linenos"> 93</span>    
+<span class="linenos"> 94</span><span class="c1"># used for RANDOM</span>
+<span class="linenos"> 95</span><span class="k">class</span><span class="w"> </span><span class="nc">RandomizeBitstreamPostConstructionStrategy</span><span class="p">:</span>
+<span class="linenos"> 96</span>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">:</span> <span class="n">BitstreamIndividual</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BitstreamIndividual</span><span class="p">:</span>
+<span class="linenos"> 97</span>        <span class="n">individual</span><span class="o">.</span><span class="n">randomize</span><span class="p">()</span>
+<span class="linenos"> 98</span>        <span class="k">return</span> <span class="n">individual</span>
+<span class="linenos"> 99</span>
+<span class="linenos">100</span><span class="k">class</span><span class="w"> </span><span class="nc">NoRandomizationStrategy</span><span class="p">:</span>
+<span class="linenos">101</span>    <span class="k">def</span><span class="w"> </span><span class="nf">randomize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individuals</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BitstreamIndividual</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BitstreamIndividual</span><span class="p">]:</span>
+<span class="linenos">102</span>        <span class="k">return</span> <span class="n">individuals</span>
+<span class="linenos">103</span>
+<span class="linenos">104</span><span class="k">class</span><span class="w"> </span><span class="nc">FileBasedCircuitFactory</span><span class="p">:</span>
+<span class="linenos">105</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">sz</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">,</span> <span class="n">directories</span><span class="p">:</span> <span class="n">Directories</span><span class="p">,</span> <span class="n">routing_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">accessed_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+<span class="linenos">106</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span> <span class="o">=</span> <span class="n">logger</span>
+<span class="linenos">107</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__directories</span> <span class="o">=</span> <span class="n">directories</span>
+<span class="linenos">108</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__routing_type</span> <span class="o">=</span> <span class="n">routing_type</span>
+<span class="linenos">109</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__accessed_columns</span> <span class="o">=</span> <span class="n">accessed_columns</span>
+<span class="linenos">110</span>
+<span class="linenos">111</span>        <span class="n">wipe_folder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__directories</span><span class="o">.</span><span class="n">asc_dir</span><span class="p">)</span>
+<span class="linenos">112</span>        <span class="n">wipe_folder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__directories</span><span class="o">.</span><span class="n">bin_dir</span><span class="p">)</span>
+<span class="linenos">113</span>        <span class="n">wipe_folder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__directories</span><span class="o">.</span><span class="n">data_dir</span><span class="p">)</span>
+<span class="linenos">114</span>
+<span class="linenos">115</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__circuits</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">116</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sz</span><span class="p">):</span>
+<span class="linenos">117</span>            <span class="n">circuit</span> <span class="o">=</span> <span class="n">FileBasedCircuit</span><span class="p">(</span>
+<span class="linenos">118</span>                <span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+<span class="linenos">119</span>                <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;hardware&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
+<span class="linenos">120</span>                <span class="n">template</span><span class="o">=</span><span class="n">SEED_HARDWARE_FILEPATH</span><span class="p">,</span>
+<span class="linenos">121</span>                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__logger</span><span class="p">,</span>
+<span class="linenos">122</span>                <span class="n">directories</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__directories</span><span class="p">,</span>
+<span class="linenos">123</span>                <span class="n">routing_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__routing_type</span><span class="p">,</span>
+<span class="linenos">124</span>                <span class="n">accessed_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__accessed_columns</span>
+<span class="linenos">125</span>            <span class="p">)</span>
+<span class="linenos">126</span>            <span class="bp">self</span><span class="o">.</span><span class="n">__circuits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
+<span class="linenos">127</span>
+<span class="linenos">128</span>    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Population</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Circuit</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Population</span><span class="p">,</span> <span class="n">Individual</span><span class="p">]]]:</span>
+<span class="linenos">129</span>        <span class="n">res</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Circuit</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Population</span><span class="p">,</span> <span class="n">Individual</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="linenos">130</span>        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos">131</span>        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">:</span>
+<span class="linenos">132</span>            <span class="n">pop</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">population_list</span>
+<span class="linenos">133</span>            <span class="k">for</span> <span class="p">(</span><span class="n">individual</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="n">pop</span><span class="p">:</span>
+<span class="linenos">134</span>                <span class="n">circuit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__circuits</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+<span class="linenos">135</span>                <span class="n">bitstream</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">get_bitstream</span><span class="p">()</span> <span class="c1"># type: ignore</span>
+<span class="linenos">136</span>                <span class="n">circuit</span><span class="o">.</span><span class="n">set_bitstream</span><span class="p">(</span><span class="n">bitstream</span><span class="p">)</span>
+<span class="linenos">137</span>                <span class="n">res</span><span class="p">[</span><span class="n">circuit</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">p</span><span class="p">,</span> <span class="n">individual</span><span class="p">)]</span>
+<span class="linenos">138</span>                <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="linenos">139</span>
+<span class="linenos">140</span>        <span class="k">return</span> <span class="n">res</span>
+<span class="linenos">141</span>
+<span class="linenos">142</span><span class="c1"># TODO: to add in randomize_until modes, we need a way to get circuit fitness/measurements AT initialization time</span>
 </pre></div>
 
                 </article>

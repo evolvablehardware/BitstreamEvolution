@@ -1,0 +1,701 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>MCU Serial Protocol &#8212; Bitstream Evolution Develop Branch 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'architecture/mcu_protocol';</script>
+    <link rel="icon" href="https://evolvablehardware.org/images/setup_tutorial_2.jpg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Refactored Code" href="../code/index.html" />
+    <link rel="prev" title="ICE40 HX1K Hardware Model" href="ice40_hardware.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="https://evolvablehardware.org/images/setup_tutorial_2.jpg" class="logo__image only-light" alt="Bitstream Evolution Develop Branch 0.1.0 documentation - Home"/>
+    <script>document.write(`<img src="https://evolvablehardware.org/images/setup_tutorial_2.jpg" class="logo__image only-dark" alt="Bitstream Evolution Develop Branch 0.1.0 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Bitstream Evolution’s Architecture</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../code/Circuit/Circuit.html">Circuit.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/Circuit/FileBasedCircuit.html">FileBasedCircuit.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/Circuit/FullySimCircuit.html">FullySimCircuit.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../code/EvaluateFitness/index.html">Evaluate Fitness</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../code/EvaluateFitness/EvaluateFitness.html">EvaluateFitness.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/EvaluateFitness/EvalPulseCountFitness.html">EvalPulseCountFitness.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/EvaluateFitness/EvalVarMaxFitness.html">EvalVarMaxFitness.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../code/GenerateMeasurements/index.html">Generate Measurements</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../code/GenerateMeasurements/GenerateMeasurements.html">GenerateMeasurements.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../code/Hardware/index.html">Hardware</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../code/Hardware/Microcontroller.html">Microcontroller.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../code/Individual/index.html">Individual</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../code/Individual/BitstreamIndividual.html">BitstreamIndividual.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../code/Population/index.html">Population</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../code/Population/PopulationInitialization.html">PopulationInitialization.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/TrivialImplementation.html">TrivialImplementation.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/Directories.html">Directories.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/Evolution.html">Evolution.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/Logger.html">Logger.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/PlotConfig.html">PlotConfig.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/PlotDataRecorder.html">PlotDataRecorder.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/PlotEvolutionLive.html">PlotEvolutionLive.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/utilities.html">utilities.py</a></li>
+</ul>
+</details></li>
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/architecture/mcu_protocol.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>MCU Serial Protocol</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connection-setup">Connection Setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datarequest-types">DataRequest Types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#waveform-measurement-protocol">Waveform Measurement Protocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pulse-count-measurement-protocol">Pulse Count Measurement Protocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling">Error Handling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#known-issues-todos">Known Issues / TODOs</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="mcu-serial-protocol">
+<h1>MCU Serial Protocol<a class="headerlink" href="#mcu-serial-protocol" title="Link to this heading">#</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This documentation was drafted from code analysis and may need verification
+against the MCU firmware.</p>
+</div>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>The host computer communicates with a microcontroller (MCU) over a serial link
+to program an ICE40 FPGA and retrieve fitness-evaluation data. The MCU acts as
+a bridge: the host sends a command byte indicating the type of measurement it
+wants, and the MCU drives the FPGA and returns either a stream of ADC waveform
+samples or a pulse count.</p>
+<p>This protocol is implemented in <code class="xref py py-class docutils literal notranslate"><span class="pre">Microcontroller</span></code>
+(<code class="docutils literal notranslate"><span class="pre">src/Hardware/Microcontroller.py</span></code>) and conforms to the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Hardware</span></code> protocol defined in <code class="docutils literal notranslate"><span class="pre">BitstreamEvolutionProtocols.py</span></code>.</p>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">#</a></h2>
+<p>Connection parameters are bundled in the <code class="xref py py-class docutils literal notranslate"><span class="pre">MicrocontrollerConfig</span></code>
+dataclass:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 15.0%" />
+<col style="width: 65.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">usb_path</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Device path to the serial port (e.g. <code class="docutils literal notranslate"><span class="pre">/dev/ttyUSB0</span></code>).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">serial_baud</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p>Baud rate for the serial connection.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">read_timeout</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float</span></code></p></td>
+<td><p>Timeout in seconds for serial read operations.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="connection-setup">
+<h2>Connection Setup<a class="headerlink" href="#connection-setup" title="Link to this heading">#</a></h2>
+<p>On construction, the <code class="docutils literal notranslate"><span class="pre">Microcontroller</span></code> class opens a persistent
+<code class="docutils literal notranslate"><span class="pre">serial.Serial</span></code> connection using the values from
+<code class="docutils literal notranslate"><span class="pre">MicrocontrollerConfig</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">__serial</span> <span class="o">=</span> <span class="n">Serial</span><span class="p">(</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">usb_path</span><span class="p">,</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">serial_baud</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">read_timeout</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="o">.</span><span class="n">dtr</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<p>Setting <strong>DTR low</strong> is critical – it prevents the MCU from resetting when the
+serial port is opened, which is the default behaviour on many Arduino-compatible
+boards.</p>
+</section>
+<section id="datarequest-types">
+<h2>DataRequest Types<a class="headerlink" href="#datarequest-types" title="Link to this heading">#</a></h2>
+<p>The type of measurement requested is encoded as a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code> enum (defined in <code class="docutils literal notranslate"><span class="pre">BitstreamEvolutionProtocols.py</span></code>):</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">DataRequest.WAVEFORM</span></code></dt><dd><p>Requests an ADC waveform capture. Dispatches to <code class="docutils literal notranslate"><span class="pre">measure_signal()</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">DataRequest.OSCILLATIONS</span></code></dt><dd><p>Requests one or more pulse-count readings. Dispatches to
+<code class="docutils literal notranslate"><span class="pre">measure_pulses()</span></code>, which calls <code class="docutils literal notranslate"><span class="pre">measure_pulses_once()</span></code> repeatedly for
+the number of samples specified in the <code class="docutils literal notranslate"><span class="pre">Measurement</span></code> object.</p>
+</dd>
+</dl>
+<p>Before either measurement type, the circuit is compiled for the FPGA via
+<code class="docutils literal notranslate"><span class="pre">ckt.compile(fpga_data)</span></code> using the IceStorm toolchain (<code class="docutils literal notranslate"><span class="pre">icepack</span></code> /
+<code class="docutils literal notranslate"><span class="pre">iceprog</span></code>).</p>
+</section>
+<section id="waveform-measurement-protocol">
+<h2>Waveform Measurement Protocol<a class="headerlink" href="#waveform-measurement-protocol" title="Link to this heading">#</a></h2>
+<p><strong>Serial command:</strong> <code class="docutils literal notranslate"><span class="pre">b'2'</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This documentation was drafted from code analysis and may need verification
+against the MCU firmware. The exact sample count, sample rate, and ADC
+resolution should be confirmed with the firmware source.</p>
+</div>
+<p>Sequence:</p>
+<ol class="arabic simple">
+<li><p>The host flushes both input and output serial buffers.</p></li>
+<li><p>The host sends <code class="docutils literal notranslate"><span class="pre">b'2'</span></code> to initiate ADC capture.</p></li>
+<li><p>The host polls <code class="docutils literal notranslate"><span class="pre">read_until()</span></code> for the <code class="docutils literal notranslate"><span class="pre">START\n</span></code> delimiter, re-sending
+<code class="docutils literal notranslate"><span class="pre">b'2'</span></code> on each iteration until it arrives or the read timeout is exceeded.</p></li>
+<li><p>After <code class="docutils literal notranslate"><span class="pre">START\n</span></code>, the host reads lines one at a time. Each line contains a
+single integer ADC sample (samples are approximately 10 microseconds apart).
+Approximately 500 samples are expected.</p></li>
+<li><p>The stream ends when the host receives <code class="docutils literal notranslate"><span class="pre">FINISHED\n</span></code>.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">read_timeout</span></code> is exceeded at any stage, reading is aborted and
+whatever samples have been collected so far are returned.</p></li>
+</ol>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Host  --&gt; MCU:  b&#39;2&#39;
+MCU   --&gt; Host: START\n
+MCU   --&gt; Host: &lt;sample_0&gt;\n
+MCU   --&gt; Host: &lt;sample_1&gt;\n
+...
+MCU   --&gt; Host: &lt;sample_N&gt;\n
+MCU   --&gt; Host: FINISHED\n
+</pre></div>
+</div>
+<p><strong>Return value:</strong> <code class="docutils literal notranslate"><span class="pre">list[int]</span></code> – the parsed integer ADC samples, excluding
+the <code class="docutils literal notranslate"><span class="pre">START</span></code> and <code class="docutils literal notranslate"><span class="pre">FINISHED</span></code> sentinel lines.</p>
+</section>
+<section id="pulse-count-measurement-protocol">
+<h2>Pulse Count Measurement Protocol<a class="headerlink" href="#pulse-count-measurement-protocol" title="Link to this heading">#</a></h2>
+<p><strong>Serial command:</strong> <code class="docutils literal notranslate"><span class="pre">b'1'</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This documentation was drafted from code analysis and may need verification
+against the MCU firmware. The pulse-counting window duration and any
+firmware-side filtering should be confirmed with the firmware source.</p>
+</div>
+<p>Sequence:</p>
+<ol class="arabic">
+<li><p>The host flushes both input and output serial buffers.</p></li>
+<li><p>The host sends <code class="docutils literal notranslate"><span class="pre">b'1'</span></code> to initiate pulse counting.</p></li>
+<li><p>The host calls <code class="docutils literal notranslate"><span class="pre">read_until()</span></code> in a loop, looking for a line that:</p>
+<ul class="simple">
+<li><p>Is not empty (<code class="docutils literal notranslate"><span class="pre">b&quot;&quot;</span></code>),</p></li>
+<li><p>Does not contain <code class="docutils literal notranslate"><span class="pre">:</span></code>, <code class="docutils literal notranslate"><span class="pre">START</span></code>, <code class="docutils literal notranslate"><span class="pre">FINISH</span></code>, or a space.</p></li>
+</ul>
+<p>This filtering is intended to skip MCU debug or status lines and isolate the
+numeric pulse count.</p>
+</li>
+<li><p>When a valid line is found, carriage-return and newline bytes are stripped
+and the result is parsed as an integer.</p></li>
+</ol>
+<p><strong>Retry logic:</strong> If the read timeout is exceeded, the host retries up to
+<strong>5 attempts</strong> before giving up.</p>
+<p><strong>Sentinel / error values:</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 15.0%" />
+<col style="width: 85.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Value</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-1</span></code></p></td>
+<td><p>Read timed out after exhausting all retry attempts.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-1000</span></code></p></td>
+<td><p>The buffer was empty after the read loop completed (should never occur
+under normal conditions).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-2</span></code></p></td>
+<td><p>The received bytes could not be parsed as an integer
+(<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> during <code class="docutils literal notranslate"><span class="pre">int()</span></code> conversion).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Multi-sample collection:</strong> <code class="docutils literal notranslate"><span class="pre">measure_pulses(samples)</span></code> calls
+<code class="docutils literal notranslate"><span class="pre">measure_pulses_once()</span></code> the requested number of times and concatenates the
+results into a single <code class="docutils literal notranslate"><span class="pre">list[int]</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Host  --&gt; MCU:  b&#39;1&#39;
+MCU   --&gt; Host: &lt;pulse_count&gt;\n
+</pre></div>
+</div>
+</section>
+<section id="error-handling">
+<h2>Error Handling<a class="headerlink" href="#error-handling" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">request_measurement()</span></code> method wraps each measurement call in a
+<code class="docutils literal notranslate"><span class="pre">try</span></code> / <code class="docutils literal notranslate"><span class="pre">except</span></code> block. Results are stored on the <code class="docutils literal notranslate"><span class="pre">Measurement</span></code> object
+using the <code class="docutils literal notranslate"><span class="pre">returns</span></code> library:</p>
+<ul class="simple">
+<li><p><strong>Success path:</strong> <code class="docutils literal notranslate"><span class="pre">measurement.result</span> <span class="pre">=</span> <span class="pre">Success(data)</span></code></p></li>
+<li><p><strong>Failure path:</strong> <code class="docutils literal notranslate"><span class="pre">measurement.result</span> <span class="pre">=</span> <span class="pre">Failure(exception)</span></code></p></li>
+</ul>
+<p>Before any measurement is taken, the <code class="docutils literal notranslate"><span class="pre">Measurement</span></code> object is initialized with
+<code class="docutils literal notranslate"><span class="pre">Failure(MeasurementNotTaken(...))</span></code> so that unconsumed measurements are never
+mistaken for successful reads.</p>
+</section>
+<section id="known-issues-todos">
+<h2>Known Issues / TODOs<a class="headerlink" href="#known-issues-todos" title="Link to this heading">#</a></h2>
+<p>The following issues are noted directly in the source code:</p>
+<ol class="arabic simple">
+<li><p><strong>Serial read/write optimization needed</strong> – The waveform reading loop
+(<code class="docutils literal notranslate"><span class="pre">measure_signal</span></code>) contains a <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">TODO</span></code> comment indicating that the
+section reading samples between <code class="docutils literal notranslate"><span class="pre">START</span></code> and <code class="docutils literal notranslate"><span class="pre">FINISHED</span></code> could be
+optimized, likely by reading all available bytes at once rather than
+line-by-line.</p></li>
+<li><p><strong>Poor regex / filtering in pulse count parsing</strong> – The pulse-count reader
+(<code class="docutils literal notranslate"><span class="pre">measure_pulses_once</span></code>) uses a chain of byte-string containment checks
+(<code class="docutils literal notranslate"><span class="pre">b&quot;:&quot;</span> <span class="pre">not</span> <span class="pre">in</span> <span class="pre">p</span> <span class="pre">and</span> <span class="pre">b&quot;START&quot;</span> <span class="pre">not</span> <span class="pre">in</span> <span class="pre">p</span> <span class="pre">...</span></code>) rather than a proper regular
+expression or structured parser. A <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">TODO</span></code> in the source notes this
+“is currently doing a poor job at REGEXing the MCU serial return” and
+suggests it should handle transmission-loss artefacts (dropped or extra
+spaces, shifted colons, etc.) more robustly.</p></li>
+<li><p><strong>Missing measurement type dispatch</strong> – <code class="docutils literal notranslate"><span class="pre">request_measurement()</span></code> contains
+a <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">TODO</span></code> comment for additional <code class="docutils literal notranslate"><span class="pre">elif</span></code> branches to handle future
+<code class="docutils literal notranslate"><span class="pre">DataRequest</span></code> types beyond <code class="docutils literal notranslate"><span class="pre">WAVEFORM</span></code> and <code class="docutils literal notranslate"><span class="pre">OSCILLATIONS</span></code>.</p></li>
+</ol>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="ice40_hardware.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">ICE40 HX1K Hardware Model</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../code/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Refactored Code</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connection-setup">Connection Setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datarequest-types">DataRequest Types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#waveform-measurement-protocol">Waveform Measurement Protocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pulse-count-measurement-protocol">Pulse Count Measurement Protocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling">Error Handling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#known-issues-todos">Known Issues / TODOs</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Evolvable Hardware
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024-2026, Evolvable Hardware.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

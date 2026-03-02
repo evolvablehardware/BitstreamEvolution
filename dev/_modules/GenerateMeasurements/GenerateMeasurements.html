@@ -158,8 +158,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../code/Circuit/Circuit.html">Circuit.py</a></li>
@@ -304,31 +312,36 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for GenerateMeasurements.GenerateMeasurements</h1><div class="highlight"><pre>
-<span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">BitstreamEvolutionProtocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">CircuitFactory</span><span class="p">,</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">Individual</span><span class="p">,</span> <span class="n">Measurement</span><span class="p">,</span> <span class="n">Population</span>
+<span></span><span class="linenos"> 1</span><span class="sd">&quot;&quot;&quot;Measurement generation for the evolution pipeline.</span>
 <span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="c1"># Trivial enough that unit tests do not exist for this particular implementation</span>
+<span class="linenos"> 3</span><span class="sd">Creates :class:`~BitstreamEvolutionProtocols.Measurement` objects for each</span>
+<span class="linenos"> 4</span><span class="sd">circuit in a population, linking them back to the individuals whose</span>
+<span class="linenos"> 5</span><span class="sd">fitness they determine.</span>
+<span class="linenos"> 6</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">BitstreamEvolutionProtocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">CircuitFactory</span><span class="p">,</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">Individual</span><span class="p">,</span> <span class="n">Measurement</span><span class="p">,</span> <span class="n">Population</span>
 <div class="viewcode-block" id="SimpleGenerateMeasurements">
 <a class="viewcode-back" href="../../code/GenerateMeasurements/GenerateMeasurements.html#GenerateMeasurements.GenerateMeasurements.SimpleGenerateMeasurements">[docs]</a>
-<span class="linenos"> 4</span><span class="k">class</span><span class="w"> </span><span class="nc">SimpleGenerateMeasurements</span><span class="p">:</span>
-<span class="linenos"> 5</span><span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="linenos"> 6</span><span class="sd">    A simple implementater of GenerateMeasurements protocol</span>
-<span class="linenos"> 7</span><span class="sd">    Stores a single FPGA and the data request that will be performed</span>
-<span class="linenos"> 8</span><span class="sd">    &#39;&#39;&#39;</span>
-<span class="linenos"> 9</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fpga</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data_req</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-<span class="linenos">10</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__fpga</span> <span class="o">=</span> <span class="n">fpga</span>
-<span class="linenos">11</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__data_req</span> <span class="o">=</span> <span class="n">data_req</span>
-<span class="linenos">12</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__num_samples</span> <span class="o">=</span> <span class="n">num_samples</span>
-<span class="linenos">13</span>
-<span class="linenos">14</span>    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">:</span> <span class="n">CircuitFactory</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Population</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Measurement</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Population</span><span class="p">,</span> <span class="n">Individual</span><span class="p">]]]:</span>
-<span class="linenos">15</span>        <span class="n">circuit_dict</span> <span class="o">=</span> <span class="n">factory</span><span class="p">(</span><span class="n">populations</span><span class="p">)</span>
-<span class="linenos">16</span>        <span class="n">result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Measurement</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Population</span><span class="p">,</span> <span class="n">Individual</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="linenos">17</span>        <span class="k">for</span> <span class="n">circuit</span> <span class="ow">in</span> <span class="n">circuit_dict</span><span class="p">:</span>
-<span class="linenos">18</span>            <span class="n">other</span> <span class="o">=</span> <span class="n">circuit_dict</span><span class="p">[</span><span class="n">circuit</span><span class="p">]</span>
-<span class="linenos">19</span>            <span class="n">m</span> <span class="o">=</span> <span class="n">Measurement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__fpga</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data_req</span><span class="p">,</span> <span class="n">circuit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_samples</span><span class="p">)</span>
-<span class="linenos">20</span>            <span class="n">result</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span>
-<span class="linenos">21</span>        <span class="k">return</span> <span class="n">result</span></div>
+<span class="linenos"> 9</span><span class="k">class</span><span class="w"> </span><span class="nc">SimpleGenerateMeasurements</span><span class="p">:</span>
+<span class="linenos">10</span><span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="linenos">11</span><span class="sd">    A simple implementater of GenerateMeasurements protocol</span>
+<span class="linenos">12</span><span class="sd">    Stores a single FPGA and the data request that will be performed</span>
+<span class="linenos">13</span><span class="sd">    &#39;&#39;&#39;</span>
+<span class="linenos">14</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fpga</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data_req</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="linenos">15</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__fpga</span> <span class="o">=</span> <span class="n">fpga</span>
+<span class="linenos">16</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__data_req</span> <span class="o">=</span> <span class="n">data_req</span>
+<span class="linenos">17</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__num_samples</span> <span class="o">=</span> <span class="n">num_samples</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span>    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">:</span> <span class="n">CircuitFactory</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Population</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Measurement</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Population</span><span class="p">,</span> <span class="n">Individual</span><span class="p">]]]:</span>
+<span class="linenos">20</span>        <span class="n">circuit_dict</span> <span class="o">=</span> <span class="n">factory</span><span class="p">(</span><span class="n">populations</span><span class="p">)</span>
+<span class="linenos">21</span>        <span class="n">result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Measurement</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Population</span><span class="p">,</span> <span class="n">Individual</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="linenos">22</span>        <span class="k">for</span> <span class="n">circuit</span> <span class="ow">in</span> <span class="n">circuit_dict</span><span class="p">:</span>
+<span class="linenos">23</span>            <span class="n">other</span> <span class="o">=</span> <span class="n">circuit_dict</span><span class="p">[</span><span class="n">circuit</span><span class="p">]</span>
+<span class="linenos">24</span>            <span class="n">m</span> <span class="o">=</span> <span class="n">Measurement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__fpga</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data_req</span><span class="p">,</span> <span class="n">circuit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_samples</span><span class="p">)</span>
+<span class="linenos">25</span>            <span class="n">result</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span>
+<span class="linenos">26</span>        <span class="k">return</span> <span class="n">result</span></div>
 
-<span class="linenos">22</span>
+<span class="linenos">27</span>
 </pre></div>
 
                 </article>

@@ -158,8 +158,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../code/Circuit/Circuit.html">Circuit.py</a></li>
@@ -304,85 +312,92 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for Circuit.Circuit</h1><div class="highlight"><pre>
-<span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">BitstreamEvolutionProtocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">FPGA_Compilation_Data</span>
-<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">Logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
-<span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">result</span><span class="w"> </span><span class="kn">import</span> <span class="n">Result</span> <span class="c1"># type: ignore</span>
+<span></span><span class="linenos"> 1</span><span class="sd">&quot;&quot;&quot;Abstract base class for FPGA circuit representations.</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="sd">Concrete subclasses (e.g. :class:`~Circuit.FileBasedCircuit.FileBasedCircuit`)</span>
+<span class="linenos"> 4</span><span class="sd">implement compilation, bitstream access, and file-attribute storage for a</span>
+<span class="linenos"> 5</span><span class="sd">specific hardware format.</span>
+<span class="linenos"> 6</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="kn">from</span><span class="w"> </span><span class="nn">BitstreamEvolutionProtocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">FPGA_Compilation_Data</span>
+<span class="linenos">12</span><span class="kn">from</span><span class="w"> </span><span class="nn">Logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
+<span class="linenos">13</span><span class="kn">from</span><span class="w"> </span><span class="nn">returns.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">Result</span> <span class="c1"># type: ignore</span>
+<span class="linenos">14</span>
 <div class="viewcode-block" id="Circuit">
 <a class="viewcode-back" href="../../code/Circuit/Circuit.html#Circuit.Circuit.Circuit">[docs]</a>
-<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">Circuit</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="linenos">15</span><span class="k">class</span><span class="w"> </span><span class="nc">Circuit</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <div class="viewcode-block" id="Circuit.__repr__">
 <a class="viewcode-back" href="../../code/Circuit/Circuit.html#Circuit.Circuit.Circuit.__repr__">[docs]</a>
-<span class="linenos"> 9</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="linenos">10</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos">11</span><span class="sd">        Returns the string representation of this Circuit, used in</span>
-<span class="linenos">12</span><span class="sd">        functions such as &#39;print&#39;.</span>
-<span class="linenos">13</span>
-<span class="linenos">14</span><span class="sd">        Returns</span>
-<span class="linenos">15</span><span class="sd">        -------</span>
-<span class="linenos">16</span><span class="sd">        str</span>
-<span class="linenos">17</span><span class="sd">            A string representation of the Circuit. (the file name)</span>
-<span class="linenos">18</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">19</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filename</span></div>
-
+<span class="linenos">16</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">17</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">18</span><span class="sd">        Returns the string representation of this Circuit, used in</span>
+<span class="linenos">19</span><span class="sd">        functions such as &#39;print&#39;.</span>
 <span class="linenos">20</span>
-<span class="linenos">21</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">):</span>
-<span class="linenos">22</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_filename</span> <span class="o">=</span> <span class="n">filename</span>
-<span class="linenos">23</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span>
-<span class="linenos">24</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logger</span>
-<span class="linenos">25</span>
+<span class="linenos">21</span><span class="sd">        Returns</span>
+<span class="linenos">22</span><span class="sd">        -------</span>
+<span class="linenos">23</span><span class="sd">        str</span>
+<span class="linenos">24</span><span class="sd">            A string representation of the Circuit. (the file name)</span>
+<span class="linenos">25</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">26</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filename</span></div>
+
+<span class="linenos">27</span>
+<span class="linenos">28</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">):</span>
+<span class="linenos">29</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_filename</span> <span class="o">=</span> <span class="n">filename</span>
+<span class="linenos">30</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span>
+<span class="linenos">31</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logger</span>
+<span class="linenos">32</span>
 <div class="viewcode-block" id="Circuit.compile">
 <a class="viewcode-back" href="../../code/Circuit/Circuit.html#Circuit.Circuit.Circuit.compile">[docs]</a>
-<span class="linenos">26</span>    <span class="nd">@abstractmethod</span>
-<span class="linenos">27</span>    <span class="k">def</span><span class="w"> </span><span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fpga</span><span class="p">:</span> <span class="n">FPGA_Compilation_Data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Result</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span><span class="ne">Exception</span><span class="p">]:</span>
-<span class="linenos">28</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos">29</span><span class="sd">        Performs the upload function of this Circuit. Prerequisite to collecting data</span>
-<span class="linenos">30</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">31</span>        <span class="k">pass</span></div>
-
-<span class="linenos">32</span>
-<div class="viewcode-block" id="Circuit.get_bitstream">
-<a class="viewcode-back" href="../../code/Circuit/Circuit.html#Circuit.Circuit.Circuit.get_bitstream">[docs]</a>
 <span class="linenos">33</span>    <span class="nd">@abstractmethod</span>
-<span class="linenos">34</span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_bitstream</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
+<span class="linenos">34</span>    <span class="k">def</span><span class="w"> </span><span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fpga</span><span class="p">:</span> <span class="n">FPGA_Compilation_Data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Result</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span><span class="ne">Exception</span><span class="p">]:</span>
 <span class="linenos">35</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos">36</span><span class="sd">        Returns the full bitstream of the circuit</span>
+<span class="linenos">36</span><span class="sd">        Performs the upload function of this Circuit. Prerequisite to collecting data</span>
 <span class="linenos">37</span><span class="sd">        &quot;&quot;&quot;</span>
 <span class="linenos">38</span>        <span class="k">pass</span></div>
 
 <span class="linenos">39</span>
-<div class="viewcode-block" id="Circuit.set_bitstream">
-<a class="viewcode-back" href="../../code/Circuit/Circuit.html#Circuit.Circuit.Circuit.set_bitstream">[docs]</a>
+<div class="viewcode-block" id="Circuit.get_bitstream">
+<a class="viewcode-back" href="../../code/Circuit/Circuit.html#Circuit.Circuit.Circuit.get_bitstream">[docs]</a>
 <span class="linenos">40</span>    <span class="nd">@abstractmethod</span>
-<span class="linenos">41</span>    <span class="k">def</span><span class="w"> </span><span class="nf">set_bitstream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bitstream</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]):</span>
+<span class="linenos">41</span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_bitstream</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
 <span class="linenos">42</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos">43</span><span class="sd">        Sets the bitstream of the circuit</span>
+<span class="linenos">43</span><span class="sd">        Returns the full bitstream of the circuit</span>
 <span class="linenos">44</span><span class="sd">        &quot;&quot;&quot;</span>
 <span class="linenos">45</span>        <span class="k">pass</span></div>
 
-<span class="linenos">46</span>    
-<span class="linenos">47</span>    <span class="k">def</span><span class="w"> </span><span class="nf">set_file_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="linenos">48</span>        <span class="k">pass</span> <span class="c1"># No default behavior</span>
-<span class="linenos">49</span>
-<span class="linenos">50</span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_file_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">51</span>        <span class="k">return</span> <span class="s1">&#39;0&#39;</span> <span class="c1"># No default behavior</span>
-<span class="linenos">52</span>
+<span class="linenos">46</span>
+<div class="viewcode-block" id="Circuit.set_bitstream">
+<a class="viewcode-back" href="../../code/Circuit/Circuit.html#Circuit.Circuit.Circuit.set_bitstream">[docs]</a>
+<span class="linenos">47</span>    <span class="nd">@abstractmethod</span>
+<span class="linenos">48</span>    <span class="k">def</span><span class="w"> </span><span class="nf">set_bitstream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bitstream</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]):</span>
+<span class="linenos">49</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">50</span><span class="sd">        Sets the bitstream of the circuit</span>
+<span class="linenos">51</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">52</span>        <span class="k">pass</span></div>
+
+<span class="linenos">53</span>    
+<span class="linenos">54</span>    <span class="k">def</span><span class="w"> </span><span class="nf">set_file_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="linenos">55</span>        <span class="k">pass</span> <span class="c1"># No default behavior</span>
+<span class="linenos">56</span>
+<span class="linenos">57</span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_file_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">58</span>        <span class="k">return</span> <span class="s1">&#39;0&#39;</span> <span class="c1"># No default behavior</span>
+<span class="linenos">59</span>
 <div class="viewcode-block" id="Circuit.copy_from">
 <a class="viewcode-back" href="../../code/Circuit/Circuit.html#Circuit.Circuit.Circuit.copy_from">[docs]</a>
-<span class="linenos">53</span>    <span class="nd">@abstractmethod</span>
-<span class="linenos">54</span>    <span class="k">def</span><span class="w"> </span><span class="nf">copy_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="linenos">55</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos">56</span><span class="sd">        Fully copy the bitstream from the other circuit</span>
-<span class="linenos">57</span>
-<span class="linenos">58</span><span class="sd">        Parameters</span>
-<span class="linenos">59</span><span class="sd">        ----------</span>
-<span class="linenos">60</span><span class="sd">        other : Circuit</span>
-<span class="linenos">61</span><span class="sd">            The other circuit to copy the bitstream from</span>
-<span class="linenos">62</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">63</span>        <span class="k">pass</span></div>
+<span class="linenos">60</span>    <span class="nd">@abstractmethod</span>
+<span class="linenos">61</span>    <span class="k">def</span><span class="w"> </span><span class="nf">copy_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="linenos">62</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">63</span><span class="sd">        Fully copy the bitstream from the other circuit</span>
+<span class="linenos">64</span>
+<span class="linenos">65</span><span class="sd">        Parameters</span>
+<span class="linenos">66</span><span class="sd">        ----------</span>
+<span class="linenos">67</span><span class="sd">        other : Circuit</span>
+<span class="linenos">68</span><span class="sd">            The other circuit to copy the bitstream from</span>
+<span class="linenos">69</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">70</span>        <span class="k">pass</span></div>
 </div>
 
 </pre></div>

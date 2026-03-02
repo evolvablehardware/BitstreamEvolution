@@ -158,8 +158,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../code/Circuit/Circuit.html">Circuit.py</a></li>
@@ -304,69 +312,86 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for Evolution</h1><div class="highlight"><pre>
-<span></span><span class="linenos"> 1</span>
-<span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">BitstreamEvolutionProtocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">CircuitFactory</span><span class="p">,</span> <span class="n">EvaluatePopulationFitness</span><span class="p">,</span> <span class="n">GenDataFactory</span><span class="p">,</span> <span class="n">GenerateMeasurements</span><span class="p">,</span> <span class="n">Hardware</span><span class="p">,</span> <span class="n">Population</span><span class="p">,</span> <span class="n">Reproducer</span>
-<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">PlotDataRecorder</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlotDataRecorder</span>
-<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">Population.PopulationInitialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenerateInitialPopulations</span>
-<span class="linenos"> 5</span>
-<span class="linenos"> 6</span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
-<span class="linenos"> 7</span>
+<span></span><span class="linenos"> 1</span><span class="sd">&quot;&quot;&quot;Main evolution loop orchestrator.</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="sd">Wires together the protocol implementations (population generation,</span>
+<span class="linenos"> 4</span><span class="sd">circuit factory, fitness evaluation, reproduction) and runs the</span>
+<span class="linenos"> 5</span><span class="sd">generational evolution loop with async hardware measurements.</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="sd">.. warning::</span>
+<span class="linenos"> 8</span><span class="sd">    This module is marked as NOT CURRENT VERSION. See</span>
+<span class="linenos"> 9</span><span class="sd">    :class:`~TrivialImplementation.TrivialEvolution` for the reference</span>
+<span class="linenos">10</span><span class="sd">    implementation currently used for testing.</span>
+<span class="linenos">11</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="kn">from</span><span class="w"> </span><span class="nn">BitstreamEvolutionProtocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">CircuitFactory</span><span class="p">,</span> <span class="n">EvaluatePopulationFitness</span><span class="p">,</span> <span class="n">GenDataFactory</span><span class="p">,</span> <span class="n">GenerateMeasurements</span><span class="p">,</span> <span class="n">Hardware</span><span class="p">,</span> <span class="n">Population</span><span class="p">,</span> <span class="n">Reproducer</span>
+<span class="linenos">14</span><span class="kn">from</span><span class="w"> </span><span class="nn">PlotDataRecorder</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlotDataRecorder</span>
+<span class="linenos">15</span><span class="kn">from</span><span class="w"> </span><span class="nn">Population.PopulationInitialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenerateInitialPopulations</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="linenos">18</span>
 <div class="viewcode-block" id="Evolution">
 <a class="viewcode-back" href="../code/Evolution.html#Evolution.Evolution">[docs]</a>
-<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">Evolution</span><span class="p">:</span>
-<span class="linenos"> 9</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos">10</span><span class="sd">    NOT CURRENT VERSION, SHOULD BE REVISED USING TRIVIAL_EVOLUTION</span>
-<span class="linenos">11</span><span class="sd">    This class utilizes the protocols defined to run experiments</span>
-<span class="linenos">12</span><span class="sd">    There is only one implementation of Evolution needed</span>
-<span class="linenos">13</span><span class="sd">    If there are any desired features that are not supported in this version of the class</span>
-<span class="linenos">14</span><span class="sd">    then this class should be modified to support them *and* preserve existing behavior</span>
-<span class="linenos">15</span><span class="sd">    &quot;&quot;&quot;</span>
-<span class="linenos">16</span>
+<span class="linenos">19</span><span class="k">class</span><span class="w"> </span><span class="nc">Evolution</span><span class="p">:</span>
+<span class="linenos">20</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">21</span><span class="sd">    NOT CURRENT VERSION, SHOULD BE REVISED USING TRIVIAL_EVOLUTION</span>
+<span class="linenos">22</span><span class="sd">    This class utilizes the protocols defined to run experiments</span>
+<span class="linenos">23</span><span class="sd">    There is only one implementation of Evolution needed</span>
+<span class="linenos">24</span><span class="sd">    If there are any desired features that are not supported in this version of the class</span>
+<span class="linenos">25</span><span class="sd">    then this class should be modified to support them *and* preserve existing behavior</span>
+<span class="linenos">26</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos">27</span>
 <div class="viewcode-block" id="Evolution.__init__">
 <a class="viewcode-back" href="../code/Evolution.html#Evolution.Evolution.__init__">[docs]</a>
-<span class="linenos">17</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen_data_factory</span><span class="p">:</span> <span class="n">GenDataFactory</span><span class="p">,</span> <span class="n">circuit_factory</span><span class="p">:</span> <span class="n">CircuitFactory</span><span class="p">,</span> <span class="n">reproduce</span><span class="p">:</span> <span class="n">Reproducer</span><span class="p">,</span> 
-<span class="linenos">18</span>                 <span class="n">gen_init_populations</span><span class="p">:</span> <span class="n">GenerateInitialPopulations</span><span class="p">,</span> <span class="n">eval_population_fitness</span><span class="p">:</span> <span class="n">EvaluatePopulationFitness</span><span class="p">,</span>
-<span class="linenos">19</span>                 <span class="n">generate_measurements</span><span class="p">:</span> <span class="n">GenerateMeasurements</span><span class="p">,</span> <span class="n">hardware</span><span class="p">:</span> <span class="n">Hardware</span><span class="p">,</span> <span class="n">plot_data_recorder</span><span class="p">:</span> <span class="n">PlotDataRecorder</span><span class="p">):</span>
-<span class="linenos">20</span><span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="linenos">21</span><span class="sd">        Initializes the Evolution object with all of the protocols.</span>
-<span class="linenos">22</span><span class="sd">        Does not execute any protocols</span>
-<span class="linenos">23</span><span class="sd">        &#39;&#39;&#39;</span>
-<span class="linenos">24</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__gen_data_factory</span> <span class="o">=</span> <span class="n">gen_data_factory</span>
-<span class="linenos">25</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__circuit_factory</span> <span class="o">=</span> <span class="n">circuit_factory</span>
-<span class="linenos">26</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__reproduce</span> <span class="o">=</span> <span class="n">reproduce</span>
-<span class="linenos">27</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__gen_init_populations</span> <span class="o">=</span> <span class="n">gen_init_populations</span>
-<span class="linenos">28</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__eval_population_fitness</span> <span class="o">=</span> <span class="n">eval_population_fitness</span>
-<span class="linenos">29</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__generate_measurements</span> <span class="o">=</span> <span class="n">generate_measurements</span>
-<span class="linenos">30</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__hardware</span> <span class="o">=</span> <span class="n">hardware</span>
-<span class="linenos">31</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__plot_data_recorder</span> <span class="o">=</span> <span class="n">plot_data_recorder</span></div>
+<span class="linenos">28</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen_data_factory</span><span class="p">:</span> <span class="n">GenDataFactory</span><span class="p">,</span> <span class="n">circuit_factory</span><span class="p">:</span> <span class="n">CircuitFactory</span><span class="p">,</span> <span class="n">reproduce</span><span class="p">:</span> <span class="n">Reproducer</span><span class="p">,</span> 
+<span class="linenos">29</span>                 <span class="n">gen_init_populations</span><span class="p">:</span> <span class="n">GenerateInitialPopulations</span><span class="p">,</span> <span class="n">eval_population_fitness</span><span class="p">:</span> <span class="n">EvaluatePopulationFitness</span><span class="p">,</span>
+<span class="linenos">30</span>                 <span class="n">generate_measurements</span><span class="p">:</span> <span class="n">GenerateMeasurements</span><span class="p">,</span> <span class="n">hardware</span><span class="p">:</span> <span class="n">Hardware</span><span class="p">,</span> <span class="n">plot_data_recorder</span><span class="p">:</span> <span class="n">PlotDataRecorder</span><span class="p">):</span>
+<span class="linenos">31</span><span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="linenos">32</span><span class="sd">        Initializes the Evolution object with all of the protocols.</span>
+<span class="linenos">33</span><span class="sd">        Does not execute any protocols</span>
+<span class="linenos">34</span><span class="sd">        &#39;&#39;&#39;</span>
+<span class="linenos">35</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__gen_data_factory</span> <span class="o">=</span> <span class="n">gen_data_factory</span>
+<span class="linenos">36</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__circuit_factory</span> <span class="o">=</span> <span class="n">circuit_factory</span>
+<span class="linenos">37</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__reproduce</span> <span class="o">=</span> <span class="n">reproduce</span>
+<span class="linenos">38</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__gen_init_populations</span> <span class="o">=</span> <span class="n">gen_init_populations</span>
+<span class="linenos">39</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__eval_population_fitness</span> <span class="o">=</span> <span class="n">eval_population_fitness</span>
+<span class="linenos">40</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__generate_measurements</span> <span class="o">=</span> <span class="n">generate_measurements</span>
+<span class="linenos">41</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__hardware</span> <span class="o">=</span> <span class="n">hardware</span>
+<span class="linenos">42</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__plot_data_recorder</span> <span class="o">=</span> <span class="n">plot_data_recorder</span></div>
 
-<span class="linenos">32</span>
+<span class="linenos">43</span>
 <div class="viewcode-block" id="Evolution.run">
 <a class="viewcode-back" href="../code/Evolution.html#Evolution.Evolution.run">[docs]</a>
-<span class="linenos">33</span>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="linenos">34</span><span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="linenos">35</span><span class="sd">        Runs the desired experiment, based on the protocols provided</span>
-<span class="linenos">36</span><span class="sd">        &#39;&#39;&#39;</span>
-<span class="linenos">37</span>        <span class="n">populations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Population</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_init_populations</span><span class="p">()</span>
-<span class="linenos">38</span>        <span class="n">gen_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_data_factory</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-<span class="linenos">39</span>        <span class="k">while</span> <span class="n">gen_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">40</span>            <span class="n">measurements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__generate_measurements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__circuit_factory</span><span class="p">,</span> <span class="n">populations</span><span class="p">)</span>
-<span class="linenos">41</span>            <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__hardware</span><span class="o">.</span><span class="n">request_measurement</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">measurements</span><span class="p">]</span>
-<span class="linenos">42</span>            <span class="n">results</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span> <span class="p">)</span> <span class="c1"># I added asyncio.run to make sure that the async experiements were run at this point</span>
-<span class="linenos">43</span>            <span class="c1"># Maybe figure out task groups. See https://docs.python.org/3/library/asyncio-task.html#coroutines-and-tasks</span>
-<span class="linenos">44</span>
-<span class="linenos">45</span>            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">:</span>
-<span class="linenos">46</span>                <span class="bp">self</span><span class="o">.</span><span class="n">__eval_population_fitness</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
-<span class="linenos">47</span>            <span class="n">populations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reproduce</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">populations</span><span class="p">))</span>
-<span class="linenos">48</span>
-<span class="linenos">49</span>            <span class="n">fits</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="linenos">50</span>            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">:</span>
-<span class="linenos">51</span>                <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="ow">in</span> <span class="n">p</span><span class="p">:</span>
-<span class="linenos">52</span>                    <span class="n">fits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="c1"># type: ignore</span>
-<span class="linenos">53</span>            <span class="c1"># TODO: calculate diversity</span>
-<span class="linenos">54</span>            <span class="bp">self</span><span class="o">.</span><span class="n">__plot_data_recorder</span><span class="o">.</span><span class="n">record_generation</span><span class="p">(</span><span class="n">fits</span><span class="p">,</span> <span class="n">gen_data</span><span class="o">.</span><span class="n">generation_number</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-<span class="linenos">55</span>
-<span class="linenos">56</span>            <span class="n">gen_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_data_factory</span><span class="p">(</span><span class="n">gen_data</span><span class="p">)</span></div>
+<span class="linenos">44</span>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">45</span><span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="linenos">46</span><span class="sd">        Runs the desired experiment, based on the protocols provided</span>
+<span class="linenos">47</span><span class="sd">        &#39;&#39;&#39;</span>
+<span class="linenos">48</span>        <span class="n">populations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Population</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_init_populations</span><span class="p">()</span>
+<span class="linenos">49</span>        <span class="n">gen_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_data_factory</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<span class="linenos">50</span>        <span class="k">while</span> <span class="n">gen_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">51</span>            <span class="n">measurements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__generate_measurements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__circuit_factory</span><span class="p">,</span> <span class="n">populations</span><span class="p">)</span>
+<span class="linenos">52</span>            <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__hardware</span><span class="o">.</span><span class="n">request_measurement</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">measurements</span><span class="p">]</span>
+<span class="linenos">53</span>            <span class="c1"># asyncio.gather dispatches all measurement requests concurrently. In the intended</span>
+<span class="linenos">54</span>            <span class="c1"># server-client model, each await genuinely suspends while waiting for a network</span>
+<span class="linenos">55</span>            <span class="c1"># response, so multiple FPGAs are measured in parallel here.</span>
+<span class="linenos">56</span>            <span class="c1"># NOTE: asyncio.run() creates a new event loop each generation and destroys it</span>
+<span class="linenos">57</span>            <span class="c1"># after. A cleaner approach is to make run() itself async (i.e. `async def run`)</span>
+<span class="linenos">58</span>            <span class="c1"># and use `await asyncio.gather(*tasks)` directly, keeping one event loop for the</span>
+<span class="linenos">59</span>            <span class="c1"># whole experiment. See .claude/docs/hardware_concurrency.md for discussion.</span>
+<span class="linenos">60</span>            <span class="n">results</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span> <span class="p">)</span>
+<span class="linenos">61</span>
+<span class="linenos">62</span>            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">:</span>
+<span class="linenos">63</span>                <span class="bp">self</span><span class="o">.</span><span class="n">__eval_population_fitness</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
+<span class="linenos">64</span>            <span class="n">populations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reproduce</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">populations</span><span class="p">))</span>
+<span class="linenos">65</span>
+<span class="linenos">66</span>            <span class="n">fits</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">67</span>            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">:</span>
+<span class="linenos">68</span>                <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="ow">in</span> <span class="n">p</span><span class="p">:</span>
+<span class="linenos">69</span>                    <span class="n">fits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="c1"># type: ignore</span>
+<span class="linenos">70</span>            <span class="c1"># TODO: calculate diversity</span>
+<span class="linenos">71</span>            <span class="bp">self</span><span class="o">.</span><span class="n">__plot_data_recorder</span><span class="o">.</span><span class="n">record_generation</span><span class="p">(</span><span class="n">fits</span><span class="p">,</span> <span class="n">gen_data</span><span class="o">.</span><span class="n">generation_number</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="linenos">72</span>
+<span class="linenos">73</span>            <span class="n">gen_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_data_factory</span><span class="p">(</span><span class="n">gen_data</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

@@ -1,0 +1,858 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tools.generate_configs &#8212; Bitstream Evolution Develop Branch 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/tools/generate_configs';</script>
+    <link rel="icon" href="https://evolvablehardware.org/images/setup_tutorial_2.jpg"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="https://evolvablehardware.org/images/setup_tutorial_2.jpg" class="logo__image only-light" alt="Bitstream Evolution Develop Branch 0.1.0 documentation - Home"/>
+    <script>document.write(`<img src="https://evolvablehardware.org/images/setup_tutorial_2.jpg" class="logo__image only-dark" alt="Bitstream Evolution Develop Branch 0.1.0 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../code/Circuit/Circuit.html">Circuit.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../code/Circuit/FileBasedCircuit.html">FileBasedCircuit.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../code/Circuit/FullySimCircuit.html">FullySimCircuit.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../code/EvaluateFitness/index.html">Evaluate Fitness</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../code/EvaluateFitness/EvaluateFitness.html">EvaluateFitness.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../code/EvaluateFitness/EvalPulseCountFitness.html">EvalPulseCountFitness.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../code/EvaluateFitness/EvalVarMaxFitness.html">EvalVarMaxFitness.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../code/GenerateMeasurements/index.html">Generate Measurements</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../code/GenerateMeasurements/GenerateMeasurements.html">GenerateMeasurements.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../code/Hardware/index.html">Hardware</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../code/Hardware/Microcontroller.html">Microcontroller.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../code/Individual/index.html">Individual</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../code/Individual/BitstreamIndividual.html">BitstreamIndividual.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../code/Population/index.html">Population</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../code/Population/PopulationInitialization.html">PopulationInitialization.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code/BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code/TrivialImplementation.html">TrivialImplementation.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code/Directories.html">Directories.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code/Evolution.html">Evolution.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code/Logger.html">Logger.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code/PlotConfig.html">PlotConfig.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code/PlotDataRecorder.html">PlotDataRecorder.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code/PlotEvolutionLive.html">PlotEvolutionLive.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code/utilities.html">utilities.py</a></li>
+</ul>
+</details></li>
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for tools.generate_configs</h1><div class="highlight"><pre>
+<span></span><span class="linenos">  1</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  2</span><span class="sd">Generate a bash script to run multiple experiments.</span>
+<span class="linenos">  3</span><span class="sd">Make sure you generate configs from base BitstreamEvolution Directory.</span>
+<span class="linenos">  4</span>
+<span class="linenos">  5</span><span class="sd">Origionally written by Allyn, improved and extended by Isaac.</span>
+<span class="linenos">  6</span>
+<span class="linenos">  7</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  8</span>
+<span class="linenos">  9</span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">stat</span>
+<span class="linenos"> 10</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Protocol</span>
+<span class="linenos"> 11</span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="linenos"> 12</span>
+<span class="linenos"> 13</span><span class="c1"># mkdir(&quot;data/SensitivityConfigs&quot;)</span>
+<span class="linenos"> 14</span>
+<span class="linenos"> 15</span><span class="c1"># Set some defaults</span>
+<span class="linenos"> 16</span><span class="n">base_config_path</span> <span class="o">=</span>              <span class="s2">&quot;data/config.ini&quot;</span>
+<span class="linenos"> 17</span><span class="n">generated_configs_dir</span> <span class="o">=</span>         <span class="s2">&quot;data/GeneratedConfigs&quot;</span>
+<span class="linenos"> 18</span><span class="n">generated_bash_script_path</span> <span class="o">=</span>    <span class="s2">&quot;data/runGeneratedConfigs.sh&quot;</span>
+<span class="linenos"> 19</span><span class="n">results_output_directory</span> <span class="o">=</span>      <span class="s2">&quot;data/GeneratedConfigsResults&quot;</span>
+<span class="linenos"> 20</span><span class="n">path_best_asc_in_workspace</span> <span class="o">=</span>    <span class="s2">&quot;./workspace/best.asc&quot;</span>
+<span class="linenos"> 21</span><span class="n">path_store_best_asc</span> <span class="o">=</span>           <span class="s2">&quot;data/previous_best.asc&quot;</span>
+<span class="linenos"> 22</span><span class="sd">&quot;&quot;&quot;This variable is where the best.asc is copied to is set command to copy_best_target_path by default&quot;&quot;&quot;</span>
+<span class="linenos"> 23</span>
+<span class="linenos"> 24</span>
+<span class="linenos"> 25</span><span class="c1"># This will create the directory to put the generated configs in if it doesn&#39;t exist</span>
+<span class="linenos"> 26</span><span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">generated_configs_dir</span><span class="p">):</span>
+<span class="linenos"> 27</span>    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">generated_configs_dir</span><span class="p">)</span>
+<span class="linenos"> 28</span>
+<span class="linenos"> 29</span><span class="c1">#Make the directory for the final results</span>
+<span class="linenos"> 30</span><span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">results_output_directory</span><span class="p">):</span>
+<span class="linenos"> 31</span>    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">results_output_directory</span><span class="p">)</span>
+<span class="linenos"> 32</span>
+<span class="linenos"> 33</span><span class="c1">## Some Protocalls and Dataclasses to streamline operation &amp; Provide good defaults</span>
+<span class="linenos"> 34</span>
+<div class="viewcode-block" id="CommandInfo">
+<a class="viewcode-back" href="../../code/tools/generate_configs.html#tools.generate_configs.CommandInfo">[docs]</a>
+<span class="linenos"> 35</span><span class="k">class</span><span class="w"> </span><span class="nc">CommandInfo</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="linenos"> 36</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;A protocol specifying all data needed to invoke and run evolve on the command line.&quot;&quot;&quot;</span>
+<span class="linenos"> 37</span>    <span class="n">config_path</span><span class="p">:</span><span class="nb">str</span>
+<span class="linenos"> 38</span>    <span class="n">description</span><span class="p">:</span><span class="nb">str</span>
+<span class="linenos"> 39</span>    <span class="n">copy_best_asc_target_path</span><span class="p">:</span><span class="nb">str</span><span class="o">|</span><span class="kc">None</span>
+<span class="linenos"> 40</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;This is the path we want to copy best.asc to once it has run successfully, None if don&#39;t want to copy it to a different location.&quot;&quot;&quot;</span>
+<span class="linenos"> 41</span>    <span class="n">best_asc_workspace_path</span><span class="p">:</span><span class="nb">str</span>
+<span class="linenos"> 42</span>    <span class="n">skip_next_command_if_success</span><span class="p">:</span><span class="nb">bool</span>
+<span class="linenos"> 43</span>    <span class="n">skip_next_command_if_error</span><span class="p">:</span><span class="nb">bool</span>
+<span class="linenos"> 44</span>    <span class="n">skip_next_command_if_skipped</span><span class="p">:</span><span class="nb">bool</span></div>
+
+<span class="linenos"> 45</span>
+<div class="viewcode-block" id="CommandData">
+<a class="viewcode-back" href="../../code/tools/generate_configs.html#tools.generate_configs.CommandData">[docs]</a>
+<span class="linenos"> 46</span><span class="nd">@dataclass</span>
+<span class="linenos"> 47</span><span class="k">class</span><span class="w"> </span><span class="nc">CommandData</span><span class="p">:</span>
+<span class="linenos"> 48</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that stores all data needed to invoke and run  evolve on the command line.&quot;&quot;&quot;</span>
+<span class="linenos"> 49</span>    <span class="n">config_path</span><span class="p">:</span><span class="nb">str</span>
+<span class="linenos"> 50</span>    <span class="n">description</span><span class="p">:</span><span class="nb">str</span>
+<span class="linenos"> 51</span>    <span class="n">copy_best_asc_target_path</span><span class="p">:</span><span class="nb">str</span><span class="o">|</span><span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="linenos"> 52</span>    <span class="n">best_asc_workspace_path</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="n">path_best_asc_in_workspace</span>
+<span class="linenos"> 53</span>    <span class="n">skip_next_command_if_success</span><span class="p">:</span><span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="linenos"> 54</span>    <span class="n">skip_next_command_if_error</span><span class="p">:</span><span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="linenos"> 55</span>    <span class="n">skip_next_command_if_skipped</span><span class="p">:</span><span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<span class="linenos"> 56</span>
+<span class="linenos"> 57</span>
+<span class="linenos"> 58</span><span class="c1"># All {variables_in_brackets} need to be specified and formatted later as .format(variables_in_brackets=&quot;value&quot;)</span>
+<span class="linenos"> 59</span><span class="c1"># It is fine to specify unused variables in .format(), but will error out if a value isn&#39;t included</span>
+<span class="linenos"> 60</span><span class="c1"># You only need to include the values here that you don&#39;t want to inherit from your base config.</span>
+<span class="linenos"> 61</span>
+<span class="linenos"> 62</span><span class="c1">######################### OLD SENSITIVITY SCRIPT ############################</span>
+<span class="linenos"> 63</span><span class="n">old_sensitivity_config_base</span> <span class="o">=</span> \
+<span class="linenos"> 64</span><span class="sd">&quot;&quot;&quot;[TOP-LEVEL PARAMETERS]</span>
+<span class="linenos"> 65</span><span class="sd">base_config = {base_config_path}</span>
+<span class="linenos"> 66</span>
+<span class="linenos"> 67</span><span class="sd">[FITNESS SENSITIVITY PARAMETERS]</span>
+<span class="linenos"> 68</span><span class="sd">test_circuit = data/saved_bests/{circuit_id}.asc</span>
+<span class="linenos"> 69</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 70</span>
+<span class="linenos"> 71</span><span class="c1"># return the path to the new config</span>
+<span class="linenos"> 72</span><span class="k">def</span><span class="w"> </span><span class="nf">old_sensitivity_config_generator</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Generator</span><span class="p">[</span><span class="n">CommandInfo</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">]:</span>
+<span class="linenos"> 73</span>
+<span class="linenos"> 74</span>    <span class="k">for</span> <span class="n">circuit_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">510</span><span class="p">,</span><span class="mi">10</span><span class="p">):</span>
+<span class="linenos"> 75</span>        <span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">generated_configs_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">circuit_id</span><span class="si">}</span><span class="s2">.ini&quot;</span><span class="p">)</span>
+<span class="linenos"> 76</span>        <span class="c1"># Create the config file using the config_base file</span>
+<span class="linenos"> 77</span>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">config_file</span><span class="p">:</span>
+<span class="linenos"> 78</span>            <span class="n">config_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">old_sensitivity_config_base</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+<span class="linenos"> 79</span>                <span class="n">base_config_path</span> <span class="o">=</span> <span class="n">base_config_path</span><span class="p">,</span>
+<span class="linenos"> 80</span>                <span class="n">circuit_id</span> <span class="o">=</span> <span class="n">circuit_id</span>
+<span class="linenos"> 81</span>            <span class="p">))</span>
+<span class="linenos"> 82</span>
+<span class="linenos"> 83</span>        <span class="k">yield</span> <span class="n">CommandData</span><span class="p">(</span><span class="n">config_path</span><span class="o">=</span><span class="n">config_path</span><span class="p">,</span><span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Runing sensitivity experiment on </span><span class="si">{</span><span class="n">circuit_id</span><span class="si">}</span><span class="s2">.ini&quot;</span><span class="p">)</span>
+<span class="linenos"> 84</span>
+<span class="linenos"> 85</span>
+<span class="linenos"> 86</span><span class="c1">################################## PULSE COUNT SCRIPTS ################################</span>
+<span class="linenos"> 87</span>
+<span class="linenos"> 88</span><span class="n">pulse_count_config_base</span> <span class="o">=</span> \
+<span class="linenos"> 89</span><span class="sd">&quot;&quot;&quot;[TOP-LEVEL PARAMETERS]</span>
+<span class="linenos"> 90</span><span class="sd">base_config = {base_config_path}</span>
+<span class="linenos"> 91</span><span class="sd">simulation_mode = FULLY_INTRINSIC</span>
+<span class="linenos"> 92</span>
+<span class="linenos"> 93</span><span class="sd">[FITNESS PARAMETERS]</span>
+<span class="linenos"> 94</span><span class="sd">fitness_func = {fitness_function}</span>
+<span class="linenos"> 95</span><span class="sd">desired_freq = {desired_frequency}</span>
+<span class="linenos"> 96</span>
+<span class="linenos"> 97</span><span class="sd">[GA PARAMETERS]</span>
+<span class="linenos"> 98</span><span class="sd">population_size = {population_size}</span>
+<span class="linenos"> 99</span>
+<span class="linenos">100</span><span class="sd">[STOPPING CONDITION PARAMETERS]</span>
+<span class="linenos">101</span><span class="sd">generations = {generations}</span>
+<span class="linenos">102</span>
+<span class="linenos">103</span><span class="sd">[LOGGING PARAMETERS]</span>
+<span class="linenos">104</span><span class="sd">best_file = {best_asc_path}</span>
+<span class="linenos">105</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">106</span>
+<div class="viewcode-block" id="pulse_count_config_generator">
+<a class="viewcode-back" href="../../code/tools/generate_configs.html#tools.generate_configs.pulse_count_config_generator">[docs]</a>
+<span class="linenos">107</span><span class="k">def</span><span class="w"> </span><span class="nf">pulse_count_config_generator</span><span class="p">(</span><span class="n">target_pulses</span><span class="p">:</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+<span class="linenos">108</span>                <span class="n">use_tolerant_ff</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="linenos">109</span>                <span class="n">use_sensitive_ff</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="linenos">110</span>                <span class="n">population_size</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+<span class="linenos">111</span>                <span class="n">max_generations</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+<span class="linenos">112</span>                <span class="n">store_best_circuit</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="linenos">113</span>                <span class="n">skip_next_if_fail</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="linenos">114</span>                <span class="n">skip_next_if_skipped</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">Generator</span><span class="p">[</span><span class="n">CommandInfo</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">]:</span>
+<span class="linenos">115</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">116</span><span class="sd">    Generates configs for pulse_count experiments</span>
+<span class="linenos">117</span>
+<span class="linenos">118</span><span class="sd">    The order experiments will run if all fitness functions are selected is:</span>
+<span class="linenos">119</span><span class="sd">    tolerant -&gt; sensitive</span>
+<span class="linenos">120</span>
+<span class="linenos">121</span><span class="sd">    Parameters</span>
+<span class="linenos">122</span><span class="sd">    ----------</span>
+<span class="linenos">123</span><span class="sd">    target_pulses : list[int]</span>
+<span class="linenos">124</span><span class="sd">        A list of all of the target pulse counts you want to train for</span>
+<span class="linenos">125</span><span class="sd">    use_tolerant_ff : bool, optional</span>
+<span class="linenos">126</span><span class="sd">        If each pulse get a run using the tolerant fitness function, by default True</span>
+<span class="linenos">127</span><span class="sd">    use_sensitive_ff: bool, optional</span>
+<span class="linenos">128</span><span class="sd">        If each pulse get a run using the sinsitive fitness function, by default True</span>
+<span class="linenos">129</span><span class="sd">    population_size: int, optional</span>
+<span class="linenos">130</span><span class="sd">        This sets how many circuits are in each population, by default 50</span>
+<span class="linenos">131</span><span class="sd">    max_generations: int, optional</span>
+<span class="linenos">132</span><span class="sd">        Sets how many generations are allowed to run before the experiment ends, by default 500</span>
+<span class="linenos">133</span><span class="sd">    store_best_circuit: bool, optional</span>
+<span class="linenos">134</span><span class="sd">        If this is set the best.asc file will be copied to the data directory specified in path_store_best_asc, by default False</span>
+<span class="linenos">135</span><span class="sd">    skip_next_if_fail: bool, optional</span>
+<span class="linenos">136</span><span class="sd">        This will set the bash script to skip the next command it would run if this script fails, by default False</span>
+<span class="linenos">137</span><span class="sd">    skip_next_if_skipped: bool, optional</span>
+<span class="linenos">138</span><span class="sd">        Sets the bash script to skip the next command if this command is skipped, by default False</span>
+<span class="linenos">139</span>
+<span class="linenos">140</span><span class="sd">    Yields</span>
+<span class="linenos">141</span><span class="sd">    ------</span>
+<span class="linenos">142</span><span class="sd">    Generator[CommandInfo,None,None]</span>
+<span class="linenos">143</span><span class="sd">        The path to the output file generated.</span>
+<span class="linenos">144</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos">145</span>    <span class="k">def</span><span class="w"> </span><span class="nf">create_config</span><span class="p">(</span><span class="n">target_pulse_count</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">fitness_funciton</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">population_size</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">max_generations</span><span class="p">:</span><span class="nb">int</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">str</span><span class="p">:</span>
+<span class="linenos">146</span>        <span class="c1"># Generate the path for each pulse count</span>
+<span class="linenos">147</span>        <span class="n">config_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">generated_configs_dir</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">target_pulse_count</span><span class="si">}</span><span class="s2">_with__</span><span class="si">{</span><span class="n">fitness_funciton</span><span class="si">}</span><span class="s2">.ini&quot;</span><span class="p">)</span>
+<span class="linenos">148</span>
+<span class="linenos">149</span>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">config_file</span><span class="p">:</span>
+<span class="linenos">150</span>            <span class="n">config_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pulse_count_config_base</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+<span class="linenos">151</span>                <span class="n">base_config_path</span> <span class="o">=</span> <span class="n">base_config_path</span><span class="p">,</span>
+<span class="linenos">152</span>                <span class="n">fitness_function</span> <span class="o">=</span> <span class="n">fitness_funciton</span><span class="p">,</span>
+<span class="linenos">153</span>                <span class="n">desired_frequency</span> <span class="o">=</span> <span class="n">target_pulse_count</span><span class="p">,</span>
+<span class="linenos">154</span>                <span class="n">best_asc_path</span> <span class="o">=</span> <span class="n">path_best_asc_in_workspace</span><span class="p">,</span>
+<span class="linenos">155</span>                <span class="n">population_size</span> <span class="o">=</span> <span class="n">population_size</span><span class="p">,</span>
+<span class="linenos">156</span>                <span class="n">generations</span> <span class="o">=</span> <span class="n">max_generations</span>
+<span class="linenos">157</span>            <span class="p">))</span>
+<span class="linenos">158</span>        <span class="k">return</span> <span class="n">CommandData</span><span class="p">(</span><span class="n">config_path</span><span class="o">=</span><span class="n">config_path</span><span class="p">,</span> 
+<span class="linenos">159</span>                           <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Pulse Count experiment targeting </span><span class="si">{</span><span class="n">target_pulse_count</span><span class="si">}</span><span class="s2">Hz using fitness function </span><span class="si">{</span><span class="n">fitness_funciton</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
+<span class="linenos">160</span>                           <span class="n">copy_best_asc_target_path</span><span class="o">=</span> <span class="n">path_store_best_asc</span> <span class="k">if</span> <span class="n">store_best_circuit</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+<span class="linenos">161</span>                           <span class="n">skip_next_command_if_error</span><span class="o">=</span><span class="n">skip_next_if_fail</span><span class="p">,</span>
+<span class="linenos">162</span>                           <span class="n">skip_next_command_if_skipped</span><span class="o">=</span><span class="n">skip_next_if_skipped</span><span class="p">,</span>
+<span class="linenos">163</span>                           <span class="n">skip_next_command_if_success</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">164</span>
+<span class="linenos">165</span>    <span class="k">for</span> <span class="n">target_pulse</span> <span class="ow">in</span> <span class="n">target_pulses</span><span class="p">:</span>
+<span class="linenos">166</span>        <span class="k">if</span> <span class="n">use_sensitive_ff</span><span class="p">:</span>
+<span class="linenos">167</span>            <span class="k">yield</span> <span class="n">create_config</span><span class="p">(</span><span class="n">target_pulse</span><span class="p">,</span><span class="s2">&quot;SENSITIVE_PULSE_COUNT&quot;</span><span class="p">,</span><span class="n">population_size</span><span class="o">=</span><span class="n">population_size</span><span class="p">,</span><span class="n">max_generations</span><span class="o">=</span><span class="n">max_generations</span><span class="p">)</span>
+<span class="linenos">168</span>        <span class="k">if</span> <span class="n">use_tolerant_ff</span><span class="p">:</span>
+<span class="linenos">169</span>            <span class="k">yield</span> <span class="n">create_config</span><span class="p">(</span><span class="n">target_pulse</span><span class="p">,</span><span class="s2">&quot;TOLERANT_PULSE_COUNT&quot;</span><span class="p">,</span><span class="n">population_size</span><span class="o">=</span><span class="n">population_size</span><span class="p">,</span><span class="n">max_generations</span><span class="o">=</span><span class="n">max_generations</span><span class="p">)</span></div>
+
+<span class="linenos">170</span>
+<span class="linenos">171</span><span class="n">pulse_count_sensitivity_config_base</span> <span class="o">=</span> \
+<span class="linenos">172</span><span class="sd">&quot;&quot;&quot;[TOP-LEVEL PARAMETERS]</span>
+<span class="linenos">173</span><span class="sd">base_config = {base_config_path}</span>
+<span class="linenos">174</span><span class="sd">simulation_mode = INTRINSIC_SENSITIVITY</span>
+<span class="linenos">175</span>
+<span class="linenos">176</span><span class="sd">[FITNESS PARAMETERS]</span>
+<span class="linenos">177</span><span class="sd">fitness_func = {fitness_function}</span>
+<span class="linenos">178</span><span class="sd">desired_freq = {desired_frequency}</span>
+<span class="linenos">179</span>
+<span class="linenos">180</span><span class="sd">[FITNESS SENSITIVITY PARAMETERS]</span>
+<span class="linenos">181</span><span class="sd">test_circuit = {test_circuit_path}</span>
+<span class="linenos">182</span><span class="sd">sensitivity_trials = IGNORE</span>
+<span class="linenos">183</span><span class="sd">sensitivity_time = 001:00:00:00</span>
+<span class="linenos">184</span><span class="sd">reading_temp_humidity = false</span>
+<span class="linenos">185</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">186</span>
+<div class="viewcode-block" id="pulse_count_then_sensitivity_config_generator">
+<a class="viewcode-back" href="../../code/tools/generate_configs.html#tools.generate_configs.pulse_count_then_sensitivity_config_generator">[docs]</a>
+<span class="linenos">187</span><span class="k">def</span><span class="w"> </span><span class="nf">pulse_count_then_sensitivity_config_generator</span><span class="p">(</span><span class="n">target_pulses</span><span class="p">:</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+<span class="linenos">188</span>                <span class="n">use_tolerant_ff</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="linenos">189</span>                <span class="n">use_sensitive_ff</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="linenos">190</span>                <span class="n">population_size</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+<span class="linenos">191</span>                <span class="n">max_generations</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">Generator</span><span class="p">[</span><span class="n">CommandInfo</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">]:</span>
+<span class="linenos">192</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">193</span><span class="sd">    Generates configs for pulse_count experiments,</span>
+<span class="linenos">194</span><span class="sd">    then follows them with the config for a sensitivity config.</span>
+<span class="linenos">195</span>
+<span class="linenos">196</span><span class="sd">    The order experiments will run if all fitness functions are selected is:</span>
+<span class="linenos">197</span><span class="sd">    tolerant -&gt; sensitive</span>
+<span class="linenos">198</span>
+<span class="linenos">199</span><span class="sd">    Parameters</span>
+<span class="linenos">200</span><span class="sd">    ----------</span>
+<span class="linenos">201</span><span class="sd">    target_pulses : list[int]</span>
+<span class="linenos">202</span><span class="sd">        A list of all of the target pulse counts you want to train for</span>
+<span class="linenos">203</span><span class="sd">    use_tolerant_ff : bool, optional</span>
+<span class="linenos">204</span><span class="sd">        If each pulse get a run using the tolerant fitness function, by default True</span>
+<span class="linenos">205</span><span class="sd">    use_sensitive_ff: bool, optional</span>
+<span class="linenos">206</span><span class="sd">        If each pulse get a run using the sinsitive fitness function, by default True</span>
+<span class="linenos">207</span><span class="sd">    population_size: int, optional</span>
+<span class="linenos">208</span><span class="sd">        The number of circuits in each generation for pulse count, by default 50</span>
+<span class="linenos">209</span><span class="sd">    max_generations: int, optional</span>
+<span class="linenos">210</span><span class="sd">        The number of generations run before ending the simulation for pulse count, by default 500</span>
+<span class="linenos">211</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos">212</span>    <span class="k">def</span><span class="w"> </span><span class="nf">create_config_pair</span><span class="p">(</span><span class="n">target_pulse_count</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">fitness_funciton</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">pop_size</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">max_gens</span><span class="p">:</span><span class="nb">int</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">Generator</span><span class="p">[</span><span class="n">CommandInfo</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">]:</span>
+<span class="linenos">213</span>        <span class="c1"># Generate a pulse_count_config_generator to get first config</span>
+<span class="linenos">214</span>        <span class="n">use_sensitive</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="linenos">215</span>        <span class="n">use_tolerant</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="linenos">216</span>        <span class="k">match</span> <span class="n">fitness_funciton</span><span class="p">:</span>
+<span class="linenos">217</span>            <span class="k">case</span> <span class="s2">&quot;SENSITIVE_PULSE_COUNT&quot;</span><span class="p">:</span>
+<span class="linenos">218</span>                <span class="n">use_sensitive</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="linenos">219</span>            <span class="k">case</span> <span class="s2">&quot;TOLERANT_PULSE_COUNT&quot;</span><span class="p">:</span>
+<span class="linenos">220</span>                <span class="n">use_tolerant</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="linenos">221</span>            <span class="k">case</span> <span class="n">bad_name</span><span class="p">:</span>
+<span class="linenos">222</span>                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fitness funciton name &#39;</span><span class="si">{</span><span class="n">bad_name</span><span class="si">}</span><span class="s2">&#39; not recognised&quot;</span><span class="p">)</span>
+<span class="linenos">223</span>
+<span class="linenos">224</span>        <span class="c1"># This would be easier if we just pulled out the function the generator used, but I couldn&#39;t be bothered.</span>
+<span class="linenos">225</span>        <span class="n">pc_gen</span> <span class="o">=</span> <span class="n">pulse_count_config_generator</span><span class="p">(</span><span class="n">target_pulses</span><span class="o">=</span><span class="p">[</span><span class="n">target_pulse_count</span><span class="p">],</span>
+<span class="linenos">226</span>                                              <span class="n">use_sensitive_ff</span><span class="o">=</span><span class="n">use_sensitive</span><span class="p">,</span>
+<span class="linenos">227</span>                                              <span class="n">use_tolerant_ff</span><span class="o">=</span><span class="n">use_tolerant</span><span class="p">,</span>
+<span class="linenos">228</span>                                              <span class="n">population_size</span><span class="o">=</span><span class="n">pop_size</span><span class="p">,</span>
+<span class="linenos">229</span>                                              <span class="n">max_generations</span><span class="o">=</span><span class="n">max_gens</span><span class="p">,</span>
+<span class="linenos">230</span>                                              <span class="n">store_best_circuit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="linenos">231</span>                                              <span class="n">skip_next_if_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="linenos">232</span>                                              <span class="n">skip_next_if_skipped</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">233</span>        <span class="n">pulse_count_experiment</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pc_gen</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># yield the first element only (there should only be 1)</span>
+<span class="linenos">234</span>        <span class="k">yield</span> <span class="n">pulse_count_experiment</span>
+<span class="linenos">235</span>
+<span class="linenos">236</span>        <span class="c1"># make sure we have a best.asc to act on.</span>
+<span class="linenos">237</span>        <span class="k">if</span> <span class="n">pulse_count_experiment</span><span class="o">.</span><span class="n">copy_best_asc_target_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">238</span>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The pulse count must output to a target path for Sensitivity to test it.&quot;</span><span class="p">)</span>
+<span class="linenos">239</span>
+<span class="linenos">240</span>        <span class="c1">## Generate the config for the Sensitivity run.</span>
+<span class="linenos">241</span>        <span class="n">config_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">generated_configs_dir</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;Sensitivity_For_Pulse_Count_of_</span><span class="si">{</span><span class="n">target_pulse_count</span><span class="si">}</span><span class="s2">_with_</span><span class="si">{</span><span class="n">fitness_funciton</span><span class="si">}</span><span class="s2">.ini&quot;</span><span class="p">)</span>
+<span class="linenos">242</span>
+<span class="linenos">243</span>        <span class="c1">## UPDATE SO TO GENERATE SENSITIVITY CONFIG 120 mins</span>
+<span class="linenos">244</span>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">config_file</span><span class="p">:</span>
+<span class="linenos">245</span>            <span class="n">config_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pulse_count_sensitivity_config_base</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+<span class="linenos">246</span>                <span class="n">base_config_path</span> <span class="o">=</span> <span class="n">base_config_path</span><span class="p">,</span>
+<span class="linenos">247</span>                <span class="n">fitness_function</span> <span class="o">=</span> <span class="n">fitness_funciton</span><span class="p">,</span>
+<span class="linenos">248</span>                <span class="n">desired_frequency</span> <span class="o">=</span> <span class="n">target_pulse_count</span><span class="p">,</span>
+<span class="linenos">249</span>                <span class="n">test_circuit_path</span> <span class="o">=</span> <span class="n">pulse_count_experiment</span><span class="o">.</span><span class="n">copy_best_asc_target_path</span> <span class="c1"># get the asc file stored by p_c_experiment</span>
+<span class="linenos">250</span>            <span class="p">))</span>
+<span class="linenos">251</span>        <span class="k">yield</span> <span class="n">CommandData</span><span class="p">(</span><span class="n">config_path</span><span class="o">=</span><span class="n">config_path</span><span class="p">,</span> 
+<span class="linenos">252</span>                           <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Sensitivity Evaluation for Pulse Count experiment targeting </span><span class="si">{</span><span class="n">target_pulse_count</span><span class="si">}</span><span class="s2">Hz with </span><span class="si">{</span><span class="n">fitness_funciton</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
+<span class="linenos">253</span>                           <span class="n">copy_best_asc_target_path</span><span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># No best_asc to copy out</span>
+<span class="linenos">254</span>                           <span class="n">skip_next_command_if_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="linenos">255</span>                           <span class="n">skip_next_command_if_skipped</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="linenos">256</span>                           <span class="n">skip_next_command_if_success</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">257</span>    
+<span class="linenos">258</span>    <span class="k">for</span> <span class="n">target_pulse</span> <span class="ow">in</span> <span class="n">target_pulses</span><span class="p">:</span>
+<span class="linenos">259</span>        <span class="k">if</span> <span class="n">use_sensitive_ff</span><span class="p">:</span>
+<span class="linenos">260</span>            <span class="n">configs</span> <span class="o">=</span> <span class="n">create_config_pair</span><span class="p">(</span><span class="n">target_pulse</span><span class="p">,</span><span class="s2">&quot;SENSITIVE_PULSE_COUNT&quot;</span><span class="p">,</span><span class="n">pop_size</span><span class="o">=</span><span class="n">population_size</span><span class="p">,</span><span class="n">max_gens</span><span class="o">=</span><span class="n">max_generations</span><span class="p">)</span>
+<span class="linenos">261</span>            <span class="k">for</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">:</span>
+<span class="linenos">262</span>                <span class="k">yield</span> <span class="n">config</span>
+<span class="linenos">263</span>        <span class="k">if</span> <span class="n">use_tolerant_ff</span><span class="p">:</span>
+<span class="linenos">264</span>            <span class="n">configs</span> <span class="o">=</span> <span class="n">create_config_pair</span><span class="p">(</span><span class="n">target_pulse</span><span class="p">,</span><span class="s2">&quot;TOLERANT_PULSE_COUNT&quot;</span><span class="p">,</span><span class="n">pop_size</span><span class="o">=</span><span class="n">population_size</span><span class="p">,</span><span class="n">max_gens</span><span class="o">=</span><span class="n">max_generations</span><span class="p">)</span>
+<span class="linenos">265</span>            <span class="k">for</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">:</span>
+<span class="linenos">266</span>                <span class="k">yield</span> <span class="n">config</span></div>
+
+<span class="linenos">267</span>    
+<span class="linenos">268</span>
+<span class="linenos">269</span><span class="c1">############################ USEFUL UTILITIES ##############################################</span>
+<div class="viewcode-block" id="repeat">
+<a class="viewcode-back" href="../../code/tools/generate_configs.html#tools.generate_configs.repeat">[docs]</a>
+<span class="linenos">270</span><span class="k">def</span><span class="w"> </span><span class="nf">repeat</span><span class="p">(</span><span class="n">repeat_count</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">generator</span><span class="p">:</span><span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">])</span><span class="o">-&gt;</span><span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">]:</span>
+<span class="linenos">271</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">272</span><span class="sd">    Repeats the outputs of the instantiated generator it is passed.</span>
+<span class="linenos">273</span>
+<span class="linenos">274</span><span class="sd">    Parameters</span>
+<span class="linenos">275</span><span class="sd">    ----------</span>
+<span class="linenos">276</span><span class="sd">    repeat_count : int</span>
+<span class="linenos">277</span><span class="sd">        number of times to duplicate the sequence</span>
+<span class="linenos">278</span><span class="sd">    generator : Generator[Any,None,None]</span>
+<span class="linenos">279</span><span class="sd">        Instantiated generator it duplicates</span>
+<span class="linenos">280</span>
+<span class="linenos">281</span><span class="sd">    Yields</span>
+<span class="linenos">282</span><span class="sd">    ------</span>
+<span class="linenos">283</span><span class="sd">    Generator[Any,None,None]</span>
+<span class="linenos">284</span><span class="sd">        The repeated output of the input generator</span>
+<span class="linenos">285</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos">286</span>    <span class="n">generator_results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">generator</span><span class="p">)</span>
+<span class="linenos">287</span>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">repeat_count</span><span class="p">):</span>
+<span class="linenos">288</span>        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">generator_results</span><span class="p">:</span>
+<span class="linenos">289</span>            <span class="k">yield</span> <span class="n">result</span></div>
+
+<span class="linenos">290</span>        
+<span class="linenos">291</span>
+<span class="linenos">292</span><span class="c1">## Select the config_generator you want to use and pass arguments</span>
+<span class="linenos">293</span><span class="c1">## OPTIONS:</span>
+<span class="linenos">294</span><span class="c1"># sensitivity_config_generator()</span>
+<span class="linenos">295</span><span class="c1"># pulse_count_config_generator(target_pulses = [1000,10000], use_tolerant_ff = True, use_sensitive_ff = True)</span>
+<span class="linenos">296</span><span class="c1"># repeat(2,pulse_count_config_generator(target_pulses = [1000, 10000], use_tolerant_ff = True, use_sensitive_ff = True))</span>
+<span class="linenos">297</span><span class="c1"># pulse_count_config_generator(target_pulses = [40000,20000,20000],use_tolerant_ff=False,use_sensitive_ff=True)</span>
+<span class="linenos">298</span><span class="n">config_generator</span><span class="p">:</span> <span class="n">Generator</span><span class="p">[</span><span class="n">CommandInfo</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">]</span> <span class="o">=</span> \
+<span class="linenos">299</span>    <span class="n">pulse_count_then_sensitivity_config_generator</span><span class="p">(</span><span class="n">target_pulses</span><span class="o">=</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span><span class="mi">2000</span><span class="p">,</span><span class="mi">4000</span><span class="p">],</span><span class="n">use_tolerant_ff</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_sensitive_ff</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">max_generations</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span><span class="n">population_size</span><span class="o">=</span><span class="mi">53</span><span class="p">)</span>
+<span class="linenos">300</span><span class="c1">## Bash File Configuration</span>
+<span class="linenos">301</span>
+<span class="linenos">302</span><span class="c1"># Note that there are no spaces between variables, =, and value assigned. This is needed. </span>
+<span class="linenos">303</span><span class="c1">#Bash will not recognize them as variables if there is a space in them.</span>
+<span class="linenos">304</span><span class="n">bash_head</span> <span class="o">=</span> \
+<span class="linenos">305</span><span class="sd">&quot;&quot;&quot;#!/bin/bash</span>
+<span class="linenos">306</span><span class="sd"># make sure this was generated from the BitstreamEvolution folder at the base of this directory.</span>
+<span class="linenos">307</span>
+<span class="linenos">308</span><span class="sd"># This variables stores the number or errors that occour</span>
+<span class="linenos">309</span><span class="sd">ErrorCounter=0</span>
+<span class="linenos">310</span><span class="sd">SuccessCounter=0</span>
+<span class="linenos">311</span><span class="sd">SkippedCounter=0</span>
+<span class="linenos">312</span><span class="sd">UserInterruptTriggered=0</span>
+<span class="linenos">313</span><span class="sd">SkipNextCommand=0</span>
+<span class="linenos">314</span><span class="sd">FailedCommands=&#39;&#39;</span>
+<span class="linenos">315</span><span class="sd">SkippedCommands=&#39;&#39;</span>
+<span class="linenos">316</span>
+<span class="linenos">317</span>
+<span class="linenos">318</span>
+<span class="linenos">319</span><span class="sd">#Run Commands, log if they fail.</span>
+<span class="linenos">320</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">321</span>
+<span class="linenos">322</span><span class="n">evolve_command_base</span> <span class="o">=</span> <span class="s2">&quot;python3 src/evolve.py -c </span><span class="si">{config_path}</span><span class="s2"> -d </span><span class="si">{description}</span><span class="s2"> -o </span><span class="si">{output_directory}</span><span class="s2">&quot;</span>
+<span class="linenos">323</span>
+<span class="linenos">324</span><span class="c1"># The || only runs 2nd if left fails, &amp;&amp; only if left succeeds</span>
+<span class="linenos">325</span><span class="c1"># parenthesis is to extend command over multiple lines</span>
+<span class="linenos">326</span><span class="c1"># The not means it enters the then statement if there is an error</span>
+<span class="linenos">327</span><span class="c1"># the UserInterruptTriggered=$((exitCode==130)) allows us to stop other code if user interrupt occoured (set to 1 if called)</span>
+<span class="linenos">328</span><span class="n">bash_command_wrapper_logic</span> <span class="o">=</span> \
+<span class="linenos">329</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">330</span><span class="sd">Current_Command=$&#39;{command}&#39;</span>
+<span class="linenos">331</span><span class="sd">if [ $UserInterruptTriggered -eq 0 ]; then</span>
+<span class="linenos">332</span><span class="sd">if [ $SkipNextCommand -eq 0 ]; then</span>
+<span class="linenos">333</span><span class="sd">{command}</span>
+<span class="linenos">334</span><span class="sd">exitCode=$?</span>
+<span class="linenos">335</span><span class="sd">if [ $exitCode -ne 0 ]; then  #Error</span>
+<span class="linenos">336</span><span class="sd">    UserInterruptTriggered=$((exitCode == 130))</span>
+<span class="linenos">337</span><span class="sd">    ((ErrorCounter=ErrorCounter+1)) &amp;&amp; FailedCommands+=&quot;$Current_Command&quot;+$&#39;\\n&#39; </span>
+<span class="linenos">338</span><span class="sd">    {action_if_failure}</span>
+<span class="linenos">339</span><span class="sd">else # Success</span>
+<span class="linenos">340</span><span class="sd">    ((SuccessCounter=SuccessCounter+1))</span>
+<span class="linenos">341</span><span class="sd">    {action_if_success}</span>
+<span class="linenos">342</span><span class="sd">fi </span>
+<span class="linenos">343</span><span class="sd">else # Skipped</span>
+<span class="linenos">344</span><span class="sd">    ((SkippedCounter=SkippedCounter+1)) &amp;&amp; SkippedCommands+=&quot;$Current_Command&quot;+$&#39;\\n&#39;</span>
+<span class="linenos">345</span><span class="sd">    {action_if_skipped}</span>
+<span class="linenos">346</span><span class="sd">fi #ctrl+c</span>
+<span class="linenos">347</span><span class="sd">fi</span>
+<span class="linenos">348</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">349</span>
+<span class="linenos">350</span><span class="n">bash_tail</span> <span class="o">=</span> \
+<span class="linenos">351</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">352</span><span class="sd">if [ $UserInterruptTriggered -ne 0 ]; then</span>
+<span class="linenos">353</span><span class="sd">#print these results if the script had a user interrupt</span>
+<span class="linenos">354</span><span class="sd">echo &quot;=================================== USER INTERRUPT RESULTS ====================================&quot;</span>
+<span class="linenos">355</span><span class="sd">echo &quot;Canceled Commands Due to Keyboard Interrupt while running:&quot;</span>
+<span class="linenos">356</span><span class="sd">echo $&quot;$Current_Command&quot;</span>
+<span class="linenos">357</span><span class="sd">echo &quot;&quot;</span>
+<span class="linenos">358</span><span class="sd">echo &quot;Commands That Failed:&quot;</span>
+<span class="linenos">359</span><span class="sd">echo &quot;$FailedCommands&quot;</span>
+<span class="linenos">360</span><span class="sd">echo &quot;&quot;</span>
+<span class="linenos">361</span><span class="sd">echo &quot;Commands Skipped:&quot;</span>
+<span class="linenos">362</span><span class="sd">echo &quot;$SkippedCommands&quot;</span>
+<span class="linenos">363</span>
+<span class="linenos">364</span><span class="sd">echo &quot;===============================================================================================&quot;</span>
+<span class="linenos">365</span><span class="sd">echo &quot;$ErrorCounter of $((ErrorCounter+SuccessCounter+SkippedCounter)) commands Failed, including the one not completed.&quot;</span>
+<span class="linenos">366</span><span class="sd">echo &quot;$SkippedCounter of $((ErrorCounter+SuccessCounter+SkippedCounter)) commands were Skipped&quot;</span>
+<span class="linenos">367</span><span class="sd">echo &quot;$(({num_commands}-(ErrorCounter+SuccessCounter+SkippedCounter))) of {num_commands} were not run at all.&quot;</span>
+<span class="linenos">368</span>
+<span class="linenos">369</span>
+<span class="linenos">370</span><span class="sd">exit 1</span>
+<span class="linenos">371</span><span class="sd">fi</span>
+<span class="linenos">372</span>
+<span class="linenos">373</span><span class="sd"># Print out the results of the Tests</span>
+<span class="linenos">374</span><span class="sd">echo &quot;&quot;</span>
+<span class="linenos">375</span><span class="sd">echo &quot;=================================== RESULTS ====================================&quot;</span>
+<span class="linenos">376</span><span class="sd">echo &quot;&quot;</span>
+<span class="linenos">377</span><span class="sd">echo &quot;Commands That Failed:&quot;</span>
+<span class="linenos">378</span><span class="sd">echo &quot;$FailedCommands&quot;</span>
+<span class="linenos">379</span><span class="sd">echo &quot;&quot;</span>
+<span class="linenos">380</span><span class="sd">echo &quot;Commands Skipped:&quot;</span>
+<span class="linenos">381</span><span class="sd">echo &quot;$SkippedCommands&quot;</span>
+<span class="linenos">382</span>
+<span class="linenos">383</span><span class="sd">echo &quot;================================================================================&quot;</span>
+<span class="linenos">384</span><span class="sd">echo &quot;$ErrorCounter of {num_commands} commands Failed&quot;</span>
+<span class="linenos">385</span><span class="sd">echo &quot;$SkippedCounter of {num_commands} commands were Skipped&quot;</span>
+<span class="linenos">386</span>
+<span class="linenos">387</span><span class="sd">exit 0</span>
+<span class="linenos">388</span>
+<span class="linenos">389</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">390</span>
+<span class="linenos">391</span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">generated_bash_script_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">bash_file</span><span class="p">:</span>
+<span class="linenos">392</span>    <span class="c1"># Invoke the bash shell for bash script</span>
+<span class="linenos">393</span>    <span class="n">bash_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">bash_head</span><span class="p">)</span>
+<span class="linenos">394</span>
+<span class="linenos">395</span>    <span class="n">command_count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos">396</span>    <span class="k">for</span> <span class="n">command_data</span> <span class="ow">in</span> <span class="n">config_generator</span><span class="p">:</span>
+<span class="linenos">397</span>
+<span class="linenos">398</span>        <span class="c1"># Add a call to this </span>
+<span class="linenos">399</span>        <span class="n">bash_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+<span class="linenos">400</span>            <span class="n">bash_command_wrapper_logic</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+<span class="linenos">401</span>                <span class="n">command</span> <span class="o">=</span> <span class="n">evolve_command_base</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+<span class="linenos">402</span>                    <span class="n">config_path</span> <span class="o">=</span> <span class="n">command_data</span><span class="o">.</span><span class="n">config_path</span><span class="p">,</span>
+<span class="linenos">403</span>                    <span class="n">description</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">command_data</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">,</span> 
+<span class="linenos">404</span>                    <span class="c1"># Note that it is important that outer string uses double quotes or this messes up wrapper logic</span>
+<span class="linenos">405</span>                    <span class="n">output_directory</span> <span class="o">=</span> <span class="n">results_output_directory</span>
+<span class="linenos">406</span>                <span class="p">),</span>
+<span class="linenos">407</span>                <span class="n">action_if_failure</span> <span class="o">=</span> <span class="s2">&quot;SkipNextCommand=1&quot;</span> <span class="k">if</span> <span class="n">command_data</span><span class="o">.</span><span class="n">skip_next_command_if_error</span> <span class="k">else</span> <span class="s2">&quot;SkipNextCommand=0&quot;</span><span class="p">,</span>
+<span class="linenos">408</span>                <span class="n">action_if_success</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;SkipNextCommand=1&quot;</span> <span class="k">if</span> <span class="n">command_data</span><span class="o">.</span><span class="n">skip_next_command_if_success</span> <span class="k">else</span> <span class="s2">&quot;SkipNextCommand=0&quot;</span><span class="p">)</span>  <span class="o">+</span>\
+<span class="linenos">409</span>                                    <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">cp </span><span class="si">{</span><span class="n">path_best_asc_in_workspace</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">command_data</span><span class="o">.</span><span class="n">copy_best_asc_target_path</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">command_data</span><span class="o">.</span><span class="n">copy_best_asc_target_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+<span class="linenos">410</span>                <span class="n">action_if_skipped</span> <span class="o">=</span> <span class="s2">&quot;SkipNextCommand=1&quot;</span> <span class="k">if</span> <span class="n">command_data</span><span class="o">.</span><span class="n">skip_next_command_if_skipped</span> <span class="k">else</span> <span class="s2">&quot;SkipNextCommand=0&quot;</span>
+<span class="linenos">411</span>            <span class="p">)</span>
+<span class="linenos">412</span>        <span class="p">)</span>
+<span class="linenos">413</span>
+<span class="linenos">414</span>        <span class="c1">#count the number of commands we add</span>
+<span class="linenos">415</span>        <span class="n">command_count</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="linenos">416</span>    
+<span class="linenos">417</span>    <span class="n">bash_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">bash_tail</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">num_commands</span> <span class="o">=</span> <span class="n">command_count</span><span class="p">))</span>
+<span class="linenos">418</span>
+<span class="linenos">419</span><span class="c1">#ensure bash script is executable if possible, but don&#39;t require permisions to do so.</span>
+<span class="linenos">420</span><span class="k">try</span><span class="p">:</span>
+<span class="linenos">421</span>    <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">generated_bash_script_path</span><span class="p">,</span><span class="n">stat</span><span class="o">.</span><span class="n">S_IREAD</span>
+<span class="linenos">422</span>            <span class="o">|</span><span class="n">stat</span><span class="o">.</span><span class="n">S_IWRITE</span>
+<span class="linenos">423</span>            <span class="o">|</span><span class="n">stat</span><span class="o">.</span><span class="n">S_IRWXU</span>
+<span class="linenos">424</span>            <span class="o">|</span><span class="n">stat</span><span class="o">.</span><span class="n">S_IRWXG</span>
+<span class="linenos">425</span>            <span class="o">|</span><span class="n">stat</span><span class="o">.</span><span class="n">S_IRWXO</span><span class="p">)</span>
+<span class="linenos">426</span><span class="k">except</span> <span class="ne">PermissionError</span><span class="p">:</span>
+<span class="linenos">427</span>    <span class="nb">print</span><span class="p">(</span>
+<span class="linenos">428</span>    <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="linenos">429</span><span class="s2">You may need to make the bash file executable.</span>
+<span class="linenos">430</span><span class="s2">Alternatively, you could run this command with sudo privilages. (sudo python3 ...)</span>
+<span class="linenos">431</span><span class="s2">To do so run the following command:</span>
+<span class="linenos">432</span><span class="s2">    </span>
+<span class="linenos">433</span><span class="s2">chmod +x </span><span class="si">{</span><span class="n">bash_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span>
+<span class="linenos">434</span>
+<span class="linenos">435</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="linenos">436</span>    <span class="p">)</span>
+<span class="linenos">437</span>
+<span class="linenos">438</span><span class="n">completion_message</span><span class="o">=</span>\
+<span class="linenos">439</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="linenos">440</span><span class="s2">--------------------------------------------------------------------------</span>
+<span class="linenos">441</span><span class="s2">Finished completing the bash file, and related folders.</span>
+<span class="linenos">442</span>
+<span class="linenos">443</span><span class="s2">Folder containing generated partial configs: </span><span class="si">{</span><span class="n">generated_configs_dir</span><span class="si">}</span>
+<span class="linenos">444</span><span class="s2">Reference base config: </span><span class="si">{</span><span class="n">base_config_path</span><span class="si">}</span>
+<span class="linenos">445</span><span class="s2">Results are output to the following directory: </span><span class="si">{</span><span class="n">results_output_directory</span><span class="si">}</span>
+<span class="linenos">446</span>
+<span class="linenos">447</span><span class="s2">Created the bash file at: </span><span class="si">{</span><span class="n">bash_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span>
+<span class="linenos">448</span><span class="s2">---------------------------------------------------------------------------</span>
+<span class="linenos">449</span>
+<span class="linenos">450</span><span class="s2">Begin the experiment by running ./</span><span class="si">{</span><span class="n">bash_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span>
+<span class="linenos">451</span>
+<span class="linenos">452</span><span class="s2">---------------------------------------------------------------------------</span>
+<span class="linenos">453</span><span class="s2">If you didn&#39;t run this script from the base of the BitstreamEvolution project,</span>
+<span class="linenos">454</span><span class="s2">it is best you regenerate the file after you cd there and run the file from that folder, too.</span>
+<span class="linenos">455</span>
+<span class="linenos">456</span><span class="s2">i.e.   .../BitstreamEvolution$ python3 src/tools/generate_configs.py</span>
+<span class="linenos">457</span><span class="s2">       .../BitstreamEvolution$ ./</span><span class="si">{</span><span class="n">bash_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span>
+<span class="linenos">458</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="linenos">459</span>
+<span class="linenos">460</span><span class="nb">print</span><span class="p">(</span><span class="n">completion_message</span><span class="p">)</span>
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Evolvable Hardware
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024-2026, Evolvable Hardware.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

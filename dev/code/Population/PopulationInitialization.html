@@ -159,8 +159,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Refactored Code</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="../Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../Circuit/Circuit.html">Circuit.py</a></li>
@@ -368,6 +376,10 @@ document.write(`
                   
   <section id="module-Population.PopulationInitialization">
 <span id="populationinitialization-py"></span><h1>PopulationInitialization.py<a class="headerlink" href="#module-Population.PopulationInitialization" title="Link to this heading">#</a></h1>
+<p>Population initialization factories and strategies.</p>
+<p>Provides protocols and concrete implementations for creating initial
+populations of <a class="reference internal" href="../Individual/BitstreamIndividual.html#Individual.BitstreamIndividual.BitstreamIndividual" title="Individual.BitstreamIndividual.BitstreamIndividual"><code class="xref py py-class docutils literal notranslate"><span class="pre">BitstreamIndividual</span></code></a>
+objects with configurable post-construction and randomization strategies.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="Population.PopulationInitialization.GenerateInitialPopulation">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Population.PopulationInitialization.</span></span><span class="sig-name descname"><span class="pre">GenerateInitialPopulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/Population/PopulationInitialization.html#GenerateInitialPopulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Population.PopulationInitialization.GenerateInitialPopulation" title="Link to this definition">#</a></dt>

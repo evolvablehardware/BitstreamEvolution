@@ -159,8 +159,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Refactored Code</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="Circuit/Circuit.html">Circuit.py</a></li>
@@ -398,6 +406,11 @@ document.write(`
                   
   <section id="module-BitstreamEvolutionProtocols">
 <span id="bitstreamevolutionprotocols-py"></span><h1>BitstreamEvolutionProtocols.py<a class="headerlink" href="#module-BitstreamEvolutionProtocols" title="Link to this heading">#</a></h1>
+<p>Core protocols and interfaces for the BitstreamEvolution framework.</p>
+<p>Defines the abstract contracts (<code class="docutils literal notranslate"><span class="pre">Protocol</span></code> classes) that all concrete
+implementations must satisfy: <code class="docutils literal notranslate"><span class="pre">Individual</span></code>, <code class="docutils literal notranslate"><span class="pre">Circuit</span></code>, <code class="docutils literal notranslate"><span class="pre">Population</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Fitness</span></code>, <code class="docutils literal notranslate"><span class="pre">Hardware</span></code>, <code class="docutils literal notranslate"><span class="pre">Reproducer</span></code>, <code class="docutils literal notranslate"><span class="pre">GenerateMeasurements</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">EvaluatePopulationFitness</span></code>. Start here to understand the system architecture.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="BitstreamEvolutionProtocols.Circuit">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">BitstreamEvolutionProtocols.</span></span><span class="sig-name descname"><span class="pre">Circuit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/BitstreamEvolutionProtocols.html#Circuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BitstreamEvolutionProtocols.Circuit" title="Link to this definition">#</a></dt>
@@ -435,7 +448,7 @@ and includes the population the individual was from, and the individual itself.<
 
 <dl class="py class">
 <dt class="sig sig-object py" id="BitstreamEvolutionProtocols.DataRequest">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">BitstreamEvolutionProtocols.</span></span><span class="sig-name descname"><span class="pre">DataRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/BitstreamEvolutionProtocols.html#DataRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BitstreamEvolutionProtocols.DataRequest" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">BitstreamEvolutionProtocols.</span></span><span class="sig-name descname"><span class="pre">DataRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/BitstreamEvolutionProtocols.html#DataRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BitstreamEvolutionProtocols.DataRequest" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
@@ -458,7 +471,7 @@ and includes the population the individual was from, and the individual itself.<
 
 <dl class="py class">
 <dt class="sig sig-object py" id="BitstreamEvolutionProtocols.FPGA_Model">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">BitstreamEvolutionProtocols.</span></span><span class="sig-name descname"><span class="pre">FPGA_Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/BitstreamEvolutionProtocols.html#FPGA_Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BitstreamEvolutionProtocols.FPGA_Model" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">BitstreamEvolutionProtocols.</span></span><span class="sig-name descname"><span class="pre">FPGA_Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/BitstreamEvolutionProtocols.html#FPGA_Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BitstreamEvolutionProtocols.FPGA_Model" title="Link to this definition">#</a></dt>
 <dd><p>All of the FPGA models that any part of our code supports</p>
 </dd></dl>
 
@@ -501,7 +514,37 @@ and determines when the final generation occours (returns None).</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="BitstreamEvolutionProtocols.Hardware">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">BitstreamEvolutionProtocols.</span></span><span class="sig-name descname"><span class="pre">Hardware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/BitstreamEvolutionProtocols.html#Hardware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BitstreamEvolutionProtocols.Hardware" title="Link to this definition">#</a></dt>
-<dd><p>Used to Evaluate Measurements. Compile hardware would be responsible for compiling the Circuit in the Measurement object passed to it in request_measurement().</p>
+<dd><p>Used to Evaluate Measurements. Compile hardware would be responsible for compiling the Circuit
+in the Measurement object passed to it in request_measurement().</p>
+<section id="intended-concurrency-model-server-client">
+<h2>Intended concurrency model (server-client):<a class="headerlink" href="#intended-concurrency-model-server-client" title="Link to this heading">#</a></h2>
+<p>request_measurement() is async so that multiple measurements can be dispatched concurrently
+via asyncio.gather() in Evolution.run(). This is meaningful when Hardware is a client that
+sends requests over a network to a hardware server — the await genuinely suspends while
+waiting for the network response, allowing other coroutines to run in the meantime.</p>
+<p>The current Microcontroller implementation uses blocking pyserial and does NOT achieve
+real concurrency. As the codebase moves to a server-client model, asyncio.gather() will
+provide true parallelism across multiple FPGAs automatically. The server-side should use
+serial_asyncio (<a class="reference external" href="https://pypi.org/project/serial-asyncio/">https://pypi.org/project/serial-asyncio/</a>) in place of pyserial so that
+serial reads are genuinely non-blocking within the server’s event loop.</p>
+</section>
+<section id="per-fpga-exclusivity-constraint">
+<h2>Per-FPGA exclusivity constraint:<a class="headerlink" href="#per-fpga-exclusivity-constraint" title="Link to this heading">#</a></h2>
+<p>Each physical Icestick (or FPGA device) can only be accessed by one process at a time —
+iceprog holds exclusive USB access while programming the device. Implementations of this
+protocol MUST ensure that concurrent calls to request_measurement() targeting the same
+physical FPGA are serialized. Recommended approaches for the server:</p>
+<dl class="simple">
+<dt>Option A — asyncio.Semaphore(1) per FPGA:</dt><dd><p>Each FPGA gets its own Semaphore. request_measurement acquires the semaphore for the
+target device before proceeding. Requests for different FPGAs run concurrently;
+requests for the same FPGA queue up automatically.</p>
+</dd>
+<dt>Option B — Per-FPGA asyncio.Queue with a dedicated worker coroutine:</dt><dd><p>One worker coroutine per FPGA dequeues and processes measurements one at a time.
+Naturally serializes access while allowing inter-FPGA parallelism.</p>
+</dd>
+</dl>
+<p>See .claude/docs/hardware_concurrency.md for full discussion.</p>
+</section>
 </dd></dl>
 
 <dl class="py class">

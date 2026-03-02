@@ -158,8 +158,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../code/Circuit/Circuit.html">Circuit.py</a></li>
@@ -304,45 +312,53 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for EvaluateFitness.EvaluateFitness</h1><div class="highlight"><pre>
-<span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span>
-<span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Protocol</span>
-<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">BitstreamEvolutionProtocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fitness</span><span class="p">,</span> <span class="n">Measurement</span><span class="p">,</span> <span class="n">Population</span>
-<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">result</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_ok</span> <span class="c1"># type: ignore</span>
-<span class="linenos"> 5</span>
+<span></span><span class="linenos"> 1</span><span class="sd">&quot;&quot;&quot;Generic fitness evaluation wrapper.</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="sd">Delegates to a :class:`FitnessEvaluator` strategy for computing fitness</span>
+<span class="linenos"> 4</span><span class="sd">from measurement results. Connects the measurement pipeline to the</span>
+<span class="linenos"> 5</span><span class="sd">population&#39;s fitness slots.</span>
+<span class="linenos"> 6</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span>
+<span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Protocol</span>
+<span class="linenos">10</span><span class="kn">from</span><span class="w"> </span><span class="nn">BitstreamEvolutionProtocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fitness</span><span class="p">,</span> <span class="n">Measurement</span><span class="p">,</span> <span class="n">Population</span>
+<span class="linenos">11</span><span class="kn">from</span><span class="w"> </span><span class="nn">returns.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">Success</span> <span class="c1"># type: ignore</span>
+<span class="linenos">12</span>
 <div class="viewcode-block" id="FitnessEvaluator">
 <a class="viewcode-back" href="../../code/EvaluateFitness/EvaluateFitness.html#EvaluateFitness.EvaluateFitness.FitnessEvaluator">[docs]</a>
-<span class="linenos"> 6</span><span class="k">class</span><span class="w"> </span><span class="nc">FitnessEvaluator</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="linenos"> 7</span>    <span class="k">def</span><span class="w"> </span><span class="nf">start_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
-<span class="linenos"> 8</span>
-<span class="linenos"> 9</span>    <span class="k">def</span><span class="w"> </span><span class="nf">end_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
-<span class="linenos">10</span>
-<span class="linenos">11</span>    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">src_pop</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Fitness</span><span class="p">:</span> <span class="o">...</span>
-<span class="linenos">12</span>
-<span class="linenos">13</span>    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">src_pop</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Fitness</span><span class="p">:</span> <span class="o">...</span></div>
+<span class="linenos">13</span><span class="k">class</span><span class="w"> </span><span class="nc">FitnessEvaluator</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="linenos">14</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Strategy protocol for computing fitness from measurement data.&quot;&quot;&quot;</span>
+<span class="linenos">15</span>    <span class="k">def</span><span class="w"> </span><span class="nf">start_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span>    <span class="k">def</span><span class="w"> </span><span class="nf">end_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span>    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">src_pop</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Fitness</span><span class="p">:</span> <span class="o">...</span>
+<span class="linenos">20</span>
+<span class="linenos">21</span>    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">src_pop</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Fitness</span><span class="p">:</span> <span class="o">...</span></div>
 
-<span class="linenos">14</span>
+<span class="linenos">22</span>
 <div class="viewcode-block" id="EvaluateFitness">
 <a class="viewcode-back" href="../../code/EvaluateFitness/EvaluateFitness.html#EvaluateFitness.EvaluateFitness.EvaluateFitness">[docs]</a>
-<span class="linenos">15</span><span class="k">class</span><span class="w"> </span><span class="nc">EvaluateFitness</span><span class="p">:</span>
-<span class="linenos">16</span><span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="linenos">17</span><span class="sd">    A generic evaluate fitness class that has protocols for defining behavior more simply</span>
-<span class="linenos">18</span><span class="sd">    &#39;&#39;&#39;</span>
-<span class="linenos">19</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evaluator</span><span class="p">:</span> <span class="n">FitnessEvaluator</span><span class="p">):</span>
-<span class="linenos">20</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__evaluator</span> <span class="o">=</span> <span class="n">evaluator</span>
-<span class="linenos">21</span>
-<span class="linenos">22</span>    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">:</span> <span class="n">Population</span><span class="p">,</span> <span class="n">measurements</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Measurement</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">23</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__evaluator</span><span class="o">.</span><span class="n">start_eval</span><span class="p">()</span>
-<span class="linenos">24</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">measurements</span><span class="p">)):</span>
-<span class="linenos">25</span>            <span class="n">m</span> <span class="o">=</span> <span class="n">measurements</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-<span class="linenos">26</span>            <span class="k">if</span> <span class="n">is_ok</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">result</span><span class="p">):</span>
-<span class="linenos">27</span>                <span class="n">data</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">ok_value</span> <span class="c1"># type: ignore</span>
-<span class="linenos">28</span>                <span class="n">fit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__evaluator</span><span class="o">.</span><span class="n">calculate_success</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-<span class="linenos">29</span>                <span class="n">population</span><span class="o">.</span><span class="n">set_fitness_by_index</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">fit</span><span class="p">)</span>
-<span class="linenos">30</span>            <span class="k">else</span><span class="p">:</span>
-<span class="linenos">31</span>                <span class="n">err</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">err_value</span> <span class="c1"># type: ignore</span>
-<span class="linenos">32</span>                <span class="n">fit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__evaluator</span><span class="o">.</span><span class="n">calculate_error</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-<span class="linenos">33</span>                <span class="n">population</span><span class="o">.</span><span class="n">set_fitness_by_index</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">fit</span><span class="p">)</span>
-<span class="linenos">34</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__evaluator</span><span class="o">.</span><span class="n">end_eval</span><span class="p">()</span></div>
+<span class="linenos">23</span><span class="k">class</span><span class="w"> </span><span class="nc">EvaluateFitness</span><span class="p">:</span>
+<span class="linenos">24</span><span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="linenos">25</span><span class="sd">    A generic evaluate fitness class that has protocols for defining behavior more simply</span>
+<span class="linenos">26</span><span class="sd">    &#39;&#39;&#39;</span>
+<span class="linenos">27</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evaluator</span><span class="p">:</span> <span class="n">FitnessEvaluator</span><span class="p">):</span>
+<span class="linenos">28</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__evaluator</span> <span class="o">=</span> <span class="n">evaluator</span>
+<span class="linenos">29</span>
+<span class="linenos">30</span>    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">:</span> <span class="n">Population</span><span class="p">,</span> <span class="n">measurements</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Measurement</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">31</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__evaluator</span><span class="o">.</span><span class="n">start_eval</span><span class="p">()</span>
+<span class="linenos">32</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">measurements</span><span class="p">)):</span>
+<span class="linenos">33</span>            <span class="n">m</span> <span class="o">=</span> <span class="n">measurements</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="linenos">34</span>            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">result</span><span class="p">,</span> <span class="n">Success</span><span class="p">):</span>
+<span class="linenos">35</span>                <span class="n">data</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">unwrap</span><span class="p">()</span>
+<span class="linenos">36</span>                <span class="n">fit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__evaluator</span><span class="o">.</span><span class="n">calculate_success</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="linenos">37</span>                <span class="n">population</span><span class="o">.</span><span class="n">set_fitness_by_index</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">fit</span><span class="p">)</span>
+<span class="linenos">38</span>            <span class="k">else</span><span class="p">:</span>
+<span class="linenos">39</span>                <span class="n">err</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">failure</span><span class="p">()</span>
+<span class="linenos">40</span>                <span class="n">fit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__evaluator</span><span class="o">.</span><span class="n">calculate_error</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="linenos">41</span>                <span class="n">population</span><span class="o">.</span><span class="n">set_fitness_by_index</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">fit</span><span class="p">)</span>
+<span class="linenos">42</span>        <span class="bp">self</span><span class="o">.</span><span class="n">__evaluator</span><span class="o">.</span><span class="n">end_eval</span><span class="p">()</span></div>
 
 </pre></div>
 

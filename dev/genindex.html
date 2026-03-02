@@ -158,8 +158,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="code/Circuit/Circuit.html">Circuit.py</a></li>
@@ -323,6 +331,7 @@ document.write(`
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
+ | <a href="#W"><strong>W</strong></a>
  
 </div>
 <h2 id="_">_</h2>
@@ -337,13 +346,31 @@ document.write(`
       <ul>
         <li><a href="code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Population.__init__">(BitstreamEvolutionProtocols.Population method)</a>
 </li>
+        <li><a href="code/Directories.html#Directories.Directories.__init__">(Directories.Directories method)</a>
+</li>
+        <li><a href="code/EvaluateFitness/EvalPulseCountFitness.html#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.__init__">(EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness method)</a>
+</li>
+        <li><a href="code/EvaluateFitness/EvalVarMaxFitness.html#EvaluateFitness.EvalVarMaxFitness.EvalVarMaxFitness.__init__">(EvaluateFitness.EvalVarMaxFitness.EvalVarMaxFitness method)</a>
+</li>
         <li><a href="code/Evolution.html#Evolution.Evolution.__init__">(Evolution.Evolution method)</a>
+</li>
+        <li><a href="code/Hardware/Microcontroller.html#Hardware.Microcontroller.Microcontroller.__init__">(Hardware.Microcontroller.Microcontroller method)</a>
+</li>
+        <li><a href="code/Individual/BitstreamIndividual.html#Individual.BitstreamIndividual.BitstreamIndividual.__init__">(Individual.BitstreamIndividual.BitstreamIndividual method)</a>
+</li>
+        <li><a href="code/Logger.html#Logger.Logger.__init__">(Logger.Logger method)</a>
+</li>
+        <li><a href="code/PlotConfig.html#PlotConfig.PlotConfig.__init__">(PlotConfig.PlotConfig method)</a>
+</li>
+        <li><a href="code/PlotDataRecorder.html#PlotDataRecorder.PlotDataRecorder.__init__">(PlotDataRecorder.PlotDataRecorder method)</a>
 </li>
         <li><a href="code/TrivialImplementation.html#TrivialImplementation.TrivialEvolution.__init__">(TrivialImplementation.TrivialEvolution method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/Logger.html#Logger.Logger.__init_monitor">__init_monitor() (Logger.Logger method)</a>
+</li>
       <li><a href="code/Circuit/FileBasedCircuit.html#Circuit.FileBasedCircuit.FileBasedCircuit.__log_event">__log_event() (Circuit.FileBasedCircuit.FileBasedCircuit method)</a>
 </li>
       <li><a href="code/Circuit/Circuit.html#Circuit.Circuit.Circuit.__repr__">__repr__() (Circuit.Circuit.Circuit method)</a>
@@ -366,11 +393,27 @@ document.write(`
 </li>
       </ul></li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/Individual/BitstreamIndividual.html#Individual.BitstreamIndividual.BitstreamIndividual">BitstreamIndividual (class in Individual.BitstreamIndividual)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/EvaluateFitness/EvalPulseCountFitness.html#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.calculate_error">calculate_error() (EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness method)</a>
+
+      <ul>
+        <li><a href="code/EvaluateFitness/EvalVarMaxFitness.html#EvaluateFitness.EvalVarMaxFitness.EvalVarMaxFitness.calculate_error">(EvaluateFitness.EvalVarMaxFitness.EvalVarMaxFitness method)</a>
+</li>
+      </ul></li>
+      <li><a href="code/EvaluateFitness/EvalPulseCountFitness.html#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.calculate_success">calculate_success() (EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness method)</a>
+
+      <ul>
+        <li><a href="code/EvaluateFitness/EvalVarMaxFitness.html#EvaluateFitness.EvalVarMaxFitness.EvalVarMaxFitness.calculate_success">(EvaluateFitness.EvalVarMaxFitness.EvalVarMaxFitness method)</a>
+</li>
+      </ul></li>
       <li><a href="code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Circuit">Circuit (class in BitstreamEvolutionProtocols)</a>
 
       <ul>
@@ -402,6 +445,10 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.CircuitFactory">CircuitFactory (class in BitstreamEvolutionProtocols)</a>
 </li>
+      <li><a href="code/tools/generate_configs.html#tools.generate_configs.CommandData">CommandData (class in tools.generate_configs)</a>
+</li>
+      <li><a href="code/tools/generate_configs.html#tools.generate_configs.CommandInfo">CommandInfo (class in tools.generate_configs)</a>
+</li>
       <li><a href="code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Circuit.compile">compile() (BitstreamEvolutionProtocols.Circuit method)</a>
 
       <ul>
@@ -410,6 +457,8 @@ document.write(`
         <li><a href="code/Circuit/FileBasedCircuit.html#Circuit.FileBasedCircuit.FileBasedCircuit.compile">(Circuit.FileBasedCircuit.FileBasedCircuit method)</a>
 </li>
       </ul></li>
+      <li><a href="code/tools/generate_configs.html#tools.generate_configs.CommandInfo.copy_best_asc_target_path">copy_best_asc_target_path (tools.generate_configs.CommandInfo attribute)</a>
+</li>
       <li><a href="code/Circuit/Circuit.html#Circuit.Circuit.Circuit.copy_from">copy_from() (Circuit.Circuit.Circuit method)</a>
 
       <ul>
@@ -417,9 +466,15 @@ document.write(`
 </li>
         <li><a href="code/Circuit/FullySimCircuit.html#Circuit.FullySimCircuit.FullySimCircuit.copy_from">(Circuit.FullySimCircuit.FullySimCircuit method)</a>
 </li>
+        <li><a href="code/Individual/BitstreamIndividual.html#Individual.BitstreamIndividual.BitstreamIndividual.copy_from">(Individual.BitstreamIndividual.BitstreamIndividual method)</a>
+</li>
       </ul></li>
       <li><a href="code/Circuit/FullySimCircuit.html#Circuit.FullySimCircuit.FullySimCircuit.crossover">crossover() (Circuit.FullySimCircuit.FullySimCircuit method)</a>
+
+      <ul>
+        <li><a href="code/Individual/BitstreamIndividual.html#Individual.BitstreamIndividual.BitstreamIndividual.crossover">(Individual.BitstreamIndividual.BitstreamIndividual method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -427,6 +482,8 @@ document.write(`
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.DataRequest">DataRequest (class in BitstreamEvolutionProtocols)</a>
+</li>
+      <li><a href="code/utilities.html#utilities.determine_color">determine_color() (in module utilities)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -437,12 +494,22 @@ document.write(`
         <li><a href="code/Directories.html#module-Directories">module</a>
 </li>
       </ul></li>
+      <li><a href="code/Directories.html#Directories.Directories">Directories (class in Directories)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/EvaluateFitness/EvalPulseCountFitness.html#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.end_eval">end_eval() (EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness method)</a>
+
+      <ul>
+        <li><a href="code/EvaluateFitness/EvalVarMaxFitness.html#EvaluateFitness.EvalVarMaxFitness.EvalVarMaxFitness.end_eval">(EvaluateFitness.EvalVarMaxFitness.EvalVarMaxFitness method)</a>
+</li>
+      </ul></li>
+      <li><a href="code/EvaluateFitness/EvalPulseCountFitness.html#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness">EvalPulseCountFitness (class in EvaluateFitness.EvalPulseCountFitness)</a>
+</li>
       <li><a href="code/EvaluateFitness/EvaluateFitness.html#EvaluateFitness.EvaluateFitness.EvaluateFitness">EvaluateFitness (class in EvaluateFitness.EvaluateFitness)</a>
 </li>
       <li>
@@ -469,6 +536,8 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.EvaluatePopulationFitness">EvaluatePopulationFitness (class in BitstreamEvolutionProtocols)</a>
+</li>
+      <li><a href="code/EvaluateFitness/EvalVarMaxFitness.html#EvaluateFitness.EvalVarMaxFitness.EvalVarMaxFitness">EvalVarMaxFitness (class in EvaluateFitness.EvalVarMaxFitness)</a>
 </li>
       <li>
     Evolution
@@ -530,9 +599,9 @@ document.write(`
         <li><a href="code/GenerateMeasurements/GenerateMeasurements.html#module-GenerateMeasurements.GenerateMeasurements">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/Population/PopulationInitialization.html#Population.PopulationInitialization.GenerateSinglePopulationWrapper">GenerateSinglePopulationWrapper (class in Population.PopulationInitialization)</a>
+</li>
+      <li><a href="code/Hardware/Microcontroller.html#Hardware.Microcontroller.Microcontroller.get_available_FPGAs">get_available_FPGAs() (Hardware.Microcontroller.Microcontroller method)</a>
 </li>
       <li><a href="code/Circuit/Circuit.html#Circuit.Circuit.Circuit.get_bitstream">get_bitstream() (Circuit.Circuit.Circuit method)</a>
 
@@ -541,10 +610,26 @@ document.write(`
 </li>
         <li><a href="code/Circuit/FullySimCircuit.html#Circuit.FullySimCircuit.FullySimCircuit.get_bitstream">(Circuit.FullySimCircuit.FullySimCircuit method)</a>
 </li>
+        <li><a href="code/Individual/BitstreamIndividual.html#Individual.BitstreamIndividual.BitstreamIndividual.get_bitstream">(Individual.BitstreamIndividual.BitstreamIndividual method)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/PlotConfig.html#PlotConfig.PlotConfig.get_desired_frequency">get_desired_frequency() (PlotConfig.PlotConfig method)</a>
+</li>
+      <li><a href="code/PlotConfig.html#PlotConfig.PlotConfig.get_diversity_measure">get_diversity_measure() (PlotConfig.PlotConfig method)</a>
+</li>
       <li><a href="code/Circuit/FileBasedCircuit.html#Circuit.FileBasedCircuit.FileBasedCircuit.get_file_attribute">get_file_attribute() (Circuit.FileBasedCircuit.FileBasedCircuit method)</a>
 </li>
       <li><a href="code/Circuit/FileBasedCircuit.html#Circuit.FileBasedCircuit.FileBasedCircuit.get_file_attribute_st">get_file_attribute_st() (Circuit.FileBasedCircuit.FileBasedCircuit static method)</a>
+</li>
+      <li><a href="code/PlotConfig.html#PlotConfig.PlotConfig.get_plots_directory">get_plots_directory() (PlotConfig.PlotConfig method)</a>
+</li>
+      <li><a href="code/PlotConfig.html#PlotConfig.PlotConfig.get_population_size">get_population_size() (PlotConfig.PlotConfig method)</a>
+</li>
+      <li><a href="code/PlotConfig.html#PlotConfig.PlotConfig.get_save_plots">get_save_plots() (PlotConfig.PlotConfig method)</a>
+</li>
+      <li><a href="code/PlotConfig.html#PlotConfig.PlotConfig.get_transfer_interval">get_transfer_interval() (PlotConfig.PlotConfig method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -571,8 +656,6 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Individual">Individual (class in BitstreamEvolutionProtocols)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     Individual.BitstreamIndividual
 
@@ -581,11 +664,33 @@ document.write(`
 </li>
       </ul></li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/PlotConfig.html#PlotConfig.PlotConfig.is_pulse_count">is_pulse_count() (PlotConfig.PlotConfig method)</a>
+</li>
+      <li><a href="code/PlotConfig.html#PlotConfig.PlotConfig.is_tone_discriminator">is_tone_discriminator() (PlotConfig.PlotConfig method)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/Logger.html#Logger.Logger.log_critical">log_critical() (Logger.Logger method)</a>
+</li>
+      <li><a href="code/Logger.html#Logger.Logger.log_error">log_error() (Logger.Logger method)</a>
+</li>
+      <li><a href="code/Logger.html#Logger.Logger.log_event">log_event() (Logger.Logger method)</a>
+</li>
+      <li><a href="code/Logger.html#Logger.Logger.log_generation">log_generation() (Logger.Logger method)</a>
+</li>
+      <li><a href="code/Logger.html#Logger.Logger.log_info">log_info() (Logger.Logger method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/Logger.html#Logger.Logger.log_monitor">log_monitor() (Logger.Logger method)</a>
+</li>
+      <li><a href="code/Logger.html#Logger.Logger.log_warning">log_warning() (Logger.Logger method)</a>
+</li>
       <li>
     Logger
 
@@ -593,8 +698,8 @@ document.write(`
         <li><a href="code/Logger.html#module-Logger">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/Logger.html#Logger.Logger">Logger (class in Logger)</a>
+</li>
       <li><a href="code/Logger.html#Logger.LoggerConfig">LoggerConfig (class in Logger)</a>
 </li>
   </ul></td>
@@ -603,11 +708,19 @@ document.write(`
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/Hardware/Microcontroller.html#Hardware.Microcontroller.Microcontroller.measure_pulses">measure_pulses() (Hardware.Microcontroller.Microcontroller method)</a>
+</li>
+      <li><a href="code/Hardware/Microcontroller.html#Hardware.Microcontroller.Microcontroller.measure_pulses_once">measure_pulses_once() (Hardware.Microcontroller.Microcontroller method)</a>
+</li>
+      <li><a href="code/Hardware/Microcontroller.html#Hardware.Microcontroller.Microcontroller.measure_signal">measure_signal() (Hardware.Microcontroller.Microcontroller method)</a>
+</li>
       <li><a href="code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Measurement">Measurement (class in BitstreamEvolutionProtocols)</a>
 </li>
       <li><a href="code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.MeasurementError">MeasurementError</a>
 </li>
       <li><a href="code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.MeasurementNotTaken">MeasurementNotTaken</a>
+</li>
+      <li><a href="code/Hardware/Microcontroller.html#Hardware.Microcontroller.Microcontroller">Microcontroller (class in Hardware.Microcontroller)</a>
 </li>
       <li><a href="code/Hardware/Microcontroller.html#Hardware.Microcontroller.MicrocontrollerConfig">MicrocontrollerConfig (class in Hardware.Microcontroller)</a>
 </li>
@@ -651,6 +764,8 @@ document.write(`
 </li>
         <li><a href="code/Population/PopulationInitialization.html#module-Population.PopulationInitialization">Population.PopulationInitialization</a>
 </li>
+        <li><a href="code/tools/generate_configs.html#module-tools.generate_configs">tools.generate_configs</a>
+</li>
         <li><a href="code/tools/pulse_histogram.html#module-tools.pulse_histogram">tools.pulse_histogram</a>
 </li>
         <li><a href="code/tools/reconstruct.html#module-tools.reconstruct">tools.reconstruct</a>
@@ -663,13 +778,19 @@ document.write(`
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/Circuit/FullySimCircuit.html#Circuit.FullySimCircuit.FullySimCircuit.mutate">mutate() (Circuit.FullySimCircuit.FullySimCircuit method)</a>
+
+      <ul>
+        <li><a href="code/Individual/BitstreamIndividual.html#Individual.BitstreamIndividual.BitstreamIndividual.mutate">(Individual.BitstreamIndividual.BitstreamIndividual method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/tools/generate_configs.html#tools.generate_configs.path_store_best_asc">path_store_best_asc (in module tools.generate_configs)</a>
+</li>
       <li>
     PlotConfig
 
@@ -677,6 +798,8 @@ document.write(`
         <li><a href="code/PlotConfig.html#module-PlotConfig">module</a>
 </li>
       </ul></li>
+      <li><a href="code/PlotConfig.html#PlotConfig.PlotConfig">PlotConfig (class in PlotConfig)</a>
+</li>
       <li>
     PlotDataRecorder
 
@@ -684,6 +807,10 @@ document.write(`
         <li><a href="code/PlotDataRecorder.html#module-PlotDataRecorder">module</a>
 </li>
       </ul></li>
+      <li><a href="code/PlotDataRecorder.html#PlotDataRecorder.PlotDataRecorder">PlotDataRecorder (class in PlotDataRecorder)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     PlotEvolutionLive
 
@@ -691,8 +818,6 @@ document.write(`
         <li><a href="code/PlotEvolutionLive.html#module-PlotEvolutionLive">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Population">Population (class in BitstreamEvolutionProtocols)</a>
 </li>
       <li>
@@ -704,6 +829,10 @@ document.write(`
       </ul></li>
       <li><a href="code/Population/PopulationInitialization.html#Population.PopulationInitialization.PostConstructionStrategy">PostConstructionStrategy (class in Population.PopulationInitialization)</a>
 </li>
+      <li><a href="code/tools/generate_configs.html#tools.generate_configs.pulse_count_config_generator">pulse_count_config_generator() (in module tools.generate_configs)</a>
+</li>
+      <li><a href="code/tools/generate_configs.html#tools.generate_configs.pulse_count_then_sensitivity_config_generator">pulse_count_then_sensitivity_config_generator() (in module tools.generate_configs)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -712,12 +841,30 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/Population/PopulationInitialization.html#Population.PopulationInitialization.RandomizationStrategy">RandomizationStrategy (class in Population.PopulationInitialization)</a>
 </li>
+      <li><a href="code/Individual/BitstreamIndividual.html#Individual.BitstreamIndividual.BitstreamIndividual.randomize">randomize() (Individual.BitstreamIndividual.BitstreamIndividual method)</a>
+</li>
       <li><a href="code/Circuit/FullySimCircuit.html#Circuit.FullySimCircuit.FullySimCircuit.randomize_bitstream">randomize_bitstream() (Circuit.FullySimCircuit.FullySimCircuit method)</a>
 </li>
-      <li><a href="code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Reproducer">Reproducer (class in BitstreamEvolutionProtocols)</a>
+      <li><a href="code/Hardware/Microcontroller.html#Hardware.Microcontroller.MicrocontrollerConfig.read_timeout">read_timeout (Hardware.Microcontroller.MicrocontrollerConfig attribute)</a>
+</li>
+      <li><a href="code/PlotDataRecorder.html#PlotDataRecorder.PlotDataRecorder.record_all_live_data">record_all_live_data() (PlotDataRecorder.PlotDataRecorder method)</a>
+</li>
+      <li><a href="code/PlotDataRecorder.html#PlotDataRecorder.PlotDataRecorder.record_generation">record_generation() (PlotDataRecorder.PlotDataRecorder method)</a>
+</li>
+      <li><a href="code/PlotDataRecorder.html#PlotDataRecorder.PlotDataRecorder.record_waveform">record_waveform() (PlotDataRecorder.PlotDataRecorder method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/PlotDataRecorder.html#PlotDataRecorder.PlotDataRecorder.record_waveform_heatmap">record_waveform_heatmap() (PlotDataRecorder.PlotDataRecorder method)</a>
+</li>
+      <li><a href="code/tools/generate_configs.html#tools.generate_configs.repeat">repeat() (in module tools.generate_configs)</a>
+</li>
+      <li><a href="code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Reproducer">Reproducer (class in BitstreamEvolutionProtocols)</a>
+</li>
+      <li><a href="code/Hardware/Microcontroller.html#Hardware.Microcontroller.Microcontroller.request_measurement">request_measurement() (Hardware.Microcontroller.Microcontroller method)</a>
+</li>
+      <li><a href="code/PlotDataRecorder.html#PlotDataRecorder.PlotDataRecorder.reset">reset() (PlotDataRecorder.PlotDataRecorder method)</a>
+</li>
       <li><a href="code/Evolution.html#Evolution.Evolution.run">run() (Evolution.Evolution method)</a>
 
       <ul>
@@ -732,16 +879,24 @@ document.write(`
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/PlotConfig.html#PlotConfig.save_plot_config">save_plot_config() (in module PlotConfig)</a>
+</li>
+      <li><a href="code/Logger.html#Logger.Logger.save_workspace">save_workspace() (Logger.Logger method)</a>
+</li>
+      <li><a href="code/Hardware/Microcontroller.html#Hardware.Microcontroller.MicrocontrollerConfig.serial_baud">serial_baud (Hardware.Microcontroller.MicrocontrollerConfig attribute)</a>
+</li>
       <li><a href="code/Circuit/Circuit.html#Circuit.Circuit.Circuit.set_bitstream">set_bitstream() (Circuit.Circuit.Circuit method)</a>
 
       <ul>
         <li><a href="code/Circuit/FileBasedCircuit.html#Circuit.FileBasedCircuit.FileBasedCircuit.set_bitstream">(Circuit.FileBasedCircuit.FileBasedCircuit method)</a>
 </li>
-      </ul></li>
-      <li><a href="code/Circuit/FileBasedCircuit.html#Circuit.FileBasedCircuit.FileBasedCircuit.set_file_attribute">set_file_attribute() (Circuit.FileBasedCircuit.FileBasedCircuit method)</a>
+        <li><a href="code/Individual/BitstreamIndividual.html#Individual.BitstreamIndividual.BitstreamIndividual.set_bitstream">(Individual.BitstreamIndividual.BitstreamIndividual method)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/Circuit/FileBasedCircuit.html#Circuit.FileBasedCircuit.FileBasedCircuit.set_file_attribute">set_file_attribute() (Circuit.FileBasedCircuit.FileBasedCircuit method)</a>
+</li>
       <li><a href="code/Circuit/FileBasedCircuit.html#Circuit.FileBasedCircuit.FileBasedCircuit.set_file_attribute_st">set_file_attribute_st() (Circuit.FileBasedCircuit.FileBasedCircuit static method)</a>
 </li>
       <li><a href="code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Population.set_fitness">set_fitness() (BitstreamEvolutionProtocols.Population method)</a>
@@ -750,12 +905,25 @@ document.write(`
 </li>
       <li><a href="code/BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Population.sort">sort() (BitstreamEvolutionProtocols.Population method)</a>
 </li>
+      <li><a href="code/EvaluateFitness/EvalPulseCountFitness.html#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.start_eval">start_eval() (EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness method)</a>
+
+      <ul>
+        <li><a href="code/EvaluateFitness/EvalVarMaxFitness.html#EvaluateFitness.EvalVarMaxFitness.EvalVarMaxFitness.start_eval">(EvaluateFitness.EvalVarMaxFitness.EvalVarMaxFitness method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    tools.generate_configs
+
+      <ul>
+        <li><a href="code/tools/generate_configs.html#module-tools.generate_configs">module</a>
+</li>
+      </ul></li>
       <li>
     tools.pulse_histogram
 
@@ -772,10 +940,10 @@ document.write(`
       </ul></li>
       <li><a href="code/TrivialImplementation.html#TrivialImplementation.Trivial_Meas">Trivial_Meas (class in TrivialImplementation)</a>
 </li>
-      <li><a href="code/TrivialImplementation.html#TrivialImplementation.TrivialCircuit">TrivialCircuit (class in TrivialImplementation)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/TrivialImplementation.html#TrivialImplementation.TrivialCircuit">TrivialCircuit (class in TrivialImplementation)</a>
+</li>
       <li><a href="code/TrivialImplementation.html#TrivialImplementation.TrivialEvaluatePopulationFitness">TrivialEvaluatePopulationFitness() (in module TrivialImplementation)</a>
 </li>
       <li><a href="code/TrivialImplementation.html#TrivialImplementation.TrivialEvolution">TrivialEvolution (class in TrivialImplementation)</a>
@@ -799,6 +967,14 @@ document.write(`
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/Hardware/Microcontroller.html#Hardware.Microcontroller.MicrocontrollerConfig.usb_path">usb_path (Hardware.Microcontroller.MicrocontrollerConfig attribute)</a>
+</li>
+      <li><a href="code/PlotConfig.html#PlotConfig.PlotConfig.uses_init_existing_population">uses_init_existing_population() (PlotConfig.PlotConfig method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/PlotConfig.html#PlotConfig.PlotConfig.using_transfer_interval">using_transfer_interval() (PlotConfig.PlotConfig method)</a>
+</li>
       <li>
     utilities
 
@@ -806,6 +982,14 @@ document.write(`
         <li><a href="code/utilities.html#module-utilities">module</a>
 </li>
       </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/utilities.html#utilities.wipe_folder">wipe_folder() (in module utilities)</a>
+</li>
   </ul></td>
 </tr></table>
 

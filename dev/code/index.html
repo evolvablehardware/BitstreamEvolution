@@ -48,7 +48,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Circuit" href="Circuit/index.html" />
-    <link rel="prev" title="Bitstream Evolution’s Architecture" href="../architecture/index.html" />
+    <link rel="prev" title="MCU Serial Protocol" href="../architecture/mcu_protocol.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -159,8 +159,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Refactored Code</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="Circuit/Circuit.html">Circuit.py</a></li>
@@ -366,17 +374,6 @@ document.write(`
                   
   <section id="refactored-code">
 <h1>Refactored Code<a class="headerlink" href="#refactored-code" title="Link to this heading">#</a></h1>
-<div class="admonition-todo admonition" id="id1">
-<p class="admonition-title">Todo</p>
-<p>Fix DEPENDANCY ANNOYANCE:
-Have to do this so imports in the files work,
-because they are evaluated relative to the home directory when python runs,
-but relative to path directory when sphinx runs.</p>
-<p>This could be solved by always running from one directory, but it would mean that imports would be messed up if you decided not to run from that directory.
-One could also write a script to always add the base directory to the path whenever you run a file, but that is quite a bother.</p>
-<p>Discuss this.</p>
-<p>This is mostly a problem because sphinx must be provided a path and must be able to perform the needed imports, and providing multiple paths risks having names overlap so is undesireable.</p>
-</div>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Circuit/index.html">Circuit</a><ul>
@@ -436,23 +433,38 @@ One could also write a script to always add the base directory to the path whene
 <li class="toctree-l2"><a class="reference internal" href="TrivialImplementation.html#TrivialImplementation.Trivial_Meas"><code class="docutils literal notranslate"><span class="pre">Trivial_Meas</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Directories.html">Directories.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Directories.html">Directories.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Directories.html#Directories.Directories"><code class="docutils literal notranslate"><span class="pre">Directories</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="Evolution.html">Evolution.py</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Evolution.html#Evolution.Evolution"><code class="docutils literal notranslate"><span class="pre">Evolution</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Logger.html">Logger.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Logger.html#Logger.Logger"><code class="docutils literal notranslate"><span class="pre">Logger</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="Logger.html#Logger.LoggerConfig"><code class="docutils literal notranslate"><span class="pre">LoggerConfig</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="PlotConfig.html">PlotConfig.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="PlotDataRecorder.html">PlotDataRecorder.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PlotConfig.html">PlotConfig.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PlotConfig.html#PlotConfig.PlotConfig"><code class="docutils literal notranslate"><span class="pre">PlotConfig</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="PlotConfig.html#PlotConfig.save_plot_config"><code class="docutils literal notranslate"><span class="pre">save_plot_config()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PlotDataRecorder.html">PlotDataRecorder.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PlotDataRecorder.html#PlotDataRecorder.PlotDataRecorder"><code class="docutils literal notranslate"><span class="pre">PlotDataRecorder</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="PlotEvolutionLive.html">PlotEvolutionLive.py</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="PlotEvolutionLive.html#plot-evolution-live">Plot Evolution Live</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PlotEvolutionLive.html#PlotEvolutionLive.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="utilities.html">utilities.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">utilities.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utilities.html#utilities.determine_color"><code class="docutils literal notranslate"><span class="pre">determine_color()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilities.html#utilities.wipe_folder"><code class="docutils literal notranslate"><span class="pre">wipe_folder()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -468,6 +480,18 @@ One could also write a script to always add the base directory to the path whene
 <li class="toctree-l2"><a class="reference internal" href="tools/reconstruct.html#reconstruct-py-current-state">reconstruct.py - current state</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools/reconstruct.html#program-goal">program goal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools/reconstruct.html#depricated">depricated</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools/generate_configs.html">generate_configs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools/generate_configs.html#tools.generate_configs.CommandData"><code class="docutils literal notranslate"><span class="pre">CommandData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools/generate_configs.html#tools.generate_configs.CommandInfo"><code class="docutils literal notranslate"><span class="pre">CommandInfo</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tools/generate_configs.html#tools.generate_configs.CommandInfo.copy_best_asc_target_path"><code class="docutils literal notranslate"><span class="pre">CommandInfo.copy_best_asc_target_path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tools/generate_configs.html#tools.generate_configs.path_store_best_asc"><code class="docutils literal notranslate"><span class="pre">path_store_best_asc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools/generate_configs.html#tools.generate_configs.pulse_count_config_generator"><code class="docutils literal notranslate"><span class="pre">pulse_count_config_generator()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools/generate_configs.html#tools.generate_configs.pulse_count_then_sensitivity_config_generator"><code class="docutils literal notranslate"><span class="pre">pulse_count_then_sensitivity_config_generator()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools/generate_configs.html#tools.generate_configs.repeat"><code class="docutils literal notranslate"><span class="pre">repeat()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -486,12 +510,12 @@ One could also write a script to always add the base directory to the path whene
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../architecture/index.html"
+       href="../architecture/mcu_protocol.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Bitstream Evolution’s Architecture</p>
+        <p class="prev-next-title">MCU Serial Protocol</p>
       </div>
     </a>
     <a class="right-next"

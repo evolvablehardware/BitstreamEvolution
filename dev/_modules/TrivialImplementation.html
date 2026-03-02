@@ -158,8 +158,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../code/Circuit/Circuit.html">Circuit.py</a></li>
@@ -470,8 +478,8 @@ document.write(`
 <div class="viewcode-block" id="TrivialHardware">
 <a class="viewcode-back" href="../code/TrivialImplementation.html#TrivialImplementation.TrivialHardware">[docs]</a>
 <span class="linenos">146</span><span class="k">class</span><span class="w"> </span><span class="nc">TrivialHardware</span><span class="p">(</span><span class="n">Hardware</span><span class="p">):</span>
-<span class="linenos">147</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">FPGAs</span><span class="p">:</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-<span class="linenos">148</span>        <span class="bp">self</span><span class="o">.</span><span class="n">FPGAs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;FAKE_FPGA1&quot;</span><span class="p">,</span> <span class="s2">&quot;FAKE FPGA2&quot;</span><span class="p">]</span>
+<span class="linenos">147</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">FPGAs</span><span class="p">:</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;FAKE_FPGA1&quot;</span><span class="p">,</span> <span class="s2">&quot;FAKE FPGA2&quot;</span><span class="p">]):</span>
+<span class="linenos">148</span>        <span class="bp">self</span><span class="o">.</span><span class="n">FPGAs</span> <span class="o">=</span> <span class="n">FPGAs</span>
 <span class="linenos">149</span>        
 <span class="linenos">150</span>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">request_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">measurement</span><span class="p">:</span> <span class="n">Trivial_Meas</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">Trivial_Meas</span><span class="p">:</span> 
 <span class="linenos">151</span>        <span class="n">measurement</span><span class="o">.</span><span class="n">record_FPGA_used</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FPGAs</span><span class="p">))</span>
@@ -483,10 +491,10 @@ document.write(`
 <span class="linenos">156</span>
 <span class="linenos">157</span>
 <span class="linenos">158</span><span class="k">def</span><span class="w"> </span><span class="nf">TrivialEvaluateMeasurements</span><span class="p">(</span><span class="n">measurements</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Measurement</span><span class="p">],</span> <span class="n">HW</span><span class="p">:</span> <span class="n">TrivialHardware</span><span class="p">)</span><span class="o">-&gt;</span><span class="kc">None</span><span class="p">:</span>
-<span class="linenos">159</span>    <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="linenos">160</span>    <span class="k">for</span> <span class="n">meas</span> <span class="ow">in</span> <span class="n">measurements</span><span class="p">:</span>
-<span class="linenos">161</span>        <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">HW</span><span class="o">.</span><span class="n">request_measurement</span><span class="p">(</span><span class="n">meas</span><span class="p">)))</span>
-<span class="linenos">162</span>    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">))</span>
+<span class="linenos">159</span>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_run_all</span><span class="p">():</span>
+<span class="linenos">160</span>        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">HW</span><span class="o">.</span><span class="n">request_measurement</span><span class="p">(</span><span class="n">meas</span><span class="p">)</span> <span class="k">for</span> <span class="n">meas</span> <span class="ow">in</span> <span class="n">measurements</span><span class="p">]</span>
+<span class="linenos">161</span>        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+<span class="linenos">162</span>    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">_run_all</span><span class="p">())</span>
 <span class="linenos">163</span>        
 <span class="linenos">164</span>
 <span class="linenos">165</span><span class="c1">## ------------------------------------ Trivial Evolution Object -----------------------------------------</span>

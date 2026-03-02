@@ -47,7 +47,7 @@
     <link rel="icon" href="https://evolvablehardware.org/images/setup_tutorial_2.jpg"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Development Information" href="dev/index.html" />
+    <link rel="next" title="Getting Started" href="quickstart.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -160,8 +160,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="code/Circuit/Circuit.html">Circuit.py</a></li>
@@ -371,57 +379,54 @@ document.write(`
   <section id="welcome-to-bitstreamevolution-s-documentation">
 <h1>Welcome to BitstreamEvolution’s documentation!<a class="headerlink" href="#welcome-to-bitstreamevolution-s-documentation" title="Link to this heading">#</a></h1>
 <p>This is the Develop documentation for BitstreamEvolution.</p>
+<a class="reference external image-reference" href="https://github.com/evolvablehardware/BitstreamEvolution/actions/workflows/initialize-push-workflows.yml"><img alt="CI Status" src="https://github.com/evolvablehardware/BitstreamEvolution/actions/workflows/initialize-push-workflows.yml/badge.svg" />
+</a>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Currently we are trying to do a rewrite of the main repository to use new interfaces to make the codebase more modular.
-Until this is done, the <cite>develop</cite> branch will be used for this process and modifications will be made to the <cite>main</cite> branch directly for pre-existing code.
-I also converted all todos in old_code to warnings to avoid cluttering up the todolist while refactoring.</p>
+Until this is done, the <code class="docutils literal notranslate"><span class="pre">develop</span></code> branch will be used for this process and modifications will be made to the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch directly for pre-existing code.</p>
 </div>
-<div class="admonition-todo admonition" id="id1">
-<p class="admonition-title">Todo</p>
-<p>Run tests from the repository dev or main that was last pushed.</p>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Getting Started</div>
+<p class="sd-card-text">Installation, prerequisites, and running your first experiment.</p>
 </div>
-<div class="admonition-todo admonition" id="id2">
-<p class="admonition-title">Todo</p>
-<p>Display results from test runs on website. Likely put this in the dev folder, only revealing on the dev branch.</p>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="quickstart.html"><span class="doc">Getting Started</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Architecture</div>
+<p class="sd-card-text">System design, hardware model, and protocol specifications.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="architecture/index.html"><span class="doc">Bitstream Evolution’s Architecture</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+API Reference</div>
+<p class="sd-card-text">Auto-generated documentation from source code docstrings.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="code/index.html"><span class="doc">Refactored Code</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Development</div>
+<p class="sd-card-text">Build instructions, test results, and contribution information.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="dev/index.html"><span class="doc">Development Information</span></a></div>
+</div>
+</div>
 </div>
 <div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="dev/index.html">Development Information</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="dev/index.html#link-to-main-website">Link To Main Website</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dev/index.html#how-to-create-the-website-manually">How To Create The Website Manually</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="architecture/index.html">Bitstream Evolution’s Architecture</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="architecture/index.html#general-structure">General Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture/index.html#initial-proposal">Initial Proposal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture/index.html#early-design-ideas">Early Design Ideas</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="code/index.html">Refactored Code</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="code/Circuit/index.html">Circuit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/EvaluateFitness/index.html">Evaluate Fitness</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/GenerateMeasurements/index.html">Generate Measurements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/Hardware/index.html">Hardware</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/Individual/index.html">Individual</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/Population/index.html">Population</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/TrivialImplementation.html">TrivialImplementation.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/Directories.html">Directories.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/Evolution.html">Evolution.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/Logger.html">Logger.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/PlotConfig.html">PlotConfig.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/PlotDataRecorder.html">PlotDataRecorder.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/PlotEvolutionLive.html">PlotEvolutionLive.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/utilities.html">utilities.py</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="code/index.html#documentation-of-old-tools">Documentation of Old Tools</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="code/tools/pulse_histogram.html">pulse_histogram.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/tools/reconstruct.html">reconstruct.py</a></li>
-</ul>
-</li>
-</ul>
 </div>
 </section>
 <section id="indices-and-tables">
@@ -435,43 +440,13 @@ I also converted all todos in old_code to warnings to avoid cluttering up the to
 <h2>To Do List<a class="headerlink" href="#to-do-list" title="Link to this heading">#</a></h2>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
-<p>For some reason when you look for a page not in the main directory, when this 404 page appears, there is no formatting.
-The whole page pops up properly except for the formatting. If I were to guess it is likely because of how Sphinx builds
-the html and how github is grabbing the html file for use. It might make sense to build a custom 404 file in html that links
-outward instead of dealing with this, and just figure out how to put it in the gh-pages repository.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="404.html#id1"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/404.rst, line 21.)</p>
-<div class="admonition-todo admonition">
-<p class="admonition-title">Todo</p>
 <p>Figure out the format for an FPGA Request, potentially also changing the type, and adjust that here.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="code/BitstreamEvolutionProtocols.html#id1"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/../../../src/BitstreamEvolutionProtocols.py:docstring of BitstreamEvolutionProtocols.Measurement.__init__, line 1.)</p>
-<div class="admonition-todo admonition">
-<p class="admonition-title">Todo</p>
-<p>Fix DEPENDANCY ANNOYANCE:
-Have to do this so imports in the files work,
-because they are evaluated relative to the home directory when python runs,
-but relative to path directory when sphinx runs.</p>
-<p>This could be solved by always running from one directory, but it would mean that imports would be messed up if you decided not to run from that directory.
-One could also write a script to always add the base directory to the path whenever you run a file, but that is quite a bother.</p>
-<p>Discuss this.</p>
-<p>This is mostly a problem because sphinx must be provided a path and must be able to perform the needed imports, and providing multiple paths risks having names overlap so is undesireable.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="code/index.html#id1"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/code/index.rst, line 5.)</p>
-<div class="admonition-todo admonition">
-<p class="admonition-title">Todo</p>
-<p>Run tests from the repository dev or main that was last pushed.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="#id1"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/index.rst, line 12.)</p>
-<div class="admonition-todo admonition">
-<p class="admonition-title">Todo</p>
-<p>Display results from test runs on website. Likely put this in the dev folder, only revealing on the dev branch.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="#id2"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/index.rst, line 15.)</p>
+<p class="todo-source">(The <a class="reference internal" href="code/BitstreamEvolutionProtocols.html#id1"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/src/BitstreamEvolutionProtocols.py:docstring of BitstreamEvolutionProtocols.Measurement.__init__, line 1.)</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>Todo lists only appear if enabled. They will not be enabled on the main website, only develop.
-to do this, run: <cite>sphinx-build -M  html source build -t dev</cite></p>
+To do this, run: <code class="docutils literal notranslate"><span class="pre">sphinx-build</span> <span class="pre">-M</span> <span class="pre">html</span> <span class="pre">source</span> <span class="pre">build</span> <span class="pre">-t</span> <span class="pre">dev</span></code></p>
 </div>
 </section>
 </section>
@@ -488,11 +463,11 @@ to do this, run: <cite>sphinx-build -M  html source build -t dev</cite></p>
                   
 <div class="prev-next-area">
     <a class="right-next"
-       href="dev/index.html"
+       href="quickstart.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Development Information</p>
+        <p class="prev-next-title">Getting Started</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

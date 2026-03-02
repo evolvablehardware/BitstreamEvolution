@@ -159,8 +159,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Refactored Code</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="Circuit/Circuit.html">Circuit.py</a></li>
@@ -327,7 +335,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -343,6 +353,22 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotDataRecorder.PlotDataRecorder"><code class="docutils literal notranslate"><span class="pre">PlotDataRecorder</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotDataRecorder.PlotDataRecorder.__init__"><code class="docutils literal notranslate"><span class="pre">PlotDataRecorder.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotDataRecorder.PlotDataRecorder.record_all_live_data"><code class="docutils literal notranslate"><span class="pre">PlotDataRecorder.record_all_live_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotDataRecorder.PlotDataRecorder.record_generation"><code class="docutils literal notranslate"><span class="pre">PlotDataRecorder.record_generation()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotDataRecorder.PlotDataRecorder.record_waveform"><code class="docutils literal notranslate"><span class="pre">PlotDataRecorder.record_waveform()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotDataRecorder.PlotDataRecorder.record_waveform_heatmap"><code class="docutils literal notranslate"><span class="pre">PlotDataRecorder.record_waveform_heatmap()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotDataRecorder.PlotDataRecorder.reset"><code class="docutils literal notranslate"><span class="pre">PlotDataRecorder.reset()</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -354,6 +380,80 @@ document.write(`
                   
   <section id="module-PlotDataRecorder">
 <span id="plotdatarecorder-py"></span><h1>PlotDataRecorder.py<a class="headerlink" href="#module-PlotDataRecorder" title="Link to this heading">#</a></h1>
+<p>Records live experiment data to workspace log files for real-time plotting.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="PlotDataRecorder.PlotDataRecorder">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PlotDataRecorder.</span></span><span class="sig-name descname"><span class="pre">PlotDataRecorder</span></span><a class="reference internal" href="../_modules/PlotDataRecorder.html#PlotDataRecorder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotDataRecorder.PlotDataRecorder" title="Link to this definition">#</a></dt>
+<dd><p>Tracks overall best fitness and writes data to log files consumed by PlotEvolutionLive.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="PlotDataRecorder.PlotDataRecorder.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PlotDataRecorder.html#PlotDataRecorder.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotDataRecorder.PlotDataRecorder.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize the recorder with zero overall best fitness.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PlotDataRecorder.PlotDataRecorder.record_all_live_data">
+<span class="sig-name descname"><span class="pre">record_all_live_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">reported_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_population</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PlotDataRecorder.html#PlotDataRecorder.record_all_live_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotDataRecorder.PlotDataRecorder.record_all_live_data" title="Link to this definition">#</a></dt>
+<dd><p>Update a specific line in the all-live-data log with a new value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Line index to update.</p></li>
+<li><p><strong>reported_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Fitness or metric value to record.</p></li>
+<li><p><strong>src_population</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Name of the source population.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PlotDataRecorder.PlotDataRecorder.record_generation">
+<span class="sig-name descname"><span class="pre">record_generation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">diversity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PlotDataRecorder.html#PlotDataRecorder.record_generation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotDataRecorder.PlotDataRecorder.record_generation" title="Link to this definition">#</a></dt>
+<dd><p>Append generation summary (best, worst, avg, diversity) to log files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fits</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em>) – Fitness values for the current generation.</p></li>
+<li><p><strong>current_epoch</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Current generation number.</p></li>
+<li><p><strong>diversity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Population diversity measure.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PlotDataRecorder.PlotDataRecorder.record_waveform">
+<span class="sig-name descname"><span class="pre">record_waveform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">waveform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PlotDataRecorder.html#PlotDataRecorder.record_waveform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotDataRecorder.PlotDataRecorder.record_waveform" title="Link to this definition">#</a></dt>
+<dd><p>Write waveform sample points to the waveform live-data log.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>waveform</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em>) – Sampled waveform data points.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PlotDataRecorder.PlotDataRecorder.record_waveform_heatmap">
+<span class="sig-name descname"><span class="pre">record_waveform_heatmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_waveform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PlotDataRecorder.html#PlotDataRecorder.record_waveform_heatmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotDataRecorder.PlotDataRecorder.record_waveform_heatmap" title="Link to this definition">#</a></dt>
+<dd><p>Append the best waveform of this epoch to the heatmap log.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>current_epoch</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Current generation number.</p></li>
+<li><p><strong>best_waveform</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em>) – Waveform data of the best individual.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PlotDataRecorder.PlotDataRecorder.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PlotDataRecorder.html#PlotDataRecorder.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PlotDataRecorder.PlotDataRecorder.reset" title="Link to this definition">#</a></dt>
+<dd><p>Reset overall best fitness to zero.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -391,6 +491,29 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotDataRecorder.PlotDataRecorder"><code class="docutils literal notranslate"><span class="pre">PlotDataRecorder</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotDataRecorder.PlotDataRecorder.__init__"><code class="docutils literal notranslate"><span class="pre">PlotDataRecorder.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotDataRecorder.PlotDataRecorder.record_all_live_data"><code class="docutils literal notranslate"><span class="pre">PlotDataRecorder.record_all_live_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotDataRecorder.PlotDataRecorder.record_generation"><code class="docutils literal notranslate"><span class="pre">PlotDataRecorder.record_generation()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotDataRecorder.PlotDataRecorder.record_waveform"><code class="docutils literal notranslate"><span class="pre">PlotDataRecorder.record_waveform()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotDataRecorder.PlotDataRecorder.record_waveform_heatmap"><code class="docutils literal notranslate"><span class="pre">PlotDataRecorder.record_waveform_heatmap()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PlotDataRecorder.PlotDataRecorder.reset"><code class="docutils literal notranslate"><span class="pre">PlotDataRecorder.reset()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

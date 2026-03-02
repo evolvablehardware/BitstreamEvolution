@@ -159,8 +159,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Refactored Code</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="../Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../Circuit/Circuit.html">Circuit.py</a></li>
@@ -364,6 +372,10 @@ document.write(`
                   
   <section id="module-GenerateMeasurements.GenerateMeasurements">
 <span id="generatemeasurements-py"></span><h1>GenerateMeasurements.py<a class="headerlink" href="#module-GenerateMeasurements.GenerateMeasurements" title="Link to this heading">#</a></h1>
+<p>Measurement generation for the evolution pipeline.</p>
+<p>Creates <a class="reference internal" href="../BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.Measurement" title="BitstreamEvolutionProtocols.Measurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Measurement</span></code></a> objects for each
+circuit in a population, linking them back to the individuals whose
+fitness they determine.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="GenerateMeasurements.GenerateMeasurements.SimpleGenerateMeasurements">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenerateMeasurements.GenerateMeasurements.</span></span><span class="sig-name descname"><span class="pre">SimpleGenerateMeasurements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpga</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_req</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../BitstreamEvolutionProtocols.html#BitstreamEvolutionProtocols.DataRequest" title="BitstreamEvolutionProtocols.DataRequest"><span class="pre">DataRequest</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/GenerateMeasurements/GenerateMeasurements.html#SimpleGenerateMeasurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GenerateMeasurements.GenerateMeasurements.SimpleGenerateMeasurements" title="Link to this definition">#</a></dt>

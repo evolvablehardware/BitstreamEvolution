@@ -47,8 +47,8 @@
     <link rel="icon" href="https://evolvablehardware.org/images/setup_tutorial_2.jpg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Refactored Code" href="../code/index.html" />
-    <link rel="prev" title="Development Information" href="../dev/index.html" />
+    <link rel="next" title="ICE40 HX1K Hardware Model" href="ice40_hardware.html" />
+    <link rel="prev" title="Test Results" href="../dev/test_results.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -159,8 +159,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">Development Information</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Bitstream Evolution’s Architecture</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Refactored Code</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../code/Circuit/Circuit.html">Circuit.py</a></li>
@@ -356,6 +364,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#architectural-example">Architectural Example</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware-documentation">Hardware Documentation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#early-design-ideas">Early Design Ideas</a></li>
 </ul>
             </nav>
@@ -414,6 +423,15 @@ Thus, we created the following general architecture to make the code more modula
 <img alt="../_images/Arch_Example-12.png" src="../_images/Arch_Example-12.png" />
 </section>
 </section>
+<section id="hardware-documentation">
+<h2>Hardware Documentation<a class="headerlink" href="#hardware-documentation" title="Link to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</div>
+</section>
 <section id="early-design-ideas">
 <h2>Early Design Ideas<a class="headerlink" href="#early-design-ideas" title="Link to this heading">#</a></h2>
 <p>Below is one of the early attempts at conceptualizing an architecture for this project:</p>
@@ -433,20 +451,20 @@ Thus, we created the following general architecture to make the code more modula
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../dev/index.html"
+       href="../dev/test_results.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Development Information</p>
+        <p class="prev-next-title">Test Results</p>
       </div>
     </a>
     <a class="right-next"
-       href="../code/index.html"
+       href="ice40_hardware.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Refactored Code</p>
+        <p class="prev-next-title">ICE40 HX1K Hardware Model</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -472,6 +490,7 @@ Thus, we created the following general architecture to make the code more modula
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#architectural-example">Architectural Example</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware-documentation">Hardware Documentation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#early-design-ideas">Early Design Ideas</a></li>
 </ul>
   </nav></div>

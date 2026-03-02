@@ -159,8 +159,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Refactored Code</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="../Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../Circuit/Circuit.html">Circuit.py</a></li>
@@ -327,7 +335,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -343,6 +353,21 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness"><code class="docutils literal notranslate"><span class="pre">EvalPulseCountFitness</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.__init__"><code class="docutils literal notranslate"><span class="pre">EvalPulseCountFitness.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.calculate_error"><code class="docutils literal notranslate"><span class="pre">EvalPulseCountFitness.calculate_error()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.calculate_success"><code class="docutils literal notranslate"><span class="pre">EvalPulseCountFitness.calculate_success()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.end_eval"><code class="docutils literal notranslate"><span class="pre">EvalPulseCountFitness.end_eval()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.start_eval"><code class="docutils literal notranslate"><span class="pre">EvalPulseCountFitness.start_eval()</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -354,6 +379,53 @@ document.write(`
                   
   <section id="module-EvaluateFitness.EvalPulseCountFitness">
 <span id="evalpulsecountfitness-py"></span><h1>EvalPulseCountFitness.py<a class="headerlink" href="#module-EvaluateFitness.EvalPulseCountFitness" title="Link to this heading">#</a></h1>
+<p>Oscillation pulse-count fitness evaluator.</p>
+<p>Fitness is computed as the inverse distance from a target pulse count.
+Used with <a class="reference internal" href="EvaluateFitness.html#EvaluateFitness.EvaluateFitness.EvaluateFitness" title="EvaluateFitness.EvaluateFitness.EvaluateFitness"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvaluateFitness</span></code></a> via
+the <a class="reference internal" href="EvaluateFitness.html#EvaluateFitness.EvaluateFitness.FitnessEvaluator" title="EvaluateFitness.EvaluateFitness.FitnessEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">FitnessEvaluator</span></code></a> protocol:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evaluator</span> <span class="o">=</span> <span class="n">EvalPulseCountFitness</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">plot_data_recorder</span><span class="o">=</span><span class="n">recorder</span><span class="p">)</span>
+<span class="n">EvaluateFitness</span><span class="p">(</span><span class="n">evaluator</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EvaluateFitness.EvalPulseCountFitness.</span></span><span class="sig-name descname"><span class="pre">EvalPulseCountFitness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_data_recorder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../PlotDataRecorder.html#PlotDataRecorder.PlotDataRecorder" title="PlotDataRecorder.PlotDataRecorder"><span class="pre">PlotDataRecorder</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/EvaluateFitness/EvalPulseCountFitness.html#EvalPulseCountFitness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate fitness based on how close measured pulse counts are to a target.</p>
+<p>For each individual the minimum fitness across all samples is used,
+where fitness = 1 when pulses == target, 0 when pulses == 0, and
+<code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">abs(target</span> <span class="pre">-</span> <span class="pre">pulses)</span></code> otherwise.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_data_recorder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../PlotDataRecorder.html#PlotDataRecorder.PlotDataRecorder" title="PlotDataRecorder.PlotDataRecorder"><span class="pre">PlotDataRecorder</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/EvaluateFitness/EvalPulseCountFitness.html#EvalPulseCountFitness.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Create an evaluator targeting <em>target</em> pulses.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.calculate_error">
+<span class="sig-name descname"><span class="pre">calculate_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">err</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><span class="pre">Exception</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_pop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../../_modules/EvaluateFitness/EvalPulseCountFitness.html#EvalPulseCountFitness.calculate_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.calculate_error" title="Link to this definition">#</a></dt>
+<dd><p>Return zero fitness when measurement fails.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.calculate_success">
+<span class="sig-name descname"><span class="pre">calculate_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_pop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../../_modules/EvaluateFitness/EvalPulseCountFitness.html#EvalPulseCountFitness.calculate_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.calculate_success" title="Link to this definition">#</a></dt>
+<dd><p>Return the minimum fitness across all pulse-count samples in <em>data</em>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.end_eval">
+<span class="sig-name descname"><span class="pre">end_eval</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/EvaluateFitness/EvalPulseCountFitness.html#EvalPulseCountFitness.end_eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.end_eval" title="Link to this definition">#</a></dt>
+<dd><p>Called after evaluating a generation (no-op for pulse count).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.start_eval">
+<span class="sig-name descname"><span class="pre">start_eval</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/EvaluateFitness/EvalPulseCountFitness.html#EvalPulseCountFitness.start_eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.start_eval" title="Link to this definition">#</a></dt>
+<dd><p>Called before evaluating a generation (no-op for pulse count).</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -391,6 +463,28 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness"><code class="docutils literal notranslate"><span class="pre">EvalPulseCountFitness</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.__init__"><code class="docutils literal notranslate"><span class="pre">EvalPulseCountFitness.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.calculate_error"><code class="docutils literal notranslate"><span class="pre">EvalPulseCountFitness.calculate_error()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.calculate_success"><code class="docutils literal notranslate"><span class="pre">EvalPulseCountFitness.calculate_success()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.end_eval"><code class="docutils literal notranslate"><span class="pre">EvalPulseCountFitness.end_eval()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EvaluateFitness.EvalPulseCountFitness.EvalPulseCountFitness.start_eval"><code class="docutils literal notranslate"><span class="pre">EvalPulseCountFitness.start_eval()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

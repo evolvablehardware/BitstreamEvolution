@@ -159,8 +159,16 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../dev/index.html">Development Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/test_results.html">Test Results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Refactored Code</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="../Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../Circuit/Circuit.html">Circuit.py</a></li>
@@ -365,6 +373,10 @@ document.write(`
                   
   <section id="module-EvaluateFitness.EvaluateFitness">
 <span id="evaluatefitness-py"></span><h1>EvaluateFitness.py<a class="headerlink" href="#module-EvaluateFitness.EvaluateFitness" title="Link to this heading">#</a></h1>
+<p>Generic fitness evaluation wrapper.</p>
+<p>Delegates to a <a class="reference internal" href="#EvaluateFitness.EvaluateFitness.FitnessEvaluator" title="EvaluateFitness.EvaluateFitness.FitnessEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">FitnessEvaluator</span></code></a> strategy for computing fitness
+from measurement results. Connects the measurement pipeline to the
+population’s fitness slots.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="EvaluateFitness.EvaluateFitness.EvaluateFitness">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EvaluateFitness.EvaluateFitness.</span></span><span class="sig-name descname"><span class="pre">EvaluateFitness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evaluator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#EvaluateFitness.EvaluateFitness.FitnessEvaluator" title="EvaluateFitness.EvaluateFitness.FitnessEvaluator"><span class="pre">FitnessEvaluator</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/EvaluateFitness/EvaluateFitness.html#EvaluateFitness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#EvaluateFitness.EvaluateFitness.EvaluateFitness" title="Link to this definition">#</a></dt>
@@ -374,7 +386,8 @@ document.write(`
 <dl class="py class">
 <dt class="sig sig-object py" id="EvaluateFitness.EvaluateFitness.FitnessEvaluator">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EvaluateFitness.EvaluateFitness.</span></span><span class="sig-name descname"><span class="pre">FitnessEvaluator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/EvaluateFitness/EvaluateFitness.html#FitnessEvaluator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#EvaluateFitness.EvaluateFitness.FitnessEvaluator" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Strategy protocol for computing fitness from measurement data.</p>
+</dd></dl>
 
 </section>
 
