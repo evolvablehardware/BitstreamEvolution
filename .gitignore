@@ -104,6 +104,8 @@ instance/
 docs/*/**
 !docs/sphinx/**
 docs/sphinx/build/
+docs/sphinx/build-dev/
+docs/sphinx/build-release/
 docs/**/__pycache__
 docs/sphinx/data/*
 

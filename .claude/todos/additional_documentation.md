@@ -2,7 +2,17 @@
 
 Tracks documentation suggestions to be added to `.claude/docs/` or elsewhere.
 
-**Last Updated**: 2026-02-27
+**Last Updated**: 2026-03-02
+
+---
+
+## Workflow Reminder
+
+**When changing code definitions or the Sphinx website**, always rebuild the docs and verify no warnings:
+```bash
+cd docs/sphinx && make html
+```
+Review the output for Sphinx warnings (missing references, malformed docstrings, undocumented members, etc.) and fix them before considering the task complete.
 
 ---
 
