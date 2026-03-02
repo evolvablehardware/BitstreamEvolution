@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(poetry run pytest:*)",
-      "Bash(python -m pytest:*)"
+      "Bash(python -m pytest:*)",
+      "WebFetch(domain:sphinx-test-reports.readthedocs.io)"
     ],
     "additionalDirectories": [
       "c:\\Users\\mierowir\\OneDrive - Rose-Hulman Institute of Technology\\Documents\\Research\\BitstreamEvolution\\.claude"

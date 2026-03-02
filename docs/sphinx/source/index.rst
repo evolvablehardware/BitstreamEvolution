@@ -4,15 +4,43 @@ Welcome to BitstreamEvolution's documentation!
 
 This is the |doc_version| documentation for BitstreamEvolution.
 
-.. image:: https://github.com/evolvablehardware/BitstreamEvolution/actions/workflows/initialize-push-workflows.yml/badge.svg
-   :target: https://github.com/evolvablehardware/BitstreamEvolution/actions/workflows/initialize-push-workflows.yml
-   :alt: CI Status
+.. only:: release
+
+    .. image:: https://github.com/evolvablehardware/BitstreamEvolution/actions/workflows/initialize-push-workflows.yml/badge.svg?branch=main
+       :target: https://github.com/evolvablehardware/BitstreamEvolution/actions/workflows/initialize-push-workflows.yml?query=branch%3Amain
+       :alt: Main Branch CI Status
+
+.. only:: dev
+
+    .. warning::
+
+        **This is the development documentation** for the ``develop`` branch, which is
+        actively being worked on by developers. It may contain incomplete features,
+        experimental content, or issues not present on the
+        `stable release site <https://evolvablehardware.github.io/BitstreamEvolution/>`_.
+
+        This site also includes **TODO items** and **development notes** that are hidden
+        on the release website. If you are looking for stable documentation, please visit
+        the release site linked above.
+
+    |  **Develop branch:**
+
+    .. image:: https://github.com/evolvablehardware/BitstreamEvolution/actions/workflows/initialize-push-workflows.yml/badge.svg?branch=develop
+       :target: https://github.com/evolvablehardware/BitstreamEvolution/actions/workflows/initialize-push-workflows.yml?query=branch%3Adevelop
+       :alt: Develop Branch CI Status
+
+    |  **Main branch:**
+
+    .. image:: https://github.com/evolvablehardware/BitstreamEvolution/actions/workflows/initialize-push-workflows.yml/badge.svg?branch=main
+       :target: https://github.com/evolvablehardware/BitstreamEvolution/actions/workflows/initialize-push-workflows.yml?query=branch%3Amain
+       :alt: Main Branch CI Status
 
 .. note::
    Currently we are trying to do a rewrite of the main repository to use new interfaces to make the codebase more modular.
    Until this is done, the ``develop`` branch will be used for this process and modifications will be made to the ``main`` branch directly for pre-existing code.
 
 .. grid:: 2
+    :gutter: 3
 
     .. grid-item-card:: Getting Started
         :link: quickstart

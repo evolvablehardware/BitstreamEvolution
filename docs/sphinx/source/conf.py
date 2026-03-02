@@ -16,6 +16,9 @@ from enum import Enum
 _conf_dir = Path(__file__).resolve().parent
 _project_root = _conf_dir.parent.parent.parent
 
+# Add local extensions directory to path
+sys.path.insert(0, str(_conf_dir / "_ext"))
+
 ######################### Define Available Tags ######################
 class sTag(Enum):
     dev = "dev"
@@ -77,6 +80,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.inheritance_diagram',
               'sphinx_design', # This allows for greater user interfaces. https://sphinx-design.readthedocs.io/en/latest/get_started.html#usage
               'notfound.extension', # Custom 404 page that works in subdirectories
+              'junit_results', # Custom directive for rendering JUnit XML test results
               ]
 
 templates_path = ['_templates']
@@ -99,7 +103,7 @@ html_theme = py_project_data["config"]["sphinx"]["dev_theme"] if tag_is_applied(
 #html_theme = 'pydata_sphinx_theme'
 
 
-#html_static_path = ['_static']
+html_static_path = ['_static']
 # -- Change What Page Automatically Renders -----------------------------------
 nitpicky = True # Warnings will be emitted for all references with targets that can't be found
 show_authors = True

@@ -149,15 +149,45 @@ jobs:
           merge-multiple: true
         continue-on-error: true
 
-      - name: Convert JUnit XML to HTML
+      - name: Merge JUnit XML per Python version
         run: |
-          pip install junit2html
-          mkdir -p ${{ github.workspace }}/test-results-html
-          # Merge all XML files into a single HTML report
-          if ls ${{ github.workspace }}/junit-results/*.xml 1>/dev/null 2>&1; then
-            junit2html ${{ github.workspace }}/junit-results/*.xml ${{ github.workspace }}/test-results-html/test-results.html || true
+          # Each Python version may have multiple XML files (one per test group).
+          # Merge them into a single file per version so the Sphinx directive
+          # can render one report per Python version.
+          mkdir -p ${{ github.workspace }}/merged-junit
+          if ls ${{ github.workspace }}/junit-results/test-results-*.xml 1>/dev/null 2>&1; then
+            python3 - <<'MERGE_SCRIPT'
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+          import re
+
+          src = Path("${{ github.workspace }}/junit-results")
+          dst = Path("${{ github.workspace }}/merged-junit")
+          versions = {}
+          for f in sorted(src.glob("test-results-*.xml")):
+              m = re.search(r"test-results-(\d+\.\d+)", f.name)
+              if m:
+                  ver = m.group(1)
+                  versions.setdefault(ver, []).append(f)
+
+          for ver, files in versions.items():
+              root = ET.Element("testsuites")
+              for f in files:
+                  try:
+                      tree = ET.parse(f)
+                      r = tree.getroot()
+                      if r.tag == "testsuites":
+                          for suite in r:
+                              root.append(suite)
+                      elif r.tag == "testsuite":
+                          root.append(r)
+                  except ET.ParseError:
+                      pass
+              ET.ElementTree(root).write(dst / f"test-results-{ver}.xml",
+                                         xml_declaration=True, encoding="utf-8")
+          MERGE_SCRIPT
           else
-            echo "<html><body><p>No test results available for this build.</p></body></html>" > ${{ github.workspace }}/test-results-html/test-results.html
+            echo "No JUnit XML files found to merge."
           fi
         continue-on-error: true
 
@@ -191,10 +221,10 @@ jobs:
           pwd
           poetry install --with gh_docs --no-root
 
-      - name: 'SECONDARY SITE: Copy test results to static directory'
+      - name: 'SECONDARY SITE: Copy JUnit XML results to static directory'
         run: |
           mkdir -p ${{github.workspace}}/${{env.SECONDARY_BRANCH}}/docs/sphinx/source/_static/test-results
-          cp ${{ github.workspace }}/test-results-html/*.html ${{github.workspace}}/${{env.SECONDARY_BRANCH}}/docs/sphinx/source/_static/test-results/ || true
+          cp ${{ github.workspace }}/merged-junit/*.xml ${{github.workspace}}/${{env.SECONDARY_BRANCH}}/docs/sphinx/source/_static/test-results/ || true
         continue-on-error: true
 
       - name: 'SECONDARY SITE: Sphinx build (Dev Mode)'

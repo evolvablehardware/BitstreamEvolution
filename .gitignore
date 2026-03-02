@@ -14,6 +14,10 @@ src/tools/data/GeneratedConfigsResults
 src/tools/data/runGeneratedConfigs.sh
 src/tools/data
 
+docs/sphinx/data/GeneratedConfigs
+docs/sphinx/data/GeneratedConfigsResults
+docs/sphinx/data/runGeneratedConfigs.sh
+
 # test outputs
 test/out/*
 !test/out/.gitkeep
