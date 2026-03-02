@@ -50,12 +50,12 @@ def TrivialCircuitFactory(population: Population) -> dict[Circuit,list[tuple[Pop
 
 ## --------------------------------------------- Generate & Reproduce Populations --------------------------------------------------
 def TrivialReproduceWithMutation (population: Population,random: random.Random) -> Population:
-    """
-    Returns a population where all of the top half of the circuits are included, unchanged, 
-        and each will get a child that is mutated randomly, being incremented or decremented.
-    This primarily ensures the population remains the same size.
-    If an odd length population is passed on, the next individual is kept, but does not reproduce or mutate.
-    The outputed population has all of its fitnesses unevaluated (None).
+    """Return a population where the top half are kept and each gets a mutated child.
+
+    Each child is the parent incremented or decremented randomly. This primarily
+    ensures the population remains the same size. If an odd-length population is
+    passed, the next individual is kept but does not reproduce or mutate. The
+    output population has all of its fitnesses unevaluated (None).
     """
     population.sort(lambda x: x, True)
     individuals = list(iter(population))
@@ -175,15 +175,20 @@ def FakeMeasuringFitnessTrivialImplemention(unevaluated_population: Population)-
 
 
 class TrivialEvolution:
-    """
-    This class utilizes the protocols defined to run experiments
+    """Utilizes the protocols defined to run experiments.
+
     This is an example that should be generalized for a more general solution.
-    There should be different versions of Evolution for structurally different experiments.
-        (e.x. Multiple populations of individuals evolved simultaniously, bacterial populations where only some individuals are evaluated and reproduce each loop)
-    Any other evolution implementations should try to maintain as similar of function signatures as possible, 
-        with arguments communicated with protocols that are as general as possible. 
-    This implementations generates, evaluates, and reproduces entire populations at once,
-        and does so in discrete timesteps.
+    There should be different versions of Evolution for structurally different
+    experiments (e.g. multiple populations of individuals evolved simultaneously,
+    bacterial populations where only some individuals are evaluated and reproduce
+    each loop).
+
+    Any other evolution implementations should try to maintain as similar of
+    function signatures as possible, with arguments communicated with protocols
+    that are as general as possible.
+
+    This implementation generates, evaluates, and reproduces entire populations
+    at once, and does so in discrete timesteps.
     """
 
     def __init__(self, 

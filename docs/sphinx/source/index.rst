@@ -58,7 +58,7 @@ This is the |doc_version| documentation for BitstreamEvolution.
         :link: code/index
         :link-type: doc
 
-        Auto-generated documentation from source code docstrings.
+        Protocol interfaces, implementations, and auto-generated module docs.
 
     .. grid-item-card:: Development
         :link: dev/index

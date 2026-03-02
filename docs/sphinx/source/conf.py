@@ -106,6 +106,23 @@ html_theme = py_project_data["config"]["sphinx"]["dev_theme"] if tag_is_applied(
 html_static_path = ['_static']
 # -- Change What Page Automatically Renders -----------------------------------
 nitpicky = True # Warnings will be emitted for all references with targets that can't be found
+
+# Suppress nitpick warnings for types that cannot be resolved (stdlib types from
+# type annotations, third-party types without intersphinx, etc.)
+nitpick_ignore = [
+    ("py:class", "mmap"),
+    ("py:class", "mmap.mmap"),
+    ("py:class", "Path"),
+    ("py:class", "pathlib.Path"),
+    ("py:class", "optional"),
+    ("py:class", "Optional"),
+    ("py:class", "Population.PopulationInitialization.GenerateBitstreamPopulation"),
+]
+
+# Suppress ambiguous cross-reference warnings where multiple autodoc targets
+# share the same short name (e.g. BitstreamEvolutionProtocols.Circuit vs
+# Circuit.Circuit.Circuit).
+suppress_warnings = ["ref.python"]
 show_authors = True
 
 

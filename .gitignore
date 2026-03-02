@@ -105,6 +105,7 @@ docs/*/**
 !docs/sphinx/**
 docs/sphinx/build/
 docs/**/__pycache__
+docs/sphinx/data/*
 
 # PyBuilder
 target/

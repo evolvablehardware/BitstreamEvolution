@@ -1,9 +1,9 @@
 MCU Serial Protocol
 ====================
 
-.. note::
+.. todo::
 
-   This documentation was drafted from code analysis and may need verification
+   This documentation was drafted from code analysis and needs verification
    against the MCU firmware.
 
 Overview
@@ -15,15 +15,16 @@ a bridge: the host sends a command byte indicating the type of measurement it
 wants, and the MCU drives the FPGA and returns either a stream of ADC waveform
 samples or a pulse count.
 
-This protocol is implemented in :class:`Microcontroller`
+This protocol is implemented in :class:`~Hardware.Microcontroller.Microcontroller`
 (``src/Hardware/Microcontroller.py``) and conforms to the
-:class:`Hardware` protocol defined in ``BitstreamEvolutionProtocols.py``.
+:class:`~BitstreamEvolutionProtocols.Hardware` protocol defined in
+``BitstreamEvolutionProtocols.py``.
 
 Configuration
 -------------
 
-Connection parameters are bundled in the :class:`MicrocontrollerConfig`
-dataclass:
+Connection parameters are bundled in the
+:class:`~Hardware.Microcontroller.MicrocontrollerConfig` dataclass:
 
 .. list-table::
    :header-rows: 1
@@ -66,7 +67,8 @@ DataRequest Types
 -----------------
 
 The type of measurement requested is encoded as a
-:class:`DataRequest` enum (defined in ``BitstreamEvolutionProtocols.py``):
+:class:`~BitstreamEvolutionProtocols.DataRequest` enum (defined in
+``BitstreamEvolutionProtocols.py``):
 
 ``DataRequest.WAVEFORM``
    Requests an ADC waveform capture. Dispatches to ``measure_signal()``.
@@ -85,11 +87,10 @@ Waveform Measurement Protocol
 
 **Serial command:** ``b'2'``
 
-.. note::
+.. todo::
 
-   This documentation was drafted from code analysis and may need verification
-   against the MCU firmware. The exact sample count, sample rate, and ADC
-   resolution should be confirmed with the firmware source.
+   Verify waveform protocol against the MCU firmware. The exact sample count,
+   sample rate, and ADC resolution should be confirmed with the firmware source.
 
 Sequence:
 
@@ -122,11 +123,11 @@ Pulse Count Measurement Protocol
 
 **Serial command:** ``b'1'``
 
-.. note::
+.. todo::
 
-   This documentation was drafted from code analysis and may need verification
-   against the MCU firmware. The pulse-counting window duration and any
-   firmware-side filtering should be confirmed with the firmware source.
+   Verify pulse count protocol against the MCU firmware. The pulse-counting
+   window duration and any firmware-side filtering should be confirmed with the
+   firmware source.
 
 Sequence:
 
@@ -191,20 +192,18 @@ Known Issues / TODOs
 
 The following issues are noted directly in the source code:
 
-1. **Serial read/write optimization needed** -- The waveform reading loop
-   (``measure_signal``) contains a ``# TODO`` comment indicating that the
-   section reading samples between ``START`` and ``FINISHED`` could be
-   optimized, likely by reading all available bytes at once rather than
-   line-by-line.
+.. todo::
 
-2. **Poor regex / filtering in pulse count parsing** -- The pulse-count reader
-   (``measure_pulses_once``) uses a chain of byte-string containment checks
-   (``b":" not in p and b"START" not in p ...``) rather than a proper regular
-   expression or structured parser. A ``# TODO`` in the source notes this
-   "is currently doing a poor job at REGEXing the MCU serial return" and
-   suggests it should handle transmission-loss artefacts (dropped or extra
-   spaces, shifted colons, etc.) more robustly.
+   Optimize serial read/write in ``measure_signal`` — the waveform reading loop
+   could read all available bytes at once rather than line-by-line.
 
-3. **Missing measurement type dispatch** -- ``request_measurement()`` contains
-   a ``# TODO`` comment for additional ``elif`` branches to handle future
+.. todo::
+
+   Improve regex/filtering in ``measure_pulses_once`` — the current chain of
+   byte-string containment checks should be replaced with a proper parser that
+   handles transmission-loss artefacts (dropped or extra spaces, shifted colons).
+
+.. todo::
+
+   Add ``elif`` branches in ``request_measurement()`` to handle future
    ``DataRequest`` types beyond ``WAVEFORM`` and ``OSCILLATIONS``.
