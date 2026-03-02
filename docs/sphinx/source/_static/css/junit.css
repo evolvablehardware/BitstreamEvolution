@@ -1,41 +1,154 @@
 /* Styling for junit-results Sphinx directive */
 
+/* ── Base table layout ─────────────────────────────────────────────── */
+
 table.junit-summary,
-table.junit-detail {
+table.junit-detail,
+table.junit-overview {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 1.5em;
+    table-layout: fixed;       /* prevent columns from blowing out */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 table.junit-summary th,
-table.junit-detail th {
-    background-color: #f0f0f0;
-    font-weight: bold;
-    text-align: left;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-}
-
 table.junit-summary td,
-table.junit-detail td {
-    padding: 6px 12px;
-    border: 1px solid #ddd;
+table.junit-detail th,
+table.junit-detail td,
+table.junit-overview th,
+table.junit-overview td {
+    padding: 6px 10px;
+    border: 1px solid var(--junit-border, #ccc);
+    text-align: left;
+    vertical-align: top;
 }
 
-/* Row status colors */
+table.junit-summary th,
+table.junit-detail th,
+table.junit-overview th {
+    font-weight: bold;
+}
+
+/* Detail table: give most space to test name and message */
+table.junit-detail col:nth-child(1) { width: 40%; }  /* Test Name */
+table.junit-detail col:nth-child(2) { width: 12%; }  /* Status */
+table.junit-detail col:nth-child(3) { width: 10%; }  /* Time */
+table.junit-detail col:nth-child(4) { width: 38%; }  /* Message */
+
+/* Overview table column widths */
+table.junit-overview col:nth-child(1) { width: 22%; }  /* Python Version */
+table.junit-overview col:nth-child(2) { width: 13%; }  /* Total */
+table.junit-overview col:nth-child(3) { width: 13%; }  /* Passed */
+table.junit-overview col:nth-child(4) { width: 13%; }  /* Failed */
+table.junit-overview col:nth-child(5) { width: 13%; }  /* Errors */
+table.junit-overview col:nth-child(6) { width: 13%; }  /* Skipped */
+table.junit-overview col:nth-child(7) { width: 13%; }  /* Time */
+
+/* ── Light mode (default) ──────────────────────────────────────────── */
+
+:root {
+    --junit-border: #ccc;
+    --junit-th-bg: #f0f0f0;
+    --junit-pass-bg: #d4edda;
+    --junit-pass-fg: #155724;
+    --junit-fail-bg: #f8d7da;
+    --junit-fail-fg: #721c24;
+    --junit-error-bg: #f8d7da;
+    --junit-error-fg: #721c24;
+    --junit-skip-bg: #fff3cd;
+    --junit-skip-fg: #856404;
+}
+
+/* ── Dark mode ─────────────────────────────────────────────────────── */
+/* sphinx_book_theme uses html[data-theme="dark"] */
+
+html[data-theme="dark"] {
+    --junit-border: #555;
+    --junit-th-bg: #2a2a2a;
+    --junit-pass-bg: #1b3a26;
+    --junit-pass-fg: #7ddf96;
+    --junit-fail-bg: #3a1b1e;
+    --junit-fail-fg: #f5a3a8;
+    --junit-error-bg: #3a1b1e;
+    --junit-error-fg: #f5a3a8;
+    --junit-skip-bg: #3a3520;
+    --junit-skip-fg: #e5d07d;
+}
+
+/* Also support @media prefers-color-scheme for themes without data-theme */
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) {
+        --junit-border: #555;
+        --junit-th-bg: #2a2a2a;
+        --junit-pass-bg: #1b3a26;
+        --junit-pass-fg: #7ddf96;
+        --junit-fail-bg: #3a1b1e;
+        --junit-fail-fg: #f5a3a8;
+        --junit-error-bg: #3a1b1e;
+        --junit-error-fg: #f5a3a8;
+        --junit-skip-bg: #3a3520;
+        --junit-skip-fg: #e5d07d;
+    }
+}
+
+/* ── Apply theme variables ─────────────────────────────────────────── */
+
+table.junit-summary th,
+table.junit-detail th,
+table.junit-overview th {
+    background-color: var(--junit-th-bg);
+}
+
 tr.junit-pass td {
-    background-color: #e6f4ea;
+    background-color: var(--junit-pass-bg);
+    color: var(--junit-pass-fg);
 }
 
 tr.junit-fail td {
-    background-color: #fce8e6;
+    background-color: var(--junit-fail-bg);
+    color: var(--junit-fail-fg);
 }
 
 tr.junit-error td {
-    background-color: #fce8e6;
+    background-color: var(--junit-error-bg);
+    color: var(--junit-error-fg);
     font-weight: bold;
 }
 
 tr.junit-skip td {
-    background-color: #fff8e1;
+    background-color: var(--junit-skip-bg);
+    color: var(--junit-skip-fg);
+}
+
+/* ── Status badges (compact inline labels) ─────────────────────────── */
+
+span.junit-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 0.85em;
+    font-weight: bold;
+}
+
+span.junit-badge-pass {
+    background-color: var(--junit-pass-bg);
+    color: var(--junit-pass-fg);
+}
+
+span.junit-badge-fail {
+    background-color: var(--junit-fail-bg);
+    color: var(--junit-fail-fg);
+}
+
+/* ── Overview table link styling ───────────────────────────────────── */
+
+table.junit-overview a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+table.junit-overview a:hover {
+    text-decoration: underline;
 }
