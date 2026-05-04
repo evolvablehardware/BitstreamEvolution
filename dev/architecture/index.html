@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/junit.css?v=c2df4002" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/junit.css?v=5ae8e685" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -42,8 +42,445 @@
     <script src="../_static/documentation_options.js?v=a1637f0b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/scrollspy-fix.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
+    /* Same as .mermaid-container > pre */
+    display: block;
+    width: 100%;
+}
+
+pre.mermaid > svg {
+    /* Same as .mermaid-container > pre > svg */
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}`;
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.mermaid-container > pre {
+    display: block;
+    width: 100%;
+}
+
+.mermaid-container > pre > svg {
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.mermaid-fullscreen-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: #333;
+}
+
+.mermaid-fullscreen-btn:hover {
+    opacity: 100% !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-btn.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-btn.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 95vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    padding: 20px;
+    overflow: auto;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.mermaid-fullscreen-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen.dark-theme {
+    background: #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen .mermaid svg {
+    height: 100% !important;
+    width: 100% !important;
+    cursor: grab;
+}
+
+.mermaid-fullscreen-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: white;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-close.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-close.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
+    display: none !important;
+}`;
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+
+    if ("False" === "True") {
+        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("");
+            if(all_mermaids.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else if(svgs.size() !== mermaids_to_add_zoom) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else {
+                svgs.each(function() {
+                    var svg = d3.select(this);
+                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                    var inner = svg.select("g");
+                    var zoom = d3.zoom().on("zoom", function(event) {
+                        inner.attr("transform", event.transform);
+                    });
+                    svg.call(zoom);
+                });
+            }
+        }
+    } else if(all_mermaids.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if ("True" !== "True") return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = '⛶';
+        fullscreenBtn.style.opacity = '50%';
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scroll, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.sdisplay = 'block';
+
+                if ("False" === "True") {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'architecture/index';</script>
     <link rel="icon" href="https://evolvablehardware.org/images/setup_tutorial_2.jpg"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -423,7 +860,17 @@ integer-valued circuits (no hardware required), see
 <p>Below is the best current description of our architecture. It is currently
 pretty in-line with the initial proposal.</p>
 <img alt="../_images/Arch_Proposal-7.png" src="../_images/Arch_Proposal-7.png" />
-</section>
+<pre  class="mermaid">
+        flowchart TD
+    A([Run Evolution]) --&gt; B[&quot;Generate Initial\nPopulation&quot;]
+    B --&gt;|&quot;Population + Gen. Info&quot;| C[&quot;Evolution Generation\nInfo Incrementer&quot;]
+    C --&gt;|&quot;None returned&quot;| X([Exit])
+    C --&gt;|&quot;Population + New Gen. Info&quot;| D[&quot;Generate\nMeasurements&quot;]
+    D --&gt;|&quot;Gen. Info + List Of Measurements&quot;| E[&quot;Evaluate\nMeasurements&quot;]
+    E --&gt;|&quot;Gen. Info + List Of Measurements&quot;| F[&quot;Evaluate\nFitnesses&quot;]
+    F --&gt;|&quot;Gen. Info + Population w/ fitness&quot;| G[&quot;Reproduce&quot;]
+    G --&gt;|&quot;New Population&quot;| C
+    </pre></section>
 <section id="initial-proposal">
 <h2>Initial Proposal<a class="headerlink" href="#initial-proposal" title="Link to this heading">#</a></h2>
 <p>Below are a series of slides from the initial proposal for the architecture.
@@ -435,32 +882,310 @@ These are non-final, but were going in the right direction.</p>
 <h3>Architecture Description<a class="headerlink" href="#architecture-description" title="Link to this heading">#</a></h3>
 <img alt="../_images/Arch_Proposal-1.png" src="../_images/Arch_Proposal-1.png" />
 <img alt="../_images/Arch_Proposal-2.png" src="../_images/Arch_Proposal-2.png" />
-<img alt="../_images/Arch_Proposal-3.png" src="../_images/Arch_Proposal-3.png" />
-<img alt="../_images/Arch_Proposal-4.png" src="../_images/Arch_Proposal-4.png" />
-<img alt="../_images/Arch_Proposal-5.png" src="../_images/Arch_Proposal-5.png" />
-<img alt="../_images/Arch_Proposal-6.png" src="../_images/Arch_Proposal-6.png" />
-<img alt="../_images/Arch_Proposal-7.png" src="../_images/Arch_Proposal-7.png" />
-<img alt="../_images/Arch_Proposal-8.png" src="../_images/Arch_Proposal-8.png" />
-<img alt="../_images/Arch_Proposal-9.png" src="../_images/Arch_Proposal-9.png" />
-<img alt="../_images/Arch_Proposal-10.png" src="../_images/Arch_Proposal-10.png" />
-<img alt="../_images/Arch_Proposal-11.png" src="../_images/Arch_Proposal-11.png" />
-<img alt="../_images/Arch_Proposal-12.png" src="../_images/Arch_Proposal-12.png" />
-<img alt="../_images/Arch_Proposal-13.png" src="../_images/Arch_Proposal-13.png" />
-</section>
+<pre  class="mermaid">
+        flowchart TD
+    input[&quot;Measurement (input)&quot;]
+    subgraph Hardware
+        ctrl[&quot;Logic: Hardware Controller&quot;]
+        fpga1[&quot;FPGA Info&quot;]
+        fpga2[&quot;FPGA Info&quot;]
+        fpgan[&quot;...&quot;]
+    end
+    out1[&quot;Measurement&quot;]
+    out2[&quot;Measurement&quot;]
+    completed[&quot;Completed Measurements&quot;]
+
+    input --&gt;|&quot;Request Measurement&quot;| ctrl
+    ctrl --&gt;|&quot;Perform Measurement&quot;| fpga1
+    ctrl --&gt;|&quot;Perform Measurement&quot;| fpga2
+    ctrl --&gt;|&quot;Perform Measurement&quot;| fpgan
+    fpga1 --&gt; out1
+    fpga2 --&gt; out2
+    out1 --&gt;|&quot;Request Completed Measurements&quot;| completed
+    out2 --&gt; completed
+    </pre><img alt="../_images/Arch_Proposal-3.png" src="../_images/Arch_Proposal-3.png" />
+<pre  class="mermaid">
+        flowchart TD
+    subgraph Measurement
+        FR[&quot;FPGA Request&quot;]
+        DR[&quot;Data Request&quot;]
+        subgraph Circuit[&quot;Circuit (to evaluate)&quot;]
+            CI[&quot;Constructed from Individuals&quot;]
+        end
+        FU[&quot;FPGA Used: Hardware_UUID:FPGA_UUID&quot;]
+        MR[&quot;Measurement Result: Data or Errors&quot;]
+    end
+    </pre><img alt="../_images/Arch_Proposal-4.png" src="../_images/Arch_Proposal-4.png" />
+<pre  class="mermaid">
+        flowchart TD
+    subgraph Individual
+        desc[&quot;Highly Implementation Dependent (Probably mostly data)&quot;]
+    end
+    </pre><img alt="../_images/Arch_Proposal-5.png" src="../_images/Arch_Proposal-5.png" />
+<pre  class="mermaid">
+        flowchart TD
+    subgraph Population
+        ind1[&quot;Individuals&quot;]
+    end
+    subgraph PopWithFitness[&quot;Population w/ fitness&quot;]
+        ind2[&quot;Individuals&quot;]
+        fit[&quot;Fitnesses&quot;]
+    end
+    </pre><img alt="../_images/Arch_Proposal-6.png" src="../_images/Arch_Proposal-6.png" />
+<pre  class="mermaid">
+        flowchart TD
+    subgraph EvolutionGenerationInfo[&quot;Evolution Generation Info&quot;]
+        gennum[&quot;Generation #&quot;]
+        etc[&quot;...&quot;]
+    end
+    </pre><img alt="../_images/Arch_Proposal-7.png" src="../_images/Arch_Proposal-7.png" />
+<pre  class="mermaid">
+        flowchart TD
+    A([Run Evolution]) --&gt; B[&quot;Generate Initial\nPopulation&quot;]
+    B --&gt;|&quot;Population + Gen. Info&quot;| C[&quot;Evolution Generation\nInfo Incrementer&quot;]
+    C --&gt;|&quot;None returned&quot;| X([Exit])
+    C --&gt;|&quot;Population + New Gen. Info&quot;| D[&quot;Generate\nMeasurements&quot;]
+    D --&gt;|&quot;Gen. Info + List Of Measurements&quot;| E[&quot;Evaluate\nMeasurements&quot;]
+    E --&gt;|&quot;Gen. Info + List Of Measurements&quot;| F[&quot;Evaluate\nFitnesses&quot;]
+    F --&gt;|&quot;Gen. Info + Population w/ fitness&quot;| G[&quot;Reproduce&quot;]
+    G --&gt;|&quot;New Population&quot;| C
+    </pre><img alt="../_images/Arch_Proposal-8.png" src="../_images/Arch_Proposal-8.png" />
+<pre  class="mermaid">
+        flowchart TD
+    old[&quot;Evolution Generation Info (OLD)&quot;]
+    op[&quot;Old Population&quot;]
+    np[&quot;New Population&quot;]
+    ci[&quot;Config Info (partial)&quot;]
+    etc[&quot;etc...&quot;]
+    incr[&quot;Evolution Generation\nInfo Incrementer&quot;]
+    new[&quot;Evolution Generation Info (NEW)&quot;]
+
+    old --&gt; incr
+    op --&gt; incr
+    np --&gt; incr
+    ci --&gt; incr
+    etc --&gt; incr
+    incr --&gt; new
+    </pre><img alt="../_images/Arch_Proposal-9.png" src="../_images/Arch_Proposal-9.png" />
+<pre  class="mermaid">
+        flowchart TD
+    pop[&quot;Population&quot;]
+    geninfo[&quot;Evolution Generation Info&quot;]
+    gen[&quot;Generate Measurements&quot;]
+    list[&quot;List Of Measurements&quot;]
+
+    pop --&gt; gen
+    geninfo --&gt; gen
+    gen --&gt; list
+    </pre><img alt="../_images/Arch_Proposal-10.png" src="../_images/Arch_Proposal-10.png" />
+<pre  class="mermaid">
+        flowchart TD
+    list[&quot;List Of Measurements&quot;]
+    eval[&quot;Evaluate Measurements\n(Done by Hardware Object)&quot;]
+    result[&quot;List Of Measurements w/ Results&quot;]
+
+    list --&gt; eval
+    eval --&gt; result
+    </pre><img alt="../_images/Arch_Proposal-11.png" src="../_images/Arch_Proposal-11.png" />
+<pre  class="mermaid">
+        flowchart TD
+    pop[&quot;Population&quot;]
+    meas[&quot;List Of Measurements&quot;]
+    geninfo[&quot;Evolution Generation Info&quot;]
+    eval[&quot;Evaluate Fitnesses&quot;]
+    result[&quot;Population w/ fitness&quot;]
+
+    pop --&gt; eval
+    meas --&gt; eval
+    geninfo --&gt; eval
+    eval --&gt; result
+    </pre><img alt="../_images/Arch_Proposal-12.png" src="../_images/Arch_Proposal-12.png" />
+<pre  class="mermaid">
+        flowchart TD
+    popfit[&quot;Population w/ fitness&quot;]
+    geninfo[&quot;Evolution Generation Info&quot;]
+    reprod[&quot;Reproduce&quot;]
+    newpop[&quot;New Population&quot;]
+
+    popfit --&gt; reprod
+    geninfo --&gt; reprod
+    reprod --&gt; newpop
+    </pre><img alt="../_images/Arch_Proposal-13.png" src="../_images/Arch_Proposal-13.png" />
+<pre  class="mermaid">
+        flowchart TD
+    ind[&quot;Individual(s)&quot;]
+    gen[&quot;Generate Circuit&quot;]
+    circ[&quot;Circuit&quot;]
+    note[&quot;(Put into a Measurement Object)&quot;]
+
+    ind --&gt; gen
+    gen --&gt; circ
+    circ -.-&gt; note
+    </pre></section>
 <section id="architectural-example">
 <h3>Architectural Example<a class="headerlink" href="#architectural-example" title="Link to this heading">#</a></h3>
 <img alt="../_images/Arch_Example-1.png" src="../_images/Arch_Example-1.png" />
 <img alt="../_images/Arch_Example-2.png" src="../_images/Arch_Example-2.png" />
-<img alt="../_images/Arch_Example-3.png" src="../_images/Arch_Example-3.png" />
-<img alt="../_images/Arch_Example-4.png" src="../_images/Arch_Example-4.png" />
-<img alt="../_images/Arch_Example-5.png" src="../_images/Arch_Example-5.png" />
-<img alt="../_images/Arch_Example-6.png" src="../_images/Arch_Example-6.png" />
-<img alt="../_images/Arch_Example-7.png" src="../_images/Arch_Example-7.png" />
-<img alt="../_images/Arch_Example-8.png" src="../_images/Arch_Example-8.png" />
+<pre  class="mermaid">
+        flowchart TD
+    subgraph GenInitPop[&quot;Generate Initial Population&quot;]
+        rand[&quot;Randomly Generate Individual&quot;]
+        measure[&quot;Measure Pulse Count&quot;]
+        check{&quot;Non-zero pulses?&quot;}
+        indiv[&quot;Individual (valid)&quot;]
+        mutate[&quot;Perform Mutation&quot;]
+        rand --&gt; measure --&gt; check
+        check --&gt;|&quot;No&quot;| rand
+        check --&gt;|&quot;Yes&quot;| indiv --&gt; mutate
+    end
+    start((&quot; &quot;)) --&gt; rand
+    mutate --&gt; popout[&quot;Population: A, B, C, D\n(Fitness: None)&quot;]
+    </pre><img alt="../_images/Arch_Example-3.png" src="../_images/Arch_Example-3.png" />
+<pre  class="mermaid">
+        flowchart TD
+    geninfoin[&quot;Gen Info input: None (first run)&quot;]
+    prevpop[&quot;Prev. Population: None&quot;]
+    nextpop[&quot;Next Population: A, B, C, D\n(Fitness: None)&quot;]
+    config[&quot;Config Info&quot;]
+    subgraph Incr[&quot;Evolution Generation Info Incrementer&quot;]
+        isnone{&quot;Generation Info is None?&quot;}
+        initgen[&quot;Generate Initial Gen Info&quot;]
+        genchk{&quot;Generation Number &lt; 500&quot;}
+        isnone --&gt;|&quot;True&quot;| initgen
+        isnone --&gt;|&quot;False&quot;| genchk
+        increment[&quot;New Gen Info: Gen # = 0&quot;]
+        retnone[&quot;Return None&quot;]
+        genchk --&gt;|&quot;True&quot;| increment
+        genchk --&gt;|&quot;False&quot;| retnone
+    end
+    geninfoin --&gt; isnone
+    prevpop --&gt; isnone
+    nextpop --&gt; isnone
+    config --&gt; genchk
+    initgen --&gt; out[&quot;Gen Info: Generation # = 0&quot;]
+    </pre><img alt="../_images/Arch_Example-4.png" src="../_images/Arch_Example-4.png" />
+<pre  class="mermaid">
+        flowchart TD
+    pop4[&quot;Population: A, B, C, D (Fitness: None)&quot;]
+    geninfo4[&quot;Evolution Generation Info&quot;]
+    config4[&quot;Config Info&quot;]
+    subgraph GenMeas[&quot;Generate Measurements&quot;]
+        translate[&quot;Translate Individuals to Circuits&quot;]
+        foreach[&quot;For Each Circuit:\nGenerate Measurement&quot;]
+        returnlist[&quot;Return List&quot;]
+        translate --&gt; foreach --&gt; returnlist
+    end
+    pop4 --&gt; translate
+    geninfo4 --&gt; foreach
+    config4 --&gt; foreach
+    returnlist --&gt; mout[&quot;Measurements: A, B, C, D\n(Result: Err — Unevaluated)&quot;]
+    </pre><img alt="../_images/Arch_Example-5.png" src="../_images/Arch_Example-5.png" />
+<pre  class="mermaid">
+        flowchart TD
+    minput[&quot;Measurements: A, B, C, D (unevaluated)&quot;]
+    subgraph EvalMeas[&quot;Evaluate Measurements&quot;]
+        pass[&quot;Pass each Measurement to FPGA\n(via Hardware Object)&quot;]
+        update[&quot;Update Measurement with\ndata from FPGA&quot;]
+        collect[&quot;Collect all measurements\nand return as list&quot;]
+        pass --&gt; update --&gt; collect
+    end
+    minput --&gt; pass
+    collect --&gt; mresult[&quot;Measurements: A, B, C, D (with results)\ne.g. A: Ok(4_000 Pulses), C: Err(Serial Failure)&quot;]
+    </pre><img alt="../_images/Arch_Example-6.png" src="../_images/Arch_Example-6.png" />
+<pre  class="mermaid">
+        flowchart TD
+    meas6[&quot;Measurements: A, B, C, D (with results)&quot;]
+    pop6[&quot;Population: A, B, C, D (Fitness: None)&quot;]
+    geninfo6[&quot;Evolution Generation Info&quot;]
+    config6[&quot;Config Info&quot;]
+    subgraph EvalFit[&quot;Evaluate Fitness&quot;]
+        correlate[&quot;Correlate individuals to\nassociated measurements&quot;]
+        foreach6[&quot;For Each Individual:\nRead Measurement(s)&quot;]
+        iferror[&quot;Fitness = 0&quot;]
+        ifsuccess[&quot;Apply fitness function&quot;]
+        putpop[&quot;Put into population&quot;]
+        correlate --&gt; foreach6
+        foreach6 --&gt;|&quot;If Error&quot;| iferror
+        foreach6 --&gt;|&quot;If Success&quot;| ifsuccess
+        iferror --&gt; putpop
+        ifsuccess --&gt; putpop
+    end
+    meas6 --&gt; correlate
+    pop6 --&gt; correlate
+    geninfo6 --&gt; foreach6
+    config6 --&gt; foreach6
+    putpop --&gt; fitout[&quot;Population: A=0.98, B=0.86, C=0.00, D=0.05&quot;]
+    </pre><img alt="../_images/Arch_Example-7.png" src="../_images/Arch_Example-7.png" />
+<pre  class="mermaid">
+        flowchart TD
+    pop7[&quot;Population: A=0.98, B=0.86, C=0.00, D=0.05&quot;]
+    geninfo7[&quot;Evolution Generation Info&quot;]
+    config7[&quot;Config Info&quot;]
+    subgraph Reprod[&quot;Reproduction&quot;]
+        select[&quot;Select top 50%\n(A, B)&quot;]
+        dup[&quot;Duplicate Individuals&quot;]
+        elites[&quot;Don't mutate Elites\n(A, B)&quot;]
+        mutated[&quot;Mutate Copy\n(A', B')&quot;]
+        create[&quot;Create new population&quot;]
+        select --&gt; dup
+        dup --&gt;|&quot;One Copy&quot;| elites
+        dup --&gt;|&quot;Other Copy&quot;| mutated
+        elites --&gt; create
+        mutated --&gt; create
+    end
+    pop7 --&gt; select
+    geninfo7 --&gt; create
+    config7 --&gt; create
+    create --&gt; repout[&quot;Population: A, B, A', B' (Fitness: None)&quot;]
+    </pre><img alt="../_images/Arch_Example-8.png" src="../_images/Arch_Example-8.png" />
 <img alt="../_images/Arch_Example-9.png" src="../_images/Arch_Example-9.png" />
-<img alt="../_images/Arch_Example-10.png" src="../_images/Arch_Example-10.png" />
+<pre  class="mermaid">
+        flowchart TD
+    geninfoin9[&quot;Gen Info input: Generation # = 0&quot;]
+    prevpop9[&quot;Prev. Population: A=0.98, B=0.86, C=0.00, D=0.05&quot;]
+    nextpop9[&quot;Next Population: A, B, A', B' (Fitness: None)&quot;]
+    config9[&quot;Config Info&quot;]
+    subgraph Incr9[&quot;Evolution Generation Info Incrementer&quot;]
+        isnone9{&quot;Gen Info is None?&quot;}
+        initgen9[&quot;Generate Initial Gen Info&quot;]
+        genchk9{&quot;Gen # &lt; 500&quot;}
+        increment9[&quot;New Gen Info: (Gen #)++&quot;]
+        retnone9[&quot;Return None&quot;]
+        isnone9 --&gt;|&quot;True&quot;| initgen9
+        isnone9 --&gt;|&quot;False&quot;| genchk9
+        genchk9 --&gt;|&quot;True&quot;| increment9
+        genchk9 --&gt;|&quot;False&quot;| retnone9
+    end
+    geninfoin9 --&gt; isnone9
+    prevpop9 --&gt; isnone9
+    nextpop9 --&gt; isnone9
+    config9 --&gt; genchk9
+    increment9 --&gt; out9[&quot;Gen Info: Generation # = 1&quot;]
+    </pre><img alt="../_images/Arch_Example-10.png" src="../_images/Arch_Example-10.png" />
 <img alt="../_images/Arch_Example-11.png" src="../_images/Arch_Example-11.png" />
-<img alt="../_images/Arch_Example-12.png" src="../_images/Arch_Example-12.png" />
+<pre  class="mermaid">
+        flowchart TD
+    geninfoin11[&quot;Gen Info input: Generation # = 500&quot;]
+    prevpop11[&quot;Prev. Population (with fitnesses)&quot;]
+    nextpop11[&quot;Next Population (evolved, Fitness: None)&quot;]
+    config11[&quot;Config Info&quot;]
+    subgraph Incr11[&quot;Evolution Generation Info Incrementer&quot;]
+        isnone11{&quot;Gen Info is None?&quot;}
+        initgen11[&quot;Generate Initial Gen Info&quot;]
+        genchk11{&quot;Gen # &lt; 500&quot;}
+        increment11[&quot;New Gen Info: (Gen #)++&quot;]
+        retnone11[&quot;Return None&quot;]
+        isnone11 --&gt;|&quot;True&quot;| initgen11
+        isnone11 --&gt;|&quot;False&quot;| genchk11
+        genchk11 --&gt;|&quot;True&quot;| increment11
+        genchk11 --&gt;|&quot;False&quot;| retnone11
+    end
+    geninfoin11 --&gt; isnone11
+    prevpop11 --&gt; isnone11
+    nextpop11 --&gt; isnone11
+    config11 --&gt; genchk11
+    retnone11 --&gt; out11([&quot;None — Evolution complete&quot;])
+    </pre><img alt="../_images/Arch_Example-12.png" src="../_images/Arch_Example-12.png" />
 </section>
 </section>
 <section id="hardware-documentation">

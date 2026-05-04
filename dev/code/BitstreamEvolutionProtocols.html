@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/junit.css?v=c2df4002" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/junit.css?v=5ae8e685" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -42,6 +42,7 @@
     <script src="../_static/documentation_options.js?v=a1637f0b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/scrollspy-fix.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'code/BitstreamEvolutionProtocols';</script>
@@ -422,7 +423,7 @@ It will if the Individual represents a circuit in its entirety.
 It will not if you are simultaniously evolving multiple sub-sections that need to be combined to make the circuit to be evaluated.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="BitstreamEvolutionProtocols.Circuit.compile">
-<span class="sig-name descname"><span class="pre">compile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpga</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#BitstreamEvolutionProtocols.FPGA_Compilation_Data" title="BitstreamEvolutionProtocols.FPGA_Compilation_Data"><span class="pre">FPGA_Compilation_Data</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://returns.readthedocs.io/en/latest/pages/result.html#returns.result.Result" title="(in returns v0.26.0)"><span class="pre">Result</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><span class="pre">Exception</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/BitstreamEvolutionProtocols.html#Circuit.compile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BitstreamEvolutionProtocols.Circuit.compile" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">compile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpga</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#BitstreamEvolutionProtocols.FPGA_Compilation_Data" title="BitstreamEvolutionProtocols.FPGA_Compilation_Data"><span class="pre">FPGA_Compilation_Data</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://returns.readthedocs.io/en/latest/pages/result.html#returns.result.Result" title="(in returns v0.27.0)"><span class="pre">Result</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><span class="pre">Exception</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/BitstreamEvolutionProtocols.html#Circuit.compile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BitstreamEvolutionProtocols.Circuit.compile" title="Link to this definition">#</a></dt>
 <dd><p>This looks at the fpga and compiles the circuit for it if it can.
 If it can it does all of its work in the working_dir and returns with Ok(Path) for the path to the file/directory containing this data.
 If it cannot, it should return an exception Err(Exception) explaining why it failed.

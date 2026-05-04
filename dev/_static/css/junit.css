@@ -153,16 +153,6 @@ table.junit-overview a:hover {
     text-decoration: underline;
 }
 
-/* ── Section scroll offset ────────────────────────────────────────── */
-/* Compensate for fixed header when navigating to anchor links.
-   Uses scroll-margin-top on generated sections so the heading is
-   visible below the fixed navbar after clicking a TOC or overview link. */
-
-#test-results-overview,
-section[id^="python-"] {
-    scroll-margin-top: calc(var(--pst-header-height, 4rem) + 1rem);
-}
-
 /* ── Per-group subsection spacing ─────────────────────────────────── */
 
 /* Add visual breathing room above each test-group sub-section */
