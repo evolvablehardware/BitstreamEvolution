@@ -35,7 +35,7 @@ def _make_population(fitnesses, discovered=True):
 # ============================================================================
 
 @pytest.mark.short
-def test_evolution_pipeline_integration():
+def test_evolution_pipeline_integration():  # Written by AI
     """Full evolution run with real components and deterministic seed."""
     rand = Random(42)
 
@@ -65,7 +65,7 @@ def test_evolution_pipeline_integration():
 # 2.2 CircuitFactory to Measurement Pipeline
 # ============================================================================
 
-def test_circuit_factory_to_measurements_integration():
+def test_circuit_factory_to_measurements_integration():  # Written by AI
     """CircuitFactory output should correctly feed into GenerateMeasurements."""
     individuals = [TrivialCircuit(1), TrivialCircuit(2), TrivialCircuit(3)]
     pop = Population(individuals, None)
@@ -86,7 +86,7 @@ def test_circuit_factory_to_measurements_integration():
 # 2.3 Measurement to Fitness Pipeline
 # ============================================================================
 
-def test_measurement_to_fitness_integration():
+def test_measurement_to_fitness_integration():  # Written by AI
     """Measurements should flow correctly through fitness evaluation."""
     ind1, ind2 = TrivialCircuit(10), TrivialCircuit(20)
     pop = Population([ind1, ind2], None)
@@ -105,7 +105,7 @@ def test_measurement_to_fitness_integration():
         assert fit == ind.inherent_fitness
 
 
-def test_measurement_to_fitness_with_unevaluated():
+def test_measurement_to_fitness_with_unevaluated():  # Written by AI
     """Unevaluated individuals should receive default fitness of 0."""
     ind1 = TrivialCircuit(10)
     ind2 = TrivialCircuit(20)
@@ -125,7 +125,7 @@ def test_measurement_to_fitness_with_unevaluated():
 # Full pipeline: generate -> measure -> evaluate -> reproduce
 # ============================================================================
 
-def test_full_trivial_pipeline_single_generation():
+def test_full_trivial_pipeline_single_generation():  # Written by AI
     """Test one complete generation cycle with all real components."""
     rand = Random(42)
 

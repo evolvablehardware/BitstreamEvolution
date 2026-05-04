@@ -36,21 +36,21 @@ def make_mcu(mock_serial):
     return _make
 
 
-def test_Microcontroller_init(make_mcu, mock_serial):
+def test_Microcontroller_init(make_mcu, mock_serial):  # Written by AI
     """Microcontroller should initialize and configure serial connection."""
     mcu = make_mcu()
     assert mcu is not None
     assert mock_serial.dtr is False
 
 
-def test_Microcontroller_get_available_FPGAs(make_mcu):
+def test_Microcontroller_get_available_FPGAs(make_mcu):  # Written by AI
     """get_available_FPGAs should return a list with the configured FPGA."""
     mcu = make_mcu("MY_FPGA")
     fpgas = mcu.get_available_FPGAs()
     assert fpgas == ["MY_FPGA"]
 
 
-def test_Microcontroller_measure_signal(make_mcu, mock_serial):
+def test_Microcontroller_measure_signal(make_mcu, mock_serial):  # Written by AI
     """measure_signal should parse waveform data from serial."""
     mcu = make_mcu()
 
@@ -70,7 +70,7 @@ def test_Microcontroller_measure_signal(make_mcu, mock_serial):
     assert result == [100, 200, 300]
 
 
-def test_Microcontroller_measure_pulses(make_mcu, mock_serial):
+def test_Microcontroller_measure_pulses(make_mcu, mock_serial):  # Written by AI
     """measure_pulses should collect data from multiple samples."""
     mcu = make_mcu()
 
@@ -87,7 +87,7 @@ def test_Microcontroller_measure_pulses(make_mcu, mock_serial):
     assert len(result) == 2
 
 
-def test_Microcontroller_request_measurement_waveform(make_mcu, mock_serial):
+def test_Microcontroller_request_measurement_waveform(make_mcu, mock_serial):  # Written by AI
     """request_measurement with WAVEFORM should compile circuit and measure signal."""
     mcu = make_mcu()
 
@@ -109,7 +109,7 @@ def test_Microcontroller_request_measurement_waveform(make_mcu, mock_serial):
     ckt.compile.assert_called_once()
 
 
-def test_Microcontroller_request_measurement_oscillations(make_mcu, mock_serial):
+def test_Microcontroller_request_measurement_oscillations(make_mcu, mock_serial):  # Written by AI
     """request_measurement with OSCILLATIONS should compile circuit and measure pulses."""
     mcu = make_mcu()
 
@@ -128,7 +128,7 @@ def test_Microcontroller_request_measurement_oscillations(make_mcu, mock_serial)
     ckt.compile.assert_called_once()
 
 
-def test_Microcontroller_timeout_recovery(make_mcu, mock_serial):
+def test_Microcontroller_timeout_recovery(make_mcu, mock_serial):  # Written by AI
     """Microcontroller should handle serial timeouts gracefully."""
     mcu = make_mcu()
 

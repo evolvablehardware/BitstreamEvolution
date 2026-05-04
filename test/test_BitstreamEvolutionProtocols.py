@@ -99,7 +99,7 @@ def test_LongTest():
 
 # --- GenDataIncrementer edge cases ---
 
-def test_GenDataIncrementer_ZeroGenerations():
+def test_GenDataIncrementer_ZeroGenerations():  # Written by AI
     """max_gen_num=0 should return gen 0 on first call, then None."""
     inc = GenDataIncrementer(0)
     result = inc(None)
@@ -109,7 +109,7 @@ def test_GenDataIncrementer_ZeroGenerations():
     assert result is None
 
 
-def test_GenDataIncrementer_SingleGeneration():
+def test_GenDataIncrementer_SingleGeneration():  # Written by AI
     """max_gen_num=1 should return gen 0, then gen 1 is not reached (returns None after gen 0)."""
     inc = GenDataIncrementer(1)
     result = inc(None)
@@ -119,7 +119,7 @@ def test_GenDataIncrementer_SingleGeneration():
     assert result is None
 
 
-def test_GenDataIncrementer_return_type_validation():
+def test_GenDataIncrementer_return_type_validation():  # Written by AI
     """GenDataIncrementer should return GenData or None."""
     inc = GenDataIncrementer(5)
     result = inc(None)
@@ -134,7 +134,7 @@ def test_GenDataIncrementer_return_type_validation():
 
 # --- Fitness protocol tests ---
 
-def test_float_satisfies_Fitness_protocol():
+def test_float_satisfies_Fitness_protocol():  # Written by AI
     """float should work as Fitness type in Population sort."""
     pop = Population([Mock(), Mock()], [1.5, 2.5])
     pop.sort(lambda x: x, reverse=True)
@@ -143,7 +143,7 @@ def test_float_satisfies_Fitness_protocol():
     assert fitnesses[1] == 1.5
 
 
-def test_int_satisfies_Fitness_protocol():
+def test_int_satisfies_Fitness_protocol():  # Written by AI
     """int should work as Fitness type in Population sort."""
     pop = Population([Mock(), Mock()], [1, 2])
     pop.sort(lambda x: x, reverse=True)
@@ -152,7 +152,7 @@ def test_int_satisfies_Fitness_protocol():
     assert fitnesses[1] == 1
 
 
-def test_custom_Fitness_class():
+def test_custom_Fitness_class():  # Written by AI
     """A custom class with comparison operators should work as Fitness."""
 
     class CustomFitness:

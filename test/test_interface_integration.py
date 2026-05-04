@@ -44,7 +44,7 @@ def _make_trivial_population(fitnesses, discovered=True):
 # 1.5 CircuitFactory Protocol Tests
 # ============================================================================
 
-def test_CircuitFactory_returns_correct_structure():
+def test_CircuitFactory_returns_correct_structure():  # Written by AI
     """CircuitFactory return type should be dict[Circuit, list[tuple[Pop, Ind]]]."""
     pop = Population([TrivialCircuit(1), TrivialCircuit(2)], None)
     result = TrivialCircuitFactory(pop)
@@ -58,7 +58,7 @@ def test_CircuitFactory_returns_correct_structure():
             assert individual in individuals
 
 
-def test_CircuitFactory_handles_empty_population():
+def test_CircuitFactory_handles_empty_population():  # Written by AI
     """CircuitFactory should handle an empty population gracefully."""
     pop = Population([], None)
     result = TrivialCircuitFactory(pop)
@@ -66,7 +66,7 @@ def test_CircuitFactory_handles_empty_population():
     assert len(result) == 0
 
 
-def test_CircuitFactory_population_individual_tracking():
+def test_CircuitFactory_population_individual_tracking():  # Written by AI
     """Each circuit in the factory output should map back to the correct individual."""
     ind1 = TrivialCircuit(10)
     ind2 = TrivialCircuit(20)
@@ -107,7 +107,7 @@ class _MockIndividual:
         self.id = id
 
 
-def test_GenerateMeasurements_return_structure():
+def test_GenerateMeasurements_return_structure():  # Written by AI
     """SimpleGenerateMeasurements should return dict[Measurement, list[tuple[Pop, Ind]]]."""
     gen_meas = SimpleGenerateMeasurements('fpga', DataRequest.WAVEFORM, 1)
     factory = _MockCircuitFactory()
@@ -124,7 +124,7 @@ def test_GenerateMeasurements_return_structure():
             assert source_pop is pop
 
 
-def test_GenerateMeasurements_factory_integration():
+def test_GenerateMeasurements_factory_integration():  # Written by AI
     """GenerateMeasurements should use CircuitFactory to get circuits."""
     gen_meas = SimpleGenerateMeasurements('test-fpga', DataRequest.OSCILLATIONS, 3)
     factory = _MockCircuitFactory()
@@ -140,7 +140,7 @@ def test_GenerateMeasurements_factory_integration():
     assert measurement.num_samples == 3
 
 
-def test_GenerateMeasurements_multiple_populations():
+def test_GenerateMeasurements_multiple_populations():  # Written by AI
     """GenerateMeasurements should handle multiple populations."""
     gen_meas = SimpleGenerateMeasurements('fpga', DataRequest.WAVEFORM, 1)
     factory = _MockCircuitFactory()
@@ -152,7 +152,7 @@ def test_GenerateMeasurements_multiple_populations():
     assert len(result) == 2
 
 
-def test_GenerateMeasurements_empty_input():
+def test_GenerateMeasurements_empty_input():  # Written by AI
     """GenerateMeasurements with empty populations should return empty dict."""
     gen_meas = SimpleGenerateMeasurements('fpga', DataRequest.WAVEFORM, 1)
     factory = _MockCircuitFactory()
@@ -167,7 +167,7 @@ def test_GenerateMeasurements_empty_input():
 # 1.10 EvaluatePopulationFitness Protocol Tests
 # ============================================================================
 
-def test_EvaluatePopulationFitness_modifies_in_place():
+def test_EvaluatePopulationFitness_modifies_in_place():  # Written by AI
     """EvaluateFitness.evaluate() should modify population in place, not return it."""
     plot_data_recorder = Mock(spec=PlotDataRecorder)
     ckt = Mock(spec=FileBasedCircuit)
@@ -184,7 +184,7 @@ def test_EvaluatePopulationFitness_modifies_in_place():
     assert pop.population_list[0][1] is not None
 
 
-def test_EvaluatePopulationFitness_measurement_mapping():
+def test_EvaluatePopulationFitness_measurement_mapping():  # Written by AI
     """The i-th measurement should set fitness at population index i."""
     plot_data_recorder = Mock(spec=PlotDataRecorder)
     ckt1 = Mock(spec=FileBasedCircuit)
@@ -204,7 +204,7 @@ def test_EvaluatePopulationFitness_measurement_mapping():
     assert pop.population_list[1][1] == 2.0
 
 
-def test_EvaluatePopulationFitness_handles_errors():
+def test_EvaluatePopulationFitness_handles_errors():  # Written by AI
     """Measurements with Failure results should use calculate_error (fitness 0)."""
     plot_data_recorder = Mock(spec=PlotDataRecorder)
     ckt = Mock(spec=FileBasedCircuit)
@@ -220,7 +220,7 @@ def test_EvaluatePopulationFitness_handles_errors():
     assert pop.population_list[0][1] == 0
 
 
-def test_EvaluatePopulationFitness_multiple_measurements():
+def test_EvaluatePopulationFitness_multiple_measurements():  # Written by AI
     """All measurements should be processed."""
     plot_data_recorder = Mock(spec=PlotDataRecorder)
     varmax = EvalVarMaxFitness(plot_data_recorder)
@@ -246,14 +246,14 @@ def test_EvaluatePopulationFitness_multiple_measurements():
 # 1.6 Reproducer Protocol Tests
 # ============================================================================
 
-def test_Reproducer_returns_new_population():
+def test_Reproducer_returns_new_population():  # Written by AI
     """Reproducer should return a new Population object, not the original."""
     original = _make_trivial_population(range(1, 11), discovered=True)
     result = TrivialReproduceWithMutation(original, Random(42))
     assert result is not original
 
 
-def test_Reproducer_returns_unevaluated_population():
+def test_Reproducer_returns_unevaluated_population():  # Written by AI
     """The reproduced population should have all fitnesses as None."""
     pop = _make_trivial_population(range(1, 11), discovered=True)
     result = TrivialReproduceWithMutation(pop, Random(42))
@@ -262,7 +262,7 @@ def test_Reproducer_returns_unevaluated_population():
         assert fitness is None
 
 
-def test_Reproducer_input_unchanged():
+def test_Reproducer_input_unchanged():  # Written by AI
     """The original population's individuals should still be accessible after reproduction."""
     original = _make_trivial_population(range(1, 11), discovered=True)
     original_individuals = [i for i, _ in original]
@@ -279,7 +279,7 @@ def test_Reproducer_input_unchanged():
 # 1.13 FitnessEvaluator Protocol Tests
 # ============================================================================
 
-def test_FitnessEvaluator_lifecycle():
+def test_FitnessEvaluator_lifecycle():  # Written by AI
     """start_eval and end_eval should be called around evaluation."""
     evaluator = Mock(spec=FitnessEvaluator)
     evaluator.calculate_success.return_value = 1.0
@@ -296,7 +296,7 @@ def test_FitnessEvaluator_lifecycle():
     evaluator.end_eval.assert_called_once()
 
 
-def test_FitnessEvaluator_calculate_success_called():
+def test_FitnessEvaluator_calculate_success_called():  # Written by AI
     """calculate_success should be called for successful measurements."""
     evaluator = Mock(spec=FitnessEvaluator)
     evaluator.calculate_success.return_value = 5.0
@@ -313,7 +313,7 @@ def test_FitnessEvaluator_calculate_success_called():
     assert pop.population_list[0][1] == 5.0
 
 
-def test_FitnessEvaluator_calculate_error_called():
+def test_FitnessEvaluator_calculate_error_called():  # Written by AI
     """calculate_error should be called for failed measurements."""
     evaluator = Mock(spec=FitnessEvaluator)
     evaluator.calculate_error.return_value = 0.0

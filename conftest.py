@@ -1,12 +1,14 @@
 import toml
 import pytest
 import logging
+from pathlib import Path
 
 log = logging.getLogger(__name__)
 
 py_project_toml = "pyproject.toml"
-py_project_data = toml.load(py_project_toml)
+py_project_data = toml.load(Path(__file__).parent / py_project_toml)
 marker_groups:dict[str,list[str]] = py_project_data["tool"]["pytest_marker_groups"]
+
 
 #Look through all collected tests and ensure every group is represented
 # Currently we do not delete marker groups that are over-selected (more than one member chosen), but that could change

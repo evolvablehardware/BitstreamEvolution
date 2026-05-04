@@ -76,11 +76,11 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.viewcode',
               'sphinx.ext.autosectionlabel',
               'sphinx.ext.intersphinx',
-              'sphinx.ext.graphviz',
               'sphinx.ext.inheritance_diagram',
               'sphinx_design', # This allows for greater user interfaces. https://sphinx-design.readthedocs.io/en/latest/get_started.html#usage
               'notfound.extension', # Custom 404 page that works in subdirectories
               'junit_results', # Custom directive for rendering JUnit XML test results
+              'sphinxcontrib.mermaid',
               ]
 
 templates_path = ['_templates']
@@ -154,10 +154,6 @@ todo_emit_warnings=False            # True if want warnings created for each tod
 # -- viewcode extension configuration -----------------------------------------
 viewcode_line_numbers = True
 viewcode_enable_epub  = False
-
-# -- Graphviz Configuration --------------------------------------------------
-graphviz_dot = "dot" # specify "neato" layout when there is an issue, see https://graphviz.org/docs/layouts/
-graphviz_output_format = "png" # Alternatively, you could use "png" if don't need zoom, "svg" for detail, but can't download.
 
 # -- Autosection Label -------------------------------------------------------
 autosectionlabel_prefix_document = True # Can link to 'Section Title' titles using :ref:'document:Section Title'

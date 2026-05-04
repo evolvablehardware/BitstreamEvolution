@@ -35,7 +35,7 @@ def test_pulse_fitness():
 
 # --- EvalPulseCountFitness additional tests ---
 
-def test_EvalPulseCountFitness_perfect_match():
+def test_EvalPulseCountFitness_perfect_match():  # Written by AI
     """When pulses == target, fitness should be 1.0."""
     plot_data_recorder = Mock(spec=PlotDataRecorder)
     pulse = EvalPulseCountFitness(500, plot_data_recorder)
@@ -43,7 +43,7 @@ def test_EvalPulseCountFitness_perfect_match():
     assert fit == 1.0
 
 
-def test_EvalPulseCountFitness_zero_pulses():
+def test_EvalPulseCountFitness_zero_pulses():  # Written by AI
     """When pulses == 0, fitness should be 0.0."""
     plot_data_recorder = Mock(spec=PlotDataRecorder)
     pulse = EvalPulseCountFitness(500, plot_data_recorder)
@@ -51,7 +51,7 @@ def test_EvalPulseCountFitness_zero_pulses():
     assert fit == 0.0
 
 
-def test_EvalPulseCountFitness_multiple_samples():
+def test_EvalPulseCountFitness_multiple_samples():  # Written by AI
     """With multiple samples, fitness should be the minimum across all."""
     plot_data_recorder = Mock(spec=PlotDataRecorder)
     pulse = EvalPulseCountFitness(100, plot_data_recorder)
@@ -60,7 +60,7 @@ def test_EvalPulseCountFitness_multiple_samples():
     assert fit == pytest.approx(1.0 / 50)
 
 
-def test_EvalPulseCountFitness_negative_difference():
+def test_EvalPulseCountFitness_negative_difference():  # Written by AI
     """Pulses below target should still produce valid fitness."""
     plot_data_recorder = Mock(spec=PlotDataRecorder)
     pulse = EvalPulseCountFitness(100, plot_data_recorder)
@@ -69,7 +69,7 @@ def test_EvalPulseCountFitness_negative_difference():
     assert fit == pytest.approx(0.2)
 
 
-def test_EvalPulseCountFitness_error_returns_zero():
+def test_EvalPulseCountFitness_error_returns_zero():  # Written by AI
     """calculate_error should return 0."""
     plot_data_recorder = Mock(spec=PlotDataRecorder)
     pulse = EvalPulseCountFitness(100, plot_data_recorder)
@@ -79,7 +79,7 @@ def test_EvalPulseCountFitness_error_returns_zero():
 
 # --- EvalVarMaxFitness additional tests ---
 
-def test_EvalVarMaxFitness_constant_data():
+def test_EvalVarMaxFitness_constant_data():  # Written by AI
     """Constant data (no variance) should give fitness = 0."""
     plot_data_recorder = Mock(spec=PlotDataRecorder)
     varmax = EvalVarMaxFitness(plot_data_recorder)
@@ -88,7 +88,7 @@ def test_EvalVarMaxFitness_constant_data():
     assert fit == 0.0
 
 
-def test_EvalVarMaxFitness_high_variance():
+def test_EvalVarMaxFitness_high_variance():  # Written by AI
     """High variance data should give high fitness."""
     plot_data_recorder = Mock(spec=PlotDataRecorder)
     varmax = EvalVarMaxFitness(plot_data_recorder)
@@ -98,7 +98,7 @@ def test_EvalVarMaxFitness_high_variance():
     assert fit == pytest.approx(300.0 / 4)
 
 
-def test_EvalVarMaxFitness_single_element():
+def test_EvalVarMaxFitness_single_element():  # Written by AI
     """Single element data: no pairs to compare, variance_sum=0, fitness=0/1=0."""
     plot_data_recorder = Mock(spec=PlotDataRecorder)
     varmax = EvalVarMaxFitness(plot_data_recorder)
@@ -107,7 +107,7 @@ def test_EvalVarMaxFitness_single_element():
     assert fit == 0.0
 
 
-def test_EvalVarMaxFitness_error_returns_zero():
+def test_EvalVarMaxFitness_error_returns_zero():  # Written by AI
     """calculate_error should return 0."""
     plot_data_recorder = Mock(spec=PlotDataRecorder)
     varmax = EvalVarMaxFitness(plot_data_recorder)
@@ -115,7 +115,7 @@ def test_EvalVarMaxFitness_error_returns_zero():
     assert fit == 0
 
 
-def test_EvalVarMaxFitness_start_end_eval_lifecycle():
+def test_EvalVarMaxFitness_start_end_eval_lifecycle():  # Written by AI
     """start_eval resets state, end_eval records heatmap and increments epoch."""
     plot_data_recorder = Mock(spec=PlotDataRecorder)
     varmax = EvalVarMaxFitness(plot_data_recorder)

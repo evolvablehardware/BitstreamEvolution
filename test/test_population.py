@@ -14,7 +14,7 @@ def mock_individuals():
 
 # --- Tests for set_fitness ---
 
-def test_set_fitness_updates_only_specified_individual(mock_individuals):
+def test_set_fitness_updates_only_specified_individual(mock_individuals):  # Written by AI
     """Setting fitness on one individual should not affect others.
 
     Validates Population.set_fitness() from BitstreamEvolutionProtocols.py:145-150.
@@ -33,7 +33,7 @@ def test_set_fitness_updates_only_specified_individual(mock_individuals):
 
 # --- Tests for sort ---
 
-def test_sort_orders_by_fitness_ascending(mock_individuals):
+def test_sort_orders_by_fitness_ascending(mock_individuals):  # Written by AI
     """Population.sort() should order individuals by fitness.
 
     Validates Population.sort() from BitstreamEvolutionProtocols.py:158-166.
@@ -50,7 +50,7 @@ def test_sort_orders_by_fitness_ascending(mock_individuals):
 
 # --- Tests for set_fitness_of_unevaluated_individuals ---
 
-def test_set_fitness_of_unevaluated_individuals_fills_none_values():
+def test_set_fitness_of_unevaluated_individuals_fills_none_values():  # Written by AI
     """Unevaluated individuals (fitness=None) should receive the default fitness.
 
     Validates Population.set_fitness_of_unevaluated_individuals()
@@ -69,7 +69,7 @@ def test_set_fitness_of_unevaluated_individuals_fills_none_values():
 
 # --- Tests for uniqueness constraint ---
 
-def test_Population_rejects_duplicate_individuals():
+def test_Population_rejects_duplicate_individuals():  # Written by AI
     """Population should raise ValueError when given duplicate individuals.
 
     Validates the uniqueness constraint from BitstreamEvolutionProtocols.py:122-126.
@@ -83,7 +83,7 @@ def test_Population_rejects_duplicate_individuals():
 
 # --- Tests for set_fitness ValueError ---
 
-def test_Population_set_fitness_raises_on_missing_individual():
+def test_Population_set_fitness_raises_on_missing_individual():  # Written by AI
     """set_fitness should raise ValueError when individual is not in the population."""
     pop = Population([Mock()], None)
     missing = Mock()
@@ -93,7 +93,7 @@ def test_Population_set_fitness_raises_on_missing_individual():
 
 # --- Tests for sort with unevaluated fitness ---
 
-def test_Population_sort_raises_on_unevaluated():
+def test_Population_sort_raises_on_unevaluated():  # Written by AI
     """sort() should raise TypeError when any fitness is None."""
     pop = Population([Mock(), Mock()], [1.0, None])
     with pytest.raises(TypeError):
@@ -102,7 +102,7 @@ def test_Population_sort_raises_on_unevaluated():
 
 # --- Tests for iteration ---
 
-def test_Population_iteration_yields_tuples():
+def test_Population_iteration_yields_tuples():  # Written by AI
     """__iter__ should yield (Individual, Fitness|None) tuples."""
     ind = Mock()
     pop = Population([ind], [1.0])
@@ -115,7 +115,7 @@ def test_Population_iteration_yields_tuples():
 
 # --- Tests for __len__ ---
 
-def test_Population_length():
+def test_Population_length():  # Written by AI
     """__len__ should return the correct count of individuals."""
     individuals = [Mock() for _ in range(5)]
     pop = Population(individuals, None)
@@ -124,7 +124,7 @@ def test_Population_length():
 
 # --- Tests for fitness length mismatch ---
 
-def test_Population_fitness_length_mismatch():
+def test_Population_fitness_length_mismatch():  # Written by AI
     """When fitness list length doesn't match individuals, all default to None."""
     individuals = [Mock() for _ in range(3)]
     pop = Population(individuals, [1.0, 2.0])  # length mismatch

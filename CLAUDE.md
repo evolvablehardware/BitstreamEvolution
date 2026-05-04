@@ -83,6 +83,14 @@ Tests use pytest with three timing markers configured in [pyproject.toml:44-48](
 
 Mocking pattern: Use `unittest.mock.Mock(spec=ProtocolClass)` for protocol implementations.
 
+### AI Test Annotations
+
+When writing or editing tests, always add an inline comment to the function signature:
+- **New tests**: `def test_example():  # Written by AI`
+- **Edited tests**: `def test_example():  # Edited by AI`
+
+When editing an existing test, prompt the user with the proposed change and explain why it is being made before applying it.
+
 ## Configuration
 
 - **pyproject.toml**: Poetry dependencies, pytest markers, Sphinx config

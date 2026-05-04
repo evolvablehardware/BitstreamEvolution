@@ -541,8 +541,9 @@ def setup(app: Sphinx) -> dict:
     app.add_directive("junit-overview", JUnitOverviewDirective)
     app.add_directive("junit-test-results", JUnitTestResultsDirective)
     app.add_css_file("css/junit.css")
+    app.add_js_file("js/scrollspy-fix.js")
     return {
-        "version": "0.4",
+        "version": "0.5",
         "parallel_read_safe": True,
         "parallel_write_safe": True,
     }

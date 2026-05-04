@@ -18,9 +18,13 @@ docs/sphinx/data/GeneratedConfigs
 docs/sphinx/data/GeneratedConfigsResults
 docs/sphinx/data/runGeneratedConfigs.sh
 
+docs/sphinx/source/_ext/*
+docs/sphinx/source/_static/*
+
 # test outputs
 test/out/*
 !test/out/.gitkeep
+
 
 # no need to include temp files
 workspace/

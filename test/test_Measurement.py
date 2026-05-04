@@ -9,7 +9,7 @@ from BitstreamEvolutionProtocols import (
 
 # --- Tests for Measurement initial state ---
 
-def test_Measurement_initial_result_is_failure():
+def test_Measurement_initial_result_is_failure():  # Written by AI
     """A new Measurement should start with result = Failure(MeasurementNotTaken)."""
     ckt = Mock(spec=Circuit)
     m = Measurement("fpga", DataRequest.WAVEFORM, ckt, 1)
@@ -21,7 +21,7 @@ def test_Measurement_initial_result_is_failure():
 
 # --- Tests for recording success ---
 
-def test_Measurement_record_success():
+def test_Measurement_record_success():  # Written by AI
     """record_measurement_result with valid data should set result to Success."""
     ckt = Mock(spec=Circuit)
     m = Measurement("fpga", DataRequest.WAVEFORM, ckt, 1)
@@ -34,7 +34,7 @@ def test_Measurement_record_success():
 
 # --- Tests for recording error ---
 
-def test_Measurement_record_error():
+def test_Measurement_record_error():  # Written by AI
     """record_measurement_result with an Exception should set result to Failure."""
     ckt = Mock(spec=Circuit)
     m = Measurement("fpga", DataRequest.WAVEFORM, ckt, 1)
@@ -48,7 +48,7 @@ def test_Measurement_record_error():
 
 # --- Tests for record_FPGA_used ---
 
-def test_Measurement_record_FPGA_used():
+def test_Measurement_record_FPGA_used():  # Written by AI
     """record_FPGA_used should update the FPGA_used field."""
     ckt = Mock(spec=Circuit)
     m = Measurement("fpga", DataRequest.WAVEFORM, ckt, 1)
@@ -60,7 +60,7 @@ def test_Measurement_record_FPGA_used():
 
 # --- Tests for generic types ---
 
-def test_Measurement_generic_types():
+def test_Measurement_generic_types():  # Written by AI
     """Measurement should work with different Circuit and measurement data types."""
     ckt = Mock(spec=Circuit)
 
@@ -77,7 +77,7 @@ def test_Measurement_generic_types():
 
 # --- Tests for initial attributes ---
 
-def test_Measurement_stores_constructor_args():
+def test_Measurement_stores_constructor_args():  # Written by AI
     """Measurement should store all constructor arguments as attributes."""
     ckt = Mock(spec=Circuit)
     m = Measurement("my_fpga", DataRequest.OSCILLATIONS, ckt, 5)

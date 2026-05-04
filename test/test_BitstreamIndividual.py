@@ -50,7 +50,7 @@ def test_crossover():
 
 # --- Additional BitstreamIndividual tests ---
 
-def test_BitstreamIndividual_init_bitstream_size():
+def test_BitstreamIndividual_init_bitstream_size():  # Written by AI
     """New individual should have bitstream of correct size, all False."""
     rand = Mock(spec=Random)
     ind = BitstreamIndividual(50, rand, 0.5)
@@ -59,7 +59,7 @@ def test_BitstreamIndividual_init_bitstream_size():
     assert all(b is False for b in bitstream)
 
 
-def test_BitstreamIndividual_copy_from():
+def test_BitstreamIndividual_copy_from():  # Written by AI
     """copy_from should deep copy the bitstream from another individual."""
     rand = Mock(spec=Random)
     ind1 = BitstreamIndividual(10, rand, 0.5)
@@ -75,7 +75,7 @@ def test_BitstreamIndividual_copy_from():
     assert ind2.get_bitstream() == [True, False, True, False, True, False, True, False, True, False]
 
 
-def test_BitstreamIndividual_crossover_at_zero():
+def test_BitstreamIndividual_crossover_at_zero():  # Written by AI
     """Crossover at point 0 should take all bits from parent."""
     rand = Mock(spec=Random)
     ind1 = BitstreamIndividual(10, rand, 0.5)
@@ -90,7 +90,7 @@ def test_BitstreamIndividual_crossover_at_zero():
     assert all(b is False for b in bitstream)
 
 
-def test_BitstreamIndividual_crossover_at_end():
+def test_BitstreamIndividual_crossover_at_end():  # Written by AI
     """Crossover at the end should keep all of self's bits."""
     rand = Mock(spec=Random)
     ind1 = BitstreamIndividual(10, rand, 0.5)

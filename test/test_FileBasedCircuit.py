@@ -58,13 +58,13 @@ def make_circuit(temp_dirs):
 )
 class TestFileBasedCircuit:
 
-    def test_init_creates_asc_file(self, make_circuit, temp_dirs):
+    def test_init_creates_asc_file(self, make_circuit, temp_dirs):  # Written by AI
         """FileBasedCircuit should create an .asc file from the template."""
         ckt = make_circuit(index=0, filename="hw0")
         asc_path = temp_dirs.asc_dir / "hw0.asc"
         assert asc_path.exists()
 
-    def test_get_bitstream(self, make_circuit):
+    def test_get_bitstream(self, make_circuit):  # Written by AI
         """get_bitstream should return a list of booleans."""
         ckt = make_circuit()
         bitstream = ckt.get_bitstream()
@@ -72,7 +72,7 @@ class TestFileBasedCircuit:
         assert len(bitstream) > 0
         assert all(isinstance(b, bool) for b in bitstream)
 
-    def test_set_bitstream(self, make_circuit):
+    def test_set_bitstream(self, make_circuit):  # Written by AI
         """set_bitstream should modify the hardware file; get_bitstream should reflect changes."""
         ckt = make_circuit()
         original = ckt.get_bitstream()
@@ -82,7 +82,7 @@ class TestFileBasedCircuit:
         result = ckt.get_bitstream()
         assert result == flipped
 
-    def test_get_set_roundtrip(self, make_circuit):
+    def test_get_set_roundtrip(self, make_circuit):  # Written by AI
         """Setting a bitstream and getting it back should return the same values."""
         ckt = make_circuit()
         size = len(ckt.get_bitstream())
@@ -90,7 +90,7 @@ class TestFileBasedCircuit:
         ckt.set_bitstream(test_bitstream)
         assert ckt.get_bitstream() == test_bitstream
 
-    def test_copy_from(self, make_circuit):
+    def test_copy_from(self, make_circuit):  # Written by AI
         """copy_from should copy the hardware file from another circuit."""
         ckt1 = make_circuit(index=0, filename="hw_src")
         ckt2 = make_circuit(index=1, filename="hw_dst")
@@ -106,13 +106,13 @@ class TestFileBasedCircuit:
         # The copy_from copies the file but the mmap of ckt2 still points to old data
         # This tests the file-level copy behavior
 
-    def test_get_file_attribute_default(self, make_circuit):
+    def test_get_file_attribute_default(self, make_circuit):  # Written by AI
         """get_file_attribute should return '0' for nonexistent attributes."""
         ckt = make_circuit()
         val = ckt.get_file_attribute("nonexistent_attr")
         assert val == '0'
 
-    def test_set_and_get_file_attribute(self, make_circuit):
+    def test_set_and_get_file_attribute(self, make_circuit):  # Written by AI
         """set_file_attribute followed by get_file_attribute should return the value."""
         ckt = make_circuit()
         ckt.set_file_attribute("test_fitness", "42.5")
