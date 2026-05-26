@@ -12,7 +12,7 @@ can be driven in parallel via ``asyncio.gather()``, with per-device
 serialization to respect the exclusive USB access required by ``iceprog``.
 
 For details on the serial communication protocol, see
-:doc:`/architecture/mcu_protocol`.
+:doc:`/architecture/hardware/mcu_protocol`.
 
 Implementations
 ===============

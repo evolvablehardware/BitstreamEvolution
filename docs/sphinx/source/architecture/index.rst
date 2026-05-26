@@ -2,6 +2,13 @@
 Bitstream Evolution's Architecture
 ==================================
 
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+
+   historical/index
+   hardware/index
+
 The original code was designed in a vaguely class-like structure to prove the
 concept, but once proven it became very challenging to change the code and
 coordinate those changes, even in a small group. Thus, we created the following
@@ -72,37 +79,79 @@ To see this as the original presentation, `look here <https://docs.google.com/pr
 I then attempted to implement a basic example of it in the
 :doc:`/code/TrivialImplementation` file.
 
-Architecture Description
-------------------------
 
-.. image:: images/initial_proposal/Arch_Proposal-1.png
-
-.. image:: images/initial_proposal/Arch_Proposal-2.png
+Hardware Controller
+-------------------
 
 .. mermaid::
 
    flowchart TD
-       input["Measurement (input)"]
-       subgraph Hardware
-           ctrl["Logic: Hardware Controller"]
-           fpga1["FPGA Info"]
-           fpga2["FPGA Info"]
-           fpgan["..."]
-       end
-       out1["Measurement"]
-       out2["Measurement"]
-       completed["Completed Measurements"]
+        subgraph req[".request_Measurements()"]
+            m1["Measurement (A) 
+    (Circuit, FPGA Request, Data Request)"]
+            m2["Measurement (B)"]
+            me["Measurement (...)"]
+        end
+        hw["Hardware Object
+    (async, one FPGA per Measurement)"]
+        subgraph comp[".get_completed_Measurements()"]
+            r1["Measurement (A)
+    (FPGA Used + Ok(data))"]
+            r2["Measurement (B)
+    (FPGA Used + Err(failure))"]
+            re["Measurement (...)"]
+        end
 
-       input -->|"Request Measurement"| ctrl
-       ctrl -->|"Perform Measurement"| fpga1
-       ctrl -->|"Perform Measurement"| fpga2
-       ctrl -->|"Perform Measurement"| fpgan
-       fpga1 --> out1
-       fpga2 --> out2
-       out1 -->|"Request Completed Measurements"| completed
-       out2 --> completed
+    req ==> hw ==> comp
 
-.. image:: images/initial_proposal/Arch_Proposal-3.png
+.. mermaid::
+
+    flowchart TD
+        m_in["Measurement (input)
+    (Circuit, FPGA Request, Data Request)"]
+        m_out["Measurement (output)
+    (return FPGA Used + Result or Error)"]
+        subgraph hw_obj["Hardware Object"]
+            ctrl[["Hardware Controller Logic
+    (selects one FPGA per Measurement based on FPGA Request field)"]]
+            subgraph bank["FPGA Bank
+    (local / remote / etc.)"]
+                f_pool["FPGA Info (N available)"]
+            end
+        end
+
+        m_in ==> ctrl
+        f_pool -.->|"available
+    pool"| ctrl
+        ctrl ==>|"assigns to one FPGA,
+    async evaluate"| m_out
+
+
+The Hardware Object exposes a request/response API: callers submit a batch of Measurement
+requests and retrieve completed results separately, allowing evaluations to proceed
+asynchronously. Each Measurement carries an **FPGA Request** field that the Hardware Controller
+uses to select an appropriate FPGA from its FPGA Bank — options include "don't care," requesting
+specific FPGA UUIDs, or excluding certain UUIDs.
+
+FPGAs in the bank may be accessed in different ways — directly connected via USB, hosted on a
+remote server, or reached via a custom protocol — but the Hardware Object abstracts these
+differences from callers.
+
+When an FPGA completes (or fails) its evaluation, it writes two fields back into the Measurement:
+
+- **FPGA Used**: the UUID of the FPGA that performed the evaluation, archived so results can be
+  traced back to specific hardware.
+- **Measurement Result**: either the collected data (**Ok**) or a description of the failure
+  (**Err**) — stored as a Result type analogous to Rust's ``Result<T, E>``. Failure causes
+  include no suitable FPGA available, a compilation error, or a hardware-level failure.
+
+FPGAs are referenced in software using a ``<Hardware_UUID>:<FPGA_UUID>`` pair. This identifier
+is not necessarily consistent between program runs but remains stable for the duration of a single
+run. UUIDs can be correlated to uniquely identifiable information on the physical FPGA hardware
+and stored to request measurements on specific hardware units.
+
+Measurement Data Structure
+--------------------------
 
 .. mermaid::
 
@@ -117,7 +166,20 @@ Architecture Description
            MR["Measurement Result: Data or Errors"]
        end
 
-.. image:: images/initial_proposal/Arch_Proposal-4.png
+The Measurement object contains four fields:
+
+- **FPGA Request** (essentially an ENUM): controls FPGA selection — options are "don't care,"
+  "request specific FPGA UUIDs," or "avoid specific FPGA UUIDs."
+- **Data Request** (essentially an ENUM): specifies the type of measurement to be taken on the FPGA.
+- **Measurement Result** (essentially a Result object): stores either the collected data, or a
+  description of the failure — e.g. no satisfactory FPGA available, cannot perform the measurement,
+  or cannot compile the Individual.
+- **Measurement UUID**: intended to allow a single Individual evaluation to spawn multiple
+  Measurements that can later be recombined; in practice, matching by Individual pointer may be
+  sufficient.
+
+Individual Data Structure
+-------------------------
 
 .. mermaid::
 
@@ -126,7 +188,13 @@ Architecture Description
            desc["Highly Implementation Dependent (Probably mostly data)"]
        end
 
-.. image:: images/initial_proposal/Arch_Proposal-5.png
+An Individual stores the representation that is manipulated durring evolution to fully represent the things being evolved. 
+It must be compilable into a form that can be loaded and run on an FPGA in order to be evaluated for its fitness. 
+An open design question at proposal time was where to place the compilation logic — in the Individual itself, or in the Hardware controller —
+and whether Individuals should be linked to a specific FPGA type or brand (subclass).
+
+Population Representation
+-------------------------
 
 .. mermaid::
 
@@ -139,7 +207,15 @@ Architecture Description
            fit["Fitnesses"]
        end
 
-.. image:: images/initial_proposal/Arch_Proposal-6.png
+The Population design deliberately avoids sub-populations with explicit links between them or to a parent population.
+Each Population will always be dealt with as if it was the only one that exists in the processes that use it, even if 
+one population is divided into multiple populations durring the course of an experiment and then recombined into one
+population at the end of the experiment.
+Conceptually it is a simple list with a few extra features, and could even be implemented as a
+plain type alias (e.g. ``list[Individual] -> Population``).
+
+Generation Metadata (i.e. 'Gen. Info')
+--------------------------------------
 
 .. mermaid::
 
@@ -149,21 +225,32 @@ Architecture Description
            etc["..."]
        end
 
-.. image:: images/initial_proposal/Arch_Proposal-7.png
+``EvolutionGenerationInfo`` holds the metadata for a particular generation of the evolution run
+(e.g. the generation number). It is intended to be treated as **immutable** — a new instance is
+produced each generation rather than mutating the existing one in place.
+
+Experiment Structure
+--------------------
 
 .. mermaid::
 
    flowchart TD
-       A([Run Evolution]) --> B["Generate Initial\nPopulation"]
-       B -->|"Population + Gen. Info"| C["Evolution Generation\nInfo Incrementer"]
+       A([Run Evolution]) --> B["Generate Initial Population"]
+       B -->|"Population + Gen. Info"| C["Evolution Generation Info Incrementer"]
        C -->|"None returned"| X([Exit])
-       C -->|"Population + New Gen. Info"| D["Generate\nMeasurements"]
-       D -->|"Gen. Info + List Of Measurements"| E["Evaluate\nMeasurements"]
-       E -->|"Gen. Info + List Of Measurements"| F["Evaluate\nFitnesses"]
+       C -->|"Population + New Gen. Info"| D["Generate Measurements"]
+       D -->|"Gen. Info + List Of Measurements"| E["Evaluate Measurements"]
+       E -->|"Gen. Info + List Of Measurements"| F["Evaluate Fitnesses"]
+       D -->|"Population"| F
        F -->|"Gen. Info + Population w/ fitness"| G["Reproduce"]
-       G -->|"New Population"| C
+       G -->|"Gen. Info + New Population"| C
 
-.. image:: images/initial_proposal/Arch_Proposal-8.png
+These objects build and choreograph the entire evolution process as shown in the diagram above.
+The orchestrator is provided with callable functions implementing each stage of evolution and is
+responsible for wiring them together and driving the loop.
+
+Generation Info Factory (a.k.a.'Incrementer')
+---------------------------------------------
 
 .. mermaid::
 
@@ -173,43 +260,57 @@ Architecture Description
        np["New Population"]
        ci["Config Info (partial)"]
        etc["etc..."]
-       incr["Evolution Generation\nInfo Incrementer"]
+       incr[["Evolution Generation Info Incrementer"]]
        new["Evolution Generation Info (NEW)"]
 
-       old --> incr
+       old ==> incr
        op --> incr
        np --> incr
        ci --> incr
        etc --> incr
-       incr --> new
+       incr ==> new
 
-.. image:: images/initial_proposal/Arch_Proposal-9.png
+The Incrementer takes in the old ``EvolutionGenerationInfo`` and decides what the next generation
+looks like. When it returns ``None``, the evolution run is complete. It has access to both the old
+and new population as well as partial config info, giving it enough context to make informed
+decisions about when to terminate.
+
+Generate Measurements
+---------------------
 
 .. mermaid::
 
    flowchart TD
        pop["Population"]
        geninfo["Evolution Generation Info"]
-       gen["Generate Measurements"]
+       gen[["Generate Measurements"]]
        list["List Of Measurements"]
 
-       pop --> gen
+       pop ==> gen
        geninfo --> gen
-       gen --> list
+       gen ==> list
 
-.. image:: images/initial_proposal/Arch_Proposal-10.png
+Converts a population of Individuals into a list of Measurements to be performed. The structure
+of those measurements depends on the fitness function and evaluation approach being used.
+
+Evaluate Measurements
+---------------------
 
 .. mermaid::
 
    flowchart TD
        list["List Of Measurements"]
-       eval["Evaluate Measurements\n(Done by Hardware Object)"]
+       eval[["Evaluate Measurements (Done by Hardware Object)"]]
        result["List Of Measurements w/ Results"]
 
-       list --> eval
-       eval --> result
+       list ==> eval
+       eval ==> result
 
-.. image:: images/initial_proposal/Arch_Proposal-11.png
+Fills in the ``Result`` field of each Measurement with the requested data. This step is performed
+by the Hardware object, which dispatches each Measurement to an FPGA and collects the results.
+
+Evaluate Fitness
+----------------
 
 .. mermaid::
 
@@ -217,41 +318,53 @@ Architecture Description
        pop["Population"]
        meas["List Of Measurements"]
        geninfo["Evolution Generation Info"]
-       eval["Evaluate Fitnesses"]
+       eval[["Evaluate Fitnesses"]]
        result["Population w/ fitness"]
 
-       pop --> eval
-       meas --> eval
+       pop ==> eval
+       meas ==> eval
        geninfo --> eval
-       eval --> result
+       eval ==> result
 
-.. image:: images/initial_proposal/Arch_Proposal-12.png
+Interprets the completed measurement results and assigns fitness values to the corresponding
+Individuals in the population.
+
+Reproduce
+---------
 
 .. mermaid::
 
    flowchart TD
        popfit["Population w/ fitness"]
        geninfo["Evolution Generation Info"]
-       reprod["Reproduce"]
+       reprod[["Reproduce"]]
        newpop["New Population"]
 
-       popfit --> reprod
+       popfit ==> reprod
        geninfo --> reprod
-       reprod --> newpop
+       reprod ==> newpop
 
-.. image:: images/initial_proposal/Arch_Proposal-13.png
+Transforms the population-with-fitnesses into a new population for the next generation, using
+the fitness values to guide selection and mutation.
+
+Generate Circuit
+----------------
 
 .. mermaid::
 
    flowchart TD
        ind["Individual(s)"]
-       gen["Generate Circuit"]
+       gen[["Generate Circuit"]]
+       subgraph meas["Measurement"]
        circ["Circuit"]
-       note["(Put into a Measurement Object)"]
+       end
 
-       ind --> gen
-       gen --> circ
-       circ -.-> note
+       ind ==> gen
+       gen ==> circ
+
+Converts one or more Individuals into a Circuit that can be loaded onto an FPGA and evaluated.
+The resulting Circuit is placed into a Measurement object. Note that Circuits may be
+**specific to particular FPGAs**, or be composed of multiple individuals that are combined.
 
 Architectural Example
 ---------------------
@@ -313,14 +426,14 @@ Architectural Example
        config4["Config Info"]
        subgraph GenMeas["Generate Measurements"]
            translate["Translate Individuals to Circuits"]
-           foreach["For Each Circuit:\nGenerate Measurement"]
+           foreach["For Each Circuit: Generate Measurement"]
            returnlist["Return List"]
            translate --> foreach --> returnlist
        end
        pop4 --> translate
        geninfo4 --> foreach
        config4 --> foreach
-       returnlist --> mout["Measurements: A, B, C, D\n(Result: Err — Unevaluated)"]
+       returnlist --> mout["Measurements: A, B, C, D\n(Result: Err -- Unevaluated)"]
 
 .. image:: images/initial_proposal/example/Arch_Example-5.png
 
@@ -330,8 +443,8 @@ Architectural Example
        minput["Measurements: A, B, C, D (unevaluated)"]
        subgraph EvalMeas["Evaluate Measurements"]
            pass["Pass each Measurement to FPGA\n(via Hardware Object)"]
-           update["Update Measurement with\ndata from FPGA"]
-           collect["Collect all measurements\nand return as list"]
+           update["Update Measurement with data from FPGA"]
+           collect["Collect all measurements and return as list"]
            pass --> update --> collect
        end
        minput --> pass
@@ -443,19 +556,10 @@ Architectural Example
        prevpop11 --> isnone11
        nextpop11 --> isnone11
        config11 --> genchk11
-       retnone11 --> out11(["None — Evolution complete"])
+       retnone11 --> out11(["None -- Evolution complete"])
 
 .. image:: images/initial_proposal/example/Arch_Example-12.png
 
-
-Hardware Documentation
-======================
-
-.. toctree::
-    :maxdepth: 1
-
-    ice40_hardware
-    mcu_protocol
 
 Early Design Ideas
 ==================
