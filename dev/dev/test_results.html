@@ -168,8 +168,14 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../architecture/historical/index.html">Historical Architectures</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../architecture/hardware/index.html">Hardware Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../architecture/hardware/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../architecture/hardware/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -420,7 +426,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 <td><p>0</p></td>
 <td><p>0</p></td>
 <td><p>2</p></td>
-<td><p>0.90</p></td>
+<td><p>0.92</p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p><a class="reference external" href="#python-3-12">Python 3.12</a></p></td>
 <td><p>126</p></td>
@@ -428,7 +434,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 <td><p>0</p></td>
 <td><p>0</p></td>
 <td><p>2</p></td>
-<td><p>1.06</p></td>
+<td><p>0.98</p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p><a class="reference external" href="#python-3-13">Python 3.13</a></p></td>
 <td><p>126</p></td>
@@ -436,7 +442,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 <td><p>0</p></td>
 <td><p>0</p></td>
 <td><p>2</p></td>
-<td><p>1.07</p></td>
+<td><p>1.01</p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p><a class="reference external" href="#python-3-14">Python 3.14</a></p></td>
 <td><p>126</p></td>
@@ -444,7 +450,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 <td><p>0</p></td>
 <td><p>0</p></td>
 <td><p>2</p></td>
-<td><p>0.99</p></td>
+<td><p>1.16</p></td>
 </tr>
 </tbody>
 </table>
@@ -470,7 +476,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 <td><p>0</p></td>
 <td><p>0</p></td>
 <td><p>2</p></td>
-<td><p>0.65</p></td>
+<td><p>0.66</p></td>
 </tr>
 </tbody>
 </table>
@@ -491,7 +497,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_BitstreamEvolutionProtocols::test_GenDataIncrementer_Increments[0-1]</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_BitstreamEvolutionProtocols::test_GenDataIncrementer_Increments[1-2]</p></td>
@@ -571,7 +577,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_BitstreamEvolutionProtocols::test_GenDataIncrementer_PerformsEntireLoopCorrectly[609]</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_BitstreamEvolutionProtocols::test_GenDataIncrementer_PerformsEntireLoopCorrectly[920]</p></td>
@@ -616,7 +622,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_BitstreamIndividual::test_mutate</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.002</p></td>
+<td><p>0.003</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_BitstreamIndividual::test_crossover</p></td>
@@ -711,12 +717,12 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FitnessEval::test_EvalPulseCountFitness_negative_difference</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FitnessEval::test_EvalPulseCountFitness_error_returns_zero</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FitnessEval::test_EvalVarMaxFitness_constant_data</p></td>
@@ -736,7 +742,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FitnessEval::test_EvalVarMaxFitness_error_returns_zero</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FitnessEval::test_EvalVarMaxFitness_start_end_eval_lifecycle</p></td>
@@ -751,7 +757,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_GenBitstreamPopulation::test_generate_randomize_strategy</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.011</p></td>
+<td><p>0.012</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_GenBitstreamPopulation::test_generate_mutate_once_strategy</p></td>
@@ -811,7 +817,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_Microcontroller::test_Microcontroller_measure_pulses</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.002</p></td>
+<td><p>0.003</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_Microcontroller::test_Microcontroller_request_measurement_waveform</p></td>
@@ -881,7 +887,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_TrivialImplementation::test_TrivialGenerateInitialPopulation_GeneratesIndividualsWithRandomInt</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.003</p></td>
+<td><p>0.002</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_TrivialImplementation::test_TrivialGenerateInitialPopulation_ReturnsEmptyPopulationIfZeroOrNegativePopulationSize</p></td>
@@ -891,7 +897,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_TrivialImplementation::test_TrivialGenerateInitialPopulation_WorksWithPartial</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.002</p></td>
+<td><p>0.003</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_TrivialImplementation::test_TrivialReproduceWithMutation_ReturnsSameSizeUnevaluatedPopulation</p></td>
@@ -1091,7 +1097,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_population::test_Population_sort_raises_on_unevaluated</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.000</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_population::test_Population_iteration_yields_tuples</p></td>
@@ -1131,7 +1137,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 <td><p>0</p></td>
 <td><p>0</p></td>
 <td><p>0</p></td>
-<td><p>0.25</p></td>
+<td><p>0.26</p></td>
 </tr>
 </tbody>
 </table>
@@ -1175,7 +1181,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 <td><p>0</p></td>
 <td><p>0</p></td>
 <td><p>2</p></td>
-<td><p>0.75</p></td>
+<td><p>0.71</p></td>
 </tr>
 </tbody>
 </table>
@@ -1191,7 +1197,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 <tbody>
 <tr class="junit-pass row-even"><td><p>test.test_BitstreamEvolutionProtocols::test_GenDataIncrementer_InstantiatesInput</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.000</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_BitstreamEvolutionProtocols::test_GenDataIncrementer_Increments[0-1]</p></td>
@@ -1371,7 +1377,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FileBasedCircuit.TestFileBasedCircuit::test_copy_from</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.005</p></td>
+<td><p>0.004</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FileBasedCircuit.TestFileBasedCircuit::test_get_file_attribute_default</p></td>
@@ -1381,12 +1387,12 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FileBasedCircuit.TestFileBasedCircuit::test_set_and_get_file_attribute</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.002</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FileCircuitFactory::test_file_based_circuit_factory</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.244</p></td>
+<td><p>0.236</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FitnessEval::test_varmax_fitness</p></td>
@@ -1401,12 +1407,12 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FitnessEval::test_EvalPulseCountFitness_perfect_match</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.000</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FitnessEval::test_EvalPulseCountFitness_zero_pulses</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.000</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FitnessEval::test_EvalPulseCountFitness_multiple_samples</p></td>
@@ -1416,12 +1422,12 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FitnessEval::test_EvalPulseCountFitness_negative_difference</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.000</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FitnessEval::test_EvalPulseCountFitness_error_returns_zero</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.000</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FitnessEval::test_EvalVarMaxFitness_constant_data</p></td>
@@ -1431,7 +1437,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FitnessEval::test_EvalVarMaxFitness_high_variance</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.000</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FitnessEval::test_EvalVarMaxFitness_single_element</p></td>
@@ -1441,7 +1447,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FitnessEval::test_EvalVarMaxFitness_error_returns_zero</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.000</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FitnessEval::test_EvalVarMaxFitness_start_end_eval_lifecycle</p></td>
@@ -1456,12 +1462,12 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_GenBitstreamPopulation::test_generate_randomize_strategy</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.013</p></td>
+<td><p>0.012</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_GenBitstreamPopulation::test_generate_mutate_once_strategy</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.013</p></td>
+<td><p>0.012</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_GenerateMeasurements::test_simple_generate_measurements</p></td>
@@ -1481,7 +1487,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_Measurement::test_Measurement_record_error</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.000</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_Measurement::test_Measurement_record_FPGA_used</p></td>
@@ -1511,7 +1517,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_Microcontroller::test_Microcontroller_measure_signal</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.003</p></td>
+<td><p>0.002</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_Microcontroller::test_Microcontroller_measure_pulses</p></td>
@@ -1526,7 +1532,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_Microcontroller::test_Microcontroller_request_measurement_oscillations</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.003</p></td>
+<td><p>0.002</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_Microcontroller::test_Microcontroller_timeout_recovery</p></td>
@@ -1566,7 +1572,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_TrivialImplementation::test_TrivialGenerateInitialPopulation_ReturnsCorrectlySizedPopulation[6]</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.000</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_TrivialImplementation::test_TrivialGenerateInitialPopulation_ReturnsCorrectlySizedPopulation[10]</p></td>
@@ -1576,7 +1582,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_TrivialImplementation::test_TrivialGenerateInitialPopulation_ReturnsCorrectlySizedPopulation[100]</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.000</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_TrivialImplementation::test_TrivialGenerateInitialPopulation_ReturnsCorrectlySizedPopulation[1000]</p></td>
@@ -1606,12 +1612,12 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_TrivialImplementation::test_TrivialReproduceWithMutation_KeepsTopHalfOfPopulation[50]</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.000</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_TrivialImplementation::test_TrivialReproduceWithMutation_KeepsTopHalfOfPopulation[100]</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.000</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_TrivialImplementation::test_TrivialReproduceWithMutation_KeepsTopHalfOfPopulation[13]</p></td>
@@ -1651,17 +1657,17 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_TrivialImplementation::test_TrivialEvolution_InitializeAndRunEvolution</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.014</p></td>
+<td><p>0.012</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_TrivialImplementation::test_TrivialEvolution_TestUsingOOAndRunEvolution</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.014</p></td>
+<td><p>0.012</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_end_to_end::test_evolution_pipeline_integration</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.000</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_end_to_end::test_circuit_factory_to_measurements_integration</p></td>
@@ -1776,7 +1782,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_population::test_sort_orders_by_fitness_ascending</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.000</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_population::test_set_fitness_of_unevaluated_individuals_fills_none_values</p></td>
@@ -1806,7 +1812,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_population::test_Population_length</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_population::test_Population_fitness_length_mismatch</p></td>
@@ -1836,7 +1842,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 <td><p>0</p></td>
 <td><p>0</p></td>
 <td><p>0</p></td>
-<td><p>0.31</p></td>
+<td><p>0.27</p></td>
 </tr>
 </tbody>
 </table>
@@ -1852,7 +1858,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 <tbody>
 <tr class="junit-pass row-even"><td><p>test.test_BitstreamEvolutionProtocols::test_LongTest</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.000</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -1880,7 +1886,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 <td><p>0</p></td>
 <td><p>0</p></td>
 <td><p>2</p></td>
-<td><p>0.76</p></td>
+<td><p>0.74</p></td>
 </tr>
 </tbody>
 </table>
@@ -1906,7 +1912,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_BitstreamEvolutionProtocols::test_GenDataIncrementer_Increments[1-2]</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_BitstreamEvolutionProtocols::test_GenDataIncrementer_Increments[2-3]</p></td>
@@ -2061,7 +2067,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FileBasedCircuit.TestFileBasedCircuit::test_get_bitstream</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.003</p></td>
+<td><p>0.002</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FileBasedCircuit.TestFileBasedCircuit::test_set_bitstream</p></td>
@@ -2091,7 +2097,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FileCircuitFactory::test_file_based_circuit_factory</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.237</p></td>
+<td><p>0.221</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FitnessEval::test_varmax_fitness</p></td>
@@ -2161,12 +2167,12 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_GenBitstreamPopulation::test_generate_randomize_strategy</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.013</p></td>
+<td><p>0.012</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_GenBitstreamPopulation::test_generate_mutate_once_strategy</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.014</p></td>
+<td><p>0.013</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_GenerateMeasurements::test_simple_generate_measurements</p></td>
@@ -2216,7 +2222,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_Microcontroller::test_Microcontroller_measure_signal</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.002</p></td>
+<td><p>0.003</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_Microcontroller::test_Microcontroller_measure_pulses</p></td>
@@ -2541,7 +2547,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 <td><p>0</p></td>
 <td><p>0</p></td>
 <td><p>0</p></td>
-<td><p>0.32</p></td>
+<td><p>0.27</p></td>
 </tr>
 </tbody>
 </table>
@@ -2585,7 +2591,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 <td><p>0</p></td>
 <td><p>0</p></td>
 <td><p>2</p></td>
-<td><p>0.65</p></td>
+<td><p>0.79</p></td>
 </tr>
 </tbody>
 </table>
@@ -2601,12 +2607,12 @@ so adding or removing Python versions in CI requires no documentation changes.</
 <tbody>
 <tr class="junit-pass row-even"><td><p>test.test_BitstreamEvolutionProtocols::test_GenDataIncrementer_InstantiatesInput</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_BitstreamEvolutionProtocols::test_GenDataIncrementer_Increments[0-1]</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_BitstreamEvolutionProtocols::test_GenDataIncrementer_Increments[1-2]</p></td>
@@ -2681,12 +2687,12 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_BitstreamEvolutionProtocols::test_GenDataIncrementer_PerformsEntireLoopCorrectly[500]</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_BitstreamEvolutionProtocols::test_GenDataIncrementer_PerformsEntireLoopCorrectly[609]</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_BitstreamEvolutionProtocols::test_GenDataIncrementer_PerformsEntireLoopCorrectly[920]</p></td>
@@ -2731,37 +2737,37 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_BitstreamIndividual::test_mutate</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.004</p></td>
+<td><p>0.003</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_BitstreamIndividual::test_crossover</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_BitstreamIndividual::test_BitstreamIndividual_init_bitstream_size</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_BitstreamIndividual::test_BitstreamIndividual_copy_from</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_BitstreamIndividual::test_BitstreamIndividual_crossover_at_zero</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_BitstreamIndividual::test_BitstreamIndividual_crossover_at_end</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FileBasedCircuit.TestFileBasedCircuit::test_init_creates_asc_file</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.002</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FileBasedCircuit.TestFileBasedCircuit::test_get_bitstream</p></td>
@@ -2771,17 +2777,17 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FileBasedCircuit.TestFileBasedCircuit::test_set_bitstream</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.003</p></td>
+<td><p>0.004</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FileBasedCircuit.TestFileBasedCircuit::test_get_set_roundtrip</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.003</p></td>
+<td><p>0.004</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FileBasedCircuit.TestFileBasedCircuit::test_copy_from</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.003</p></td>
+<td><p>0.004</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FileBasedCircuit.TestFileBasedCircuit::test_get_file_attribute_default</p></td>
@@ -2791,12 +2797,12 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FileBasedCircuit.TestFileBasedCircuit::test_set_and_get_file_attribute</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.002</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FileCircuitFactory::test_file_based_circuit_factory</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.180</p></td>
+<td><p>0.241</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FitnessEval::test_varmax_fitness</p></td>
@@ -2811,12 +2817,12 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FitnessEval::test_EvalPulseCountFitness_perfect_match</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FitnessEval::test_EvalPulseCountFitness_zero_pulses</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FitnessEval::test_EvalPulseCountFitness_multiple_samples</p></td>
@@ -2826,32 +2832,32 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FitnessEval::test_EvalPulseCountFitness_negative_difference</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FitnessEval::test_EvalPulseCountFitness_error_returns_zero</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FitnessEval::test_EvalVarMaxFitness_constant_data</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FitnessEval::test_EvalVarMaxFitness_high_variance</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FitnessEval::test_EvalVarMaxFitness_single_element</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_FitnessEval::test_EvalVarMaxFitness_error_returns_zero</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_FitnessEval::test_EvalVarMaxFitness_start_end_eval_lifecycle</p></td>
@@ -2866,12 +2872,12 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_GenBitstreamPopulation::test_generate_randomize_strategy</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.010</p></td>
+<td><p>0.013</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_GenBitstreamPopulation::test_generate_mutate_once_strategy</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.010</p></td>
+<td><p>0.014</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_GenerateMeasurements::test_simple_generate_measurements</p></td>
@@ -2886,27 +2892,27 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_Measurement::test_Measurement_record_success</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_Measurement::test_Measurement_record_error</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_Measurement::test_Measurement_record_FPGA_used</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_Measurement::test_Measurement_generic_types</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_Measurement::test_Measurement_stores_constructor_args</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_Microcontroller::test_Microcontroller_init</p></td>
@@ -2921,7 +2927,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_Microcontroller::test_Microcontroller_measure_signal</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.002</p></td>
+<td><p>0.003</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_Microcontroller::test_Microcontroller_measure_pulses</p></td>
@@ -2931,7 +2937,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_Microcontroller::test_Microcontroller_request_measurement_waveform</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.002</p></td>
+<td><p>0.003</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_Microcontroller::test_Microcontroller_request_measurement_oscillations</p></td>
@@ -2941,7 +2947,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_Microcontroller::test_Microcontroller_timeout_recovery</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.002</p></td>
+<td><p>0.003</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_TrivialImplementation::test_TrivialCircuit_SetsInherentFitness</p></td>
@@ -2996,7 +3002,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_TrivialImplementation::test_TrivialGenerateInitialPopulation_GeneratesIndividualsWithRandomInt</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.002</p></td>
+<td><p>0.003</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_TrivialImplementation::test_TrivialGenerateInitialPopulation_ReturnsEmptyPopulationIfZeroOrNegativePopulationSize</p></td>
@@ -3006,7 +3012,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_TrivialImplementation::test_TrivialGenerateInitialPopulation_WorksWithPartial</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.002</p></td>
+<td><p>0.003</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_TrivialImplementation::test_TrivialReproduceWithMutation_ReturnsSameSizeUnevaluatedPopulation</p></td>
@@ -3061,17 +3067,17 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_TrivialImplementation::test_TrivialEvolution_InitializeAndRunEvolution</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.011</p></td>
+<td><p>0.014</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_TrivialImplementation::test_TrivialEvolution_TestUsingOOAndRunEvolution</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.011</p></td>
+<td><p>0.014</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_end_to_end::test_evolution_pipeline_integration</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_end_to_end::test_circuit_factory_to_measurements_integration</p></td>
@@ -3146,7 +3152,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_interface_integration::test_EvaluatePopulationFitness_multiple_measurements</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.002</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_interface_integration::test_Reproducer_returns_new_population</p></td>
@@ -3176,12 +3182,12 @@ so adding or removing Python versions in CI requires no documentation changes.</
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_interface_integration::test_FitnessEvaluator_calculate_error_called</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.001</p></td>
+<td><p>0.002</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-even"><td><p>test.test_population::test_set_fitness_updates_only_specified_individual</p></td>
 <td><p>PASSED</p></td>
-<td><p>0.000</p></td>
+<td><p>0.001</p></td>
 <td><p></p></td>
 </tr>
 <tr class="junit-pass row-odd"><td><p>test.test_population::test_sort_orders_by_fitness_ascending</p></td>
@@ -3246,7 +3252,7 @@ so adding or removing Python versions in CI requires no documentation changes.</
 <td><p>0</p></td>
 <td><p>0</p></td>
 <td><p>0</p></td>
-<td><p>0.34</p></td>
+<td><p>0.37</p></td>
 </tr>
 </tbody>
 </table>

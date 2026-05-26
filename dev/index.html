@@ -169,8 +169,14 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="architecture/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture/mcu_protocol.html">MCU Serial Protocol</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="architecture/historical/index.html">Historical Architectures</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="architecture/hardware/index.html">Hardware Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="architecture/hardware/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture/hardware/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="code/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -464,7 +470,7 @@ Development</div>
 <p>This documentation was drafted from code analysis and needs verification
 against hardware datasheets.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="architecture/ice40_hardware.html#id1"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/ice40_hardware.rst, line 4.)</p>
+<p class="todo-source">(The <a class="reference internal" href="architecture/hardware/ice40_hardware.html#id1"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/hardware/ice40_hardware.rst, line 4.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
 <p>Verify tile coordinate ranges against hardware datasheets. The ranges below
@@ -472,52 +478,52 @@ are hard-coded in <code class="docutils literal notranslate"><span class="pre">F
 the ICE40 HX1K. A different iCE40 model (e.g., HX8K) would require
 different ranges.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="architecture/ice40_hardware.html#id2"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/ice40_hardware.rst, line 90.)</p>
+<p class="todo-source">(The <a class="reference internal" href="architecture/hardware/ice40_hardware.html#id2"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/hardware/ice40_hardware.rst, line 90.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
 <p>Verify routing row selections against hardware datasheets. The row
 selections below are noted in the source as “dated” and may not reflect the
 latest routing protocol.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="architecture/ice40_hardware.html#id3"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/ice40_hardware.rst, line 117.)</p>
+<p class="todo-source">(The <a class="reference internal" href="architecture/hardware/ice40_hardware.html#id3"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/hardware/ice40_hardware.rst, line 117.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
 <p>This documentation was drafted from code analysis and needs verification
 against the MCU firmware.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="architecture/mcu_protocol.html#id1"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/mcu_protocol.rst, line 4.)</p>
+<p class="todo-source">(The <a class="reference internal" href="architecture/hardware/mcu_protocol.html#id1"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/hardware/mcu_protocol.rst, line 4.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
 <p>Verify waveform protocol against the MCU firmware. The exact sample count,
 sample rate, and ADC resolution should be confirmed with the firmware source.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="architecture/mcu_protocol.html#id2"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/mcu_protocol.rst, line 90.)</p>
+<p class="todo-source">(The <a class="reference internal" href="architecture/hardware/mcu_protocol.html#id2"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/hardware/mcu_protocol.rst, line 90.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
 <p>Verify pulse count protocol against the MCU firmware. The pulse-counting
 window duration and any firmware-side filtering should be confirmed with the
 firmware source.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="architecture/mcu_protocol.html#id3"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/mcu_protocol.rst, line 126.)</p>
+<p class="todo-source">(The <a class="reference internal" href="architecture/hardware/mcu_protocol.html#id3"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/hardware/mcu_protocol.rst, line 126.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
 <p>Optimize serial read/write in <code class="docutils literal notranslate"><span class="pre">measure_signal</span></code> — the waveform reading loop
 could read all available bytes at once rather than line-by-line.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="architecture/mcu_protocol.html#id4"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/mcu_protocol.rst, line 195.)</p>
+<p class="todo-source">(The <a class="reference internal" href="architecture/hardware/mcu_protocol.html#id4"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/hardware/mcu_protocol.rst, line 195.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
 <p>Improve regex/filtering in <code class="docutils literal notranslate"><span class="pre">measure_pulses_once</span></code> — the current chain of
 byte-string containment checks should be replaced with a proper parser that
 handles transmission-loss artefacts (dropped or extra spaces, shifted colons).</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="architecture/mcu_protocol.html#id5"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/mcu_protocol.rst, line 200.)</p>
+<p class="todo-source">(The <a class="reference internal" href="architecture/hardware/mcu_protocol.html#id5"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/hardware/mcu_protocol.rst, line 200.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
 <p>Add <code class="docutils literal notranslate"><span class="pre">elif</span></code> branches in <code class="docutils literal notranslate"><span class="pre">request_measurement()</span></code> to handle future
 <code class="docutils literal notranslate"><span class="pre">DataRequest</span></code> types beyond <code class="docutils literal notranslate"><span class="pre">WAVEFORM</span></code> and <code class="docutils literal notranslate"><span class="pre">OSCILLATIONS</span></code>.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="architecture/mcu_protocol.html#id6"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/mcu_protocol.rst, line 206.)</p>
+<p class="todo-source">(The <a class="reference internal" href="architecture/hardware/mcu_protocol.html#id6"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/architecture/hardware/mcu_protocol.rst, line 206.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
 <p>Figure out the format for an FPGA Request, potentially also changing the type, and adjust that here.</p>

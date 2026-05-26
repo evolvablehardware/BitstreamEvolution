@@ -485,7 +485,7 @@ window.runMermaid = runMermaid;</script>
     <link rel="icon" href="https://evolvablehardware.org/images/setup_tutorial_2.jpg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="ICE40 HX1K Hardware Model" href="ice40_hardware.html" />
+    <link rel="next" title="Historical Architectures" href="historical/index.html" />
     <link rel="prev" title="Contributing" href="../dev/contributing.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -604,8 +604,14 @@ window.runMermaid = runMermaid;</script>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Bitstream Evolution’s Architecture</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mcu_protocol.html">MCU Serial Protocol</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="historical/index.html">Historical Architectures</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="hardware/index.html">Hardware Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="hardware/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hardware/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -800,11 +806,21 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-structure">General Structure</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-proposal">Initial Proposal</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#architecture-description">Architecture Description</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware-controller">Hardware Controller</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#measurement-data-structure">Measurement Data Structure</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#individual-data-structure">Individual Data Structure</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#population-representation">Population Representation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generation-metadata-i-e-gen-info">Generation Metadata (i.e. ‘Gen. Info’)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#experiment-structure">Experiment Structure</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generation-info-factory-a-k-a-incrementer">Generation Info Factory (a.k.a.’Incrementer’)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-measurements">Generate Measurements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-measurements">Evaluate Measurements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-fitness">Evaluate Fitness</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reproduce">Reproduce</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-circuit">Generate Circuit</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#architectural-example">Architectural Example</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware-documentation">Hardware Documentation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#early-design-ideas">Early Design Ideas</a></li>
 </ul>
             </nav>
@@ -819,6 +835,8 @@ document.write(`
                   
   <section id="bitstream-evolution-s-architecture">
 <h1>Bitstream Evolution’s Architecture<a class="headerlink" href="#bitstream-evolution-s-architecture" title="Link to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
 <p>The original code was designed in a vaguely class-like structure to prove the
 concept, but once proven it became very challenging to change the code and
 coordinate those changes, even in a small group. Thus, we created the following
@@ -859,17 +877,17 @@ integer-valued circuits (no hardware required), see
 <h2>General Structure<a class="headerlink" href="#general-structure" title="Link to this heading">#</a></h2>
 <p>Below is the best current description of our architecture. It is currently
 pretty in-line with the initial proposal.</p>
-<img alt="../_images/Arch_Proposal-7.png" src="../_images/Arch_Proposal-7.png" />
 <pre  class="mermaid">
         flowchart TD
-    A([Run Evolution]) --&gt; B[&quot;Generate Initial\nPopulation&quot;]
-    B --&gt;|&quot;Population + Gen. Info&quot;| C[&quot;Evolution Generation\nInfo Incrementer&quot;]
+    A([Run Evolution]) --&gt; B[&quot;Generate Initial Population&quot;]
+    B --&gt;|&quot;Population + Gen. Info&quot;| C[&quot;Evolution Generation Info Incrementer&quot;]
     C --&gt;|&quot;None returned&quot;| X([Exit])
-    C --&gt;|&quot;Population + New Gen. Info&quot;| D[&quot;Generate\nMeasurements&quot;]
-    D --&gt;|&quot;Gen. Info + List Of Measurements&quot;| E[&quot;Evaluate\nMeasurements&quot;]
-    E --&gt;|&quot;Gen. Info + List Of Measurements&quot;| F[&quot;Evaluate\nFitnesses&quot;]
+    C --&gt;|&quot;Population + New Gen. Info&quot;| D[&quot;Generate Measurements&quot;]
+    D --&gt;|&quot;Gen. Info + List Of Measurements&quot;| E[&quot;Evaluate Measurements&quot;]
+    E --&gt;|&quot;Gen. Info + List Of Measurements&quot;| F[&quot;Evaluate Fitnesses&quot;]
+    D --&gt;|&quot;Population&quot;| F
     F --&gt;|&quot;Gen. Info + Population w/ fitness&quot;| G[&quot;Reproduce&quot;]
-    G --&gt;|&quot;New Population&quot;| C
+    G --&gt;|&quot;Gen. Info + New Population&quot;| C
     </pre></section>
 <section id="initial-proposal">
 <h2>Initial Proposal<a class="headerlink" href="#initial-proposal" title="Link to this heading">#</a></h2>
@@ -878,32 +896,70 @@ These are non-final, but were going in the right direction.</p>
 <p>To see this as the original presentation, <a class="reference external" href="https://docs.google.com/presentation/d/1QkHsh1EmpQeNTC4FLra8Vry-5Ln28tJxNxoWPVK5R3A/edit?usp=sharing">look here</a>.</p>
 <p>I then attempted to implement a basic example of it in the
 <a class="reference internal" href="../code/TrivialImplementation.html"><span class="doc">TrivialImplementation.py</span></a> file.</p>
-<section id="architecture-description">
-<h3>Architecture Description<a class="headerlink" href="#architecture-description" title="Link to this heading">#</a></h3>
-<img alt="../_images/Arch_Proposal-1.png" src="../_images/Arch_Proposal-1.png" />
-<img alt="../_images/Arch_Proposal-2.png" src="../_images/Arch_Proposal-2.png" />
+<section id="hardware-controller">
+<h3>Hardware Controller<a class="headerlink" href="#hardware-controller" title="Link to this heading">#</a></h3>
 <pre  class="mermaid">
         flowchart TD
-    input[&quot;Measurement (input)&quot;]
-    subgraph Hardware
-        ctrl[&quot;Logic: Hardware Controller&quot;]
-        fpga1[&quot;FPGA Info&quot;]
-        fpga2[&quot;FPGA Info&quot;]
-        fpgan[&quot;...&quot;]
-    end
-    out1[&quot;Measurement&quot;]
-    out2[&quot;Measurement&quot;]
-    completed[&quot;Completed Measurements&quot;]
+     subgraph req[&quot;.request_Measurements()&quot;]
+         m1[&quot;Measurement (A)
+ (Circuit, FPGA Request, Data Request)&quot;]
+         m2[&quot;Measurement (B)&quot;]
+         me[&quot;Measurement (...)&quot;]
+     end
+     hw[&quot;Hardware Object
+ (async, one FPGA per Measurement)&quot;]
+     subgraph comp[&quot;.get_completed_Measurements()&quot;]
+         r1[&quot;Measurement (A)
+ (FPGA Used + Ok(data))&quot;]
+         r2[&quot;Measurement (B)
+ (FPGA Used + Err(failure))&quot;]
+         re[&quot;Measurement (...)&quot;]
+     end
 
-    input --&gt;|&quot;Request Measurement&quot;| ctrl
-    ctrl --&gt;|&quot;Perform Measurement&quot;| fpga1
-    ctrl --&gt;|&quot;Perform Measurement&quot;| fpga2
-    ctrl --&gt;|&quot;Perform Measurement&quot;| fpgan
-    fpga1 --&gt; out1
-    fpga2 --&gt; out2
-    out1 --&gt;|&quot;Request Completed Measurements&quot;| completed
-    out2 --&gt; completed
-    </pre><img alt="../_images/Arch_Proposal-3.png" src="../_images/Arch_Proposal-3.png" />
+ req ==&gt; hw ==&gt; comp
+    </pre><pre  class="mermaid">
+        flowchart TD
+    m_in[&quot;Measurement (input)
+(Circuit, FPGA Request, Data Request)&quot;]
+    m_out[&quot;Measurement (output)
+(return FPGA Used + Result or Error)&quot;]
+    subgraph hw_obj[&quot;Hardware Object&quot;]
+        ctrl[[&quot;Hardware Controller Logic
+(selects one FPGA per Measurement based on FPGA Request field)&quot;]]
+        subgraph bank[&quot;FPGA Bank
+(local / remote / etc.)&quot;]
+            f_pool[&quot;FPGA Info (N available)&quot;]
+        end
+    end
+
+    m_in ==&gt; ctrl
+    f_pool -.-&gt;|&quot;available
+pool&quot;| ctrl
+    ctrl ==&gt;|&quot;assigns to one FPGA,
+async evaluate&quot;| m_out
+    </pre><p>The Hardware Object exposes a request/response API: callers submit a batch of Measurement
+requests and retrieve completed results separately, allowing evaluations to proceed
+asynchronously. Each Measurement carries an <strong>FPGA Request</strong> field that the Hardware Controller
+uses to select an appropriate FPGA from its FPGA Bank — options include “don’t care,” requesting
+specific FPGA UUIDs, or excluding certain UUIDs.</p>
+<p>FPGAs in the bank may be accessed in different ways — directly connected via USB, hosted on a
+remote server, or reached via a custom protocol — but the Hardware Object abstracts these
+differences from callers.</p>
+<p>When an FPGA completes (or fails) its evaluation, it writes two fields back into the Measurement:</p>
+<ul class="simple">
+<li><p><strong>FPGA Used</strong>: the UUID of the FPGA that performed the evaluation, archived so results can be
+traced back to specific hardware.</p></li>
+<li><p><strong>Measurement Result</strong>: either the collected data (<strong>Ok</strong>) or a description of the failure
+(<strong>Err</strong>) — stored as a Result type analogous to Rust’s <code class="docutils literal notranslate"><span class="pre">Result&lt;T,</span> <span class="pre">E&gt;</span></code>. Failure causes
+include no suitable FPGA available, a compilation error, or a hardware-level failure.</p></li>
+</ul>
+<p>FPGAs are referenced in software using a <code class="docutils literal notranslate"><span class="pre">&lt;Hardware_UUID&gt;:&lt;FPGA_UUID&gt;</span></code> pair. This identifier
+is not necessarily consistent between program runs but remains stable for the duration of a single
+run. UUIDs can be correlated to uniquely identifiable information on the physical FPGA hardware
+and stored to request measurements on specific hardware units.</p>
+</section>
+<section id="measurement-data-structure">
+<h3>Measurement Data Structure<a class="headerlink" href="#measurement-data-structure" title="Link to this heading">#</a></h3>
 <pre  class="mermaid">
         flowchart TD
     subgraph Measurement
@@ -915,13 +971,33 @@ These are non-final, but were going in the right direction.</p>
         FU[&quot;FPGA Used: Hardware_UUID:FPGA_UUID&quot;]
         MR[&quot;Measurement Result: Data or Errors&quot;]
     end
-    </pre><img alt="../_images/Arch_Proposal-4.png" src="../_images/Arch_Proposal-4.png" />
+    </pre><p>The Measurement object contains four fields:</p>
+<ul class="simple">
+<li><p><strong>FPGA Request</strong> (essentially an ENUM): controls FPGA selection — options are “don’t care,”
+“request specific FPGA UUIDs,” or “avoid specific FPGA UUIDs.”</p></li>
+<li><p><strong>Data Request</strong> (essentially an ENUM): specifies the type of measurement to be taken on the FPGA.</p></li>
+<li><p><strong>Measurement Result</strong> (essentially a Result object): stores either the collected data, or a
+description of the failure — e.g. no satisfactory FPGA available, cannot perform the measurement,
+or cannot compile the Individual.</p></li>
+<li><p><strong>Measurement UUID</strong>: intended to allow a single Individual evaluation to spawn multiple
+Measurements that can later be recombined; in practice, matching by Individual pointer may be
+sufficient.</p></li>
+</ul>
+</section>
+<section id="individual-data-structure">
+<h3>Individual Data Structure<a class="headerlink" href="#individual-data-structure" title="Link to this heading">#</a></h3>
 <pre  class="mermaid">
         flowchart TD
     subgraph Individual
         desc[&quot;Highly Implementation Dependent (Probably mostly data)&quot;]
     end
-    </pre><img alt="../_images/Arch_Proposal-5.png" src="../_images/Arch_Proposal-5.png" />
+    </pre><p>An Individual stores the representation that is manipulated durring evolution to fully represent the things being evolved.
+It must be compilable into a form that can be loaded and run on an FPGA in order to be evaluated for its fitness.
+An open design question at proposal time was where to place the compilation logic — in the Individual itself, or in the Hardware controller —
+and whether Individuals should be linked to a specific FPGA type or brand (subclass).</p>
+</section>
+<section id="population-representation">
+<h3>Population Representation<a class="headerlink" href="#population-representation" title="Link to this heading">#</a></h3>
 <pre  class="mermaid">
         flowchart TD
     subgraph Population
@@ -931,25 +1007,44 @@ These are non-final, but were going in the right direction.</p>
         ind2[&quot;Individuals&quot;]
         fit[&quot;Fitnesses&quot;]
     end
-    </pre><img alt="../_images/Arch_Proposal-6.png" src="../_images/Arch_Proposal-6.png" />
+    </pre><p>The Population design deliberately avoids sub-populations with explicit links between them or to a parent population.
+Each Population will always be dealt with as if it was the only one that exists in the processes that use it, even if
+one population is divided into multiple populations durring the course of an experiment and then recombined into one
+population at the end of the experiment.
+Conceptually it is a simple list with a few extra features, and could even be implemented as a
+plain type alias (e.g. <code class="docutils literal notranslate"><span class="pre">list[Individual]</span> <span class="pre">-&gt;</span> <span class="pre">Population</span></code>).</p>
+</section>
+<section id="generation-metadata-i-e-gen-info">
+<h3>Generation Metadata (i.e. ‘Gen. Info’)<a class="headerlink" href="#generation-metadata-i-e-gen-info" title="Link to this heading">#</a></h3>
 <pre  class="mermaid">
         flowchart TD
     subgraph EvolutionGenerationInfo[&quot;Evolution Generation Info&quot;]
         gennum[&quot;Generation #&quot;]
         etc[&quot;...&quot;]
     end
-    </pre><img alt="../_images/Arch_Proposal-7.png" src="../_images/Arch_Proposal-7.png" />
+    </pre><p><code class="docutils literal notranslate"><span class="pre">EvolutionGenerationInfo</span></code> holds the metadata for a particular generation of the evolution run
+(e.g. the generation number). It is intended to be treated as <strong>immutable</strong> — a new instance is
+produced each generation rather than mutating the existing one in place.</p>
+</section>
+<section id="experiment-structure">
+<h3>Experiment Structure<a class="headerlink" href="#experiment-structure" title="Link to this heading">#</a></h3>
 <pre  class="mermaid">
         flowchart TD
-    A([Run Evolution]) --&gt; B[&quot;Generate Initial\nPopulation&quot;]
-    B --&gt;|&quot;Population + Gen. Info&quot;| C[&quot;Evolution Generation\nInfo Incrementer&quot;]
+    A([Run Evolution]) --&gt; B[&quot;Generate Initial Population&quot;]
+    B --&gt;|&quot;Population + Gen. Info&quot;| C[&quot;Evolution Generation Info Incrementer&quot;]
     C --&gt;|&quot;None returned&quot;| X([Exit])
-    C --&gt;|&quot;Population + New Gen. Info&quot;| D[&quot;Generate\nMeasurements&quot;]
-    D --&gt;|&quot;Gen. Info + List Of Measurements&quot;| E[&quot;Evaluate\nMeasurements&quot;]
-    E --&gt;|&quot;Gen. Info + List Of Measurements&quot;| F[&quot;Evaluate\nFitnesses&quot;]
+    C --&gt;|&quot;Population + New Gen. Info&quot;| D[&quot;Generate Measurements&quot;]
+    D --&gt;|&quot;Gen. Info + List Of Measurements&quot;| E[&quot;Evaluate Measurements&quot;]
+    E --&gt;|&quot;Gen. Info + List Of Measurements&quot;| F[&quot;Evaluate Fitnesses&quot;]
+    D --&gt;|&quot;Population&quot;| F
     F --&gt;|&quot;Gen. Info + Population w/ fitness&quot;| G[&quot;Reproduce&quot;]
-    G --&gt;|&quot;New Population&quot;| C
-    </pre><img alt="../_images/Arch_Proposal-8.png" src="../_images/Arch_Proposal-8.png" />
+    G --&gt;|&quot;Gen. Info + New Population&quot;| C
+    </pre><p>These objects build and choreograph the entire evolution process as shown in the diagram above.
+The orchestrator is provided with callable functions implementing each stage of evolution and is
+responsible for wiring them together and driving the loop.</p>
+</section>
+<section id="generation-info-factory-a-k-a-incrementer">
+<h3>Generation Info Factory (a.k.a.’Incrementer’)<a class="headerlink" href="#generation-info-factory-a-k-a-incrementer" title="Link to this heading">#</a></h3>
 <pre  class="mermaid">
         flowchart TD
     old[&quot;Evolution Generation Info (OLD)&quot;]
@@ -957,71 +1052,96 @@ These are non-final, but were going in the right direction.</p>
     np[&quot;New Population&quot;]
     ci[&quot;Config Info (partial)&quot;]
     etc[&quot;etc...&quot;]
-    incr[&quot;Evolution Generation\nInfo Incrementer&quot;]
+    incr[[&quot;Evolution Generation Info Incrementer&quot;]]
     new[&quot;Evolution Generation Info (NEW)&quot;]
 
-    old --&gt; incr
+    old ==&gt; incr
     op --&gt; incr
     np --&gt; incr
     ci --&gt; incr
     etc --&gt; incr
-    incr --&gt; new
-    </pre><img alt="../_images/Arch_Proposal-9.png" src="../_images/Arch_Proposal-9.png" />
+    incr ==&gt; new
+    </pre><p>The Incrementer takes in the old <code class="docutils literal notranslate"><span class="pre">EvolutionGenerationInfo</span></code> and decides what the next generation
+looks like. When it returns <code class="docutils literal notranslate"><span class="pre">None</span></code>, the evolution run is complete. It has access to both the old
+and new population as well as partial config info, giving it enough context to make informed
+decisions about when to terminate.</p>
+</section>
+<section id="generate-measurements">
+<h3>Generate Measurements<a class="headerlink" href="#generate-measurements" title="Link to this heading">#</a></h3>
 <pre  class="mermaid">
         flowchart TD
     pop[&quot;Population&quot;]
     geninfo[&quot;Evolution Generation Info&quot;]
-    gen[&quot;Generate Measurements&quot;]
+    gen[[&quot;Generate Measurements&quot;]]
     list[&quot;List Of Measurements&quot;]
 
-    pop --&gt; gen
+    pop ==&gt; gen
     geninfo --&gt; gen
-    gen --&gt; list
-    </pre><img alt="../_images/Arch_Proposal-10.png" src="../_images/Arch_Proposal-10.png" />
+    gen ==&gt; list
+    </pre><p>Converts a population of Individuals into a list of Measurements to be performed. The structure
+of those measurements depends on the fitness function and evaluation approach being used.</p>
+</section>
+<section id="evaluate-measurements">
+<h3>Evaluate Measurements<a class="headerlink" href="#evaluate-measurements" title="Link to this heading">#</a></h3>
 <pre  class="mermaid">
         flowchart TD
     list[&quot;List Of Measurements&quot;]
-    eval[&quot;Evaluate Measurements\n(Done by Hardware Object)&quot;]
+    eval[[&quot;Evaluate Measurements (Done by Hardware Object)&quot;]]
     result[&quot;List Of Measurements w/ Results&quot;]
 
-    list --&gt; eval
-    eval --&gt; result
-    </pre><img alt="../_images/Arch_Proposal-11.png" src="../_images/Arch_Proposal-11.png" />
+    list ==&gt; eval
+    eval ==&gt; result
+    </pre><p>Fills in the <code class="docutils literal notranslate"><span class="pre">Result</span></code> field of each Measurement with the requested data. This step is performed
+by the Hardware object, which dispatches each Measurement to an FPGA and collects the results.</p>
+</section>
+<section id="evaluate-fitness">
+<h3>Evaluate Fitness<a class="headerlink" href="#evaluate-fitness" title="Link to this heading">#</a></h3>
 <pre  class="mermaid">
         flowchart TD
     pop[&quot;Population&quot;]
     meas[&quot;List Of Measurements&quot;]
     geninfo[&quot;Evolution Generation Info&quot;]
-    eval[&quot;Evaluate Fitnesses&quot;]
+    eval[[&quot;Evaluate Fitnesses&quot;]]
     result[&quot;Population w/ fitness&quot;]
 
-    pop --&gt; eval
-    meas --&gt; eval
+    pop ==&gt; eval
+    meas ==&gt; eval
     geninfo --&gt; eval
-    eval --&gt; result
-    </pre><img alt="../_images/Arch_Proposal-12.png" src="../_images/Arch_Proposal-12.png" />
+    eval ==&gt; result
+    </pre><p>Interprets the completed measurement results and assigns fitness values to the corresponding
+Individuals in the population.</p>
+</section>
+<section id="reproduce">
+<h3>Reproduce<a class="headerlink" href="#reproduce" title="Link to this heading">#</a></h3>
 <pre  class="mermaid">
         flowchart TD
     popfit[&quot;Population w/ fitness&quot;]
     geninfo[&quot;Evolution Generation Info&quot;]
-    reprod[&quot;Reproduce&quot;]
+    reprod[[&quot;Reproduce&quot;]]
     newpop[&quot;New Population&quot;]
 
-    popfit --&gt; reprod
+    popfit ==&gt; reprod
     geninfo --&gt; reprod
-    reprod --&gt; newpop
-    </pre><img alt="../_images/Arch_Proposal-13.png" src="../_images/Arch_Proposal-13.png" />
+    reprod ==&gt; newpop
+    </pre><p>Transforms the population-with-fitnesses into a new population for the next generation, using
+the fitness values to guide selection and mutation.</p>
+</section>
+<section id="generate-circuit">
+<h3>Generate Circuit<a class="headerlink" href="#generate-circuit" title="Link to this heading">#</a></h3>
 <pre  class="mermaid">
         flowchart TD
     ind[&quot;Individual(s)&quot;]
-    gen[&quot;Generate Circuit&quot;]
+    gen[[&quot;Generate Circuit&quot;]]
+    subgraph meas[&quot;Measurement&quot;]
     circ[&quot;Circuit&quot;]
-    note[&quot;(Put into a Measurement Object)&quot;]
+    end
 
-    ind --&gt; gen
-    gen --&gt; circ
-    circ -.-&gt; note
-    </pre></section>
+    ind ==&gt; gen
+    gen ==&gt; circ
+    </pre><p>Converts one or more Individuals into a Circuit that can be loaded onto an FPGA and evaluated.
+The resulting Circuit is placed into a Measurement object. Note that Circuits may be
+<strong>specific to particular FPGAs</strong>, or be composed of multiple individuals that are combined.</p>
+</section>
 <section id="architectural-example">
 <h3>Architectural Example<a class="headerlink" href="#architectural-example" title="Link to this heading">#</a></h3>
 <img alt="../_images/Arch_Example-1.png" src="../_images/Arch_Example-1.png" />
@@ -1071,22 +1191,22 @@ These are non-final, but were going in the right direction.</p>
     config4[&quot;Config Info&quot;]
     subgraph GenMeas[&quot;Generate Measurements&quot;]
         translate[&quot;Translate Individuals to Circuits&quot;]
-        foreach[&quot;For Each Circuit:\nGenerate Measurement&quot;]
+        foreach[&quot;For Each Circuit: Generate Measurement&quot;]
         returnlist[&quot;Return List&quot;]
         translate --&gt; foreach --&gt; returnlist
     end
     pop4 --&gt; translate
     geninfo4 --&gt; foreach
     config4 --&gt; foreach
-    returnlist --&gt; mout[&quot;Measurements: A, B, C, D\n(Result: Err — Unevaluated)&quot;]
+    returnlist --&gt; mout[&quot;Measurements: A, B, C, D\n(Result: Err -- Unevaluated)&quot;]
     </pre><img alt="../_images/Arch_Example-5.png" src="../_images/Arch_Example-5.png" />
 <pre  class="mermaid">
         flowchart TD
     minput[&quot;Measurements: A, B, C, D (unevaluated)&quot;]
     subgraph EvalMeas[&quot;Evaluate Measurements&quot;]
         pass[&quot;Pass each Measurement to FPGA\n(via Hardware Object)&quot;]
-        update[&quot;Update Measurement with\ndata from FPGA&quot;]
-        collect[&quot;Collect all measurements\nand return as list&quot;]
+        update[&quot;Update Measurement with data from FPGA&quot;]
+        collect[&quot;Collect all measurements and return as list&quot;]
         pass --&gt; update --&gt; collect
     end
     minput --&gt; pass
@@ -1184,18 +1304,9 @@ These are non-final, but were going in the right direction.</p>
     prevpop11 --&gt; isnone11
     nextpop11 --&gt; isnone11
     config11 --&gt; genchk11
-    retnone11 --&gt; out11([&quot;None — Evolution complete&quot;])
+    retnone11 --&gt; out11([&quot;None -- Evolution complete&quot;])
     </pre><img alt="../_images/Arch_Example-12.png" src="../_images/Arch_Example-12.png" />
 </section>
-</section>
-<section id="hardware-documentation">
-<h2>Hardware Documentation<a class="headerlink" href="#hardware-documentation" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mcu_protocol.html">MCU Serial Protocol</a></li>
-</ul>
-</div>
 </section>
 <section id="early-design-ideas">
 <h2>Early Design Ideas<a class="headerlink" href="#early-design-ideas" title="Link to this heading">#</a></h2>
@@ -1226,11 +1337,11 @@ project:</p>
       </div>
     </a>
     <a class="right-next"
-       href="ice40_hardware.html"
+       href="historical/index.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">ICE40 HX1K Hardware Model</p>
+        <p class="prev-next-title">Historical Architectures</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1253,11 +1364,21 @@ project:</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-structure">General Structure</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-proposal">Initial Proposal</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#architecture-description">Architecture Description</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware-controller">Hardware Controller</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#measurement-data-structure">Measurement Data Structure</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#individual-data-structure">Individual Data Structure</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#population-representation">Population Representation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generation-metadata-i-e-gen-info">Generation Metadata (i.e. ‘Gen. Info’)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#experiment-structure">Experiment Structure</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generation-info-factory-a-k-a-incrementer">Generation Info Factory (a.k.a.’Incrementer’)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-measurements">Generate Measurements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-measurements">Evaluate Measurements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-fitness">Evaluate Fitness</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reproduce">Reproduce</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-circuit">Generate Circuit</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#architectural-example">Architectural Example</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware-documentation">Hardware Documentation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#early-design-ideas">Early Design Ideas</a></li>
 </ul>
   </nav></div>
