@@ -47,19 +47,18 @@ General Structure
 Below is the best current description of our architecture. It is currently
 pretty in-line with the initial proposal.
 
-.. image:: images/initial_proposal/Arch_Proposal-7.png
-
 .. mermaid::
 
    flowchart TD
-       A([Run Evolution]) --> B["Generate Initial\nPopulation"]
-       B -->|"Population + Gen. Info"| C["Evolution Generation\nInfo Incrementer"]
+       A([Run Evolution]) --> B["Generate Initial Population"]
+       B -->|"Population + Gen. Info"| C["Evolution Generation Info Incrementer"]
        C -->|"None returned"| X([Exit])
-       C -->|"Population + New Gen. Info"| D["Generate\nMeasurements"]
-       D -->|"Gen. Info + List Of Measurements"| E["Evaluate\nMeasurements"]
-       E -->|"Gen. Info + List Of Measurements"| F["Evaluate\nFitnesses"]
+       C -->|"Population + New Gen. Info"| D["Generate Measurements"]
+       D -->|"Gen. Info + List Of Measurements"| E["Evaluate Measurements"]
+       E -->|"Gen. Info + List Of Measurements"| F["Evaluate Fitnesses"]
+       D -->|"Population"| F
        F -->|"Gen. Info + Population w/ fitness"| G["Reproduce"]
-       G -->|"New Population"| C
+       G -->|"Gen. Info + New Population"| C
 
 
 Initial Proposal
