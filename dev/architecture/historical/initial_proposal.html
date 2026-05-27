@@ -1,0 +1,1482 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Initial Proposal &#8212; Bitstream Evolution Develop Branch 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/junit.css?v=5ae8e685" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/scrollspy-fix.js?v=e286a52c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
+    /* Same as .mermaid-container > pre */
+    display: block;
+    width: 100%;
+}
+
+pre.mermaid > svg {
+    /* Same as .mermaid-container > pre > svg */
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}`;
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.mermaid-container > pre {
+    display: block;
+    width: 100%;
+}
+
+.mermaid-container > pre > svg {
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.mermaid-fullscreen-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: #333;
+}
+
+.mermaid-fullscreen-btn:hover {
+    opacity: 100% !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-btn.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-btn.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 95vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    padding: 20px;
+    overflow: auto;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.mermaid-fullscreen-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen.dark-theme {
+    background: #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen .mermaid svg {
+    height: 100% !important;
+    width: 100% !important;
+    cursor: grab;
+}
+
+.mermaid-fullscreen-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: white;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-close.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-close.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
+    display: none !important;
+}`;
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+
+    if ("False" === "True") {
+        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("");
+            if(all_mermaids.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else if(svgs.size() !== mermaids_to_add_zoom) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else {
+                svgs.each(function() {
+                    var svg = d3.select(this);
+                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                    var inner = svg.select("g");
+                    var zoom = d3.zoom().on("zoom", function(event) {
+                        inner.attr("transform", event.transform);
+                    });
+                    svg.call(zoom);
+                });
+            }
+        }
+    } else if(all_mermaids.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if ("True" !== "True") return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = '⛶';
+        fullscreenBtn.style.opacity = '50%';
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scroll, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.sdisplay = 'block';
+
+                if ("False" === "True") {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'architecture/historical/initial_proposal';</script>
+    <link rel="icon" href="https://evolvablehardware.org/images/setup_tutorial_2.jpg"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Early Design Ideas" href="early_design_ideas.html" />
+    <link rel="prev" title="Historical Architectures" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="https://evolvablehardware.org/images/setup_tutorial_2.jpg" class="logo__image only-light" alt="Bitstream Evolution Develop Branch 0.1.0 documentation - Home"/>
+    <script>document.write(`<img src="https://evolvablehardware.org/images/setup_tutorial_2.jpg" class="logo__image only-dark" alt="Bitstream Evolution Develop Branch 0.1.0 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/index.html">Development Information</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/test_results.html">Test Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/contributing.html">Contributing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Bitstream Evolution’s Architecture</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Historical Architectures</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Initial Proposal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="early_design_ideas.html">Early Design Ideas</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../hardware/index.html">Hardware Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../hardware/ice40_hardware.html">ICE40 HX1K Hardware Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../hardware/mcu_protocol.html">MCU Serial Protocol</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../code/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../code/BitstreamEvolutionProtocols.html">BitstreamEvolutionProtocols.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code/Evolution.html">Evolution.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code/TrivialImplementation.html">TrivialImplementation.py</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../code/Circuit/index.html">Circuit</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../code/Circuit/Circuit.html">Circuit.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../code/Circuit/FileBasedCircuit.html">FileBasedCircuit.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../code/Circuit/FullySimCircuit.html">FullySimCircuit.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../code/EvaluateFitness/index.html">Evaluate Fitness</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../code/EvaluateFitness/EvaluateFitness.html">EvaluateFitness.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../code/EvaluateFitness/EvalPulseCountFitness.html">EvalPulseCountFitness.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../code/EvaluateFitness/EvalVarMaxFitness.html">EvalVarMaxFitness.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../code/GenerateMeasurements/index.html">Generate Measurements</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../code/GenerateMeasurements/GenerateMeasurements.html">GenerateMeasurements.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../code/Hardware/index.html">Hardware</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../code/Hardware/Microcontroller.html">Microcontroller.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../code/Individual/index.html">Individual</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../code/Individual/BitstreamIndividual.html">BitstreamIndividual.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../code/Population/index.html">Population</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../code/Population/PopulationInitialization.html">PopulationInitialization.py</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code/Directories.html">Directories.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code/Logger.html">Logger.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code/PlotConfig.html">PlotConfig.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code/PlotDataRecorder.html">PlotDataRecorder.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code/PlotEvolutionLive.html">PlotEvolutionLive.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code/utilities.html">utilities.py</a></li>
+</ul>
+</details></li>
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/architecture/historical/initial_proposal.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Initial Proposal</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#experiment-structure">Experiment Structure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-structures">Data Structures</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#measurement-data-structure">Measurement Data Structure</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#individual-data-structure">Individual Data Structure</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#population-representation">Population Representation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generation-metadata-i-e-gen-info">Generation Metadata (i.e. ‘Gen. Info’)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generation-info-factory-a-k-a-incrementer">Generation Info Factory (a.k.a.’Incrementer’)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-measurements">Generate Measurements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-measurements">Evaluate Measurements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-fitness">Evaluate Fitness</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reproduce">Reproduce</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-circuit">Generate Circuit</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware-controller">Hardware Controller</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-run-using-architecture">Example Run Using Architecture</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-initial-population">Generate Initial Population</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#first-generation-initialize-gen-info">First Generation: Initialize Gen Info</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-measurements">Generating Measurements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-measurements">Evaluating Measurements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-fitness">Evaluating Fitness</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducing">Reproducing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#subsequent-generations-incrementer-advances">Subsequent Generations: Incrementer Advances</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#termination-generation-500">Termination: Generation 500</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="initial-proposal">
+<h1>Initial Proposal<a class="headerlink" href="#initial-proposal" title="Link to this heading">#</a></h1>
+<p>Below are a series of slides from the initial proposal for the architecture.
+These are non-final, but were going in the right direction.</p>
+<p>To see this as the original presentation, <a class="reference external" href="https://docs.google.com/presentation/d/1QkHsh1EmpQeNTC4FLra8Vry-5Ln28tJxNxoWPVK5R3A/edit?usp=sharing">look here</a>.</p>
+<p>I then attempted to implement a basic example of it in the
+<a class="reference internal" href="../../code/TrivialImplementation.html"><span class="doc">TrivialImplementation.py</span></a> file.</p>
+<section id="experiment-structure">
+<h2>Experiment Structure<a class="headerlink" href="#experiment-structure" title="Link to this heading">#</a></h2>
+<pre  class="mermaid">
+        flowchart TD
+    A([Run Evolution]) --&gt; B[&quot;Generate Initial Population&quot;]
+    B --&gt;|&quot;Population + Gen. Info&quot;| C[&quot;Evolution Generation Info Incrementer&quot;]
+    C --&gt;|&quot;None returned&quot;| X([Exit])
+    C --&gt;|&quot;Population + New Gen. Info&quot;| D[&quot;Generate Measurements&quot;]
+    D --&gt;|&quot;Gen. Info + List Of Measurements&quot;| E[&quot;Evaluate Measurements&quot;]
+    E --&gt;|&quot;Gen. Info + List Of Measurements&quot;| F[&quot;Evaluate Fitnesses&quot;]
+    D --&gt;|&quot;Population&quot;| F
+    F --&gt;|&quot;Gen. Info + Population w/ fitness&quot;| G[&quot;Reproduce&quot;]
+    G --&gt;|&quot;Gen. Info + New Population&quot;| C
+    </pre><p>These objects build and choreograph the entire evolution process as shown in the diagram above.
+The orchestrator is provided with callable functions implementing each stage of evolution and is
+responsible for wiring them together and driving the loop.</p>
+</section>
+<section id="data-structures">
+<h2>Data Structures<a class="headerlink" href="#data-structures" title="Link to this heading">#</a></h2>
+<section id="measurement-data-structure">
+<h3>Measurement Data Structure<a class="headerlink" href="#measurement-data-structure" title="Link to this heading">#</a></h3>
+<pre  class="mermaid">
+        flowchart TD
+    subgraph Measurement
+        FR[&quot;FPGA Request&quot;]
+        DR[&quot;Data Request&quot;]
+        subgraph Circuit[&quot;Circuit (to evaluate)&quot;]
+            CI[&quot;Constructed from Individuals&quot;]
+        end
+        FU[&quot;FPGA Used: Hardware_UUID:FPGA_UUID&quot;]
+        MR[&quot;Measurement Result: Data or Errors&quot;]
+    end
+    </pre><p>The Measurement object contains four fields:</p>
+<ul class="simple">
+<li><p><strong>FPGA Request</strong> (essentially an ENUM): controls FPGA selection — options are “don’t care,”
+“request specific FPGA UUIDs,” or “avoid specific FPGA UUIDs.”</p></li>
+<li><p><strong>Data Request</strong> (essentially an ENUM): specifies the type of measurement to be taken on the FPGA.</p></li>
+<li><p><strong>Measurement Result</strong> (essentially a Result object): stores either the collected data, or a
+description of the failure — e.g. no satisfactory FPGA available, cannot perform the measurement,
+or cannot compile the Individual.</p></li>
+<li><p><strong>Measurement UUID</strong>: intended to allow a single Individual evaluation to spawn multiple
+Measurements that can later be recombined; in practice, matching by Individual pointer may be
+sufficient.</p></li>
+</ul>
+</section>
+<section id="individual-data-structure">
+<h3>Individual Data Structure<a class="headerlink" href="#individual-data-structure" title="Link to this heading">#</a></h3>
+<pre  class="mermaid">
+        flowchart TD
+    subgraph Individual
+        desc[&quot;Highly Implementation Dependent (Probably mostly data)&quot;]
+    end
+    </pre><p>An Individual stores the representation that is manipulated durring evolution to fully represent the things being evolved.
+It must be compilable into a form that can be loaded and run on an FPGA in order to be evaluated for its fitness.
+An open design question at proposal time was where to place the compilation logic — in the Individual itself, or in the Hardware controller —
+and whether Individuals should be linked to a specific FPGA type or brand (subclass).</p>
+</section>
+<section id="population-representation">
+<h3>Population Representation<a class="headerlink" href="#population-representation" title="Link to this heading">#</a></h3>
+<pre  class="mermaid">
+        flowchart TD
+    subgraph Population
+        ind1[&quot;Individuals&quot;]
+    end
+    subgraph PopWithFitness[&quot;Population w/ fitness&quot;]
+        ind2[&quot;Individuals&quot;]
+        fit[&quot;Fitnesses&quot;]
+    end
+    </pre><p>The Population design deliberately avoids sub-populations with explicit links between them or to a parent population.
+Each Population will always be dealt with as if it was the only one that exists in the processes that use it, even if
+one population is divided into multiple populations durring the course of an experiment and then recombined into one
+population at the end of the experiment.
+Conceptually it is a simple list with a few extra features, and could even be implemented as a
+plain type alias (e.g. <code class="docutils literal notranslate"><span class="pre">list[Individual]</span> <span class="pre">-&gt;</span> <span class="pre">Population</span></code>).</p>
+</section>
+<section id="generation-metadata-i-e-gen-info">
+<h3>Generation Metadata (i.e. ‘Gen. Info’)<a class="headerlink" href="#generation-metadata-i-e-gen-info" title="Link to this heading">#</a></h3>
+<pre  class="mermaid">
+        flowchart TD
+    subgraph EvolutionGenerationInfo[&quot;Evolution Generation Info&quot;]
+        gennum[&quot;Generation #&quot;]
+        etc[&quot;...&quot;]
+    end
+    </pre><p><code class="docutils literal notranslate"><span class="pre">EvolutionGenerationInfo</span></code> holds the metadata for a particular generation of the evolution run
+(e.g. the generation number). It is intended to be treated as <strong>immutable</strong> — a new instance is
+produced each generation rather than mutating the existing one in place.</p>
+</section>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">#</a></h2>
+<section id="generation-info-factory-a-k-a-incrementer">
+<h3>Generation Info Factory (a.k.a.’Incrementer’)<a class="headerlink" href="#generation-info-factory-a-k-a-incrementer" title="Link to this heading">#</a></h3>
+<pre  class="mermaid">
+        flowchart TD
+    old[&quot;Evolution Generation Info (OLD)&quot;]
+    op[&quot;Old Population&quot;]
+    np[&quot;New Population&quot;]
+    ci[&quot;Config Info (partial)&quot;]
+    etc[&quot;etc...&quot;]
+    incr[[&quot;Evolution Generation Info Incrementer&quot;]]
+    new[&quot;Evolution Generation Info (NEW)&quot;]
+
+    old ==&gt; incr
+    op --&gt; incr
+    np --&gt; incr
+    ci --&gt; incr
+    etc --&gt; incr
+    incr ==&gt; new
+    </pre><p>The Incrementer takes in the old <code class="docutils literal notranslate"><span class="pre">EvolutionGenerationInfo</span></code> and decides what the next generation
+looks like. When it returns <code class="docutils literal notranslate"><span class="pre">None</span></code>, the evolution run is complete. It has access to both the old
+and new population as well as partial config info, giving it enough context to make informed
+decisions about when to terminate.</p>
+</section>
+<section id="generate-measurements">
+<h3>Generate Measurements<a class="headerlink" href="#generate-measurements" title="Link to this heading">#</a></h3>
+<pre  class="mermaid">
+        flowchart TD
+    pop[&quot;Population&quot;]
+    geninfo[&quot;Evolution Generation Info&quot;]
+    gen[[&quot;Generate Measurements&quot;]]
+    list[&quot;List Of Measurements&quot;]
+
+    pop ==&gt; gen
+    geninfo --&gt; gen
+    gen ==&gt; list
+    </pre><p>Converts a population of Individuals into a list of Measurements to be performed. The structure
+of those measurements depends on the fitness function and evaluation approach being used.</p>
+</section>
+<section id="evaluate-measurements">
+<h3>Evaluate Measurements<a class="headerlink" href="#evaluate-measurements" title="Link to this heading">#</a></h3>
+<pre  class="mermaid">
+        flowchart TD
+    list[&quot;List Of Measurements&quot;]
+    eval[[&quot;Evaluate Measurements (Done by Hardware Object)&quot;]]
+    result[&quot;List Of Measurements w/ Results&quot;]
+
+    list ==&gt; eval
+    eval ==&gt; result
+    </pre><p>Fills in the <code class="docutils literal notranslate"><span class="pre">Result</span></code> field of each Measurement with the requested data. This step is performed
+by the Hardware object, which dispatches each Measurement to an FPGA and collects the results.</p>
+</section>
+<section id="evaluate-fitness">
+<h3>Evaluate Fitness<a class="headerlink" href="#evaluate-fitness" title="Link to this heading">#</a></h3>
+<pre  class="mermaid">
+        flowchart TD
+    pop[&quot;Population&quot;]
+    meas[&quot;List Of Measurements&quot;]
+    geninfo[&quot;Evolution Generation Info&quot;]
+    eval[[&quot;Evaluate Fitnesses&quot;]]
+    result[&quot;Population w/ fitness&quot;]
+
+    pop ==&gt; eval
+    meas ==&gt; eval
+    geninfo --&gt; eval
+    eval ==&gt; result
+    </pre><p>Interprets the completed measurement results and assigns fitness values to the corresponding
+Individuals in the population.</p>
+</section>
+<section id="reproduce">
+<h3>Reproduce<a class="headerlink" href="#reproduce" title="Link to this heading">#</a></h3>
+<pre  class="mermaid">
+        flowchart TD
+    popfit[&quot;Population w/ fitness&quot;]
+    geninfo[&quot;Evolution Generation Info&quot;]
+    reprod[[&quot;Reproduce&quot;]]
+    newpop[&quot;New Population&quot;]
+
+    popfit ==&gt; reprod
+    geninfo --&gt; reprod
+    reprod ==&gt; newpop
+    </pre><p>Transforms the population-with-fitnesses into a new population for the next generation, using
+the fitness values to guide selection and mutation.</p>
+</section>
+<section id="generate-circuit">
+<h3>Generate Circuit<a class="headerlink" href="#generate-circuit" title="Link to this heading">#</a></h3>
+<pre  class="mermaid">
+        flowchart TD
+    ind[&quot;Individual(s)&quot;]
+    gen[[&quot;Generate Circuit&quot;]]
+    subgraph meas[&quot;Measurement&quot;]
+    circ[&quot;Circuit&quot;]
+    end
+
+    ind ==&gt; gen
+    gen ==&gt; circ
+    </pre><p>Converts one or more Individuals into a Circuit that can be loaded onto an FPGA and evaluated.
+The resulting Circuit is placed into a Measurement object. Note that Circuits may be
+<strong>specific to particular FPGAs</strong>, or be composed of multiple individuals that are combined.</p>
+</section>
+</section>
+<section id="hardware-controller">
+<h2>Hardware Controller<a class="headerlink" href="#hardware-controller" title="Link to this heading">#</a></h2>
+<pre  class="mermaid">
+        flowchart TD
+     subgraph req[&quot;.request_Measurements()&quot;]
+         m1[&quot;Measurement (A)
+ (Circuit, FPGA Request, Data Request)&quot;]
+         m2[&quot;Measurement (B)&quot;]
+         me[&quot;Measurement (...)&quot;]
+     end
+     hw[&quot;Hardware Object
+ (async, one FPGA per Measurement)&quot;]
+     subgraph comp[&quot;.get_completed_Measurements()&quot;]
+         r1[&quot;Measurement (A)
+ (FPGA Used + Ok(data))&quot;]
+         r2[&quot;Measurement (B)
+ (FPGA Used + Err(failure))&quot;]
+         re[&quot;Measurement (...)&quot;]
+     end
+
+ req ==&gt; hw ==&gt; comp
+    </pre><pre  class="mermaid">
+        flowchart TD
+    m_in[&quot;Measurement (input)
+(Circuit, FPGA Request, Data Request)&quot;]
+    m_out[&quot;Measurement (output)
+(return FPGA Used + Result or Error)&quot;]
+    subgraph hw_obj[&quot;Hardware Object&quot;]
+        ctrl[[&quot;Hardware Controller Logic
+(selects one FPGA per Measurement based on FPGA Request field)&quot;]]
+        subgraph bank[&quot;FPGA Bank
+(local / remote / etc.)&quot;]
+            f_pool[&quot;FPGA Info (N available)&quot;]
+        end
+    end
+
+    m_in ==&gt; ctrl
+    f_pool -.-&gt;|&quot;available
+pool&quot;| ctrl
+    ctrl ==&gt;|&quot;assigns to one FPGA,
+async evaluate&quot;| m_out
+    </pre><p>The Hardware Object exposes a request/response API: callers submit a batch of Measurement
+requests and retrieve completed results separately, allowing evaluations to proceed
+asynchronously. Each Measurement carries an <strong>FPGA Request</strong> field that the Hardware Controller
+uses to select an appropriate FPGA from its FPGA Bank — options include “don’t care,” requesting
+specific FPGA UUIDs, or excluding certain UUIDs.</p>
+<p>FPGAs in the bank may be accessed in different ways — directly connected via USB, hosted on a
+remote server, or reached via a custom protocol — but the Hardware Object abstracts these
+differences from callers.</p>
+<p>When an FPGA completes (or fails) its evaluation, it writes two fields back into the Measurement:</p>
+<ul class="simple">
+<li><p><strong>FPGA Used</strong>: the UUID of the FPGA that performed the evaluation, archived so results can be
+traced back to specific hardware.</p></li>
+<li><p><strong>Measurement Result</strong>: either the collected data (<strong>Ok</strong>) or a description of the failure
+(<strong>Err</strong>) — stored as a Result type analogous to Rust’s <code class="docutils literal notranslate"><span class="pre">Result&lt;T,</span> <span class="pre">E&gt;</span></code>. Failure causes
+include no suitable FPGA available, a compilation error, or a hardware-level failure.</p></li>
+</ul>
+<p>FPGAs are referenced in software using a <code class="docutils literal notranslate"><span class="pre">&lt;Hardware_UUID&gt;:&lt;FPGA_UUID&gt;</span></code> pair. This identifier
+is not necessarily consistent between program runs but remains stable for the duration of a single
+run. UUIDs can be correlated to uniquely identifiable information on the physical FPGA hardware
+and stored to request measurements on specific hardware units.</p>
+</section>
+<section id="example-run-using-architecture">
+<h2>Example Run Using Architecture<a class="headerlink" href="#example-run-using-architecture" title="Link to this heading">#</a></h2>
+<p>This example walks through one complete pulse-count evolution run. The population contains
+four individuals (A, B, C, D), and the run is configured to stop after 500 generations.
+The fitness function counts oscillation pulses — a circuit that oscillates faster receives
+a higher fitness score. Follow the execution from initialization through termination.</p>
+<section id="generate-initial-population">
+<h3>Generate Initial Population<a class="headerlink" href="#generate-initial-population" title="Link to this heading">#</a></h3>
+<p>The run begins before the main loop starts. An initial population is built by randomly
+generating individuals, immediately testing each on an FPGA to measure its pulse count,
+and discarding any that produce zero pulses. A circuit with zero oscillations would receive
+a fitness of zero regardless of any other property, making it useless as evolutionary
+starting material. Each individual that does produce pulses is mutated slightly before
+being added to the population, giving the run a diverse, non-trivial starting point.</p>
+<pre  class="mermaid">
+        flowchart TD
+    subgraph GenInitPop[&quot;Generate Initial Population&quot;]
+        rand[&quot;Randomly Generate Individual&quot;]
+        measure[&quot;Measure Pulse Count&quot;]
+        check{&quot;Non-zero pulses?&quot;}
+        indiv[&quot;Individual (valid)&quot;]
+        mutate[&quot;Perform Mutation&quot;]
+        rand --&gt; measure --&gt; check
+        check --&gt;|&quot;No&quot;| rand
+        check --&gt;|&quot;Yes&quot;| indiv --&gt; mutate
+    end
+    start((&quot; &quot;)) --&gt; rand
+    mutate --&gt; popout[&quot;Population: A, B, C, D\n(Fitness: None)&quot;]
+    </pre><p>The output is a population {A, B, C, D} with Fitness <code class="docutils literal notranslate"><span class="pre">None</span></code> — they have not yet been
+evaluated within the evolution loop.</p>
+</section>
+<section id="first-generation-initialize-gen-info">
+<h3>First Generation: Initialize Gen Info<a class="headerlink" href="#first-generation-initialize-gen-info" title="Link to this heading">#</a></h3>
+<p>Before the first generation runs, the Incrementer is called to produce the initial
+<code class="docutils literal notranslate"><span class="pre">EvolutionGenerationInfo</span></code>. The incoming Gen Info is <code class="docutils literal notranslate"><span class="pre">None</span></code>, which is the signal to
+initialize rather than increment. The Incrementer creates fresh Gen Info with
+Generation # = 0.</p>
+<pre  class="mermaid">
+        flowchart TD
+    geninfoin[&quot;Gen Info input: None (first run)&quot;]
+    prevpop[&quot;Prev. Population: None&quot;]
+    nextpop[&quot;Next Population: A, B, C, D (Fitness: None)&quot;]
+    config[&quot;Config Info&quot;]
+    subgraph Incr[&quot;Evolution Generation Info Incrementer&quot;]
+        isnone{&quot;Generation Info is None?&quot;}
+        initgen[&quot;Generate Initial Gen Info&quot;]
+        genchk{&quot;Generation Number &lt; 500&quot;}
+        isnone --&gt;|&quot;True&quot;| initgen
+        isnone --&gt;|&quot;False&quot;| genchk
+        increment[&quot;New Gen Info: Gen # = 0&quot;]
+        retnone[&quot;Return None&quot;]
+        genchk --&gt;|&quot;True&quot;| increment
+        genchk --&gt;|&quot;False&quot;| retnone
+    end
+    geninfoin --&gt; isnone
+    prevpop --&gt; Incr
+    nextpop --&gt; Incr
+    config --&gt; Incr
+    initgen --&gt; out[&quot;Gen Info: Generation # = 0&quot;]
+    </pre><p>The Incrementer returns Gen Info with Generation # = 0 and the main loop enters its
+first full cycle.</p>
+</section>
+<section id="generating-measurements">
+<h3>Generating Measurements<a class="headerlink" href="#generating-measurements" title="Link to this heading">#</a></h3>
+<p>With Gen Info established, the loop creates a Measurement object for each individual.
+In this example Individuals are already in circuit form (translation is trivial), so
+each Measurement is initialized with:</p>
+<ul class="simple">
+<li><p><strong>FPGA Request</strong>: ANY — no preference for which FPGA runs it.</p></li>
+<li><p><strong>Data Request</strong>: Pulse Count — the FPGA should count output pulses.</p></li>
+<li><p><strong>Measurement Result</strong>: Err(Unevaluated) — not yet run.</p></li>
+</ul>
+<pre  class="mermaid">
+        flowchart TD
+    pop4[&quot;Population: A, B, C, D (Fitness: None)&quot;]
+    geninfo4[&quot;Evolution Generation Info&quot;]
+    config4[&quot;Config Info&quot;]
+    subgraph GenMeas[&quot;Generate Measurements&quot;]
+        translate[&quot;Translate Individuals to Circuits&quot;]
+        foreach[&quot;For Each Circuit: Generate Measurement&quot;]
+        returnlist[&quot;Return List&quot;]
+        translate --&gt; foreach --&gt; returnlist
+    end
+    pop4 --&gt; translate
+    geninfo4 --&gt; GenMeas
+    config4 --&gt; GenMeas
+    returnlist --&gt; mout[&quot;Measurements: A, B, C, D (unevaluated)&quot;]
+    </pre><p>Four measurements {A, B, C, D} are produced, each holding a circuit ready to be run on hardware.</p>
+</section>
+<section id="evaluating-measurements">
+<h3>Evaluating Measurements<a class="headerlink" href="#evaluating-measurements" title="Link to this heading">#</a></h3>
+<p>The four unevaluated measurements are submitted to the Hardware Object. The Hardware
+Controller assigns each to an available FPGA from its bank, ideally dispatching them
+in parallel. Each FPGA loads its assigned circuit, counts pulses over a fixed window,
+and writes the result back into the Measurement. Two representative outcomes from this
+generation:</p>
+<ul class="simple">
+<li><p><strong>Measurement A</strong>: FPGA “1234:0” — Ok(4_000 Pulses)</p></li>
+<li><p><strong>Measurement C</strong>: FPGA “1234:0” — Err(Serial Failure) — hardware communication
+failed; no pulse count was recorded.</p></li>
+</ul>
+<pre  class="mermaid">
+        flowchart TD
+    minput[&quot;Measurements: A, B, C, D (unevaluated)&quot;]
+    subgraph EvalMeas[&quot;Evaluate Measurements&quot;]
+        pass[&quot;Pass each Measurement to FPGA\n(via Hardware Object)&quot;]
+        update[&quot;Update Measurement with data from FPGA&quot;]
+        collect[&quot;Collect all measurements and return as list&quot;]
+        pass --&gt; update --&gt; collect
+    end
+    minput --&gt; pass
+    collect --&gt; mresult[&quot;Measurements: A, B, C, D (evaluated)
+e.g. A: Ok(4_000 Pulses), C: Err(Serial Failure)&quot;]
+    </pre><p>All four measurements are returned with their Result fields populated — either a
+successful pulse count or a typed error.</p>
+</section>
+<section id="evaluating-fitness">
+<h3>Evaluating Fitness<a class="headerlink" href="#evaluating-fitness" title="Link to this heading">#</a></h3>
+<p>The fitness evaluator receives both the population (fitnesses still None) and the
+completed measurements. It correlates each individual to its measurement, then scores:</p>
+<ul class="simple">
+<li><p><strong>If success</strong>: apply the fitness function — here, based on pulse count, so more
+pulses yields higher fitness.</p></li>
+<li><p><strong>If failed</strong> (e.g. serial error): assign Fitness = 0 as a safe default.</p></li>
+</ul>
+<pre  class="mermaid">
+        flowchart TD
+    meas6[&quot;Measurements: A, B, C, D (with results)&quot;]
+    pop6[&quot;Population: A, B, C, D (Fitness: None)&quot;]
+    geninfo6[&quot;Evolution Generation Info&quot;]
+    config6[&quot;Config Info&quot;]
+    subgraph EvalFit[&quot;Evaluate Fitness&quot;]
+        correlate[&quot;Correlate individuals to associated measurements&quot;]
+        foreach6[&quot;For Each Individual: Read Measurement(s)&quot;]
+        iferror[&quot;Fitness = 0&quot;]
+        ifsuccess[&quot;Apply fitness function&quot;]
+        putpop[&quot;Map fitnesses onto population&quot;]
+        correlate --&gt; foreach6
+        foreach6 --&gt;|&quot;If Error&quot;| iferror
+        foreach6 --&gt;|&quot;If Success&quot;| ifsuccess
+        iferror --&gt; putpop
+        ifsuccess --&gt; putpop
+    end
+    meas6 --&gt; correlate
+    pop6 --&gt; correlate
+    pop6 --&gt; putpop
+    geninfo6 --&gt; EvalFit
+    config6 --&gt; EvalFit
+    putpop --&gt; fitout[&quot;Population: A=0.98, B=0.86, C=0.00, D=0.05&quot;]
+    </pre><p>The population now carries scores: A=0.98, B=0.86, D=0.05, and C=0.00 — zeroed out
+because its serial failure returned no usable data.</p>
+</section>
+<section id="reproducing">
+<h3>Reproducing<a class="headerlink" href="#reproducing" title="Link to this heading">#</a></h3>
+<p>The reproducer constructs the next generation from the scored population. The strategy
+here (though implementations may vary) selects the top 50% (A and B), duplicates each, preserves one copy as an elite
+(unmutated), and mutates the other copy to produce A’ and B’. Fitnesses are cleared on
+the new population since they have not yet been measured in this context. C and D, the
+two lowest scorers, are dropped entirely.</p>
+<pre  class="mermaid">
+        flowchart TD
+    pop7[&quot;Population: A=0.98, B=0.86, C=0.00, D=0.05&quot;]
+    geninfo7[&quot;Evolution Generation Info&quot;]
+    config7[&quot;Config Info&quot;]
+    subgraph Reprod[&quot;Reproduction&quot;]
+        select[&quot;Select top 50% (A, B)&quot;]
+        dup[&quot;Duplicate Individuals&quot;]
+        elites[&quot;Don't mutate Elites (A, B)&quot;]
+        mutated[&quot;Mutate Copy (A', B')&quot;]
+        create[&quot;Create new population&quot;]
+        select --&gt; dup
+        dup --&gt;|&quot;Copy Kept&quot;| elites
+        dup --&gt;|&quot;Mutated Copy&quot;| mutated
+        elites --&gt; create
+        mutated --&gt; create
+    end
+    pop7 --&gt; select
+    geninfo7 --&gt; Reprod
+    config7 --&gt; Reprod
+    create --&gt; repout[&quot;Population: A, B, A', B' (Fitness: None)&quot;]
+    </pre><p>The new population {A, B, A’, B’} is ready for the next measurement cycle.</p>
+</section>
+<section id="subsequent-generations-incrementer-advances">
+<h3>Subsequent Generations: Incrementer Advances<a class="headerlink" href="#subsequent-generations-incrementer-advances" title="Link to this heading">#</a></h3>
+<p>The new population and the just-completed generation data re-enter the Incrementer.
+Gen Info is not <code class="docutils literal notranslate"><span class="pre">None</span></code> this time, so the incrementer evaluates the stopping condition.
+Gen # = 0 &lt; 500 is True, so it increments to Generation # = 1 and the loop continues.</p>
+<pre  class="mermaid">
+        flowchart TD
+    geninfoin9[&quot;Gen Info input: Generation # = 0&quot;]
+    prevpop9[&quot;Prev. Population: A=0.98, B=0.86, C=0.00, D=0.05&quot;]
+    nextpop9[&quot;Next Population: A, B, A', B' (Fitness: None)&quot;]
+    config9[&quot;Config Info&quot;]
+    subgraph Incr9[&quot;Evolution Generation Info Incrementer&quot;]
+        isnone9{&quot;Gen Info is None?&quot;}
+        initgen9[&quot;Generate Initial Gen Info&quot;]
+        genchk9{&quot;Gen # &lt; 500&quot;}
+        increment9[&quot;New Gen Info: (Gen #)++&quot;]
+        retnone9[&quot;Return None&quot;]
+        isnone9 --&gt;|&quot;True&quot;| initgen9
+        isnone9 --&gt;|&quot;False&quot;| genchk9
+        genchk9 --&gt;|&quot;True&quot;| increment9
+        genchk9 --&gt;|&quot;False&quot;| retnone9
+    end
+    geninfoin9 --&gt; isnone9
+    prevpop9 --&gt; Incr9
+    nextpop9 --&gt; Incr9
+    config9 --&gt; Incr9
+    increment9 --&gt; out9[&quot;Gen Info: Generation # = 1&quot;]
+    </pre><p>This measure, evaluate, reproduce, and increment cycle repeats for generations 1
+through 499. With each pass the population accumulates beneficial mutations, gradually
+converging toward circuits with higher pulse counts.</p>
+</section>
+<section id="termination-generation-500">
+<h3>Termination: Generation 500<a class="headerlink" href="#termination-generation-500" title="Link to this heading">#</a></h3>
+<p>After 500 complete generations, the Incrementer is called with Gen # = 500. The
+stopping condition 500 &lt; 500 is False, so the Incrementer returns <code class="docutils literal notranslate"><span class="pre">None</span></code>. The
+evolution loop treats <code class="docutils literal notranslate"><span class="pre">None</span></code> as the termination signal: it exits, and the final
+evolved population is preserved for analysis.</p>
+<pre  class="mermaid">
+        flowchart TD
+    geninfoin11[&quot;Gen Info input: Generation # = 500&quot;]
+    prevpop11[&quot;Prev. Population (with fitnesses)&quot;]
+    nextpop11[&quot;Next Population (evolved, Fitness: None)&quot;]
+    config11[&quot;Config Info&quot;]
+    subgraph Incr11[&quot;Evolution Generation Info Incrementer&quot;]
+        isnone11{&quot;Gen Info is None?&quot;}
+        initgen11[&quot;Generate Initial Gen Info&quot;]
+        genchk11{&quot;Gen # &lt; 500&quot;}
+        increment11[&quot;New Gen Info: (Gen #)++&quot;]
+        retnone11[&quot;Return None&quot;]
+        isnone11 --&gt;|&quot;True&quot;| initgen11
+        isnone11 --&gt;|&quot;False&quot;| genchk11
+        genchk11 --&gt;|&quot;True&quot;| increment11
+        genchk11 --&gt;|&quot;False&quot;| retnone11
+    end
+    geninfoin11 --&gt; isnone11
+    prevpop11 --&gt; Incr11
+    nextpop11 --&gt; Incr11
+    config11 --&gt; Incr11
+    retnone11 --&gt; out11([&quot;None -- Evolution complete&quot;])
+    </pre><p>The run is complete. The final population contains circuits shaped by 500 generations
+of selection and mutation toward maximizing pulse count.</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Historical Architectures</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="early_design_ideas.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Early Design Ideas</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#experiment-structure">Experiment Structure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-structures">Data Structures</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#measurement-data-structure">Measurement Data Structure</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#individual-data-structure">Individual Data Structure</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#population-representation">Population Representation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generation-metadata-i-e-gen-info">Generation Metadata (i.e. ‘Gen. Info’)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generation-info-factory-a-k-a-incrementer">Generation Info Factory (a.k.a.’Incrementer’)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-measurements">Generate Measurements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-measurements">Evaluate Measurements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-fitness">Evaluate Fitness</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reproduce">Reproduce</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-circuit">Generate Circuit</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware-controller">Hardware Controller</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-run-using-architecture">Example Run Using Architecture</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-initial-population">Generate Initial Population</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#first-generation-initialize-gen-info">First Generation: Initialize Gen Info</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-measurements">Generating Measurements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-measurements">Evaluating Measurements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-fitness">Evaluating Fitness</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducing">Reproducing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#subsequent-generations-incrementer-advances">Subsequent Generations: Incrementer Advances</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#termination-generation-500">Termination: Generation 500</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Evolvable Hardware
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024-2026, Evolvable Hardware.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

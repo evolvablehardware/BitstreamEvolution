@@ -5,6 +5,9 @@ Historical Architectures
    :maxdepth: 2
    :hidden:
 
+   initial_proposal
+   early_design_ideas
+
 This section is an archive for all previous architectures used by this project. The
 :doc:`main architecture page </architecture/index>` always reflects the most current design.
 As diagrams or architectural decisions become outdated or superseded, a snapshot of them should
@@ -16,12 +19,39 @@ description of the architecture and the reason it was retired or replaced.
 Timeline
 --------
 
-Initial Proposal *(pending archive)*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Initial Proposal
+~~~~~~~~~~~~~~~~
 
-The initial architecture proposal — its slides, diagrams, and worked examples — is currently
-still hosted on the main architecture page under the "Initial Proposal" section. Once a newer
-architecture supersedes it, that material should be moved here as the top archive entry.
+*Created prior to implementation and not updated.*
+
+.. button-ref:: initial_proposal
+   :ref-type: doc
+   :color: primary
+   :shadow:
+
+The first formal architecture proposal. Introduced the protocol-based, modular design that
+shaped the current architecture: separate protocols for hardware, measurement generation,
+fitness evaluation, and reproduction, all orchestrated by a central evolution loop. Also
+includes a pulse-count worked example tracing one complete run from initialization through
+termination. The original slide presentation is linked from the archived page. Archived once
+the implementation matured and the main architecture page transitioned to documenting the
+live design rather than the proposal.
+
+Early Design Ideas
+~~~~~~~~~~~~~~~~~~
+
+*Informed the initial proposal.*
+
+.. button-ref:: early_design_ideas
+   :ref-type: doc
+   :color: primary
+   :shadow:
+
+A first attempt at sketching a formal architecture: a procedural, monolithic flowchart
+covering the full experiment lifecycle (settings collection, hardware configuration, fitness
+evaluation, population evolution, and experiment saving). Stages were loosely coupled through
+a shared ``Logger`` rather than through protocol interfaces. This sketch motivated the more
+structured initial proposal.
 
 Proof-of-Concept Code
 ~~~~~~~~~~~~~~~~~~~~~

@@ -42,14 +42,14 @@
     <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/js/scrollspy-fix.js"></script>
+    <script src="../../_static/js/scrollspy-fix.js?v=e286a52c"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'architecture/historical/index';</script>
     <link rel="icon" href="https://evolvablehardware.org/images/setup_tutorial_2.jpg"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Hardware Architecture" href="../hardware/index.html" />
+    <link rel="next" title="Initial Proposal" href="initial_proposal.html" />
     <link rel="prev" title="Bitstream Evolution’s Architecture" href="../index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -168,7 +168,9 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Bitstream Evolution’s Architecture</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">Historical Architectures</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">Historical Architectures</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="initial_proposal.html">Initial Proposal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="early_design_ideas.html">Early Design Ideas</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../hardware/index.html">Hardware Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -368,7 +370,8 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#timeline">Timeline</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-proposal-pending-archive">Initial Proposal <em>(pending archive)</em></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-proposal">Initial Proposal</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#early-design-ideas">Early Design Ideas</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#proof-of-concept-code">Proof-of-Concept Code</a></li>
 </ul>
 </li>
@@ -395,11 +398,27 @@ be moved here.</p>
 description of the architecture and the reason it was retired or replaced.</p>
 <section id="timeline">
 <h2>Timeline<a class="headerlink" href="#timeline" title="Link to this heading">#</a></h2>
-<section id="initial-proposal-pending-archive">
-<h3>Initial Proposal <em>(pending archive)</em><a class="headerlink" href="#initial-proposal-pending-archive" title="Link to this heading">#</a></h3>
-<p>The initial architecture proposal — its slides, diagrams, and worked examples — is currently
-still hosted on the main architecture page under the “Initial Proposal” section. Once a newer
-architecture supersedes it, that material should be moved here as the top archive entry.</p>
+<section id="initial-proposal">
+<h3>Initial Proposal<a class="headerlink" href="#initial-proposal" title="Link to this heading">#</a></h3>
+<p><em>Created prior to implementation and not updated.</em></p>
+<p><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-primary sd-shadow-sm reference internal" href="initial_proposal.html"><span class="doc">Initial Proposal</span></a></p>
+<p>The first formal architecture proposal. Introduced the protocol-based, modular design that
+shaped the current architecture: separate protocols for hardware, measurement generation,
+fitness evaluation, and reproduction, all orchestrated by a central evolution loop. Also
+includes a pulse-count worked example tracing one complete run from initialization through
+termination. The original slide presentation is linked from the archived page. Archived once
+the implementation matured and the main architecture page transitioned to documenting the
+live design rather than the proposal.</p>
+</section>
+<section id="early-design-ideas">
+<h3>Early Design Ideas<a class="headerlink" href="#early-design-ideas" title="Link to this heading">#</a></h3>
+<p><em>Informed the initial proposal.</em></p>
+<p><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-primary sd-shadow-sm reference internal" href="early_design_ideas.html"><span class="doc">Early Design Ideas</span></a></p>
+<p>A first attempt at sketching a formal architecture: a procedural, monolithic flowchart
+covering the full experiment lifecycle (settings collection, hardware configuration, fitness
+evaluation, population evolution, and experiment saving). Stages were loosely coupled through
+a shared <code class="docutils literal notranslate"><span class="pre">Logger</span></code> rather than through protocol interfaces. This sketch motivated the more
+structured initial proposal.</p>
 </section>
 <section id="proof-of-concept-code">
 <h3>Proof-of-Concept Code<a class="headerlink" href="#proof-of-concept-code" title="Link to this heading">#</a></h3>
@@ -437,11 +456,11 @@ configurations.</p>
       </div>
     </a>
     <a class="right-next"
-       href="../hardware/index.html"
+       href="initial_proposal.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Hardware Architecture</p>
+        <p class="prev-next-title">Initial Proposal</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -462,7 +481,8 @@ configurations.</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#timeline">Timeline</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-proposal-pending-archive">Initial Proposal <em>(pending archive)</em></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-proposal">Initial Proposal</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#early-design-ideas">Early Design Ideas</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#proof-of-concept-code">Proof-of-Concept Code</a></li>
 </ul>
 </li>
