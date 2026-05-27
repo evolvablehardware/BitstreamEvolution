@@ -130,4 +130,4 @@ to produce the next generation's population.
 Original Diagram
 ----------------
 
-.. image:: ../images/EarlyDesignIdea.png
+.. image:: images/EarlyDesignIdea.png
