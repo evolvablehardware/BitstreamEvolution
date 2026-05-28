@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Contributing &#8212; Bitstream Evolution Develop Branch 0.1.0 documentation</title>
+    <title>Building the Documentation &#8212; Bitstream Evolution Develop Branch 0.1.0 documentation</title>
   
   
   
@@ -45,12 +45,12 @@
     <script src="../_static/js/scrollspy-fix.js?v=75f31da4"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'dev/contributing';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'dev/build';</script>
     <link rel="icon" href="https://evolvablehardware.org/images/setup_tutorial_2.jpg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Building the Documentation" href="build.html" />
-    <link rel="prev" title="Test Results" href="test_results.html" />
+    <link rel="next" title="Bitstream Evolution’s Architecture" href="../architecture/index.html" />
+    <link rel="prev" title="Contributing" href="contributing.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -164,8 +164,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting Started</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Development Information</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="test_results.html">Test Results</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Contributing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="build.html">Building the Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Building the Documentation</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -276,7 +276,7 @@
       
       
       
-      <li><a href="../_sources/dev/contributing.rst" target="_blank"
+      <li><a href="../_sources/dev/build.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -360,7 +360,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Contributing</h1>
+    <h1>Building the Documentation</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -370,14 +370,9 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting Started</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-development-environment">Setting Up the Development Environment</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-tests">Running Tests</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#type-checking">Type Checking</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#commit-message-guidelines">Commit Message Guidelines</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-pull-request">Creating a Pull Request</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#code-style-and-conventions">Code Style and Conventions</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#questions">Questions?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#local-build">Local Build</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-variants">Build Variants</a></li>
 </ul>
             </nav>
         </div>
@@ -389,119 +384,75 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="contributing">
-<h1>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">#</a></h1>
-<p>Thank you for your interest in contributing to BitstreamEvolution! This guide
-covers how to set up a development environment, make changes, and submit them
-for review.</p>
-<section id="getting-started">
-<h2>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading">#</a></h2>
-<ol class="arabic">
-<li><p><strong>Fork</strong> the repository on GitHub:
-<a class="github reference external" href="https://github.com/evolvablehardware/BitstreamEvolution">evolvablehardware/BitstreamEvolution</a></p></li>
-<li><p><strong>Clone</strong> your fork locally:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/&lt;your-username&gt;/BitstreamEvolution.git
-<span class="nb">cd</span><span class="w"> </span>BitstreamEvolution
-</pre></div>
-</div>
-</li>
-<li><p><strong>Create a feature branch</strong> from <code class="docutils literal notranslate"><span class="pre">develop</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>develop
-git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>my-feature-branch
-</pre></div>
-</div>
-<p>All new work should branch from <code class="docutils literal notranslate"><span class="pre">develop</span></code>, not <code class="docutils literal notranslate"><span class="pre">main</span></code>.</p>
-</li>
-</ol>
-</section>
-<section id="setting-up-the-development-environment">
-<h2>Setting Up the Development Environment<a class="headerlink" href="#setting-up-the-development-environment" title="Link to this heading">#</a></h2>
-<p>Install all development dependencies (documentation, testing, linting) with
-Poetry:</p>
+  <section id="building-the-documentation">
+<h1>Building the Documentation<a class="headerlink" href="#building-the-documentation" title="Link to this heading">#</a></h1>
+<p>The documentation is built automatically by GitHub Actions on every push, but
+you can also compile it locally to preview changes before pushing.</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h2>
+<p>Install all development dependencies (documentation tools, testing, linting):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>install<span class="w"> </span>--with<span class="w"> </span>dev
 </pre></div>
 </div>
-<p>This gives you access to pytest, mypy, Sphinx, and all related tools.</p>
 </section>
-<section id="running-tests">
-<h2>Running Tests<a class="headerlink" href="#running-tests" title="Link to this heading">#</a></h2>
-<p>Before committing, make sure the test suite passes:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run fast tests (default, &lt; 10 seconds)</span>
-poetry<span class="w"> </span>run<span class="w"> </span>pytest
+<section id="local-build">
+<h2>Local Build<a class="headerlink" href="#local-build" title="Link to this heading">#</a></h2>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Build and open the documentation locally</span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>BitstreamEvolution/docs/sphinx
 
-<span class="c1"># Run fast and medium tests</span>
-poetry<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;immediate or short&quot;</span>
+poetry<span class="w"> </span>run<span class="w"> </span>sphinx-build<span class="w"> </span>-M<span class="w"> </span>html<span class="w"> </span><span class="nb">source</span><span class="w"> </span>build
 
-<span class="c1"># Run the full suite including long tests</span>
-poetry<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;immediate or short or long&quot;</span>
+<span class="c1"># Then open docs/sphinx/build/html/index.html in your browser</span>
 </pre></div>
 </div>
-<p>See <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--markers</span></code> for all available timing markers.</p>
-</section>
-<section id="type-checking">
-<h2>Type Checking<a class="headerlink" href="#type-checking" title="Link to this heading">#</a></h2>
-<p>Run mypy to catch type errors:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>mypy<span class="w"> </span>src/
-</pre></div>
 </div>
 </section>
-<section id="commit-message-guidelines">
-<h2>Commit Message Guidelines<a class="headerlink" href="#commit-message-guidelines" title="Link to this heading">#</a></h2>
-<p>Write clear, descriptive commit messages:</p>
-<ul class="simple">
-<li><p>Use the imperative mood in the subject line (e.g., “Add pulse count evaluator”
-not “Added pulse count evaluator”)</p></li>
-<li><p>Keep the subject line under 72 characters</p></li>
-<li><p>If needed, add a blank line followed by a more detailed description</p></li>
-</ul>
-<p>Examples:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Add</span> <span class="n">variance</span><span class="o">-</span><span class="n">based</span> <span class="n">fitness</span> <span class="n">evaluator</span>
-
-<span class="n">Implement</span> <span class="n">EvalVarMaxFitness</span> <span class="n">that</span> <span class="n">computes</span> <span class="n">fitness</span> <span class="kn">from</span><span class="w"> </span><span class="nn">the</span> <span class="n">variance</span>
-<span class="ow">and</span> <span class="n">maximum</span> <span class="n">amplitude</span> <span class="n">of</span> <span class="n">waveform</span> <span class="n">measurements</span><span class="o">.</span>
+<section id="build-variants">
+<h2>Build Variants<a class="headerlink" href="#build-variants" title="Link to this heading">#</a></h2>
+<p>Two tagged build variants control which content is visible:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 25.0%" />
+<col style="width: 55.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Tag</p></th>
+<th class="head"><p>Command</p></th>
+<th class="head"><p>Effect</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">release</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">release</span></code></p></td>
+<td><p>Hides dev-only warnings, TODO lists, and the develop-branch notice. This is what GitHub Actions deploys to the main site.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dev</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">dev</span></code></p></td>
+<td><p>Shows TODO items, development warnings, and CI badge for the develop branch. Use this to preview the develop site locally.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Release build (mirrors what is deployed to the main site)</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>sphinx-build<span class="w"> </span>-M<span class="w"> </span>html<span class="w"> </span><span class="nb">source</span><span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>release
 </pre></div>
 </div>
-</section>
-<section id="creating-a-pull-request">
-<h2>Creating a Pull Request<a class="headerlink" href="#creating-a-pull-request" title="Link to this heading">#</a></h2>
-<ol class="arabic">
-<li><p><strong>Push</strong> your feature branch to your fork:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>my-feature-branch
+</div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Dev build (mirrors what is deployed to the develop branch site)</span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>sphinx-build<span class="w"> </span>-M<span class="w"> </span>html<span class="w"> </span><span class="nb">source</span><span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>dev
 </pre></div>
 </div>
-</li>
-<li><p><strong>Open a Pull Request</strong> on GitHub targeting the <code class="docutils literal notranslate"><span class="pre">develop</span></code> branch
-(not <code class="docutils literal notranslate"><span class="pre">main</span></code>).</p></li>
-<li><p>In your PR description, explain:</p>
-<ul class="simple">
-<li><p>What the change does</p></li>
-<li><p>Why it is needed</p></li>
-<li><p>How to test it</p></li>
-</ul>
-</li>
-<li><p>CI will run tests across multiple Python versions automatically. Make sure
-all checks pass.</p></li>
-</ol>
-</section>
-<section id="code-style-and-conventions">
-<h2>Code Style and Conventions<a class="headerlink" href="#code-style-and-conventions" title="Link to this heading">#</a></h2>
-<ul class="simple">
-<li><p><strong>Docstrings</strong>: Use <a class="reference external" href="https://numpydoc.readthedocs.io/en/latest/format.html">NumPy-style</a>
-docstrings for all public classes and functions.</p></li>
-<li><p><strong>Architecture</strong>: The codebase uses Python <code class="docutils literal notranslate"><span class="pre">Protocol</span></code> classes to define
-interfaces. See <a class="reference internal" href="../code/BitstreamEvolutionProtocols.html"><span class="doc">BitstreamEvolutionProtocols.py</span></a> for all core protocols.</p></li>
-<li><p><strong>Error handling</strong>: Use the <a class="reference external" href="https://returns.readthedocs.io/">returns</a> library
-(<code class="docutils literal notranslate"><span class="pre">Success</span></code> / <code class="docutils literal notranslate"><span class="pre">Failure</span></code>) for operations that can fail, rather than raising
-exceptions.</p></li>
-<li><p><strong>Testing</strong>: Write tests using pytest. Use <code class="docutils literal notranslate"><span class="pre">unittest.mock.Mock(spec=ProtocolClass)</span></code>
-to mock protocol implementations.</p></li>
-</ul>
-</section>
-<section id="questions">
-<h2>Questions?<a class="headerlink" href="#questions" title="Link to this heading">#</a></h2>
-<p>Open an issue on the
-<a class="reference external" href="https://github.com/evolvablehardware/BitstreamEvolution/issues">GitHub repository</a>
-if you have questions, find bugs, or want to discuss a feature idea.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If no tag is passed, the build defaults to <code class="docutils literal notranslate"><span class="pre">release</span></code> behaviour for most
+content but will not match either variant exactly. Always use <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">release</span></code>
+or <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">dev</span></code> when checking how content will appear on the deployed sites.</p>
+</div>
 </section>
 </section>
 
@@ -517,20 +468,20 @@ if you have questions, find bugs, or want to discuss a feature idea.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="test_results.html"
+       href="contributing.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Test Results</p>
+        <p class="prev-next-title">Contributing</p>
       </div>
     </a>
     <a class="right-next"
-       href="build.html"
+       href="../architecture/index.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Building the Documentation</p>
+        <p class="prev-next-title">Bitstream Evolution’s Architecture</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -550,14 +501,9 @@ if you have questions, find bugs, or want to discuss a feature idea.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting Started</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-development-environment">Setting Up the Development Environment</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-tests">Running Tests</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#type-checking">Type Checking</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#commit-message-guidelines">Commit Message Guidelines</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-pull-request">Creating a Pull Request</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#code-style-and-conventions">Code Style and Conventions</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#questions">Questions?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#local-build">Local Build</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-variants">Build Variants</a></li>
 </ul>
   </nav></div>
 

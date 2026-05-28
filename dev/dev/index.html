@@ -42,7 +42,7 @@
     <script src="../_static/documentation_options.js?v=a1637f0b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/js/scrollspy-fix.js?v=f7dc66d6"></script>
+    <script src="../_static/js/scrollspy-fix.js?v=75f31da4"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'dev/index';</script>
@@ -165,6 +165,7 @@
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Development Information</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="test_results.html">Test Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build.html">Building the Documentation</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -369,8 +370,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#link-to-main-website">Link To Main Website</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-create-the-website-manually">How To Create The Website Manually</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#return-to-release-docs">Return To Release Docs</a></li>
 </ul>
             </nav>
         </div>
@@ -384,60 +384,50 @@ document.write(`
                   
   <section id="development-information">
 <h1>Development Information<a class="headerlink" href="#development-information" title="Link to this heading">#</a></h1>
-<p>This section contains information for developers working on BitstreamEvolution,
-including how to build the documentation, view test results, and contribute to
-the project.</p>
+<p>Quick reference for developers working on BitstreamEvolution.
+Use the links below to jump directly to what you need.</p>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-3 sd-row-cols-xs-3 sd-row-cols-sm-3 sd-row-cols-md-3 sd-row-cols-lg-3 sd-g-2 sd-g-xs-2 sd-g-sm-2 sd-g-md-2 sd-g-lg-2 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Test Results</div>
+<p class="sd-card-text">Automated CI test results across all supported Python versions
+from the latest build.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="test_results.html"><span class="doc">Test Results</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Contributing</div>
+<p class="sd-card-text">Environment setup, branch conventions, commit guidelines,
+and the PR workflow.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="contributing.html"><span class="doc">Contributing</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Building the Docs</div>
+<p class="sd-card-text">Compile the Sphinx documentation locally. Covers both
+<code class="docutils literal notranslate"><span class="pre">release</span></code> and <code class="docutils literal notranslate"><span class="pre">dev</span></code> build variants.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="build.html"><span class="doc">Building the Documentation</span></a></div>
+</div>
+</div>
+</div>
 <div class="toctree-wrapper compound">
 </div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="test_results.html"><span class="doc">Test Results</span></a> — CI test results from the latest build (per Python version).</p></li>
-<li><p><a class="reference internal" href="contributing.html"><span class="doc">Contributing</span></a> — How to set up a development environment and submit changes.</p></li>
-</ul>
-</div>
-<section id="link-to-main-website">
-<h2>Link To Main Website<a class="headerlink" href="#link-to-main-website" title="Link to this heading">#</a></h2>
-<p>Here is a section that should be replaced on main website, and visible on the dev branch.</p>
-<p>Here is the link to the main website:
-<a class="reference external" href="https://evolvablehardware.github.io/BitstreamEvolution/index.html">MAIN WEBSITE</a></p>
-</section>
-<section id="how-to-create-the-website-manually">
-<h2>How To Create The Website Manually<a class="headerlink" href="#how-to-create-the-website-manually" title="Link to this heading">#</a></h2>
-<p>The Webiste will be generated automatically by Github Actions, but this section is meant to remind me how I can create this sphinx website manually on my local computer.</p>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Installing Poetry &amp; Compiling Website</span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>BitstreamEvolution/docs/sphinx
-
-poetry<span class="w"> </span>install<span class="w"> </span>--with<span class="w"> </span>dev
-
-poetry<span class="w"> </span>run<span class="w"> </span>make<span class="w"> </span>html
-
-<span class="nb">cd</span><span class="w"> </span>build/html
-
-open_in_web_browser<span class="w"> </span>index.html
-</pre></div>
-</div>
-</div>
-<p>Below are some alternatives to the <cite>poetry run make html</cite> line above for slightly different goals:</p>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Installing using the Makefile or make.bat, implicitly running sphinx-build</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>make<span class="w"> </span>html
-</pre></div>
-</div>
-</div>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Creating the website to make the html website that is for public release</span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>sphinx-build<span class="w"> </span>-M<span class="w"> </span>html<span class="w"> </span><span class="s2">&quot;source&quot;</span><span class="w"> </span><span class="s2">&quot;build&quot;</span><span class="w"> </span>-t<span class="w"> </span>release
-</pre></div>
-</div>
-</div>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Creating the website to make the html website that is for development use only</span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>sphinx-build<span class="w"> </span>-M<span class="w"> </span>html<span class="w"> </span><span class="s2">&quot;source&quot;</span><span class="w"> </span><span class="s2">&quot;build&quot;</span><span class="w"> </span>-t<span class="w"> </span>dev
-</pre></div>
-</div>
-</div>
+<section id="return-to-release-docs">
+<h2>Return To Release Docs<a class="headerlink" href="#return-to-release-docs" title="Link to this heading">#</a></h2>
+<p>This site reflects the <code class="docutils literal notranslate"><span class="pre">develop</span></code> branch and may contain incomplete
+features or content not yet on the stable release site.
+If you need the stable documentation, use the link below.</p>
+<p class="sd-text-center"><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-outline-primary reference external" href="https://evolvablehardware.github.io/BitstreamEvolution/"><span>View Release Documentation</span></a></p>
 </section>
 </section>
 
@@ -486,8 +476,7 @@ open_in_web_browser<span class="w"> </span>index.html
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#link-to-main-website">Link To Main Website</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-create-the-website-manually">How To Create The Website Manually</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#return-to-release-docs">Return To Release Docs</a></li>
 </ul>
   </nav></div>
 
