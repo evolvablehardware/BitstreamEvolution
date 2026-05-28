@@ -104,9 +104,23 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   window.addEventListener("scroll", onScroll, { passive: true });
-  // hashchange fires when a TOC link is clicked (instant jump, no scroll event)
-  window.addEventListener("hashchange", onScroll);
+
+  // When a TOC link is clicked the browser jumps instantly (no scroll event)
+  // and we already know the target from location.hash, so skip the position
+  // measurement and activate it directly.
+  window.addEventListener("hashchange", function () {
+    if (!sections) sections = buildSections();
+    var hash = window.location.hash;
+    if (hash) updateNav(decodeURIComponent(hash.slice(1)));
+  });
+
   // Run once on load in case the page starts mid-scroll (e.g. hash in URL)
-  window.addEventListener("load", onScroll);
+  window.addEventListener("load", function () {
+    if (!sections) sections = buildSections();
+    var hash = window.location.hash;
+    if (hash) updateNav(decodeURIComponent(hash.slice(1)));
+    else onScroll();
+  });
+
   onScroll();
 });
