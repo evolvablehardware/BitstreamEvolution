@@ -1,8 +1,8 @@
 ==============================================
-Welcome to BitstreamEvolution's documentation!
+Welcome to BitstreamEvolution's Documentation!
 ==============================================
 
-This is the |doc_version| documentation for BitstreamEvolution.
+This is the |doc_branch| branch documentation for BitstreamEvolution.
 
 .. only:: release
 
@@ -39,13 +39,6 @@ This is the |doc_version| documentation for BitstreamEvolution.
    Currently we are trying to do a rewrite of the main repository to use new interfaces to make the codebase more modular.
    Until this is done, the ``develop`` branch will be used for this process and modifications will be made to the ``main`` branch directly for pre-existing code.
 
-.. button-link:: https://evolvablehardware.github.io/
-   :color: secondary
-   :align: center
-   :outline:
-
-   Evolvable Hardware Community Website
-
 .. grid:: 2
     :gutter: 3
 
@@ -72,6 +65,22 @@ This is the |doc_version| documentation for BitstreamEvolution.
         :link-type: doc
 
         Build instructions, test results, and contribution information.
+
+----
+
+The Evolvable Hardware Community
+================================
+
+BitstreamEvolution is one project developed by the Evolvable Hardware research group,
+which explores the use of evolutionary computation on physical hardware.
+Visit the community website to learn about other projects and ongoing research in this space.
+
+.. button-link:: https://evolvablehardware.github.io/
+   :color: secondary
+   :align: center
+   :outline:
+
+   Evolvable Hardware Community Website
 
 .. toctree::
    :maxdepth: 2

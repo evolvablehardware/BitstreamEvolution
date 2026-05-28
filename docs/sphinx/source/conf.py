@@ -178,7 +178,7 @@ napoleon_include_special_with_doc = True    # True to include special members li
 ############################# Substitutions #####################################
 
 rst_prolog = f"""
-.. |doc_version| replace:: {"Release" if tag_is_applied(sTag.release) else "Develop"}
+.. |doc_branch| replace:: {"release" if tag_is_applied(sTag.release) else "develop"}
 """
 
 # -- Options for notfound extension ------------------------------------------
