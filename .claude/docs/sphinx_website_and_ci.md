@@ -71,6 +71,7 @@ Tags control conditional content rendering:
 | `graphviz` | Diagrams (requires `dot` on PATH) |
 | `inheritance_diagram` | Class hierarchy visualization |
 | `sphinx_design` | Enhanced UI components (cards, grids, tabs) |
+| `sphinxcontrib-mermaid` | Mermaid flowchart diagrams via `.. mermaid::` directive |
 
 ### Config Loaded from `pyproject.toml`
 Under `[config.sphinx]`: project name, copyright, author, theme names, logo URLs.
@@ -88,8 +89,16 @@ docs/sphinx/source/
 ├── index.rst             # Landing page (release vs. develop indicator)
 ├── 404.rst               # Custom 404 (:orphan:)
 ├── architecture/
-│   ├── index.rst         # Architecture overview + proposal diagrams
-│   └── images/           # 13 architectural diagram images
+│   ├── index.rst         # Current architecture: overview, component diagrams, worked example
+│   ├── images/           # Static diagram images (legacy; prefer mermaid for new diagrams)
+│   ├── historical/
+│   │   ├── index.rst     # Archive index with timeline (most recent → oldest)
+│   │   ├── initial_proposal.rst   # First formal proposal (archived)
+│   │   └── early_design_ideas.rst # Pre-proposal design sketches (archived)
+│   └── hardware/
+│       ├── index.rst     # Hardware architecture reference landing page
+│       ├── ice40_hardware.rst
+│       └── mcu_protocol.rst
 ├── code/
 │   ├── index.rst         # API docs index (autodoc modules)
 │   ├── BitstreamEvolutionProtocols.rst
@@ -117,7 +126,7 @@ Total: ~32 RST files covering API autodoc for all `src/` modules.
 3. **Tag-based conditional content** — TODOs only appear on dev site; themes and logos switch per branch.
 4. **Test matrix CI** — Tests run across Python versions with JUnit reporting.
 5. **Config extraction from `pyproject.toml`** — Reusable workflow reads project metadata for CI.
-6. **Architecture docs** — Proposal diagrams and architectural overview are present.
+6. **Architecture docs** — Current-design overview, per-component mermaid diagrams, a full worked example, and an archived historical section (`historical/`) with the initial proposal and early design ideas.
 7. **Intersphinx** — Cross-links to Python stdlib, Sphinx, and `returns` library docs.
 
 ---

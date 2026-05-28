@@ -102,5 +102,6 @@ When editing an existing test, prompt the user with the proposed change and expl
 When working on specific areas, consult these files:
 
 - [.claude/docs/architectural_patterns.md](.claude/docs/architectural_patterns.md) - Design patterns and conventions used throughout the codebase
+- [.claude/docs/architecture_doc_maintenance.md](.claude/docs/architecture_doc_maintenance.md) - When and how to update the Sphinx architecture page; archiving guide; mermaid conventions
 - [.claude/docs/test_plan.md](.claude/docs/test_plan.md) - Comprehensive test plan for interface validation and coverage gaps
 - [.claude/todos/testing_todo.md](.claude/todos/testing_todo.md) - Progress tracker for test implementation
