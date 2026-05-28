@@ -71,26 +71,6 @@ def test_GenDataIncrementer_PerformsEntireLoopCorrectly(max_gen_num):
     assert input is None, f"Failed to correctly end the loop. Returned: {input}"
     
 
-"""
-Markers for Pytest:
-
-Markers can be applied to tests so only particular tests are run when you run pytest. 
-We have a custom addon that adds "long, short, and immediate" markers as specified in `pyproject.toml`.
-All tests automatically have one of these markers applied if they have none, in this case 'immediate'.
-This is also configured in `pyproject.toml` and more groups can be added.
-
-You can see what each marker means with the command line by writing the command:
-    `pytest --markers`
-You can run only tests with particular markers (in this case 'long') by running:
-    `pytest -m "long"`
-You can run tests with both markers applied: 
-    `pytest -m "long and short"`
-You can run tests with either marker applied:
-    `pytest -m "long or short"`
-
-You can apply a marker to a test (in this case 'long') by typing : `@pytest.mark.long` above the test function you want to mark.
-"""
-
 @pytest.mark.long
 def test_LongTest():
     "In the testing pipeline we need at least one 'long' test or the code running tests on github will break. This ensures we have that long test."

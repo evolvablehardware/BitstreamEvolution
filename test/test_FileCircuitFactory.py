@@ -12,7 +12,7 @@ SEED_HARDWARE_FOR_TESTS = Path("data/seed-hardware-whitley.asc")
 def test_file_based_circuit_factory():
     rand=Mock(spec=Random)
     logger = Mock(spec=Logger)
-    directories = Directories(Path('test', 'out', 'asc'), Path('test', 'out', 'bin'), Path('test', 'out', 'data'))
+    directories = Directories(Path('test', '.out', 'asc'), Path('test', '.out', 'bin'), Path('test', '.out', 'data'))
     with patch("Population.PopulationInitialization.SEED_HARDWARE_FILEPATH", SEED_HARDWARE_FOR_TESTS):
         factory = FileBasedCircuitFactory(
             sz=10,
@@ -29,7 +29,7 @@ def test_file_based_circuit_factory():
             rand=rand)
         pop = gen_bitstream_population.generate()
         circuits = factory.create([pop])
-        asc_count = count_files_in_directory(Path('test', 'out', 'asc'))
+        asc_count = count_files_in_directory(Path('test', '.out', 'asc'))
         assert asc_count == 10
         assert len(circuits) == 10
         for c in circuits:

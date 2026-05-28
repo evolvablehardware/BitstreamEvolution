@@ -81,6 +81,24 @@ Tests use pytest with three timing markers configured in [pyproject.toml:44-48](
 - `short`: <60 seconds
 - `long`: >1 minute
 
+Unmarked tests automatically receive the default marker (`immediate`) via `conftest.py`. Additional marker groups can be added in `pyproject.toml`.
+
+### Pytest Marker Usage
+
+```bash
+pytest --markers                  # List all markers and their descriptions
+pytest -m "long"                  # Run only tests marked 'long'
+pytest -m "long and short"        # Run tests that have BOTH markers
+pytest -m "long or short"         # Run tests that have EITHER marker
+```
+
+Apply a marker to a test:
+```python
+@pytest.mark.long
+def test_example():
+    ...
+```
+
 Mocking pattern: Use `unittest.mock.Mock(spec=ProtocolClass)` for protocol implementations.
 
 ### AI Test Annotations
