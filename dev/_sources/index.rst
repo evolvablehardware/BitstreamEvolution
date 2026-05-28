@@ -39,6 +39,13 @@ This is the |doc_version| documentation for BitstreamEvolution.
    Currently we are trying to do a rewrite of the main repository to use new interfaces to make the codebase more modular.
    Until this is done, the ``develop`` branch will be used for this process and modifications will be made to the ``main`` branch directly for pre-existing code.
 
+.. button-link:: https://evolvablehardware.github.io/
+   :color: secondary
+   :align: center
+   :outline:
+
+   Evolvable Hardware Community Website
+
 .. grid:: 2
     :gutter: 3
 
