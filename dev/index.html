@@ -42,7 +42,7 @@
     <script src="_static/documentation_options.js?v=a1637f0b"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="_static/js/scrollspy-fix.js?v=75f31da4"></script>
+    <script src="_static/js/scrollspy-fix.js?v=d144bd11"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
@@ -167,6 +167,7 @@
 <li class="toctree-l2"><a class="reference internal" href="dev/test_results.html">Test Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dev/contributing.html">Contributing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dev/build.html">Building the Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/interpret_pyproject.html">pyproject.toml Interpreter</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="architecture/index.html">Bitstream Evolution’s Architecture</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -544,6 +545,13 @@ handles transmission-loss artefacts (dropped or extra spaces, shifted colons).</
 <p>Figure out the format for an FPGA Request, potentially also changing the type, and adjust that here.</p>
 </div>
 <p class="todo-source">(The <a class="reference internal" href="code/BitstreamEvolutionProtocols.html#id1"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/src/BitstreamEvolutionProtocols.py:docstring of BitstreamEvolutionProtocols.Measurement.__init__, line 1.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>Expand this section with detailed test-writing guidance: fixture patterns,
+when to use <code class="docutils literal notranslate"><span class="pre">tmp_path</span></code> vs <code class="docutils literal notranslate"><span class="pre">monkeypatch</span></code>, how to handle hardware-dependent
+tests, and worked examples for each protocol.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="dev/contributing.html#id1"><em>original entry</em></a> is located in /home/runner/work/BitstreamEvolution/BitstreamEvolution/develop/docs/sphinx/source/dev/contributing.rst, line 132.)</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>Todo lists only appear if enabled. They will not be enabled on the main website, only develop.

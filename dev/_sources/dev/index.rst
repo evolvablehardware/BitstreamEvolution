@@ -5,7 +5,7 @@ Development Information
 Quick reference for developers working on BitstreamEvolution.
 Use the links below to jump directly to what you need.
 
-.. grid:: 3
+.. grid:: 2
     :gutter: 2
 
     .. grid-item-card:: Test Results
@@ -29,6 +29,13 @@ Use the links below to jump directly to what you need.
         Compile the Sphinx documentation locally. Covers both
         ``release`` and ``dev`` build variants.
 
+    .. grid-item-card:: pyproject.toml Interpreter
+        :link: interpret_pyproject
+        :link-type: doc
+
+        How ``interpret_pyproject.py`` bridges ``pyproject.toml`` and
+        GitHub Actions CI workflows.
+
 .. toctree::
     :maxdepth: 1
     :hidden:
@@ -36,6 +43,7 @@ Use the links below to jump directly to what you need.
     test_results
     contributing
     build
+    interpret_pyproject
 
 
 Return To Release Docs
