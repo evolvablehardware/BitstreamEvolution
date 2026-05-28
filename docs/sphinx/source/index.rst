@@ -12,6 +12,13 @@ This is the |doc_branch| branch documentation for BitstreamEvolution.
 
 .. only:: dev
 
+    .. button-link:: https://evolvablehardware.github.io/BitstreamEvolution/
+       :color: primary
+       :align: center
+       :outline:
+
+       View Release Documentation
+
     .. warning::
 
         **This is the development documentation** for the ``develop`` branch, which is
