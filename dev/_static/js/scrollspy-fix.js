@@ -16,24 +16,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const body = document.body;
   if (!body.hasAttribute("data-bs-spy")) return;
 
-  // Measure the fixed header
   const header = document.querySelector(".bd-header");
   if (!header) return;
-  const headerHeight = header.getBoundingClientRect().height;
 
-  // Small delay to ensure Bootstrap has auto-initialised ScrollSpy
-  requestAnimationFrame(() => {
-    const spy = bootstrap.ScrollSpy.getInstance(body);
-    if (!spy) return;
+  function applyFix() {
+    const headerHeight = header.getBoundingClientRect().height;
+    if (headerHeight === 0) {
+      // Layout not ready yet — retry shortly
+      setTimeout(applyFix, 50);
+      return;
+    }
 
     const target = body.getAttribute("data-bs-target") || ".bd-toc-nav";
-    spy.dispose();
+    const spy = bootstrap.ScrollSpy.getInstance(body);
+    if (spy) spy.dispose();
 
     new bootstrap.ScrollSpy(body, {
       target: target,
       rootMargin: `-${Math.ceil(headerHeight)}px 0px -60% 0px`,
       smoothScroll: false,
-      threshold: [0.1, 0.5, 1],
     });
-  });
+  }
+
+  // setTimeout(fn, 0) runs after all DOMContentLoaded handlers complete,
+  // ensuring Bootstrap's auto-init has run before we reinitialize with the
+  // corrected rootMargin.
+  setTimeout(applyFix, 0);
 });
