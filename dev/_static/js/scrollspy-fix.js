@@ -42,10 +42,13 @@ document.addEventListener("DOMContentLoaded", function () {
       .filter(Boolean);
   }
 
-  // The active section is the last one whose top edge is at or above the
-  // header bottom (i.e. we have scrolled past its heading).
+  // The active section is the last one whose top edge has passed the midpoint
+  // of the visible content area (halfway between the header bottom and the
+  // bottom of the viewport).  This makes the TOC switch when the heading is
+  // visibly in the upper half of the screen rather than nearly off the top.
   function getActiveId(sections) {
-    var threshold = headerHeight() + 1;
+    var h = headerHeight();
+    var threshold = h + (window.innerHeight - h) / 2;
     var activeId = null;
     for (var i = 0; i < sections.length; i++) {
       if (sections[i].el.getBoundingClientRect().top > threshold) break;
