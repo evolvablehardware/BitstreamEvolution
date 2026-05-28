@@ -104,6 +104,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   window.addEventListener("scroll", onScroll, { passive: true });
+  // hashchange fires when a TOC link is clicked (instant jump, no scroll event)
+  window.addEventListener("hashchange", onScroll);
   // Run once on load in case the page starts mid-scroll (e.g. hash in URL)
   window.addEventListener("load", onScroll);
   onScroll();
